@@ -1,0 +1,34 @@
+#----------------------------------------------------------------------------
+# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+#----------------------------------------------------------------------------
+
+from .motorsafety import MotorSafety
+from .pwm import PWM
+
+class SafePWM(PWM, MotorSafety):
+    def __init__(self, channel):
+        """Constructor for a SafePWM object taking a channel number.
+
+        :param channel: The channel number to be used for the underlying PWM
+            object
+        """
+        MotorSafety.__init__(self)
+        PWM.__init__(self, channel)
+        self.setExpiration(0.0)
+        self.setSafetyEnabled(False)
+
+    def stopMotor(self):
+        """Stop the motor associated with this PWM object.
+        This is called by the MotorSafety object when it has a timeout for
+        this PWM and needs to stop it from running.
+        """
+        self.disable()
+
+    def getDescription(self):
+        return "PWM %d" % self.getChannel()
+
+    def disable(self):
+        self.setRaw(self.kPwmDisabled)

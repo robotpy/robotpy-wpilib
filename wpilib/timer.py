@@ -1,0 +1,102 @@
+# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+
+import threading
+
+import hal
+
+class Timer:
+    @staticmethod
+    def getFPGATimestamp():
+        """Return the system clock time in seconds. Return the time from the
+        FPGA hardware clock in seconds since the FPGA started.
+
+        :returns: Robot running time in seconds."""
+        return hal.getFPGATime() / 1000000.0
+
+    @staticmethod
+    def getMatchTime():
+        """Return the approximate match time.
+        The FMS does not currently send the official match time to the robots.
+        This returns the time since the enable signal sent from the Driver
+        Station.
+        At the beginning of autonomous, the time is reset to 0.0 seconds.
+        At the beginning of teleop, the time is reset to +15.0 seconds.
+        If the robot is disabled, this returns 0.0 seconds.
+
+        .. warning::
+
+            This is not an official time (so it cannot be used to argue with
+            referees).
+
+        :returns: Match time in seconds since the beginning of autonomous
+        """
+        from .driverstation import DriverStation
+        return DriverStation.getInstance().getMatchTime()
+
+    @staticmethod
+    def delay(seconds):
+        """Pause the thread for a specified time. Pause the execution of the
+        thread for a specified period of time given in seconds. Motors will
+        continue to run at their last assigned values, and sensors will
+        continue to update. Only the task containing the wait will pause
+        until the wait time is expired.
+
+        :param seconds: Length of time to pause
+        """
+        hal.delaySeconds(seconds)
+
+    def __init__(self):
+        self.mutex = threading.RLock()
+        self.startTime = self.getMsClock()
+        self.accumulatedTime = 0.0
+        self.running = False
+
+    def getMsClock(self):
+        """Returns the system clock time in milliseconds."""
+        return hal.getFPGATime() / 1000.0
+
+    def get(self):
+        """Get the current time from the timer. If the clock is running it is
+        derived from the current system clock the start time stored in the
+        timer class. If the clock is not running, then return the time when
+        it was last stopped.
+
+        :returns: Current time value for this timer in seconds
+        """
+        with self.mutex:
+            if self.running:
+                return ((self.getMsClock() - self.startTime) + self.accumulatedTime) / 1000.0
+            else:
+                return self.accumulatedTime
+
+    def reset(self):
+        """Reset the timer by setting the time to 0.
+        Make the timer startTime the current time so new requests will be
+        relative now.
+        """
+        with self.mutex:
+            self.accumulatedTime = 0.0
+            self.startTime = self.getMsClock()
+
+    def start(self):
+        """Start the timer running.
+        Just set the running flag to true indicating that all time requests
+        should be relative to the system clock.
+        """
+        with self.mutex:
+            self.startTime = self.getMsClock()
+            self.running = True
+
+    def stop(self):
+        """Stop the timer.
+        This computes the time as of now and clears the running flag, causing
+        all subsequent time requests to be read from the accumulated time
+        rather than looking at the system clock.
+        """
+        with self.mutex:
+            temp = self.get()
+            self.accumulatedTime = temp
+            self.running = False
