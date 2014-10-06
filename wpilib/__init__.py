@@ -15,6 +15,6 @@ from .robotstate import *
 from .safepwm import *
 from .sensorbase import *
 from .timer import *
-from .victor import *
 from .ultrasonic import *
 from .utility import *
+from .victor import *
