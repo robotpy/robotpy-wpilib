@@ -78,7 +78,7 @@ class PWM:
         self.port = hal.initializeDigitalPort(hal.getPort(channel))
 
         if not hal.allocatePWMChannel(self.port):
-            raise ValueError("PWM channel %d is already allocated" % channel)
+            raise IndexError("PWM channel %d is already allocated" % channel)
 
         hal.setPWM(self.port, 0)
 

@@ -68,7 +68,7 @@ class SensorBase: # TODO: Refactor
         :param channel: The channel number to check.
         """
         if channel < 0 or channel >= SensorBase.kDigitalChannels:
-            raise ValueError("Requested digital channel number %d is out of range." % channel)
+            raise IndexError("Requested digital channel number %d is out of range." % channel)
 
     @staticmethod
     def checkRelayChannel(channel):
@@ -79,7 +79,7 @@ class SensorBase: # TODO: Refactor
         :param channel: The channel number to check.
         """
         if channel < 0 or channel >= SensorBase.kRelayChannels:
-            raise ValueError("Requested relay channel number %d is out of range." % channel)
+            raise IndexError("Requested relay channel number %d is out of range." % channel)
 
     @staticmethod
     def checkPWMChannel(channel):
@@ -90,7 +90,7 @@ class SensorBase: # TODO: Refactor
         :param channel: The channel number to check.
         """
         if channel < 0 or channel >= SensorBase.kPwmChannels:
-            raise ValueError("Requested PWM channel number %d is out of range." % channel)
+            raise IndexError("Requested PWM channel number %d is out of range." % channel)
 
     @staticmethod
     def checkAnalogInputChannel(channel):
@@ -101,7 +101,7 @@ class SensorBase: # TODO: Refactor
         :param channel: The channel number to check.
         """
         if channel < 0 or channel >= SensorBase.kAnalogInputChannels:
-            raise ValueError("Requested analog input channel number %d is out of range." % channel)
+            raise IndexError("Requested analog input channel number %d is out of range." % channel)
 
     @staticmethod
     def checkAnalogOutputChannel(channel):
@@ -112,7 +112,7 @@ class SensorBase: # TODO: Refactor
         :param channel: The channel number to check.
         """
         if channel < 0 or channel >= SensorBase.kAnalogOutputChannels:
-            raise ValueError("Requested analog output channel number %d is out of range." % channel)
+            raise IndexError("Requested analog output channel number %d is out of range." % channel)
 
     @staticmethod
     def checkSolenoidChannel(channel):
@@ -122,7 +122,7 @@ class SensorBase: # TODO: Refactor
         :param channel: The channel number to check.
         """
         if channel < 0 or channel >= SensorBase.kSolenoidChannels:
-            raise ValueError("Requested solenoid channel number %d is out of range." % channel)
+            raise IndexError("Requested solenoid channel number %d is out of range." % channel)
 
     @staticmethod
     def checkPDPChannel(channel):
@@ -132,7 +132,7 @@ class SensorBase: # TODO: Refactor
         :param channel: The channel number to check.
         """
         if channel < 0 or channel >= SensorBase.kPDPChannels:
-            raise ValueError("Requested PDP channel number %d is out of range." % channel)
+            raise IndexError("Requested PDP channel number %d is out of range." % channel)
 
     @staticmethod
     def getDefaultSolenoidModule():
