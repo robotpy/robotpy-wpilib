@@ -10,37 +10,36 @@ import hal
 from .livewindow import LiveWindow
 from .safepwm import SafePWM
 
-class Victor(SafePWM):
-    """VEX Robotics Victor Speed Controller"""
+class Talon(SafePWM):
+    """CTRE Talon Speed Controller"""
+
     def __init__(self, channel):
         """Constructor.
 
-        :param channel: The PWM channel that the Victor is attached to.
+        :param channel: The PWM channel that the Talon is attached to.
 
         .. note ::
 
-            The Victor uses the following bounds for PWM values.  These
-            values were determined empirically and optimized for the Victor
-            888. These values should work reasonably well for Victor 884
-            controllers also but if users experience issues such as
-            asymmetric behavior around the deadband or inability to saturate
-            the controller in either direction, calibration is recommended.
-            The calibration procedure can be found in the Victor 884 User
-            Manual available from VEX Robotics:
-            http://content.vexrobotics.com/docs/ifi-v884-users-manual-9-25-06.pdf
-            - 2.027ms = full "forward"
-            - 1.525ms = the "high end" of the deadband range
-            - 1.507ms = center of the deadband range (off)
-            - 1.49ms = the "low end" of the deadband range
-            - 1.026ms = full "reverse"
+            The Talon uses the following bounds for PWM values. These values
+            should work reasonably well for most controllers, but if users
+            experience issues such as asymmetric behavior around the deadband
+            or inability to saturate the controller in either direction,
+            calibration is recommended.  The calibration procedure can be
+            found in the Talon User Manual available from CTRE.
+
+            - 2.037ms = full "forward"
+            - 1.539ms = the "high end" of the deadband range
+            - 1.513ms = center of the deadband range (off)
+            - 1.487ms = the "low end" of the deadband range
+            - 0.989ms = full "reverse"
         """
         super().__init__(channel)
-        self.setBounds(2.027, 1.525, 1.507, 1.49, 1.026)
-        self.setPeriodMultiplier(self.PeriodMultiplier.k2X)
-        self.setRaw(self.centerPwm)
+        self.setBounds(2.037, 1.539, 1.513, 1.487, 0.989);
+        self.setPeriodMultiplier(self.PeriodMultiplier.k2X);
+        self.setRaw(self.centerPwm);
 
-        LiveWindow.addActuatorChannel("Victor", self.getChannel(), self)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Victor,
+        LiveWindow.addActuatorChannel("Talon", self.getChannel(), self)
+        hal.HALReport(hal.HALUsageReporting.kResourceType_Talon,
                       self.getChannel())
 
     def set(self, speed, syncGroup=0):
@@ -50,7 +49,7 @@ class Victor(SafePWM):
         scaling the value for the FPGA.
 
         :param speed: The speed to set.  Value should be between -1.0 and 1.0.
-        :param syncGroup: The update group to add this set to, pending
+        :param syncGroup: The update group to add this set() to, pending
             updateSyncGroup().  If 0, update immediately.
         """
         self.setSpeed(speed)

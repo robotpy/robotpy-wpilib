@@ -10,38 +10,29 @@ import hal
 from .livewindow import LiveWindow
 from .safepwm import SafePWM
 
-class Victor(SafePWM):
-    """VEX Robotics Victor Speed Controller"""
+class Jaguar(SafePWM):
+    """Texas Instruments Jaguar Speed Controller as a PWM device."""
+
     def __init__(self, channel):
         """Constructor.
 
-        :param channel: The PWM channel that the Victor is attached to.
-
-        .. note ::
-
-            The Victor uses the following bounds for PWM values.  These
-            values were determined empirically and optimized for the Victor
-            888. These values should work reasonably well for Victor 884
-            controllers also but if users experience issues such as
-            asymmetric behavior around the deadband or inability to saturate
-            the controller in either direction, calibration is recommended.
-            The calibration procedure can be found in the Victor 884 User
-            Manual available from VEX Robotics:
-            http://content.vexrobotics.com/docs/ifi-v884-users-manual-9-25-06.pdf
-            - 2.027ms = full "forward"
-            - 1.525ms = the "high end" of the deadband range
-            - 1.507ms = center of the deadband range (off)
-            - 1.49ms = the "low end" of the deadband range
-            - 1.026ms = full "reverse"
+        :param channel: The PWM channel that the Jaguar is attached to.
         """
         super().__init__(channel)
-        self.setBounds(2.027, 1.525, 1.507, 1.49, 1.026)
-        self.setPeriodMultiplier(self.PeriodMultiplier.k2X)
+        # Input profile defined by Luminary Micro.
+        #
+        # Full reverse ranges from 0.671325ms to 0.6972211ms
+        # Proportional reverse ranges from 0.6972211ms to 1.4482078ms
+        # Neutral ranges from 1.4482078ms to 1.5517922ms
+        # Proportional forward ranges from 1.5517922ms to 2.3027789ms
+        # Full forward ranges from 2.3027789ms to 2.328675ms
+        self.setBounds(2.31, 1.55, 1.507, 1.454, 0.697)
+        self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
         self.setRaw(self.centerPwm)
 
-        LiveWindow.addActuatorChannel("Victor", self.getChannel(), self)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Victor,
+        hal.HALReport(hal.HALUsageReporting.kResourceType_Jaguar,
                       self.getChannel())
+        LiveWindow.addActuatorChannel("Jaguar", self.getChannel(), self)
 
     def set(self, speed, syncGroup=0):
         """Set the PWM value.
@@ -50,7 +41,7 @@ class Victor(SafePWM):
         scaling the value for the FPGA.
 
         :param speed: The speed to set.  Value should be between -1.0 and 1.0.
-        :param syncGroup: The update group to add this set to, pending
+        :param syncGroup: The update group to add this set() to, pending
             updateSyncGroup().  If 0, update immediately.
         """
         self.setSpeed(speed)

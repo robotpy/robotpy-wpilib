@@ -4,6 +4,7 @@ from .digitalsource import *
 from .driverstation import *
 from .interruptablesensorbase import *
 from .iterativerobot import *
+from .jaguar import *
 from .livewindow import *
 from .motorsafety import *
 from .pidcontroller import *
@@ -14,6 +15,7 @@ from .robotbase import *
 from .robotstate import *
 from .safepwm import *
 from .sensorbase import *
+from .talon import *
 from .timer import *
 from .ultrasonic import *
 from .utility import *
