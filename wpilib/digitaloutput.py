@@ -10,6 +10,11 @@ import hal
 from .digitalsource import DigitalSource
 from .sensorbase import SensorBase
 
+def _freePWMGenerator(pwmGenerator):
+    # Disable the output by routing to a dead bit.
+    hal.setPWMOutputChannel(pwmGenerator, SensorBase.kDigitalChannels)
+    hal.freePWM(pwmGenerator)
+
 class DigitalOutput(DigitalSource):
     """Class to write digital outputs. This class will write digital outputs.
     Other devices that are implemented elsewhere will automatically allocate
@@ -22,23 +27,34 @@ class DigitalOutput(DigitalSource):
         :param channel: the port to use for the digital output
         """
         super().__init__(channel, False)
-        self.pwmGenerator = None
+        self._pwmGenerator = None
+        self._pwmGenerator_finalizer = None
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_DigitalOutput,
                       channel)
 
-    def __del__(self):
+    @property
+    def pwmGenerator(self):
+        if self._pwmGenerator_finalizer is None:
+            return None
+        if not self._pwmGenerator_finalizer.alive:
+            return None
+        return self._pwmGenerator
+
+    def free(self):
         """Free the resources associated with a digital output."""
-        # disable the pwm only if we have allocated it
+        # finalize the pwm only if we have allocated it
         if self.pwmGenerator is not None:
-            self.disablePWM()
-        super().__del__()
+            self._pwm_finalizer()
+        super().free()
 
     def set(self, value):
         """Set the value of a digital output.
 
         :param value: True is on, off is False
         """
+        if self.port is None:
+            raise ValueError("operation on freed port")
         hal.setDIO(self.port, 1 if value else 0)
 
     def getChannel(self):
@@ -53,6 +69,8 @@ class DigitalOutput(DigitalSource):
         :param channel: The channel to pulse.
         :param pulseLength: The length of the pulse.
         """
+        if self.port is None:
+            raise ValueError("operation on freed port")
         hal.pulse(self.port, pulseLength)
 
     def isPulsing(self):
@@ -61,6 +79,8 @@ class DigitalOutput(DigitalSource):
 
         :returns: True if pulsing
         """
+        if self.port is None:
+            raise ValueError("operation on freed port")
         return hal.isPulsing(self.port)
 
     def setPWMRate(self, rate):
@@ -90,9 +110,11 @@ class DigitalOutput(DigitalSource):
         """
         if self.pwmGenerator is not None:
             return
-        self.pwmGenerator = hal.allocatePWM()
-        hal.setPWMDutyCycle(self.pwmGenerator, initialDutyCycle)
-        hal.setPWMOutputChannel(self.pwmGenerator, self.channel)
+        self._pwmGenerator = hal.allocatePWM()
+        hal.setPWMDutyCycle(self._pwmGenerator, initialDutyCycle)
+        hal.setPWMOutputChannel(self._pwmGenerator, self.channel)
+        self._pwmGenerator_finalizer = \
+                weakref.finalize(self, _freePWMGenerator, self._pwmGenerator)
 
     def disablePWM(self):
         """Change this line from a PWM output back to a static Digital Output
@@ -102,10 +124,7 @@ class DigitalOutput(DigitalSource):
         """
         if self.pwmGenerator is None:
             return
-        # Disable the output by routing to a dead bit.
-        hal.setPWMOutputChannel(self.pwmGenerator, SensorBase.kDigitalChannels)
-        hal.freePWM(self.pwmGenerator)
-        self.pwmGenerator = None
+        self._interrupt_finalizer()
 
     def updateDutyCycle(self, dutyCycle):
         """Change the duty-cycle that is being generated on the line.
@@ -115,6 +134,8 @@ class DigitalOutput(DigitalSource):
 
         :param dutyCycle: The duty-cycle to change to. [0..1]
         """
+        if self.pwmGenerator is None:
+            return
         hal.setPWMDutyCycle(self.pwmGenerator, dutyCycle)
 
     # Live Window code, only does anything if live window is activated.

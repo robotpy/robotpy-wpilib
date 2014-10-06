@@ -6,6 +6,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import weakref
 
 from .resource import Resource
 from .sensorbase import SensorBase
@@ -19,15 +20,12 @@ class InterruptableSensorBase(SensorBase):
     def __init__(self):
         """Create a new InterrupatableSensorBase"""
         # The interrupt resource
-        self.interrupt = None
+        self._interrupt = None
+        self._interrupt_finalizer = None
         # Flags if the interrupt being allocated is synchronous
         self.isSynchronousInterrupt = False
         # The index of the interrupt
-        self.interruptIndex = 0
-
-    def __del__(self):
-        if self.interrupt is not None:
-            self.cancelInterrupts()
+        self.interruptIndex = None
 
     def getAnalogTriggerForRouting(self):
         raise NotImplementedError
@@ -38,38 +36,27 @@ class InterruptableSensorBase(SensorBase):
     def getModuleForRouting(self):
         raise NotImplementedError
 
-    def requestInterrupts(self, handler):
+    @property
+    def interrupt(self):
+        if self._interrupt_finalizer is None:
+            return None
+        if not self._interrupt_finalizer.alive:
+            return None
+        return self._interrupt
+
+    def requestInterrupts(self, handler=None):
         """Request interrupts asynchronously on this digital input.
 
-        :param handler:
+        :param handler: (optional)
             The function that will be called whenever there is an interrupt
             on this device.  Request interrupts in synchronus mode where the
             user program interrupt handler will be called when an interrupt
             occurs. The default is interrupt on rising edges only.
         """
         if self.interrupt is not None:
-            raise RuntimeError("The interrupt has already been allocated")
+            raise ValueError("The interrupt has already been allocated")
 
-        self.allocateInterrupts(False)
-
-        assert self.interrupt is not None
-
-        hal.requestInterrupts(self.interrupt, self.getModuleForRouting(),
-                              self.getChannelForRouting(),
-                              1 if self.getAnalogTriggerForRouting() else 0)
-        self.setUpSourceEdge(True, False)
-        hal.attachInterruptHandler(self.interrupt, handler)
-
-    def requestInterrupts(self):
-        """Request interrupts synchronously on this digital input. Request
-        interrupts in synchronous mode where the user program will have to
-        explicitly wait for the interrupt to occur. The default is interrupt
-        on rising edges only.
-        """
-        if self.interrupt is not None:
-            raise RuntimeError("The interrupt has already been allocated")
-
-        self.allocateInterrupts(True)
+        self.allocateInterrupts(handler is not None)
 
         assert self.interrupt is not None
 
@@ -77,6 +64,8 @@ class InterruptableSensorBase(SensorBase):
                               self.getChannelForRouting(),
                               1 if self.getAnalogTriggerForRouting() else 0)
         self.setUpSourceEdge(True, False)
+        if handler is not None:
+            hal.attachInterruptHandler(self.interrupt, handler)
 
     def allocateInterrupts(self, watcher):
         """Allocate the interrupt
@@ -85,24 +74,30 @@ class InterruptableSensorBase(SensorBase):
         where the user program will have to explicitly wait for the interrupt
         to occur.
         """
+        if self.interrupt is not None:
+            raise ValueError("The interrupt has already been allocated")
+
         try:
-            self.interruptIndex = InterruptibleSensorBase.interrupts.allocate()
+            self.interruptIndex = \
+                    InterruptibleSensorBase.interrupts.allocate(self)
         except IndexError:
             raise IndexError("No interrupts are left to be allocated")
 
         self.isSynchronousInterrupt = watcher
-        self.interrupt = hal.initializeInterrupts(self.interruptIndex,
-                                                  1 if watcher else 0)
+        self._interrupt = hal.initializeInterrupts(self.interruptIndex,
+                                                   1 if watcher else 0)
+        self._interrupt_finalizer = weakref.finalize(self, hal.cleanInterrupts,
+                                                     self._interrupt)
 
     def cancelInterrupts(self):
         """Cancel interrupts on this device. This deallocates all the
         chipobject structures and disables any interrupts.
         """
         if self.interrupt is None:
-            raise RuntimeError("The interrupt is not allocated.")
-        hal.cleanInterrupts(self.interrupt)
-        self.interrupt = None
+            raise ValueError("The interrupt is not allocated.")
+        self._interrupt_finalizer()
         InterruptibleSensorBase.interrupts.free(self.interruptIndex)
+        self.interruptIndex = None
 
     def waitForInterrupt(self, timeout):
         """In synchronous mode, wait for the defined interrupt to occur.
@@ -110,7 +105,7 @@ class InterruptableSensorBase(SensorBase):
         :param timeout: Timeout in seconds
         """
         if self.interrupt is None:
-            raise RuntimeError("The interrupt is not allocated.")
+            raise ValueError("The interrupt is not allocated.")
         hal.waitForInterrupt(self.interrupt, timeout)
 
     def enableInterrupts(self):
@@ -119,17 +114,17 @@ class InterruptableSensorBase(SensorBase):
         setup of the other options before starting to field interrupts.
         """
         if self.interrupt is None:
-            raise RuntimeError("The interrupt is not allocated.")
+            raise ValueError("The interrupt is not allocated.")
         if self.isSynchronousInterrupt:
-            raise RuntimeError("You do not need to enable synchronous interrupts")
+            raise ValueError("You do not need to enable synchronous interrupts")
         hal.enableInterrupts(self.interrupt)
 
     def disableInterrupts(self):
         """Disable Interrupts without without deallocating structures."""
         if self.interrupt is None:
-            raise RuntimeError("The interrupt is not allocated.")
+            raise ValueError("The interrupt is not allocated.")
         if self.isSynchronousInterrupt:
-            raise RuntimeError("You can not disable synchronous interrupts")
+            raise ValueError("You can not disable synchronous interrupts")
         hal.disableInterrupts(self.interrupt)
 
     def readInterruptTimestamp(self):
@@ -153,4 +148,4 @@ class InterruptableSensorBase(SensorBase):
                                          1 if risingEdge else 0,
                                          1 if fallingEdge else 0)
         else:
-            raise RuntimeError("You must call RequestInterrupts before setUpSourceEdge")
+            raise ValueError("You must call RequestInterrupts before setUpSourceEdge")

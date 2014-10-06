@@ -15,24 +15,7 @@ class Resource:
     library they are used for tracking allocation of hardware channels
     but this is purely arbitrary. The resource class does not do any actual
     allocation, but simply tracks if a given index is currently in use.
-
-    WARNING: this should only be statically allocated. When the program
-    loads into memory all the static constructors are called. At that time
-    a linked list of all the "Resources" is created.  Then when the program
-    actually starts - in the Robot constructor, all resources are
-    initialized.  This ensures that the program is restartable in memory
-    without having to unload/reload.
     """
-
-    resources = weakref.WeakSet()
-
-    @staticmethod
-    def restartProgram():
-        """Clears all allocated resources"""
-        for r in Resource.resources:
-            if r is not None:
-                for i in range(len(r.numAllocated)):
-                    r.numAllocated[i] = False
 
     def __init__(self, size):
         """Allocate storage for a new instance of Resource.
@@ -42,16 +25,16 @@ class Resource:
 
         :param size: The number of blocks to allocate
         """
-        self.numAllocated = [False]*size
-        Resource.resources.add(self)
+        self.numAllocated = [None]*size
 
-    def allocate(self, index=None):
+    def allocate(self, obj, index=None):
         """Allocate a resource.
 
         When index is None or unspecified, a free resource value within the
         range is located and returned after it is marked allocated.
         Otherwise, it is verified unallocated, then returned.
 
+        :param obj: The object requesting the resource.
         :param index: The resource to allocate
         :returns: The index of the allocated block.
         :raises IndexError: If there are no resources available to be
@@ -59,26 +42,29 @@ class Resource:
         """
         if index is None:
             for i in range(len(self.numAllocated)):
-                if not self.numAllocated[i]:
-                    self.numAllocated[i] = True
+                r = self.numAllocated[i]
+                if r is None or r() is None:
+                    self.numAllocated[i] = weakref.ref(obj)
                     return i
             raise IndexError("No available resources")
 
         if index >= len(self.numAllocated) or index < 0:
             raise IndexError("Index %d out of range" % index)
-        if self.numAllocated[index]:
+        r = self.numAllocated[index]
+        if r is not None and r() is not None:
             raise IndexError("Resource at index %d already allocated" % index)
-        self.numAllocated[index] = True
+        self.numAllocated[index] = weakref.ref(obj)
         return index
 
     def free(self, index):
-        """Free an allocated resource.
+        """Force-free an allocated resource.
         After a resource is no longer needed, for example a destructor is
-        called for a channel assignment class, Free will release the resource
+        called for a channel assignment class, free will release the resource
         value so it can be reused somewhere else in the program.
 
         :param index: The index of the resource to free.
         """
-        if not self.numAllocated[index]:
+        r = self.numAllocated[index]
+        if r is None or r() is not None:
             raise IndexError("No resource available to be freed")
-        self.numAllocated[index] = False
+        self.numAllocated[index] = None

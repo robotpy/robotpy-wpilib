@@ -6,6 +6,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import weakref
 
 from .resource import Resource
 from .sensorbase import SensorBase
@@ -31,17 +32,26 @@ class DigitalSource(InterruptableSensorBase):
         SensorBase.checkDigitalChannel(channel)
 
         try:
-            DigitalSource.channels.allocate(channel)
+            DigitalSource.channels.allocate(self, channel)
         except IndexError:
             raise IndexError("Digital input %d is already allocated" % self.channel)
 
-        self.port = hal.initializeDigitalPort(channel)
-        hal.allocateDIO(self.port, 1 if input else 0)
+        self._port = hal.initializeDigitalPort(channel)
+        hal.allocateDIO(self._port, 1 if input else 0)
+        self._port_finalizer = weakref.finalize(self, hal.freeDIO, self._port)
 
-    def __del__(self):
-        channels.free(self.channel)
-        hal.freeDIO(self.port)
-        super().__del__()
+    @property
+    def port(self):
+        if not self._port_finalizer.alive:
+            return None
+        return self._port
+
+    def free(self):
+        if self.channel is None:
+            return
+        DigitalSource.channels.free(self.channel)
+        self._port_finalizer()
+        self.channel = None
 
     def getChannelForRouting(self):
         """Get the channel routing number

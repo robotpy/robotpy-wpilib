@@ -34,6 +34,8 @@ class DigitalInput(DigitalSource):
 
         :returns: the stats of the digital input
         """
+        if self.port is None:
+            raise ValueError("operation on freed port")
         return hal.getDIO(self.port)
 
     def getChannel(self):
