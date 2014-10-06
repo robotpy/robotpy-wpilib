@@ -5,6 +5,7 @@ from .driverstation import *
 from .interruptablesensorbase import *
 from .iterativerobot import *
 from .jaguar import *
+from .joystick import *
 from .livewindow import *
 from .motorsafety import *
 from .pidcontroller import *
