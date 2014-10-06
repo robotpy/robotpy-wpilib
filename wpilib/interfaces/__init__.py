@@ -7,3 +7,4 @@ from .pidoutput import *
 from .pidsource import *
 from .potentiometer import *
 from .sendable import *
+from .speedcontroller import *
