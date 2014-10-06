@@ -81,18 +81,24 @@ class PWM:
 
         SensorBase.checkPWMChannel(channel)
         self.channel = channel
-        self.port = hal.initializeDigitalPort(hal.getPort(channel))
+        self._port = hal.initializeDigitalPort(hal.getPort(channel))
 
-        if not hal.allocatePWMChannel(self.port):
+        if not hal.allocatePWMChannel(self._port):
             raise IndexError("PWM channel %d is already allocated" % channel)
 
-        hal.setPWM(self.port, 0)
+        hal.setPWM(self._port, 0)
 
-        self._pwm_finalizer = weakref.finalize(self, _freePWM, self.port)
+        self._pwm_finalizer = weakref.finalize(self, _freePWM, self._port)
 
         self.eliminateDeadband = False
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_PWM, channel)
+
+    @property
+    def port(self):
+        if not self._pwm_finalizer.alive:
+            return None
+        return self._port
 
     def free(self):
         """Free the PWM channel.
@@ -252,7 +258,7 @@ class PWM:
 
         :param value: Raw PWM value.  Range 0 - 255.
         """
-        if not self._pwm_finalizer.alive:
+        if self.port is None:
             raise ValueError("operation on freed port")
         hal.setPWM(self.port, value)
 
@@ -263,7 +269,7 @@ class PWM:
 
         :returns: Raw PWM control value.  Range: 0 - 255.
         """
-        if not self._pwm_finalizer.alive:
+        if self.port is None:
             raise ValueError("operation on freed port")
         return hal.getPWM(self.port)
 
@@ -272,7 +278,7 @@ class PWM:
 
         :param mult: The period multiplier to apply to this channel
         """
-        if not self._pwm_finalizer.alive:
+        if self.port is None:
             raise ValueError("operation on freed port")
         if mult == PWM.PeriodMultiplier.k4X:
             # Squelch 3 out of 4 outputs
