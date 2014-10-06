@@ -45,7 +45,7 @@ class DigitalOutput(DigitalSource):
         """Free the resources associated with a digital output."""
         # finalize the pwm only if we have allocated it
         if self.pwmGenerator is not None:
-            self._pwm_finalizer()
+            self._pwmGenerator_finalizer()
         super().free()
 
     def set(self, value):
@@ -124,7 +124,7 @@ class DigitalOutput(DigitalSource):
         """
         if self.pwmGenerator is None:
             return
-        self._interrupt_finalizer()
+        self._pwmGenerator_finalizer()
 
     def updateDutyCycle(self, dutyCycle):
         """Change the duty-cycle that is being generated on the line.
