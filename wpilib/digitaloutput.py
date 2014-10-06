@@ -154,12 +154,14 @@ class DigitalOutput(DigitalSource):
         pass
 
     def startLiveWindowMode(self):
-        if not hasattr(self, "table"):
+        table = getattr(self, "table", None)
+        table_listener = getattr(self, "table_listener", None)
+        if table is None or table_listener is not None:
             return
         def valueChanged(itable, key, value, bln):
             self.set(True if value else False)
         self.table_listener = valueChanged
-        self.table.addTableListener("Value", valueChanged, True)
+        table.addTableListener("Value", valueChanged, True)
 
     def stopLiveWindowMode(self):
         # TODO: Broken, should only remove the listener from "Value" only.
@@ -168,4 +170,4 @@ class DigitalOutput(DigitalSource):
         if table is None or table_listener is None:
             return
         table.removeTableListener(table_listener)
-        table_listener = None
+        self.table_listener = None
