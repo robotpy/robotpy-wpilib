@@ -6,8 +6,14 @@
 #----------------------------------------------------------------------------
 
 import hal
+import weakref
 
 from .sensorbase import SensorBase
+
+def _freePWM(port):
+    hal.setPWM(port, 0)
+    hal.freePWMChannel(port)
+    hal.freeDIO(port)
 
 class PWM:
     """Class implements the PWM generation in the FPGA.
@@ -82,6 +88,8 @@ class PWM:
 
         hal.setPWM(self.port, 0)
 
+        self._finalizer = weakref.finalize(self, _freePWM, self.port)
+
         self.eliminateDeadband = False
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_PWM, channel)
@@ -92,10 +100,7 @@ class PWM:
         Free the resource associated with the PWM channel and set the value
         to 0.
         """
-        # FIXME: for Python should this be in __del__?
-        hal.setPWM(self.port, 0)
-        hal.freePWMChannel(self.port)
-        hal.freeDIO(self.port)
+        self._finalizer()
 
     def enableDeadbandElimination(self, eliminateDeadband):
         """Optionally eliminate the deadband from a speed controller.
@@ -247,6 +252,8 @@ class PWM:
 
         :param value: Raw PWM value.  Range 0 - 255.
         """
+        if not self._finalizer.alive:
+            raise ValueError("operation on freed port")
         hal.setPWM(self.port, value)
 
     def getRaw(self):
@@ -256,6 +263,8 @@ class PWM:
 
         :returns: Raw PWM control value.  Range: 0 - 255.
         """
+        if not self._finalizer.alive:
+            raise ValueError("operation on freed port")
         return hal.getPWM(self.port)
 
     def setPeriodMultiplier(self, mult):
@@ -263,6 +272,8 @@ class PWM:
 
         :param mult: The period multiplier to apply to this channel
         """
+        if not self._finalizer.alive:
+            raise ValueError("operation on freed port")
         if mult == PWM.PeriodMultiplier.k4X:
             # Squelch 3 out of 4 outputs
             hal.setPWMPeriodScale(self.port, 3)
