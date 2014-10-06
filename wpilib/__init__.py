@@ -11,6 +11,7 @@ from .motorsafety import *
 from .pidcontroller import *
 from .powerdistributionpanel import *
 from .pwm import *
+from .relay import *
 from .resource import *
 from .robotbase import *
 from .robotstate import *
