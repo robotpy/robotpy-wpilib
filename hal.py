@@ -574,6 +574,41 @@ def attachInterruptHandler(interrupt, handler):
 setInterruptUpSourceEdge = _STATUSFUNC("setInterruptUpSourceEdge", None, ("interrupt", Interrupt), ("rising_edge", C.c_bool), ("falling_edge", C.c_bool))
 
 #############################################################################
+# Notifier
+#############################################################################
+
+# opaque Notifier
+class _Notifier(C.Structure):
+    pass
+Notifier = C.POINTER(_Notifier)
+
+_NotifierProcessQueueFunction = C.CFUNCTYPE(None, C.c_uint32, C.c_void_p)
+_notifierProcessQueueFunctions = {}
+
+_initializeNotifier = _STATUSFUNC("initializeNotifier", Notifier, ("processQueue", _NotifierProcessQueueFunction))
+def initializeNotifier(processQueue):
+    # While initializeNotifier provides a param parameter, we use ctypes
+    # magic instead to uniquify the callback handler
+
+    # create bounce function to drop param
+    cb_func = _NotifierProcessQueueFunction(lambda mask, param: processQueue(mask))
+
+    # initialize notifier
+    notifier = _attachInterruptHandler(interrupt, cb_func, None)
+
+    # keep reference to bounce function
+    handlers = _notifierProcessQueueFunctions[notifier] = cb_func
+
+_cleanNotifier = _STATUSFUNC("cleanNotifier", None, ("notifier", Notifier))
+def cleanNotifier(notifier):
+    _cleanNotifier(notifier)
+
+    # remove reference to process queue function
+    _notifierProcessQueueFunctions.pop(notifier, None)
+
+updateNotifierAlarm = _STATUSFUNC("updateNotifierAlarm", None, ("notifier", Notifier), ("triggerTime", C.c_uint32))
+
+#############################################################################
 # PDP
 #############################################################################
 getPDPTemperature = _STATUSFUNC("getPDPTemperature", C.c_double)
@@ -581,7 +616,7 @@ getPDPVoltage = _STATUSFUNC("getPDPVoltage", C.c_double)
 getPDPChannelCurrent = _STATUSFUNC("getPDPChannelCurrent", C.c_double, ("channel", C.c_uint8))
 
 #############################################################################
-# PDP
+# Power
 #############################################################################
 getVinVoltage = _STATUSFUNC("getVinVoltage", C.c_float)
 getVinCurrent = _STATUSFUNC("getVinCurrent", C.c_float)
@@ -591,6 +626,21 @@ getUserVoltage5V = _STATUSFUNC("getUserVoltage5V", C.c_float)
 getUserCurrent5V = _STATUSFUNC("getUserCurrent5V", C.c_float)
 getUserVoltage3V3 = _STATUSFUNC("getUserVoltage3V3", C.c_float)
 getUserCurrent3V3 = _STATUSFUNC("getUserCurrent3V3", C.c_float)
+
+#############################################################################
+# Solenoid
+#############################################################################
+
+# opaque SolenoidPort
+class _SolenoidPort(C.Structure):
+    pass
+SolenoidPort = C.POINTER(_SolenoidPort)
+
+initializeSolenoidPort = _STATUSFUNC("initializeSolenoidPort", SolenoidPort, ("port", Port))
+checkSolenoidModule = _RETFUNC("checkSolenoidModule", C.c_bool, ("module", C.c_uint8))
+
+getSolenoid = _STATUSFUNC("getSolenoid", C.c_bool, ("solenoid_port", SolenoidPort))
+setSolenoid = _STATUSFUNC("setSolenoid", None, ("solenoid_port", SolenoidPort), ("value", C.c_bool))
 
 #############################################################################
 # Utilities
