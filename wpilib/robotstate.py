@@ -3,20 +3,20 @@ class RobotState:
 
     @staticmethod
     def isDisabled():
-        return impl.isDisabled()
+        return RobotState.impl.isDisabled()
 
     @staticmethod
     def isEnabled():
-        return impl.isEnabled()
+        return RobotState.impl.isEnabled()
 
     @staticmethod
     def isOperatorControl():
-        return impl.isOperatorControl()
+        return RobotState.impl.isOperatorControl()
 
     @staticmethod
     def isAutonomous():
-        return impl.isAutonomous()
+        return RobotState.impl.isAutonomous()
 
     @staticmethod
     def isTest():
-        return impl.isTest()
+        return RobotState.impl.isTest()
