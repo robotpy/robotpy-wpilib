@@ -14,6 +14,7 @@ from .pwm import *
 from .relay import *
 from .resource import *
 from .robotbase import *
+from .robotdrive import *
 from .robotstate import *
 from .safepwm import *
 from .sensorbase import *
