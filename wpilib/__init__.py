@@ -1,6 +1,7 @@
 from .digitalinput import *
 from .digitaloutput import *
 from .digitalsource import *
+from .doublesolenoid import *
 from .driverstation import *
 from .interruptablesensorbase import *
 from .iterativerobot import *
@@ -18,6 +19,8 @@ from .robotdrive import *
 from .robotstate import *
 from .safepwm import *
 from .sensorbase import *
+from .solenoidbase import *
+from .solenoid import *
 from .talon import *
 from .timer import *
 from .ultrasonic import *
