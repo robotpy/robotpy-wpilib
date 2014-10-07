@@ -225,8 +225,8 @@ class RobotDrive(MotorSafety):
             leftStick, leftAxis, rightStick, rightAxis = args
         elif len(args) == 5:
             leftStick, leftAxis, rightStick, rightAxis, squaredInputs = args
-        else:
-            raise ValueError("invalid number (%d) of positional arguments" % len(args))
+        elif len(args) != 0:
+            raise ValueError("don't know how to handle %d positional arguments" % len(args))
 
         # get value from stick if only stick provided
         if leftValue is None:
@@ -331,8 +331,8 @@ class RobotDrive(MotorSafety):
             moveStick, moveAxis, rotateStick, rotateAxis = args
         elif len(args) == 5:
             moveStick, moveAxis, rotateStick, rotateAxis, squaredInputs = args
-        else:
-            raise ValueError("invalid number (%d) of positional arguments" % len(args))
+        elif len(args) != 0:
+            raise ValueError("don't know how to handle %d positional arguments" % len(args))
 
         # get value from stick if only stick provided
         if moveValue is None:
