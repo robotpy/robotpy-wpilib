@@ -167,14 +167,14 @@ class DriverStation:
         else:
             return value / 127.0
 
-    def getStickButtons(stick):
+    def getStickButtons(self, stick):
         """The state of the buttons on the joystick.
         12 buttons (4 msb are unused) from the joystick.
 
         :param stick: The joystick to read.
         :returns: The state of the buttons on the joystick.
         """
-        if stick < 1 or stick > kJoystickPorts:
+        if stick < 1 or stick > self.kJoystickPorts:
             raise ValueError("Joystick index is out of range, should be 1-4")
 
         with self.mutex:
