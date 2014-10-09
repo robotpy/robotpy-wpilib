@@ -1,3 +1,4 @@
+from .compressor import *
 from .digitalinput import *
 from .digitaloutput import *
 from .digitalsource import *
