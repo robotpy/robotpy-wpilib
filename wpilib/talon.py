@@ -37,6 +37,7 @@ class Talon(SafePWM):
         self.setBounds(2.037, 1.539, 1.513, 1.487, 0.989);
         self.setPeriodMultiplier(self.PeriodMultiplier.k2X);
         self.setRaw(self.centerPwm);
+        self.setZeroLatch()
 
         LiveWindow.addActuatorChannel("Talon", self.getChannel(), self)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Talon,

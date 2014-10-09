@@ -292,6 +292,9 @@ class PWM:
         else:
             raise ValueError("unknown mult value %s" % mult)
 
+    def setZeroLatch(self):
+        hal.latchPWMZero(self.port)
+
     def getMaxPositivePwm(self):
         return self.maxPwm
 

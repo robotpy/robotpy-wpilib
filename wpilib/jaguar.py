@@ -29,6 +29,7 @@ class Jaguar(SafePWM):
         self.setBounds(2.31, 1.55, 1.507, 1.454, 0.697)
         self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
         self.setRaw(self.centerPwm)
+        self.setZeroLatch()
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_Jaguar,
                       self.getChannel())

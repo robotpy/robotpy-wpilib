@@ -38,6 +38,7 @@ class Victor(SafePWM):
         self.setBounds(2.027, 1.525, 1.507, 1.49, 1.026)
         self.setPeriodMultiplier(self.PeriodMultiplier.k2X)
         self.setRaw(self.centerPwm)
+        self.setZeroLatch()
 
         LiveWindow.addActuatorChannel("Victor", self.getChannel(), self)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Victor,
