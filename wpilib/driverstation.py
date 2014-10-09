@@ -153,14 +153,14 @@ class DriverStation:
         :param axis: The analog axis value to read from the joystick.
         :returns: The value of the axis on the joystick.
         """
-        if stick < 1 or stick > self.kJoystickPorts:
-            raise ValueError("Joystick index is out of range, should be 1-4")
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise ValueError("Joystick index is out of range, should be 0-3")
 
         if axis < 1 or axis > self.kJoystickAxes:
             raise ValueError("Joystick axis is out of range")
 
         with self.mutex:
-            value = self.joystickAxes[stick - 1][axis - 1]
+            value = self.joystickAxes[stick][axis - 1]
 
         if value < 0:
             return value / 128.0
@@ -174,11 +174,11 @@ class DriverStation:
         :param stick: The joystick to read.
         :returns: The state of the buttons on the joystick.
         """
-        if stick < 1 or stick > self.kJoystickPorts:
-            raise ValueError("Joystick index is out of range, should be 1-4")
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise ValueError("Joystick index is out of range, should be 0-3")
 
         with self.mutex:
-            return self.joystickButtons[stick - 1]
+            return self.joystickButtons[stick]
 
     def isEnabled(self):
         """Gets a value indicating whether the Driver Station requires the

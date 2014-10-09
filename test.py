@@ -3,9 +3,9 @@ import wpilib
 
 class MyRobot(wpilib.IterativeRobot):
     def robotInit(self):
-        self.lstick = wpilib.Joystick(1)
-        self.rstick = wpilib.Joystick(2)
-        self.cstick = wpilib.Joystick(3)
+        self.lstick = wpilib.Joystick(0)
+        self.rstick = wpilib.Joystick(1)
+        self.cstick = wpilib.Joystick(2)
         self.m1 = wpilib.Victor(0)
         self.m2 = wpilib.Victor(1)
         self.m3 = wpilib.Victor(2)
