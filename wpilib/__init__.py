@@ -20,6 +20,7 @@ from .robotdrive import *
 from .robotstate import *
 from .safepwm import *
 from .sensorbase import *
+from .servo import *
 from .solenoidbase import *
 from .solenoid import *
 from .talon import *
