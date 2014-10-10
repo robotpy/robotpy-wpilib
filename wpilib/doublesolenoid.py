@@ -129,15 +129,8 @@ class DoubleSolenoid(SolenoidBase):
     def getSmartDashboardType(self):
         return "Double Solenoid"
 
-    def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return getattr(self, "table", None)
-
     def updateTable(self):
-        table = getattr(self, "table", None)
+        table = self.getTable()
         if table is not None:
             #TODO: this is bad
             val = self.get()
@@ -148,31 +141,19 @@ class DoubleSolenoid(SolenoidBase):
             else:
                 table.putString("Value", "Off")
 
+    def valueChanged(self, itable, key, value, bln):
+        #TODO: this is bad also
+        if value == "Reverse":
+            self.set(self.Value.kReverse)
+        elif value == "Forward":
+            self.set(self.Value.kForward)
+        else:
+            self.set(self.Value.kOff)
+
     def startLiveWindowMode(self):
-        table = getattr(self, "table", None)
-        table_listener = getattr(self, "table_listener", None)
-        if table is None or table_listener is not None:
-            return
-
-        def valueChanged(itable, key, value, bln):
-            #TODO: this is bad also
-            if value == "Reverse":
-                self.set(self.Value.kReverse)
-            elif value == "Forward":
-                self.set(self.Value.kForward)
-            else:
-                self.set(self.Value.kOff)
-
-        self.set(self.Value.kOff); # Stop for safety
-        table.addTableListener("Value", valueChanged, True)
+        self.set(self.Value.kOff) # Stop for safety
+        super().startLiveWindowMode()
 
     def stopLiveWindowMode(self):
-        # TODO: Broken, should only remove the listener from "Value" only.
-        table = getattr(self, "table", None)
-        table_listener = getattr(self, "table_listener", None)
-        if table is None or table_listener is None:
-            return
-
+        super().stopLiveWindowMode()
         self.set(self.Value.kOff) # Stop for safety
-        table.removeTableListener(table_listener)
-        self.table_listener = None

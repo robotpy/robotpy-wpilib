@@ -213,15 +213,8 @@ class Relay(SensorBase):
     def getSmartDashboardType(self):
         return "Relay"
 
-    def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return getattr(self, "table", None)
-
     def updateTable(self):
-        table = getattr(self, "table", None)
+        table = self.getTable()
         if table is None:
             return
         v = self.get()
@@ -234,26 +227,10 @@ class Relay(SensorBase):
         else:
             table.putString("Value", "Off")
 
-    def startLiveWindowMode(self):
-        table = getattr(self, "table", None)
-        table_listener = getattr(self, "table_listener", None)
-        if table is None or table_listener is not None:
-            return
-        def valueChanged(itable, key, value, bln):
-            if val == "Off":
-                self.set(self.Value.kOff)
-            elif val == "Forward":
-                self.set(self.Value.kForward)
-            elif val == "Reverse":
-                self.set(self.Value.kReverse)
-        self.table_listener = valueChanged
-        self.table.addTableListener("Value", valueChanged, True)
-
-    def stopLiveWindowMode(self):
-        # TODO: Broken, should only remove the listener from "Value" only.
-        table = getattr(self, "table", None)
-        table_listener = getattr(self, "table_listener", None)
-        if table is None or table_listener is None:
-            return
-        table.removeTableListener(table_listener)
-        self.table_listener = None
+    def valueChanged(self, itable, key, value, bln):
+        if val == "Off":
+            self.set(self.Value.kOff)
+        elif val == "Forward":
+            self.set(self.Value.kForward)
+        elif val == "Reverse":
+            self.set(self.Value.kReverse)

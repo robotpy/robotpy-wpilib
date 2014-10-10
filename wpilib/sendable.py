@@ -7,12 +7,14 @@ class Sendable:
 
         :param subtable: The table to put the values in.
         """
-        raise NotImplementedError
+        self.table = subtable
+        if hasattr(self, "updateTable"):
+            self.updateTable()
 
     def getTable(self):
         """:returns: the table that is currently associated with the sendable
         """
-        raise NotImplementedError
+        return getattr(self, "table", None)
 
     def getSmartDashboardType(self):
         """:returns: the string representation of the named data type that

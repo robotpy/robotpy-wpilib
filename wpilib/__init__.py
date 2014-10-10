@@ -9,6 +9,7 @@ from .iterativerobot import *
 from .jaguar import *
 from .joystick import *
 from .livewindow import *
+from .livewindowsendable import *
 from .motorsafety import *
 from .pidcontroller import *
 from .powerdistributionpanel import *
@@ -19,6 +20,7 @@ from .robotbase import *
 from .robotdrive import *
 from .robotstate import *
 from .safepwm import *
+from .sendable import *
 from .sensorbase import *
 from .servo import *
 from .solenoidbase import *

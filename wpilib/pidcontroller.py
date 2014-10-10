@@ -11,8 +11,9 @@ import warnings
 import hal
 
 from .timer import Timer
+from .livewindowsendable import LiveWindowSendable
 
-class PIDController:
+class PIDController(LiveWindowSendable):
     """Class implements a PID Control Loop.
 
     Creates a separate thread which reads the given PIDSource and takes
@@ -80,8 +81,6 @@ class PIDController:
 
         self.mutex = threading.RLock()
 
-        self.table = None
-
         self.thread = threading.Thread(
                 target=self.task,
                 name="PIDTask%d" % PIDController.instances)
@@ -96,8 +95,6 @@ class PIDController:
         """Free the PID object"""
         # TODO: is this useful in Python?  Should make TableListener weakref.
         self.freed = True
-        if self.table is not None:
-            table.removeTableListener(self.valueChanged)
         self.pidInput = None
         self.pidOutput = None
 
@@ -167,7 +164,8 @@ class PIDController:
             if f is not None:
                 self.F = f
 
-        if self.table is not None:
+        table = self.getTable()
+        if table is not None:
             table.putNumber("p", p)
             table.putNumber("i", i)
             table.putNumber("d", d)
@@ -269,7 +267,8 @@ class PIDController:
                 newsetpoint = setpoint
             self.setpoint = newsetpoint
 
-        if self.table is not None:
+        table = self.getTable()
+        if table is not None:
             table.putNumber("setpoint", newsetpoint);
 
     def getSetpoint(self):
@@ -341,7 +340,8 @@ class PIDController:
         with self.mutex:
             self.enabled = True
 
-        if self.table is not None:
+        table = self.getTable()
+        if table is not None:
             table.putBoolean("enabled", True)
 
     def disable(self):
@@ -351,7 +351,8 @@ class PIDController:
             self.pidOutput.pidWrite(0)
             self.enabled = False
 
-        if self.table is not None:
+        table = self.getTable()
+        if table is not None:
             table.putBoolean("enabled", False)
 
     def isEnable(self):
@@ -390,8 +391,9 @@ class PIDController:
                     self.disable()
 
     def initTable(self, table):
-        if self.table is not None:
-            self.table.removeTableListener(self.valueChanged)
+        oldtable = self.getTable()
+        if oldtable is not None:
+            oldtable.removeTableListener(self.valueChanged)
         self.table = table
         if table is not None:
             table.putNumber("p", self.getP())
@@ -401,12 +403,6 @@ class PIDController:
             table.putNumber("setpoint", self.getSetpoint())
             table.putBoolean("enabled", self.isEnable())
             table.addTableListener(self.valueChanged, False)
-
-    def getTable(self):
-        return self.table
-
-    def updateTable(self):
-        pass
 
     def startLiveWindowMode(self):
         self.disable()

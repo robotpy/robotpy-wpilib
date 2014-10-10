@@ -8,6 +8,7 @@
 import hal
 import weakref
 
+from .livewindowsendable import LiveWindowSendable
 from .sensorbase import SensorBase
 
 def _freePWM(port):
@@ -15,7 +16,7 @@ def _freePWM(port):
     hal.freePWMChannel(port)
     hal.freeDIO(port)
 
-class PWM:
+class PWM(LiveWindowSendable):
     """Class implements the PWM generation in the FPGA.
     Values supplied as arguments for PWM outputs range from -1.0 to 1.0. They
     are mapped to the hardware dependent values, in this case 0-255 for the
@@ -76,9 +77,6 @@ class PWM:
 
         :param channel: The PWM channel.
         """
-        self.table = None
-        self.table_listener = None
-
         SensorBase.checkPWMChannel(channel)
         self.channel = channel
         self._port = hal.initializeDigitalPort(hal.getPort(channel))
@@ -333,24 +331,18 @@ class PWM:
     def getSmartDashboardType(self):
         return "Speed Controller"
 
-    def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
     def updateTable(self):
-        if self.table is not None:
-            self.table.putNumber("Value", self.getSpeed())
+        table = self.getTable()
+        if table is not None:
+            table.putNumber("Value", self.getSpeed())
 
-    def getTable(self):
-        return self.table
+    def valueChanged(self, itable, key, value, bln):
+        self.setSpeed(float(value))
 
     def startLiveWindowMode(self):
-        self.setSpeed(0); # Stop for safety
-        self.table_listener = \
-                lambda itable, key, value, bln: self.setSpeed(float(value))
-        self.table.addTableListener("Value", self.table_listener, True)
+        self.setSpeed(0) # Stop for safety
+        super().startLiveWindowMode()
 
     def stopLiveWindowMode(self):
-        self.setSpeed(0); # Stop for safety
-        # TODO: Broken, should only remove the listener from "Value" only.
-        self.table.removeTableListener(self.table_listener)
+        super().stopLiveWindowMode()
+        self.setSpeed(0) # Stop for safety

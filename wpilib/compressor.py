@@ -77,24 +77,11 @@ class Compressor(SensorBase):
         """
         return hal.getClosedLoopControl(self.pcm)
 
-    def startLiveWindowMode(self):
-        pass
-
-    def stopLiveWindowMode(self):
-        pass
-
     def getSmartDashboardType(self):
         return "Compressor"
 
-    def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return getattr(self, "table", None)
-
     def updateTable(self):
-        table = getattr(self, "table", None)
+        table = self.getTable()
         if table is not None:
             table.putBoolean("Enabled", self.enabled())
             table.putBoolean("Pressure Switch", self.getPressureSwitchValue())

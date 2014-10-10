@@ -101,30 +101,10 @@ class Servo(PWM):
     def getSmartDashboardType(self):
         return "Servo"
 
-    def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
     def updateTable(self):
-        table = getattr(self, "table", None)
+        table = self.getTable()
         if table is not None:
             table.putNumber("Value", self.get())
 
-    def startLiveWindowMode(self):
-        table = getattr(self, "table", None)
-        table_listener = getattr(self, "table_listener", None)
-        if table is None or table_listener is not None:
-            return
-        def valueChanged(itable, key, value, bln):
-            self.set(float(value))
-        self.table_listener = valueChanged
-        table.addTableListener("Value", valueChanged, True)
-
-    def stopLiveWindowMode(self):
-        # TODO: Broken, should only remove the listener from "Value" only.
-        table = getattr(self, "table", None)
-        table_listener = getattr(self, "table_listener", None)
-        if table is None or table_listener is None:
-            return
-        table.removeTableListener(table_listener)
-        self.table_listener = None
+    def valueChanged(self, itable, key, value, bln):
+        self.set(float(value))

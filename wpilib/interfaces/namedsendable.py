@@ -1,4 +1,4 @@
-from .sendable import Sendable
+from ..sendable import Sendable
 
 class NamedSendable(Sendable):
     """The interface for sendable objects that gives the sendable a default

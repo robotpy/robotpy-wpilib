@@ -52,20 +52,7 @@ class DigitalInput(DigitalSource):
     def getSmartDashboardType(self):
         return "Digital Input"
 
-    def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
     def updateTable(self):
-        table = getattr(self, "table", None)
+        table = self.getTable()
         if table is not None:
             table.putBoolean("Value", self.get())
-
-    def getTable(self):
-        return getattr(self, "table", None)
-
-    def startLiveWindowMode(self):
-        pass
-
-    def stopLiveWindowMode(self):
-        pass

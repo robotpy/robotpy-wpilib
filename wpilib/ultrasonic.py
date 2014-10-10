@@ -254,15 +254,8 @@ class Ultrasonic(SensorBase):
     def getSmartDashboardType(self):
         return "Ultrasonic"
 
-    def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return getattr(self, "table", None)
-
     def updateTable(self):
-        table = getattr(self, "table", None)
+        table = self.getTable()
         if table is not None:
             table.putNumber("Value", self.getRangeInches())
 
