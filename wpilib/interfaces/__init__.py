@@ -1,5 +1,6 @@
 from .accelerometer import *
 from .controller import *
+from .counterbase import *
 from .generichid import *
 from .namedsendable import *
 from .pidoutput import *

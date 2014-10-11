@@ -5,17 +5,17 @@
 # the project.
 #----------------------------------------------------------------------------
 
-class PIDSourceParameter:
-    """A description for the type of output value to provide to a
-    :class:`PIDController`"""
-    kDistance = 0
-    kRate = 1
-    kAngle = 2
-
 class PIDSource:
     """This interface allows for PIDController to automatically read from this
     object.
     """
+
+    class PIDSourceParameter:
+        """A description for the type of output value to provide to a
+        :class:`PIDController`"""
+        kDistance = 0
+        kRate = 1
+        kAngle = 2
 
     def pidGet(self):
         """Get the result to use in PIDController
