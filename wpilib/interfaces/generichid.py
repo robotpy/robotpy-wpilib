@@ -13,7 +13,7 @@ class GenericHID:
         kLeft = 0
         kRight = 1
 
-    def getX(self, hand=GenericHID.Hand.kRight):
+    def getX(self, hand=None):
         """Get the x position of HID.
 
         :param hand: which hand, left or right (default right)
@@ -21,7 +21,7 @@ class GenericHID:
         """
         raise NotImplementedError
 
-    def getY(self, hand=GenericHID.Hand.kRight):
+    def getY(self, hand=None):
         """Get the y position of the HID.
 
         :param hand: which hand, left or right (default right)
@@ -29,7 +29,7 @@ class GenericHID:
         """
         raise NotImplementedError
 
-    def getZ(self, hand=GenericHID.Hand.kRight):
+    def getZ(self, hand=None):
         """Get the z position of the HID.
 
         :param hand: which hand, left or right (default right)
@@ -59,21 +59,21 @@ class GenericHID:
         """
         raise NotImplementedError
 
-    def getTrigger(self, hand=GenericHID.Hand.kRight):
+    def getTrigger(self, hand=None):
         """Is the trigger pressed
         :param hand: which hand (default right)
         :returns: True if the trigger for the given hand is pressed
         """
         raise NotImplementedError
 
-    def getTop(self, hand=GenericHID.Hand.kRight):
+    def getTop(self, hand=None):
         """Is the top button pressed
         :param hand: which hand (default right)
         :returns: True if the top button for the given hand is pressed
         """
         raise NotImplementedError
 
-    def getBumper(self, hand=GenericHID.Hand.kRight):
+    def getBumper(self, hand=None):
         """Is the bumper pressed?
 
         :param hand: which hand (default right)
