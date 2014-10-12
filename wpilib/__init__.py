@@ -10,6 +10,9 @@ from .digitalsource import *
 from .doublesolenoid import *
 from .driverstation import *
 from .encoder import *
+from .geartooth import *
+from .gyro import *
+from .i2c import *
 from .interruptablesensorbase import *
 from .iterativerobot import *
 from .jaguar import *
@@ -31,6 +34,7 @@ from .sensorbase import *
 from .servo import *
 from .solenoidbase import *
 from .solenoid import *
+from .spi import *
 from .talon import *
 from .timer import *
 from .ultrasonic import *

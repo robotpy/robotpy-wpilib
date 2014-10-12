@@ -1,6 +1,7 @@
 import ctypes as C
+import os
 
-_dll = C.CDLL("./libHALAthena_shared.so")
+_dll = C.CDLL("./libHALAthena_shared.so", use_errno=True)
 
 class HALError(RuntimeError):
     pass
@@ -480,19 +481,25 @@ def spiTransaction(port, data_to_send):
     send_buffer = (C.c_uint8 * size)(*data_to_send)
     recv_buffer = C.c_uint8 * size
     rv = _spiTransaction(port, send_buffer, recv_buffer, size)
-    return rv, [x for x in recv_buffer]
+    if rv < 0:
+        raise IOError(os.strerror(ctypes.get_errno()))
+    return [x for x in recv_buffer]
 
 _spiWrite = _RETFUNC("spiWrite", C.c_int32, ("port", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
 def spiWrite(port, data_to_send):
     send_size = len(data_to_send)
     buffer = (C.c_uint8 * send_size)(*data_to_send)
-    return _spiWrite(port, buffer, send_size)
+    rv = _spiWrite(port, buffer, send_size)
+    if rv < 0:
+        raise IOError(os.strerror(ctypes.get_errno()))
 
 _spiRead = _RETFUNC("spiRead", C.c_int32, ("port", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 def spiRead(port, count):
     buffer = C.c_uint8 * count
     rv = _spiRead(port, buffer, count)
-    return rv, [x for x in buffer]
+    if rv < 0:
+        raise IOError(os.strerror(ctypes.get_errno()))
+    return [x for x in buffer]
 
 spiClose = _RETFUNC("spiClose", None, ("port", C.c_uint8))
 spiSetSpeed = _RETFUNC("spiSetSpeed", None, ("port", C.c_uint8), ("speed", C.c_uint32))
@@ -515,19 +522,25 @@ def i2CTransaction(port, device_address, data_to_send, receive_size):
     send_buffer = (C.c_uint8 * send_size)(*data_to_send)
     recv_buffer = C.c_uint8 * receive_size
     rv = _i2CTransaction(port, device_address, send_buffer, send_size, recv_buffer, receive_size)
-    return rv, [x for x in recv_buffer]
+    if rv < 0:
+        raise IOError(os.strerror(ctypes.get_errno()))
+    return [x for x in recv_buffer]
 
 _i2CWrite = _RETFUNC("i2CWrite", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
 def i2CWrite(port, device_address, data_to_send):
     send_size = len(data_to_send)
     buffer = (C.c_uint8 * send_size)(*data_to_send)
-    return _i2CWrite(port, device_address, buffer, send_size)
+    rv = _i2CWrite(port, device_address, buffer, send_size)
+    if rv < 0:
+        raise IOError(os.strerror(ctypes.get_errno()))
 
 _i2CRead = _RETFUNC("i2CRead", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 def i2CRead(port, device_address, count):
     buffer = C.c_uint8 * count
     rv = _i2CRead(port, device_address, buffer, count)
-    return rv, [x for x in buffer]
+    if rv < 0:
+        raise IOError(os.strerror(ctypes.get_errno()))
+    return [x for x in buffer]
 
 i2CClose = _RETFUNC("i2CClose", None, ("port", C.c_uint8))
 
