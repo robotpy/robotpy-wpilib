@@ -6,6 +6,9 @@ _dll = C.CDLL("libFRC_NetworkCommunication.so")
 class CANError(RuntimeError):
     pass
 
+class CANMessageNotFound(CANError):
+    pass
+
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
              errcheck=None, handle_missing=False):
     prototype = C.CFUNCTYPE(restype, *tuple(param[1] for param in params))
@@ -41,7 +44,7 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
         rv = _inner(*args, status=C.byref(status), **kwargs)
         if status.value != 0:
             if status.value == -44086: raise CANError("invalid buffer")
-            if status.value == -44087: raise CANError("message not found")
+            if status.value == -44087: raise CANMessageNotFound("message not found")
             if status.value == -44088: raise CANError("not allowed")
             if status.value == -44089: raise CANError("not initialized")
             if status.value == 44087:
@@ -69,15 +72,24 @@ class CANStreamMessage(C.Structure):
 
 _CANSessionMux_sendMessage = _STATUSFUNC("FRC_NetworkCommunication_CANSessionMux_sendMessage", None, ("messageID", C.c_uint32), ("data", C.POINTER(C.c_uint8)), ("dataSize", C.c_uint8), ("periodMs", C.c_int32))
 def CANSessionMux_sendMessage(messageID, data, periodMs):
-    size = len(data)
-    buffer = (C.c_uint8 * size)(*data)
+    if data is None:
+        size = 0
+        buffer = None
+    else:
+        size = len(data)
+        buffer = (C.c_uint8 * size)(*data)
     _CANSessionMux_sendMessage(messageID, buffer, size, periodMs)
 
-_CANSessionMux_receiveMessage = _STATUSFUNC("FRC_NetworkCommunication_CANSessionMux_receiveMessage", None, ("messageID", C.POINTER(C.c_uint32)), ("messageIDMask", C.c_uint32), ("data", C.POINTER(C.c_uint8)), ("dataSize", C.POINTER(C.c_uint8)), ("timeStamp", C.POINTER(C.c_uint32)), out=["messageID", "dataSize", "timeStamp"])
-def CANSessionMux_receiveMessage(messageIDMask):
+_CANSessionMux_receiveMessage = _STATUSFUNC("FRC_NetworkCommunication_CANSessionMux_receiveMessage", None, ("messageID", C.POINTER(C.c_uint32)), ("messageIDMask", C.c_uint32), ("data", C.POINTER(C.c_uint8)), ("dataSize", C.POINTER(C.c_uint8)), ("timeStamp", C.POINTER(C.c_uint32)), out=["dataSize", "timeStamp"])
+def CANSessionMux_receiveMessage(messageID, messageIDMask):
+    idbuf = C.c_uint32(messageID)
     buffer = C.c_uint8 * 8
-    messageID, dataSize, timeStamp = _CANSessionMux_receiveMessage(messageIDMask, buffer)
-    return messageID, [x for x in buffer[0:dataSize]], timeStamp
+    dataSize, timeStamp = _CANSessionMux_receiveMessage(C.byref(idbuf),
+                                                        messageIDMask, buffer)
+    if dataSize is 0:
+        return idbuf.value, None, timeStamp
+    else:
+        return idbuf.value, [x for x in buffer[0:dataSize]], timeStamp
 
 CANSessionMux_openStreamSession = _STATUSFUNC("FRC_NetworkCommunication_CANSessionMux_openStreamSession", None, ("sessionHandle", C.POINTER(C.c_uint32)), ("messageID", C.c_uint32), ("messageIDMask", C.c_uint32), ("maxMessages", C.c_uint32), out=["sessionHandle"])
 CANSessionMux_closeStreamSession = _RETFUNC("FRC_NetworkCommunication_CANSessionMux_closeStreamSession", None, ("sessionHandle", C.c_uint32))

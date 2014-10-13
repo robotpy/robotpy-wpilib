@@ -7,6 +7,7 @@ from .analogpotentiometer import *
 from .analogtrigger import *
 from .analogtriggeroutput import *
 from .builtinaccelerometer import *
+from .canjaguar import *
 from .compressor import *
 from .counter import *
 from .digitalinput import *
