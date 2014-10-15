@@ -76,19 +76,19 @@ class Relay(SensorBase):
         self._initRelay()
 
         LiveWindow.addActuatorChannel("Relay", self.channel, self)
-        set(self.Value.kOff)
+        self.set(self.Value.kOff)
 
     def _initRelay(self):
         SensorBase.checkRelayChannel(self.channel)
         try:
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kForward):
-                Relay.relayChannels.allocate(self.channel * 2)
+                Relay.relayChannels.allocate(self, self.channel * 2)
                 hal.HALReport(hal.HALUsageReporting.kResourceType_Relay,
                               self.channel)
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kReverse):
-                Relay.relayChannels.allocate(self.channel * 2 + 1)
+                Relay.relayChannels.allocate(self, self.channel * 2 + 1)
                 hal.HALReport(hal.HALUsageReporting.kResourceType_Relay,
                               self.channel + 128)
         except IndexError:
