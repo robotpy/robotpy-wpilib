@@ -291,6 +291,8 @@ class PWM(LiveWindowSendable):
             raise ValueError("unknown mult value %s" % mult)
 
     def setZeroLatch(self):
+        if self.port is None:
+            raise ValueError("operation on freed port")
         hal.latchPWMZero(self.port)
 
     def getMaxPositivePwm(self):
