@@ -102,9 +102,11 @@ def test_setSpeed_limits(param, expected, boundpwm, hal):
 
 @pytest.mark.parametrize("db,param,expected",
         # no deadband elimination results in direct scaling from center
-        [(False, 1251, 0.5), (False, 750, -0.5),
+        [(False, 1251, 0.5), (False, 750, -0.5), (False, 1000, 0.0),
         # deadband elimination results in scaling from deadband edge
-         (True, 1275, 0.5), (True, 725, -0.5)])
+         (True, 1275, 0.5), (True, 725, -0.5),
+        # deadband elimination also results in values within deadband = 0.0
+         (True, 1050, 0.0), (True, 950, 0.0)])
 def test_getSpeed(db, param, expected, boundpwm, hal):
     # no deadband elimination
     boundpwm.eliminateDeadband = db
