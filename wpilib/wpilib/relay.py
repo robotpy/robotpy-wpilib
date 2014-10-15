@@ -123,8 +123,8 @@ class Relay(SensorBase):
         states: 0v-0v, 12v-0v, 0v-12v, 12v-12v
 
         When set to kForwardOnly or kReverseOnly, you can specify the constant
-        for the direction or you can simply specify kOff_val and kOn_val. Using
-        only kOff_val and kOn_val is recommended.
+        for the direction or you can simply specify kOff and kOn. Using only
+        kOff and kOn is recommended.
 
         :param value: The state to set the relay.
         """
