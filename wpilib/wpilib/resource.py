@@ -64,7 +64,4 @@ class Resource:
 
         :param index: The index of the resource to free.
         """
-        r = self.numAllocated[index]
-        if r is None or r() is not None:
-            raise IndexError("No resource available to be freed")
         self.numAllocated[index] = None
