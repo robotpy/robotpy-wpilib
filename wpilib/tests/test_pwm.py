@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import MagicMock
 
 def test_pwm_create(hal, wpilib):
     pwm = wpilib.PWM(5)
@@ -201,4 +202,22 @@ def test_pwm_getNegativeScaleFactor(db, expected, boundpwm):
 def test_pwm_getFullRangeScaleFactor(db, expected, boundpwm):
     boundpwm.eliminateDeadband = db
     assert boundpwm.getFullRangeScaleFactor() == expected
+
+def test_pwm_getSmartDashboardType(pwm):
+    assert pwm.getSmartDashboardType() == "Speed Controller"
+
+def test_pwm_updateTable(pwm):
+    pwm.getTable = MagicMock()
+    pwm.getSpeed = MagicMock()
+    # normal case
+    pwm.updateTable()
+    pwm.getTable.return_value.putNumber.assert_called_once_with("Value", pwm.getSpeed.return_value)
+    # None case
+    pwm.getTable.return_value = None
+    pwm.updateTable()
+
+def test_pwm_valueChanged(pwm):
+    pwm.setSpeed = MagicMock()
+    pwm.valueChanged(None, None, 0.5, None)
+    pwm.setSpeed.assert_called_once_with(0.5)
 
