@@ -28,7 +28,7 @@ def pwm(wpilib, hal):
     hal.reset_mock()
     return pwm
 
-def test_pwm_free(pwm, hal):
+def test_pwm_free(pwm, hal, wpilib):
     wasport = pwm._port
     assert pwm.port == pwm._port
     pwm.free()
@@ -36,6 +36,8 @@ def test_pwm_free(pwm, hal):
     hal.setPWM.assert_called_once_with(wasport, 0)
     hal.freePWMChannel.assert_called_once_with(wasport)
     hal.freeDIO.assert_called_once_with(wasport)
+    # try to re-grab
+    pwm2 = wpilib.PWM(2)
 
 @pytest.mark.parametrize("value", [True, False])
 def test_pwm_enableDeadbandElimination(value, pwm):
