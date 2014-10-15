@@ -25,7 +25,7 @@ class RobotBase:
         the future it would be nice to put this code into it's own task that
         loads on boot so ensure that it runs.
         """
-        # TODO: StartCAPI();
+        # TODO: StartCAPI()
         # TODO: See if the next line is necessary
         # Resource.RestartProgram()
 
@@ -138,5 +138,5 @@ class RobotBase:
             raise
         else:
             # startCompetition never returns unless exception occurs....
-            print("WARNING: Robots don't quit!");
+            print("WARNING: Robots don't quit!")
             print("---> Unexpected return from startCompetition() method.")

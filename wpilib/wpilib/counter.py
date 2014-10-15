@@ -584,9 +584,9 @@ class Counter(SensorBase):
 
     def pidGet(self):
         if self.pidSource == self.PIDSourceParameter.kDistance:
-            return self.getDistance();
+            return self.getDistance()
         elif self.pidSource == self.PIDSourceParameter.kRate:
-            return self.getRate();
+            return self.getRate()
         else:
             return 0.0
 

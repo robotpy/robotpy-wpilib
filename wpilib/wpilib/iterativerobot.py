@@ -213,7 +213,7 @@ class IterativeRobot(RobotBase):
         if not hasattr(func, "firstRun"):
             print("Default IterativeRobot.autonomousPeriodic() method... Overload me!")
             func.firstRun = False
-        Timer.delay(0.001);
+        Timer.delay(0.001)
 
     def teleopPeriodic(self):
         """Periodic code for teleop mode should go here.
@@ -225,7 +225,7 @@ class IterativeRobot(RobotBase):
         if not hasattr(func, "firstRun"):
             print("Default IterativeRobot.teleopPeriodic() method... Overload me!")
             func.firstRun = False
-        Timer.delay(0.001);
+        Timer.delay(0.001)
 
     def testPeriodic(self):
         """Periodic code for test mode should go here.

@@ -54,7 +54,7 @@ class Joystick:
         """
         from .driverstation import DriverStation
         self.ds = DriverStation.getInstance()
-        self.port = port;
+        self.port = port
 
         if numAxisTypes is None:
             self.axes = [0]*self.AxisType.kNumAxis

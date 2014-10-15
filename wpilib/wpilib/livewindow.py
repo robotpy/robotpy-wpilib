@@ -29,7 +29,7 @@ class LiveWindow:
         replaced with the custom names from users calling addActuator and
         addSensor.
         """
-        print("Initializing the components first time");
+        print("Initializing the components first time")
         if LiveWindow.livewindowTable is None:
             from .networktables import NetworkTable
             LiveWindow.livewindowTable = NetworkTable.getTable("LiveWindow")

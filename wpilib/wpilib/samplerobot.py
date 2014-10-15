@@ -121,7 +121,7 @@ class SampleRobot(RobotBase):
                     self.test()
                     self.ds.InTest(False)
                     while self.isTest() and self.isEnabled():
-                        Timer.delay(0.01);
+                        Timer.delay(0.01)
                     #TODO:LiveWindow.setEnabled(False)
                 else:
                     self.ds.InOperatorControl(True)

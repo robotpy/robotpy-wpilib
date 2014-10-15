@@ -269,7 +269,7 @@ class PIDController(LiveWindowSendable):
 
         table = self.getTable()
         if table is not None:
-            table.putNumber("setpoint", newsetpoint);
+            table.putNumber("setpoint", newsetpoint)
 
     def getSetpoint(self):
         """Returns the current setpoint of the PIDController.
@@ -285,7 +285,7 @@ class PIDController(LiveWindowSendable):
         :return: the current error
         """
         with self.mutex:
-            #return self.error;
+            #return self.error
             return self.getSetpoint() - self.pidInput.pidGet()
 
     def setTolerance(self, percent):

@@ -94,7 +94,7 @@ def _freeJaguar(deviceNumber, controlMode):
     data = _packFXP8_8(CANJaguar.kApproxBusVoltage)
     _sendMessageHelper(_cj.LM_API_CFG_MAX_VOUT | deviceNumber, data)
 
-    configMaxOutputVoltage(kApproxBusVoltage);
+    configMaxOutputVoltage(kApproxBusVoltage)
 
 
 class CANJaguar(LiveWindowSendable, MotorSafety):
@@ -597,7 +597,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
                     self.configForwardLimit(self.forwardLimit)
             except frccan.CANMessageNotFound:
                 # Verification is needed but not available - request it again.
-                self.requestMessage(_cj.LM_API_CFG_LIMIT_FWD);
+                self.requestMessage(_cj.LM_API_CFG_LIMIT_FWD)
 
         if not self.reverseLimitVerified:
             try:
@@ -739,11 +739,11 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         data = _packFXP16_16(i)
 
         if self.controlMode == self.ControlMode.Speed:
-            self.sendMessage(_cj.LM_API_SPD_IC, data, dataSize);
+            self.sendMessage(_cj.LM_API_SPD_IC, data, dataSize)
         elif self.controlMode == self.ControlMode.Position:
-            self.sendMessage(_cj.LM_API_POS_IC, data, dataSize);
+            self.sendMessage(_cj.LM_API_POS_IC, data, dataSize)
         elif self.controlMode == self.ControlMode.Current:
-            self.sendMessage(_cj.LM_API_ICTRL_IC, data, dataSize);
+            self.sendMessage(_cj.LM_API_ICTRL_IC, data, dataSize)
         else:
             raise ValueError("PID constants only apply in Speed, Position, and Current mode")
 
@@ -758,11 +758,11 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         data = _packFXP16_16(d)
 
         if self.controlMode == self.ControlMode.Speed:
-            self.sendMessage(_cj.LM_API_SPD_DC, data, dataSize);
+            self.sendMessage(_cj.LM_API_SPD_DC, data, dataSize)
         if self.controlMode == self.ControlMode.Position:
-            self.sendMessage(_cj.LM_API_POS_DC, data, dataSize);
+            self.sendMessage(_cj.LM_API_POS_DC, data, dataSize)
         if self.controlMode == self.ControlMode.Current:
-            self.sendMessage(_cj.LM_API_ICTRL_DC, data, dataSize);
+            self.sendMessage(_cj.LM_API_ICTRL_DC, data, dataSize)
         else:
             raise ValueError("PID constants only apply in Speed, Position, and Current mode")
 
@@ -1121,7 +1121,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         self.disableControl()
 
         # Update the local mode
-        self.controlMode = controlMode;
+        self.controlMode = controlMode
         self.controlModeVerified = False
 
         # Update the finalizer

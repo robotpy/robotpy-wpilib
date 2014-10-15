@@ -34,7 +34,7 @@ class Servo(PWM):
         super().__init__(channel)
         self.setBounds(self.kDefaultMaxServoPWM, 0, 0, 0,
                        self.kDefaultMinServoPWM)
-        self.setPeriodMultiplier(self.PeriodMultiplier.k4X);
+        self.setPeriodMultiplier(self.PeriodMultiplier.k4X)
 
         LiveWindow.addActuatorChannel("Servo", self.getChannel(), self)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Servo,
