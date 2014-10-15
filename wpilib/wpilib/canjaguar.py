@@ -94,9 +94,6 @@ def _freeJaguar(deviceNumber, controlMode):
     data = _packFXP8_8(CANJaguar.kApproxBusVoltage)
     _sendMessageHelper(_cj.LM_API_CFG_MAX_VOUT | deviceNumber, data)
 
-    configMaxOutputVoltage(kApproxBusVoltage)
-
-
 class CANJaguar(LiveWindowSendable, MotorSafety):
     """Texas Instruments Jaguar Speed Controller as a CAN device."""
 
