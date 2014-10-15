@@ -60,10 +60,10 @@ class PWM(LiveWindowSendable):
 
     """
     class PeriodMultiplier:
-        k1X = 1
         """Represents the amount to multiply the minimum servo-pulse pwm
         period by.
         """
+        k1X = 1
         k2X = 2
         k4X = 4
 
