@@ -206,6 +206,15 @@ class Joystick:
         """
         return ((0x1 << (button - 1)) & self.ds.getStickButtons(self.port)) != 0
 
+    def getPOV(self, pov=1):
+        """Get the state of a POV on the joystick.
+
+        :param pov: which POV (default is 1)
+        :returns: The angle of the POV in degrees, or -1 if the POV is not
+        pressed.
+        """
+        return self.ds.getStickPOV(self.port, pov)
+
     def getButton(self, button):
         """Get buttons based on an enumerated type.
 

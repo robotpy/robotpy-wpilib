@@ -139,15 +139,28 @@ kHALAllianceStationID_blue3 = 5
 
 HALGetAllianceStation = _RETFUNC("HALGetAllianceStation", C.c_int, ("allianceStation", C.POINTER(C.c_int)), out=["allianceStation"])
 
+kMaxJoystickAxes = 12
+kMaxJoystickPOVs = 12
+
 class _HALJoystickAxes(C.Structure):
     _fields_ = [("count", C.c_uint16),
-                ("axes", C.c_int16 * 6)]
+                ("axes", C.c_int16 * kMaxJoystickAxes)]
 
-_HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", C.POINTER(_HALJoystickAxes)), ("maxAxes", C.c_uint8))
+class _HALJoystickPOVs(C.Structure):
+    _fields_ = [("count", C.c_uint16),
+                ("povs", C.c_int16 * kMaxJoystickPOVs)]
+
+_HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", C.POINTER(_HALJoystickAxes)))
 def HALGetJoystickAxes(joystickNum):
     axes = _HALJoystickAxes()
     _HALGetJoystickAxes(joystickNum, C.byref(axes), 6)
     return [x for x in axes.axes[0:axes.count]]
+
+_HALGetJoystickPOVs = _RETFUNC("HALGetJoystickPOVs", C.c_int, ("joystickNum", C.c_uint8), ("povs", C.POINTER(_HALJoystickPOVs)))
+def HALGetJoystickPOVs(joystickNum):
+    povs = _HALJoystickPOVs()
+    _HALGetJoystickPOVs(joystickNum, C.byref(povs), 6)
+    return [x for x in povs.povs[0:povs.count]]
 
 _HALGetJoystickButtons = _RETFUNC("HALGetJoystickButtons", C.c_int, ("joystickNum", C.c_uint8), ("buttons", C.POINTER(C.c_uint32)), ("count", C.POINTER(C.c_uint8)))
 def HALGetJoystickButtons(joystickNum):

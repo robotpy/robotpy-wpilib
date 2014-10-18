@@ -16,12 +16,10 @@ class DriverStation:
 
     Class variables:
         kJoystickPorts (int): The number of joystick ports
-        kJoystickAxes (int): The number of joystick axes
         kDSAnalogInScaling (float): Scaling factor from raw values to volts
     """
 
     kJoystickPorts = 4
-    kJoystickAxes = 6
     kDSAnalogInScaling = 5.0 / 1023.0
     lastEnabled = False
 
@@ -56,8 +54,10 @@ class DriverStation:
         self.controlWord = hal.HALControlWord()
         self.allianceStationID = -1
         self.joystickAxes = []
-        for i in range(self.kJoystickAxes):
-            self.joystickAxes.append([0]*self.kJoystickPorts)
+        self.joystickPOVs = []
+        for i in range(self.kJoystickPorts):
+            self.joystickAxes.append([0]*hal.kMaxJoystickAxes)
+            self.joystickPOVs.append([0]*hal.kMaxJoystickPOVs)
         self.joystickButtons = [0]*self.kJoystickPorts
 
         self.approxMatchTimeOffset = -1.0
@@ -125,6 +125,7 @@ class DriverStation:
             for stick in range(self.kJoystickPorts):
                 self.joystickButtons[stick] = hal.HALGetJoystickButtons(stick)
                 self.joystickAxes[stick] = hal.HALGetJoystickAxes(stick)
+                self.joystickPOVs[stick] = hal.HALGetJoystickPOVs(stick)
 
             if not DriverStation.lastEnabled and self.isEnabled():
                 # If starting teleop, assume that autonomous just took up 15 seconds
@@ -156,7 +157,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise ValueError("Joystick index is out of range, should be 0-3")
 
-        if axis < 1 or axis > self.kJoystickAxes:
+        if axis < 1 or axis > len(self.joystickAxes[stick]):
             raise ValueError("Joystick axis is out of range")
 
         with self.mutex:
@@ -166,6 +167,21 @@ class DriverStation:
             return value / 128.0
         else:
             return value / 127.0
+
+    def getStickPOV(self, stick, pov):
+        """Get the state of a POV on the joystick.
+
+        :param pov: which POV
+        :returns: The angle of the POV in degrees, or -1 if the POV is not
+        pressed.
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise ValueError("Joystick index is out of range, should be 0-3")
+
+        if pov < 1 or pov > len(self.joystickPOVs[stick]):
+            raise ValueError("Joystick POV is out of range")
+
+        return self.joystickPOVs[stick][pov - 1]
 
     def getStickButtons(self, stick):
         """The state of the buttons on the joystick.

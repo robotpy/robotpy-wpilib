@@ -88,3 +88,12 @@ class GenericHID:
         :returns: True if the button is pressed
         """
         raise NotImplementedError
+
+    def getPOV(self, pov=1):
+        """Get the state of a POV.
+
+        :param pov: which POV (default is 1)
+        :returns: The angle of the POV in degrees, or -1 if the POV is not
+        pressed.
+        """
+        raise NotImplementedError
