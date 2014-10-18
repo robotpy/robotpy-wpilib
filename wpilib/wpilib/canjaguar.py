@@ -1522,6 +1522,9 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
     def getDescription(self):
         return "CANJaguar ID %d" % self.deviceNumber
 
+    def getDeviceID(self):
+        return self.deviceNumber
+
     def stopMotor(self):
         """Common interface for stopping a motor.
         """
