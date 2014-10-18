@@ -213,8 +213,10 @@ def test_pwm_updateTable(pwm):
     pwm.updateTable()
     pwm.getTable.return_value.putNumber.assert_called_once_with("Value", pwm.getSpeed.return_value)
     # None case
+    pwm.getSpeed.reset_mock()
     pwm.getTable.return_value = None
     pwm.updateTable()
+    assert not pwm.getSpeed.called
 
 def test_pwm_valueChanged(pwm):
     pwm.setSpeed = MagicMock()
