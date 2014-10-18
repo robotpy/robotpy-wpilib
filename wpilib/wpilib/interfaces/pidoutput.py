@@ -10,7 +10,7 @@ class PIDOutput:
     its output.
     """
 
-    def pidWrite(output):
+    def pidWrite(self, output):
         """Set the output to the value calculated by PIDController.
 
         :param output: the value calculated by PIDController
