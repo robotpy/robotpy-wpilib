@@ -228,9 +228,11 @@ class Relay(SensorBase):
             table.putString("Value", "Off")
 
     def valueChanged(self, itable, key, value, bln):
-        if val == "Off":
+        if value == "Off":
             self.set(self.Value.kOff)
-        elif val == "Forward":
+        elif value == "On":
+            self.set(self.Value.kOn)
+        elif value == "Forward":
             self.set(self.Value.kForward)
-        elif val == "Reverse":
+        elif value == "Reverse":
             self.set(self.Value.kReverse)
