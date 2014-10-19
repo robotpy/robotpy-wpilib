@@ -80,6 +80,10 @@ class RobotDrive(MotorSafety):
         if "rightMotor" in kwargs:
             self.rearRightMotor = kwargs.pop("rightMotor")
 
+        cls = kwargs.pop("motorController", None)
+        if cls is None:
+            cls = Talon
+
         if kwargs:
             warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
                           RuntimeWarning)
@@ -97,7 +101,6 @@ class RobotDrive(MotorSafety):
             raise ValueError("don't know how to handle %d positional arguments" % len(args))
 
         # convert channel number into motor controller if needed
-        cls = kwargs.pop("motorController", Talon)
         if (self.frontLeftMotor is not None and
             not hasattr(self.frontLeftMotor, "set")):
             self.frontLeftMotor = cls(self.frontLeftMotor)
@@ -115,8 +118,8 @@ class RobotDrive(MotorSafety):
         self.invertedMotors = [1]*self.kMaxNumberOfMotors
 
         # other defaults
-        self.maxOutput = 1.0
-        self.sensitivity = None
+        self.maxOutput = RobotDrive.kDefaultMaxOutput
+        self.sensitivity = RobotDrive.kDefaultSensitivity
         self.isCANInitialized = False #TODO: fix can
 
         # set up motor safety
@@ -124,7 +127,7 @@ class RobotDrive(MotorSafety):
         self.setSafetyEnabled(True)
 
         # start off not moving
-        self.drive(0, 0)
+        self.setLeftRightMotorOutputs(0, 0)
 
     def drive(self, outputMagnitude, curve):
         """Drive the motors at "speed" and "curve".
@@ -467,7 +470,7 @@ class RobotDrive(MotorSafety):
                           hal.HALUsageReporting.kRobotDrive_MecanumPolar)
             RobotDrive.kMecanumPolar_Reported = True
         # Normalized for full power along the Cartesian axes.
-        magnitude = limit(magnitude) * math.sqrt(2.0)
+        magnitude = RobotDrive.limit(magnitude) * math.sqrt(2.0)
         # The rollers are at 45 degree angles.
         dirInRad = math.radians(direction + 45.0)
         cosD = math.cos(dirInRad)
@@ -563,13 +566,9 @@ class RobotDrive(MotorSafety):
         """Normalize all wheel speeds if the magnitude of any wheel is greater
         than 1.0.
         """
-        maxMagnitude = abs(wheelSpeeds[0])
-        for i in range(1, self.kMaxNumberOfMotors):
-            temp = abs(wheelSpeeds[i])
-            if maxMagnitude < temp:
-                maxMagnitude = temp
+        maxMagnitude = max(abs(x) for x in wheelSpeeds)
         if maxMagnitude > 1.0:
-            for i in range(self.kMaxNumberOfMotors):
+            for i in range(len(wheelSpeeds)):
                 wheelSpeeds[i] = wheelSpeeds[i] / maxMagnitude
 
     @staticmethod
