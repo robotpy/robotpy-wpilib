@@ -252,7 +252,8 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         receivedFirmwareVersion = False
 
         # Request firmware and hardware version only once
-        self.requestMessage(_cj.CAN_IS_FRAME_REMOTE | _cj.CAN_MSGID_API_FIRMVER)
+        self.requestMessage(frccan.CAN_IS_FRAME_REMOTE |
+                            _cj.CAN_MSGID_API_FIRMVER)
         self.requestMessage(_cj.LM_API_HWVER)
 
         # Establish finalizer
