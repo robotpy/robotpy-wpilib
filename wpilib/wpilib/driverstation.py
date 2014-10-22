@@ -155,10 +155,10 @@ class DriverStation:
         :returns: The value of the axis on the joystick.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
-            raise ValueError("Joystick index is out of range, should be 0-3")
+            raise IndexError("Joystick index is out of range, should be 0-3")
 
         if axis < 1 or axis > len(self.joystickAxes[stick]):
-            raise ValueError("Joystick axis is out of range")
+            raise IndexError("Joystick axis is out of range")
 
         with self.mutex:
             value = self.joystickAxes[stick][axis - 1]
@@ -176,10 +176,10 @@ class DriverStation:
         pressed.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
-            raise ValueError("Joystick index is out of range, should be 0-3")
+            raise IndexError("Joystick index is out of range, should be 0-3")
 
         if pov < 1 or pov > len(self.joystickPOVs[stick]):
-            raise ValueError("Joystick POV is out of range")
+            raise IndexError("Joystick POV is out of range")
 
         return self.joystickPOVs[stick][pov - 1]
 
@@ -191,7 +191,7 @@ class DriverStation:
         :returns: The state of the buttons on the joystick.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
-            raise ValueError("Joystick index is out of range, should be 0-3")
+            raise IndexError("Joystick index is out of range, should be 0-3")
 
         with self.mutex:
             return self.joystickButtons[stick]
@@ -352,4 +352,4 @@ class DriverStation:
         :param entering: If True, starting test code; if False, leaving test
             code
         """
-        self.userInTeleop = entering
+        self.userInTest = entering
