@@ -96,7 +96,7 @@ class Preferences:
         :param key: the key
         :param value: the value
         """
-        if any((c in key) for c in "=\n\r\t "):
+        if any((c in key) for c in "=\n\r\t[] "):
             raise KeyError("improper preference key '%s'" % key)
         with self.lock:
             if key not in self.values:
@@ -394,7 +394,7 @@ class Preferences:
                 self.save()
         else:
             with self.lock:
-                if any((c in key) for c in "=\n\r\t ") or '"' in str(value):
+                if any((c in key) for c in "=\n\r\t[] ") or '"' in str(value):
                     if key in self.values or key in self.keylist:
                         self.values.pop(key, None)
                         try:
