@@ -157,11 +157,11 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-3")
 
-        if axis < 1 or axis > len(self.joystickAxes[stick]):
+        if axis < 0 or axis >= len(self.joystickAxes[stick]):
             raise IndexError("Joystick axis is out of range")
 
         with self.mutex:
-            value = self.joystickAxes[stick][axis - 1]
+            value = self.joystickAxes[stick][axis]
 
         if value < 0:
             return value / 128.0
@@ -178,10 +178,10 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-3")
 
-        if pov < 1 or pov > len(self.joystickPOVs[stick]):
+        if pov < 0 or pov >= len(self.joystickPOVs[stick]):
             raise IndexError("Joystick POV is out of range")
 
-        return self.joystickPOVs[stick][pov - 1]
+        return self.joystickPOVs[stick][pov]
 
     def getStickButtons(self, stick):
         """The state of the buttons on the joystick.

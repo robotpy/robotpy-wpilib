@@ -16,11 +16,11 @@ class Joystick:
     hardware buttons depends on the code in the driver station.
     """
 
-    kDefaultXAxis = 1
-    kDefaultYAxis = 2
-    kDefaultZAxis = 3
-    kDefaultTwistAxis = 3
-    kDefaultThrottleAxis = 4
+    kDefaultXAxis = 0
+    kDefaultYAxis = 1
+    kDefaultZAxis = 2
+    kDefaultTwistAxis = 2
+    kDefaultThrottleAxis = 3
     kDefaultTriggerButton = 1
     kDefaultTopButton = 2
 
@@ -131,7 +131,7 @@ class Joystick:
     def getRawAxis(self, axis):
         """Get the value of the axis.
 
-        :param axis: The axis to read [1-6].
+        :param axis: The axis to read, starting at 0.
         :returns: The value of the axis.
         """
         return self.ds.getStickAxis(self.port, axis)
@@ -206,10 +206,10 @@ class Joystick:
         """
         return ((0x1 << (button - 1)) & self.ds.getStickButtons(self.port)) != 0
 
-    def getPOV(self, pov=1):
+    def getPOV(self, pov=0):
         """Get the state of a POV on the joystick.
 
-        :param pov: which POV (default is 1)
+        :param pov: which POV (default is 0)
         :returns: The angle of the POV in degrees, or -1 if the POV is not
         pressed.
         """

@@ -116,9 +116,9 @@ def test_getBatteryVoltage(ds, hal):
 
 def test_getStickAxis(ds):
     ds.joystickAxes[2][0] = 127
-    assert ds.getStickAxis(2, 1) == 1.0
+    assert ds.getStickAxis(2, 0) == 1.0
     ds.joystickAxes[0][1] = -128
-    assert ds.getStickAxis(0, 2) == -1.0
+    assert ds.getStickAxis(0, 1) == -1.0
 
 def test_getStickAxis_limits(ds, hal):
     with pytest.raises(IndexError):
@@ -126,13 +126,13 @@ def test_getStickAxis_limits(ds, hal):
     with pytest.raises(IndexError):
         ds.getStickAxis(ds.kJoystickPorts, 1)
     with pytest.raises(IndexError):
-        ds.getStickAxis(0, 0)
+        ds.getStickAxis(0, -1)
     with pytest.raises(IndexError):
-        ds.getStickAxis(0, hal.kMaxJoystickAxes+1)
+        ds.getStickAxis(0, hal.kMaxJoystickAxes)
 
 def test_getStickPOV(ds):
     ds.joystickPOVs[2][0] = 30
-    assert ds.getStickPOV(2, 1) == 30
+    assert ds.getStickPOV(2, 0) == 30
 
 def test_getStickPOV_limits(ds, hal):
     with pytest.raises(IndexError):
@@ -140,9 +140,9 @@ def test_getStickPOV_limits(ds, hal):
     with pytest.raises(IndexError):
         ds.getStickPOV(ds.kJoystickPorts, 1)
     with pytest.raises(IndexError):
-        ds.getStickPOV(0, 0)
+        ds.getStickPOV(0, -1)
     with pytest.raises(IndexError):
-        ds.getStickPOV(0, hal.kMaxJoystickPOVs+1)
+        ds.getStickPOV(0, hal.kMaxJoystickPOVs)
 
 def test_getStickButtons(ds):
     ds.joystickButtons[0] = 0x13

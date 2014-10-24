@@ -89,10 +89,10 @@ class GenericHID:
         """
         raise NotImplementedError
 
-    def getPOV(self, pov=1):
+    def getPOV(self, pov=0):
         """Get the state of a POV.
 
-        :param pov: which POV (default is 1)
+        :param pov: which POV (default is 0)
         :returns: The angle of the POV in degrees, or -1 if the POV is not
         pressed.
         """
