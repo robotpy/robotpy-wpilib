@@ -670,6 +670,17 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
                 # Verification is needed but not available - request it again.
                 self.requestMessage(_cj.LM_API_CFG_FAULT_TIME)
 
+        if (not self.receivedStatusMessage0 or
+            not self.receivedStatusMessage1 or
+            not self.receivedStatusMessage2):
+            # If the periodic status messages haven't been verified as
+            # received, request periodic status messages again and attempt
+            # to unpack any available ones.
+            self.setupPeriodicStatus()
+            self.getTemperature()
+            self.getPosition()
+            self.getFaults()
+
     def disable(self):
         """Common interface for disabling a motor.
 
