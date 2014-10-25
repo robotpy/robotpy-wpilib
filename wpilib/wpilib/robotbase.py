@@ -133,6 +133,8 @@ class RobotBase:
         try:
             robot.startCompetition()
         except:
+            from .driverstation import DriverStation
+            DriverStation.reportError("ERROR Unhandled exception", True)
             print("WARNING: Robots don't quit!")
             print("---> The startCompetition() method (or methods called by it) should have handled the exception.")
             raise

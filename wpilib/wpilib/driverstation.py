@@ -6,6 +6,8 @@
 import threading
 
 import hal
+import sys
+import traceback
 
 from .motorsafety import MotorSafety
 from .timer import Timer
@@ -317,6 +319,29 @@ class DriverStation:
         if self.approxMatchTimeOffset < 0.0:
             return 0.0
         return Timer.getFPGATimestamp() - self.approxMatchTimeOffset
+
+    @staticmethod
+    def reportError(error, printTrace):
+        """Report error to Driver Station.
+        Also prints error to sys.stderr
+        Optionally appends stack trace to error message
+        :param printTrace: If True, append stack trace to error string
+        """
+        errorString = error
+        if printTrace:
+            exc = sys.exc_info()[0]
+            stack = traceback.extract_stack()[:-1]  # last one is this func
+            if exc is not None: # i.e. if an exception is present
+                # remove call of full_stack, the printed exception
+                # will contain the caught exception caller instead
+                del stack[-1]
+            trc = 'Traceback (most recent call last):\n'
+            stackstr = trc + ''.join(traceback.format_list(stack))
+            if exc is not None:
+                 stackstr += '  ' + traceback.format_exc().lstrip(trc)
+            errorString += ':\n' + stackstr
+        #print(errorString, file=sys.stderr)
+        hal.HALSetErrorData(errorString, 0)
 
     def InDisabled(self, entering):
         """Only to be used to tell the Driver Station what code you claim to
