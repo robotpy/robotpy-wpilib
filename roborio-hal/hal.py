@@ -456,8 +456,6 @@ setCounterSemiPeriodMode = _STATUSFUNC("setCounterSemiPeriodMode", None, ("count
 setCounterPulseLengthMode = _STATUSFUNC("setCounterPulseLengthMode", None, ("counter", Counter), ("threshold", C.c_double))
 getCounterSamplesToAverage = _STATUSFUNC("getCounterSamplesToAverage", C.c_int32, ("counter", Counter))
 setCounterSamplesToAverage = _STATUSFUNC("setCounterSamplesToAverage", None, ("counter", Counter), ("samples_to_average", C.c_int))
-startCounter = _STATUSFUNC("startCounter", None, ("counter", Counter))
-stopCounter = _STATUSFUNC("stopCounter", None, ("counter", Counter))
 resetCounter = _STATUSFUNC("resetCounter", None, ("counter", Counter))
 getCounter = _STATUSFUNC("getCounter", C.c_int32, ("counter", Counter))
 getCounterPeriod = _STATUSFUNC("getCounterPeriod", C.c_double, ("counter", Counter))
@@ -472,8 +470,6 @@ initializeEncoder = _STATUSFUNC("initializeEncoder", Encoder,
         ("port_b_module", C.c_uint8), ("port_b_pin", C.c_uint32), ("port_b_analog_trigger", C.c_bool),
         ("reverse_direction", C.c_bool), ("index", C.POINTER(C.c_int32)), out=["index"])
 freeEncoder = _STATUSFUNC("freeEncoder", None, ("encoder", Encoder))
-startEncoder = _STATUSFUNC("startEncoder", None, ("encoder", Encoder))
-stopEncoder = _STATUSFUNC("stopEncoder", None, ("encoder", Encoder))
 resetEncoder = _STATUSFUNC("resetEncoder", None, ("encoder", Encoder))
 getEncoder = _STATUSFUNC("getEncoder", C.c_int32, ("encoder", Encoder))
 getEncoderPeriod = _STATUSFUNC("getEncoderPeriod", C.c_double, ("encoder", Encoder))
@@ -578,10 +574,11 @@ def cleanInterrupts(interrupt):
     # remove references to function handlers
     _interruptHandlers.pop(interrupt, None)
 
-waitForInterrupt = _STATUSFUNC("waitForInterrupt", None, ("interrupt", Interrupt), ("timeout", C.c_double))
+waitForInterrupt = _STATUSFUNC("waitForInterrupt", C.c_uint32, ("interrupt", Interrupt), ("timeout", C.c_double), ("ignorePrevious", C.c_bool))
 enableInterrupts = _STATUSFUNC("enableInterrupts", None, ("interrupt", Interrupt))
 disableInterrupts = _STATUSFUNC("disableInterrupts", None, ("interrupt", Interrupt))
-readInterruptTimestamp = _STATUSFUNC("readInterruptTimestamp", C.c_double, ("interrupt", Interrupt))
+readRisingTimestamp = _STATUSFUNC("readRisingTimestamp", C.c_double, ("interrupt", Interrupt))
+readFallingTimestamp = _STATUSFUNC("readFallingTimestamp", C.c_double, ("interrupt", Interrupt))
 requestInterrupts = _STATUSFUNC("requestInterrupts", None, ("interrupt", Interrupt), ("routing_module", C.c_uint8), ("routing_pin", C.c_uint32), ("routing_analog_trigger", C.c_bool))
 _attachInterruptHandler = _STATUSFUNC("attachInterruptHandler", None, ("interrupt", Interrupt), ("handler", _InterruptHandlerFunction), ("param", C.c_void_p))
 def attachInterruptHandler(interrupt, handler):

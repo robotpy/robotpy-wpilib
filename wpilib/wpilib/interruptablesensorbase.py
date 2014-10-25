@@ -99,14 +99,16 @@ class InterruptableSensorBase(SensorBase):
         InterruptibleSensorBase.interrupts.free(self.interruptIndex)
         self.interruptIndex = None
 
-    def waitForInterrupt(self, timeout):
+    def waitForInterrupt(self, timeout, ignorePrevious=True):
         """In synchronous mode, wait for the defined interrupt to occur.
 
         :param timeout: Timeout in seconds
+        :param ignorePrevious: If True (default), ignore interrupts that
+            happened before waitForInterrupt was called.
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
-        hal.waitForInterrupt(self.interrupt, timeout)
+        return hal.waitForInterrupt(self.interrupt, timeout, ignorePrevious)
 
     def enableInterrupts(self):
         """Enable interrupts to occur on this input. Interrupts are disabled
@@ -127,15 +129,27 @@ class InterruptableSensorBase(SensorBase):
             raise ValueError("You can not disable synchronous interrupts")
         hal.disableInterrupts(self.interrupt)
 
-    def readInterruptTimestamp(self):
-        """Return the timestamp for the interrupt that occurred most recently.
-        This is in the same time domain as getClock().
+    def readRisingTimestamp(self):
+        """Return the timestamp for the rising interrupt that occurred most
+        recently.  This is in the same time domain as getClock().  The
+        rising-edge interrupt should be enabled with setUpSourceEdge.
 
         :returns: Timestamp in seconds since boot.
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
-        return hal.readInterruptTimestamp(self.interrupt)
+        return hal.readRisingTimestamp(self.interrupt)
+
+    def readFallingTimestamp(self):
+        """Return the timestamp for the falling interrupt that occurred most
+        recently.  This is in the same time domain as getClock().  The
+        falling-edge interrupt should be enabled with setUpSourceEdge.
+
+        :returns: Timestamp in seconds since boot.
+        """
+        if self.interrupt is None:
+            raise ValueError("The interrupt is not allocated.")
+        return hal.readFallingTimestamp(self.interrupt)
 
     def setUpSourceEdge(self, risingEdge, fallingEdge):
         """Set which edge to trigger interrupts on

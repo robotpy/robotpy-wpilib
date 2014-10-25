@@ -166,8 +166,6 @@ class Counter(SensorBase):
         hal.HALReport(hal.HALUsageReporting.kResourceType_Counter, self.index,
                       mode)
 
-        hal.startCounter(self._counter)
-
         # set sources on counter
         if upSource is not None:
             hal.setCounterUpSource(self._counter,

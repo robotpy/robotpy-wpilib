@@ -164,7 +164,6 @@ class Encoder(SensorBase):
                     reverseDirection)
             self._encoder_finalizer = \
                     weakref.finalize(self, _freeEncoder, self._encoder)
-            hal.startEncoder(self._encoder)
         elif encodingType in (self.EncodingType.k2X, self.EncodingType.k1X):
             # Use Counter object for 1x and 2x encoding
             self.counter = Counter(encodingType, aSource, bSource,
