@@ -154,13 +154,13 @@ class _HALJoystickPOVs(C.Structure):
 _HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", C.POINTER(_HALJoystickAxes)))
 def HALGetJoystickAxes(joystickNum):
     axes = _HALJoystickAxes()
-    _HALGetJoystickAxes(joystickNum, C.byref(axes), 6)
+    _HALGetJoystickAxes(joystickNum, C.byref(axes))
     return [x for x in axes.axes[0:axes.count]]
 
 _HALGetJoystickPOVs = _RETFUNC("HALGetJoystickPOVs", C.c_int, ("joystickNum", C.c_uint8), ("povs", C.POINTER(_HALJoystickPOVs)))
 def HALGetJoystickPOVs(joystickNum):
     povs = _HALJoystickPOVs()
-    _HALGetJoystickPOVs(joystickNum, C.byref(povs), 6)
+    _HALGetJoystickPOVs(joystickNum, C.byref(povs))
     return [x for x in povs.povs[0:povs.count]]
 
 _HALGetJoystickButtons = _RETFUNC("HALGetJoystickButtons", C.c_int, ("joystickNum", C.c_uint8), ("buttons", C.POINTER(C.c_uint32)), ("count", C.POINTER(C.c_uint8)))
