@@ -126,6 +126,7 @@ getFPGAButton = _STATUSFUNC("getFPGAButton", C.c_bool)
 
 _HALSetErrorData = _RETFUNC("HALSetErrorData", C.c_int, ("errors", C.c_char_p), ("errorsLength", C.c_int), ("wait_ms", C.c_int))
 def HALSetErrorData(errors, wait_ms):
+    errors = errors.encode('utf-8')
     return _HALSetErrorData(errors, len(errors), wait_ms)
 
 HALGetControlWord = _RETFUNC("HALGetControlWord", C.c_int, ("data", C.POINTER(HALControlWord)), out=["data"])
