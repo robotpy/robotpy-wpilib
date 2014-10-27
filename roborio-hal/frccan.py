@@ -41,7 +41,7 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                       handle_missing=handle_missing)
     def outer(*args, **kwargs):
         status = C.c_int32(0)
-        rv = _inner(*args, status=C.byref(status), **kwargs)
+        rv = _inner(*args, status=status, **kwargs)
         if status.value != 0:
             if status.value == -44086: raise CANError("invalid buffer")
             if status.value == -44087: raise CANMessageNotFound("message not found")
@@ -84,8 +84,8 @@ _CANSessionMux_receiveMessage = _STATUSFUNC("FRC_NetworkCommunication_CANSession
 def CANSessionMux_receiveMessage(messageID, messageIDMask):
     idbuf = C.c_uint32(messageID)
     buffer = C.c_uint8 * 8
-    dataSize, timeStamp = _CANSessionMux_receiveMessage(C.byref(idbuf),
-                                                        messageIDMask, buffer)
+    dataSize, timeStamp = _CANSessionMux_receiveMessage(idbuf, messageIDMask,
+                                                        buffer)
     if dataSize is 0:
         return idbuf.value, None, timeStamp
     else:

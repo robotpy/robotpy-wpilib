@@ -38,7 +38,7 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                       handle_missing=handle_missing)
     def outer(*args, **kwargs):
         status = C.c_int32(0)
-        rv = _inner(*args, status=C.byref(status), **kwargs)
+        rv = _inner(*args, status=status, **kwargs)
         if status.value != 0:
             raise HALError(getHALErrorMessage(status))
         return rv
@@ -154,21 +154,20 @@ class _HALJoystickPOVs(C.Structure):
 _HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", C.POINTER(_HALJoystickAxes)))
 def HALGetJoystickAxes(joystickNum):
     axes = _HALJoystickAxes()
-    _HALGetJoystickAxes(joystickNum, C.byref(axes))
+    _HALGetJoystickAxes(joystickNum, axes)
     return [x for x in axes.axes[0:axes.count]]
 
 _HALGetJoystickPOVs = _RETFUNC("HALGetJoystickPOVs", C.c_int, ("joystickNum", C.c_uint8), ("povs", C.POINTER(_HALJoystickPOVs)))
 def HALGetJoystickPOVs(joystickNum):
     povs = _HALJoystickPOVs()
-    _HALGetJoystickPOVs(joystickNum, C.byref(povs))
+    _HALGetJoystickPOVs(joystickNum, povs)
     return [x for x in povs.povs[0:povs.count]]
 
 _HALGetJoystickButtons = _RETFUNC("HALGetJoystickButtons", C.c_int, ("joystickNum", C.c_uint8), ("buttons", C.POINTER(C.c_uint32)), ("count", C.POINTER(C.c_uint8)))
 def HALGetJoystickButtons(joystickNum):
     buttons = C.c_uint32(0)
     count = C.c_uint8(0)
-    _HALGetJoystickButtons(joystickNum, C.byref(buttons),
-                           C.byref(count))
+    _HALGetJoystickButtons(joystickNum, buttons, count)
     return buttons.value
 
 HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MUTEX_ID))
