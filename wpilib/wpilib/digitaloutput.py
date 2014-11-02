@@ -98,7 +98,7 @@ class DigitalOutput(DigitalSource):
     def enablePWM(self, initialDutyCycle):
         """Enable a PWM Output on this line.
 
-        Allocate one of the 4 DO PWM generator resources.
+        Allocate one of the 6 DO PWM generator resources.
 
         Supply the initial duty-cycle to output so as to avoid a glitch when
         first starting.
@@ -120,7 +120,7 @@ class DigitalOutput(DigitalSource):
         """Change this line from a PWM output back to a static Digital Output
         line.
 
-        Free up one of the 4 DO PWM generator resources that were in use.
+        Free up one of the 6 DO PWM generator resources that were in use.
         """
         if self.pwmGenerator is None:
             return
