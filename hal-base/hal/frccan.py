@@ -1,37 +1,8 @@
 import ctypes as C
 import warnings
 
-_dll = C.CDLL("libFRC_NetworkCommunication.so")
-
-class CANError(RuntimeError):
-    pass
-
-class CANMessageNotFound(CANError):
-    pass
-
-def _RETFUNC(name, restype, *params, out=None, library=_dll,
-             errcheck=None, handle_missing=False):
-    prototype = C.CFUNCTYPE(restype, *tuple(param[1] for param in params))
-    paramflags = []
-    for param in params:
-        if out is not None and param[0] in out:
-            dir = 2
-        else:
-            dir = 1
-        if len(param) == 3:
-            paramflags.append((dir, param[0], param[2]))
-        else:
-            paramflags.append((dir, param[0]))
-    try:
-        func = prototype((name, library), tuple(paramflags))
-        if errcheck is not None:
-            func.errcheck = errcheck
-    except AttributeError:
-        if not handle_missing:
-            raise
-        def func(*args, **kwargs):
-            raise NotImplementedError
-    return func
+from .exceptions import CANError, CANMessageNotFound
+from hal_impl.fndef import _dll, _RETFUNC
 
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                 handle_missing=False):

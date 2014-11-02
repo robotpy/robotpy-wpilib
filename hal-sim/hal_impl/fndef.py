@@ -6,7 +6,7 @@
 import ctypes as C
 import inspect
 
-import hal_impl as _dll
+from . import functions as _dll
 
 def gen_check(pname, ptype):
     
@@ -37,7 +37,7 @@ def gen_check(pname, ptype):
         return 'isinstance(%s, int) and %s < %d and %s > -%d' % (pname, pname, 1<<63, pname, 1<<63)
         
     elif ptype in [C.c_uint, C.c_size_t]:
-        return 'isinstance(%s, int)' % (pname, pname, pname)
+        return 'isinstance(%s, int)' % (pname)
     elif ptype is C.c_uint8:
         return 'isinstance(%s, int) and %s < %d and %s >= 0' % (pname, pname, 1<<8, pname)
     elif ptype is C.c_uint16:
@@ -48,28 +48,37 @@ def gen_check(pname, ptype):
         return 'isinstance(%s, int) and %s < %d and %s >= 0' % (pname, pname, 1<<64, pname)
     
     else:
-        raise 'isinstance(%s, %s)' % (pname, ptype)
+        #return 'isinstance(%s, %s)' % (pname, type(ptype).__name__)
+        return 'True'
     
 
 def gen_func(f, name, restype, params, out):
     
     args = []
+    callargs = []
     checks = []
     
     if out is None:
         out = []
     
-    for pname, ptype in params:
+    for param in params:
+        pname, ptype = param[:2]
+        
         if pname not in out:
             
             check = gen_check(pname, ptype)
             checks.append('assert %s, "%s; with %s=%%s, type(%s)=%%s" %% (%s, type(%s).__name__)' % (check, check, pname, pname, pname, pname)) 
             
-            args.append(pname)
+            if len(param) == 3:
+                args.append('%s=%s' % (pname, param[2]))
+            else:
+                args.append(pname)
+                
+            callargs.append(pname)
     
     # double check that our simulated HAL is correct
     info = inspect.getfullargspec(f)
-    assert info.args == args, '%s != %s' % (info.args, args)
+    assert info.args == callargs, '%s != %s' % (info.args, args)
     
     # Create the function body to be exec'ed
     return inspect.cleandoc('''
@@ -77,7 +86,7 @@ def gen_func(f, name, restype, params, out):
             %s
             return _dll.%s(%s)
     ''') % (name, ', '.join(args), 
-            '    '.join(checks),
+            '\n    '.join(checks),
             name, ', '.join(args))    
 
 
@@ -85,17 +94,14 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
              errcheck=None, handle_missing=False):
     
     # get func
-    try:
-        fn = getattr(_dll, name)
-    except:
-        return  # TEMP remove this!
+    fn = getattr(_dll, name)
         
     fn_body = gen_func(fn, name, restype, params, out)
     #print(fn_body)
     
     # exec:
     # TODO: give it a filename?
-    locals = {}
+    locals = {'_dll': _dll}
     exec(fn_body, locals)
     
     # return the created func
@@ -103,7 +109,5 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
 
 
 def _VAR(name, type, library=_dll):
-    try:
-        return getattr(_dll, name)
-    except:
-        pass    # TEMP, remove this
+    '''These are always constants, so it's ok to return a value'''
+    return getattr(_dll, name)

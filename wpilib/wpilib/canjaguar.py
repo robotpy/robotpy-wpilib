@@ -5,8 +5,8 @@
 # the project.
 #----------------------------------------------------------------------------
 
-import frccan
 import hal
+from hal import frccan
 import struct
 import warnings
 import weakref

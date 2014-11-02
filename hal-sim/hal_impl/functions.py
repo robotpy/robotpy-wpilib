@@ -6,9 +6,12 @@
 
 # TODO: actually implement this
 
+from . import types
 
-# TODO: define the structure of this thing
+import time
+
 hal_data = {
+    # don't fill this out, fill out the version in _reset_hal_data
 }
 
 
@@ -16,7 +19,43 @@ def _reset_hal_data():
     '''Intended to be used by the test runner'''
     global hal_data
     hal_data = {
+        'accelerometer': {
+            'active': False,
+            'range': 0,
+            'x': 0,
+            'y': 0,
+            'z': 0
+        },
+                
+        'power': {
+            'vin_voltage': 0,
+            'vin_current': 0,
+            'user_voltage_6v': 6.0,
+            'user_current_6v': 0,
+            'user_voltage_5v': 5.0,
+            'user_current_5v': 0,
+            'user_voltage_3v3': 3.3,
+            'user_current_3v3': 0
+        },
+                
+        'solenoid': [None]*8,
+                
+        'pdp': {
+            'temperature': 0,
+            'voltage': 0,
+            'current': [0]*16
+        }
     }
+
+_reset_hal_data()
+print(hal_data)
+
+#
+# Misc constants
+#
+
+CTR_InvalidParamValue = 3
+
 
 #############################################################################
 # Semaphore
@@ -33,49 +72,49 @@ SEMAPHORE_EMPTY = 0
 SEMAPHORE_FULL = 1
 
 def initializeMutexRecursive():
-    pass
+    assert False
 
 def initializeMutexNormal():
-    pass
+    assert False
 
 def deleteMutex(sem):
-    pass
+    assert False
 
 def takeMutex(sem):
-    pass
+    assert False
 
 def tryTakeMutex(sem):
-    pass
+    assert False
 
 def giveMutex(sem):
-    pass
+    assert False
 
 def initializeSemaphore(initial_value):
-    pass
+    assert False
 
 def deleteSemaphore(sem):
-    pass
+    assert False
 
 def takeSemaphore(sem):
-    pass
+    assert False
 
 def tryTakeSemaphore(sem):
-    pass
+    assert False
 
 def giveSemaphore(sem):
-    pass
+    assert False
 
 def initializeMultiWait():
-    pass
+    assert False
 
 def deleteMultiWait(sem):
-    pass
+    assert False
 
 def takeMultiWait(sem, timeout):
-    pass
+    assert False
 
 def giveMultiWait(sem):
-    pass
+    assert False
 
 
 
@@ -84,64 +123,66 @@ def giveMultiWait(sem):
 #############################################################################
 
 def getPort(pin):
-    pass
+    return getPortWithModule(0, pin)
 
 def getPortWithModule(module, pin):
-    pass
+    return types.Port(pin, module)
 
 def getHALErrorMessage(code):
-    pass
+    assert False # TODO
 
 def getFPGAVersion(status):
-    pass
+    status.value = 0
+    return 2015
 
 def getFPGARevision(status):
-    pass
+    status.value = 0
+    return 0
 
 def getFPGATime(status):
-    pass
+    assert False
 
 def getFPGAButton(status):
-    pass
+    assert False
 
 def HALSetErrorData(errors, errorsLength, wait_ms):
-    pass
+    assert False
 
 def HALGetControlWord():
-    pass
+    assert False
 
 def HALGetAllianceStation():
-    pass
+    assert False
 
 def HALGetJoystickAxes(joystickNum, axes):
-    pass
+    assert False
 
 def HALGetJoystickPOVs(joystickNum, povs):
-    pass
+    assert False
 
 def HALGetJoystickButtons(joystickNum, buttons, count):
-    pass
+    assert False
 
 def HALSetNewDataSem(sem):
-    pass
+    assert False
 
 def HALInitialize(mode=0):
-    pass
+    assert False
 
 def HALNetworkCommunicationObserveUserProgramStarting():
-    pass
+    assert False
 
 def HALNetworkCommunicationObserveUserProgramDisabled():
-    pass
+    assert False
 
 def HALNetworkCommunicationObserveUserProgramAutonomous():
-    pass
+    assert False
 
 def HALNetworkCommunicationObserveUserProgramTeleop():
-    pass
+    assert False
 
 def HALNetworkCommunicationObserveUserProgramTest():
-    pass
+    assert False
 
 def HALReport(resource, instanceNumber, context=0, feature=None):
     pass
@@ -152,19 +193,19 @@ def HALReport(resource, instanceNumber, context=0, feature=None):
 #############################################################################
 
 def setAccelerometerActive(active):
-    pass
+    hal_data['accelerometer']['active'] = active
 
 def setAccelerometerRange(range):
-    pass
+    hal_data['accelerometer']['range'] = range
 
 def getAccelerometerX():
-    pass
+    return hal_data['accelerometer']['x']
 
 def getAccelerometerY():
-    pass
+    return hal_data['accelerometer']['y']
 
 def getAccelerometerZ():
-    pass
+    return hal_data['accelerometer']['z']
 
 
 #############################################################################
@@ -172,115 +213,115 @@ def getAccelerometerZ():
 #############################################################################
 
 def initializeAnalogOutputPort(port, status):
-    pass
+    assert False
 
 def setAnalogOutput(analog_port, voltage, status):
-    pass
+    assert False
 
 def getAnalogOutput(analog_port, status):
-    pass
+    assert False
 
 def checkAnalogOutputChannel(pin):
-    pass
+    assert False
 
 def initializeAnalogInputPort(port, status):
-    pass
+    assert False
 
 def checkAnalogModule(module):
-    pass
+    assert False
 
 def checkAnalogInputChannel(pin):
-    pass
+    assert False
 
 def setAnalogSampleRate(samples_per_second, status):
-    pass
+    assert False
 
 def getAnalogSampleRate(status):
-    pass
+    assert False
 
 def setAnalogAverageBits(analog_port, bits, status):
-    pass
+    assert False
 
 def getAnalogAverageBits(analog_port, status):
-    pass
+    assert False
 
 def setAnalogOversampleBits(analog_port, bits, status):
-    pass
+    assert False
 
 def getAnalogOversampleBits(analog_port, status):
-    pass
+    assert False
 
 def getAnalogValue(analog_port, status):
-    pass
+    assert False
 
 def getAnalogAverageValue(analog_port, status):
-    pass
+    assert False
 
 def getAnalogVoltsToValue(analog_port, voltage, status):
-    pass
+    assert False
 
 def getAnalogVoltage(analog_port, status):
-    pass
+    assert False
 
 def getAnalogAverageVoltage(analog_port, status):
-    pass
+    assert False
 
 def getAnalogLSBWeight(analog_port, status):
-    pass
+    assert False
 
 def getAnalogOffset(analog_port, status):
-    pass
+    assert False
 
 def isAccumulatorChannel(analog_port, status):
-    pass
+    assert False
 
 def initAccumulator(analog_port, status):
-    pass
+    assert False
 
 def resetAccumulator(analog_port, status):
-    pass
+    assert False
 
 def setAccumulatorCenter(analog_port, status):
-    pass
+    assert False
 
 def setAccumulatorDeadband(analog_port, deadband, status):
-    pass
+    assert False
 
 def getAccumulatorValue(analog_port, status):
-    pass
+    assert False
 
 def getAccumulatorCount(analog_port, status):
-    pass
+    assert False
 
 def getAccumulatorOutput(analog_port, status):
-    pass
+    assert False
 
 def initializeAnalogTrigger(port, status):
-    pass
+    assert False
 
 def cleanAnalogTrigger(analog_trigger, status):
-    pass
+    assert False
 
 def setAnalogTriggerLimitsRaw(analog_trigger, lower, upper, status):
-    pass
+    assert False
 
 def setAnalogTriggerLimitsVoltage(analog_trigger, lower, upper, status):
-    pass
+    assert False
 
 def setAnalogTriggerAveraged(analog_trigger, use_averaged_value, status):
-    pass
+    assert False
 
 def setAnalogTriggerFiltered(analog_trigger, use_filtered_value, status):
-    pass
+    assert False
 
 def getAnalogTriggerInWindow(analog_trigger, status):
-    pass
+    assert False
 
 def getAnalogTriggerTriggerState(analog_trigger, status):
-    pass
+    assert False
 
 def getAnalogTriggerOutput(analog_trigger, type, status):
-    pass
+    assert False
 
 
 #############################################################################
@@ -288,25 +329,25 @@ def getAnalogTriggerOutput(analog_trigger, type, status):
 #############################################################################
 
 def initializeCompressor(module):
-    pass
+    assert False
 
 def checkCompressorModule(module):
-    pass
+    assert False
 
 def getCompressor(pcm, status):
-    pass
+    assert False
 
 def setClosedLoopControl(pcm, value, status):
-    pass
+    assert False
 
 def getClosedLoopControl(pcm, status):
-    pass
+    assert False
 
 def getPressureSwitch(pcm, status):
-    pass
+    assert False
 
 def getCompressorCurrent(pcm, status):
-    pass
+    assert False
 
 
 #############################################################################
@@ -314,241 +355,241 @@ def getCompressorCurrent(pcm, status):
 #############################################################################
 
 def initializeDigitalPort(port, status):
-    pass
+    assert False
 
 def checkPWMChannel(digital_port):
-    pass
+    assert False
 
 def checkRelayChannel(digital_port):
-    pass
+    assert False
 
 def setPWM(digital_port, value, status):
-    pass
+    assert False
 
 def allocatePWMChannel(digital_port, status):
-    pass
+    assert False
 
 def freePWMChannel(digital_port, status):
-    pass
+    assert False
 
 def getPWM(digital_port, status):
-    pass
+    assert False
 
 def latchPWMZero(digital_port, status):
-    pass
+    assert False
 
 def setPWMPeriodScale(digital_port, squelch_mask, status):
-    pass
+    assert False
 
 def allocatePWM(status):
-    pass
+    assert False
 
 def freePWM(pwm, status):
-    pass
+    assert False
 
 def setPWMRate(rate, status):
-    pass
+    assert False
 
 def setPWMDutyCycle(pwm, duty_cycle, status):
-    pass
+    assert False
 
 def setPWMOutputChannel(pwm, pin, status):
-    pass
+    assert False
 
 def setRelayForward(digital_port, on, status):
-    pass
+    assert False
 
 def setRelayReverse(digital_port, on, status):
-    pass
+    assert False
 
 def getRelayForward(digital_port, status):
-    pass
+    assert False
 
 def getRelayReverse(digital_port, status):
-    pass
+    assert False
 
 def allocateDIO(digital_port, input, status):
-    pass
+    assert False
 
 def freeDIO(digital_port, status):
-    pass
+    assert False
 
 def setDIO(digital_port, value, status):
-    pass
+    assert False
 
 def getDIO(digital_port, status):
-    pass
+    assert False
 
 def getDIODirection(digital_port, status):
-    pass
+    assert False
 
 def pulse(digital_port, pulse_length, status):
-    pass
+    assert False
 
 def isPulsing(digital_port, status):
-    pass
+    assert False
 
 def isAnyPulsing(status):
-    pass
+    assert False
 
 def initializeCounter(mode, status):
-    pass
+    assert False
 
 def freeCounter(counter, status):
-    pass
+    assert False
 
 def setCounterAverageSize(counter, size, status):
-    pass
+    assert False
 
 def setCounterUpSource(counter, pin, analog_trigger, status):
-    pass
+    assert False
 
 def setCounterUpSourceEdge(counter, rising_edge, falling_edge, status):
-    pass
+    assert False
 
 def clearCounterUpSource(counter, status):
-    pass
+    assert False
 
 def setCounterDownSource(counter, pin, analog_trigger, status):
-    pass
+    assert False
 
 def setCounterDownSourceEdge(counter, rising_edge, falling_edge, status):
-    pass
+    assert False
 
 def clearCounterDownSource(counter, status):
-    pass
+    assert False
 
 def setCounterUpDownMode(counter, status):
-    pass
+    assert False
 
 def setCounterExternalDirectionMode(counter, status):
-    pass
+    assert False
 
 def setCounterSemiPeriodMode(counter, high_semi_period, status):
-    pass
+    assert False
 
 def setCounterPulseLengthMode(counter, threshold, status):
-    pass
+    assert False
 
 def getCounterSamplesToAverage(counter, status):
-    pass
+    assert False
 
 def setCounterSamplesToAverage(counter, samples_to_average, status):
-    pass
+    assert False
 
 def resetCounter(counter, status):
-    pass
+    assert False
 
 def getCounter(counter, status):
-    pass
+    assert False
 
 def getCounterPeriod(counter, status):
-    pass
+    assert False
 
 def setCounterMaxPeriod(counter, max_period, status):
-    pass
+    assert False
 
 def setCounterUpdateWhenEmpty(counter, enabled, status):
-    pass
+    assert False
 
 def getCounterStopped(counter, status):
-    pass
+    assert False
 
 def getCounterDirection(counter, status):
-    pass
+    assert False
 
 def setCounterReverseDirection(counter, reverse_direction, status):
-    pass
+    assert False
 
 def initializeEncoder(port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger, reverse_direction, status):
-    pass
+    assert False
 
 def freeEncoder(encoder, status):
-    pass
+    assert False
 
 def resetEncoder(encoder, status):
-    pass
+    assert False
 
 def getEncoder(encoder, status):
-    pass
+    assert False
 
 def getEncoderPeriod(encoder, status):
-    pass
+    assert False
 
 def setEncoderMaxPeriod(encoder, max_period, status):
-    pass
+    assert False
 
 def getEncoderStopped(encoder, status):
-    pass
+    assert False
 
 def getEncoderDirection(encoder, status):
-    pass
+    assert False
 
 def setEncoderReverseDirection(encoder, reverse_direction, status):
-    pass
+    assert False
 
 def setEncoderSamplesToAverage(encoder, samples_to_average, status):
-    pass
+    assert False
 
 def getEncoderSamplesToAverage(encoder, status):
-    pass
+    assert False
 
 def getLoopTiming(status):
-    pass
+    assert False
 
 def spiInitialize(port, status):
-    pass
+    assert False
 
 def spiTransaction(port, data_to_send, data_received, size):
-    pass
+    assert False
 
 def spiWrite(port, data_to_send, send_size):
-    pass
+    assert False
 
 def spiRead(port, buffer, count):
-    pass
+    assert False
 
 def spiClose(port):
-    pass
+    assert False
 
 def spiSetSpeed(port, speed):
-    pass
+    assert False
 
 def spiSetOpts(port, msb_first, sample_on_trailing, clk_idle_high):
-    pass
+    assert False
 
 def spiSetChipSelectActiveHigh(port, status):
-    pass
+    assert False
 
 def spiSetChipSelectActiveLow(port, status):
-    pass
+    assert False
 
 def spiGetHandle(port):
-    pass
+    assert False
 
 def spiSetHandle(port, handle):
-    pass
+    assert False
 
 def spiGetSemaphore(port):
-    pass
+    assert False
 
 def spiSetSemaphore(port, semaphore):
-    pass
+    assert False
 
 def i2CInitialize(port, status):
-    pass
+    assert False
 
 def i2CTransaction(port, device_address, data_to_send, send_size, data_received, receive_size):
-    pass
+    assert False
 
 def i2CWrite(port, device_address, data_to_send, send_size):
-    pass
+    assert False
 
 def i2CRead(port, device_address, buffer, count):
-    pass
+    assert False
 
 def i2CClose(port):
-    pass
+    assert False
 
 
 #############################################################################
@@ -556,34 +597,34 @@ def i2CClose(port):
 #############################################################################
 
 def initializeInterrupts(interrupt_index, watcher, status):
-    pass
+    assert False # TODO
 
 def cleanInterrupts(interrupt, status):
-    pass
+    assert False # TODO
 
 def waitForInterrupt(interrupt, timeout, ignorePrevious, status):
-    pass
+    assert False # TODO
 
 def enableInterrupts(interrupt, status):
-    pass
+    assert False # TODO
 
 def disableInterrupts(interrupt, status):
-    pass
+    assert False # TODO
 
 def readRisingTimestamp(interrupt, status):
-    pass
+    assert False # TODO
 
 def readFallingTimestamp(interrupt, status):
-    pass
+    assert False # TODO
 
 def requestInterrupts(interrupt, routing_module, routing_pin, routing_analog_trigger, status):
-    pass
+    assert False # TODO
 
 def attachInterruptHandler(interrupt, handler, param, status):
-    pass
+    assert False # TODO
 
 def setInterruptUpSourceEdge(interrupt, rising_edge, falling_edge, status):
-    pass
+    assert False # TODO
 
 
 #############################################################################
@@ -591,13 +632,13 @@ def setInterruptUpSourceEdge(interrupt, rising_edge, falling_edge, status):
 #############################################################################
 
 def initializeNotifier(processQueue, status):
-    pass
+    assert False # TODO
 
 def cleanNotifier(notifier, status):
-    pass
+    assert False # TODO
 
 def updateNotifierAlarm(notifier, triggerTime, status):
-    pass
+    assert False # TODO
 
 
 #############################################################################
@@ -605,13 +646,19 @@ def updateNotifierAlarm(notifier, triggerTime, status):
 #############################################################################
 
 def getPDPTemperature(status):
-    pass
+    status.value = 0
+    return hal_data['pdp']['temperature']
 
 def getPDPVoltage(status):
-    pass
+    status.value = 0
+    return hal_data['pdp']['voltage']
 
 def getPDPChannelCurrent(channel, status):
-    pass
+    if channel < 0 or channel >= len(hal_data['pdp']['current']):
+        status.value = CTR_InvalidParamValue
+        return 0
+    status.value = 0
+    return hal_data['pdp']['current'][channel]
 
 
 #############################################################################
@@ -619,45 +666,57 @@ def getPDPChannelCurrent(channel, status):
 #############################################################################
 
 def getVinVoltage(status):
-    pass
+    status.value = 0
+    return hal_data['power']['vin_voltage']
 
 def getVinCurrent(status):
-    pass
+    status.value = 0
+    return hal_data['power']['vin_current']
 
 def getUserVoltage6V(status):
-    pass
+    status.value = 0
+    return hal_data['power']['user_voltage_6v']
 
 def getUserCurrent6V(status):
-    pass
+    status.value = 0
+    return hal_data['power']['user_current_6v']
 
 def getUserVoltage5V(status):
-    pass
+    status.value = 0
+    return hal_data['power']['user_voltage_5v']
 
 def getUserCurrent5V(status):
-    pass
+    status.value = 0
+    return hal_data['power']['user_current_5v']
 
 def getUserVoltage3V3(status):
-    pass
+    status.value = 0
+    return hal_data['power']['user_voltage_3v3']
 
 def getUserCurrent3V3(status):
-    pass
-
-def initializeSolenoidPort(port, status):
-    pass
-
-def checkSolenoidModule(module):
-    pass
-
+    status.value = 0
+    return hal_data['power']['user_current_3v3']
 
 #############################################################################
 # Solenoid
 #############################################################################
 
+def initializeSolenoidPort(port, status):
+    status.value = 0
+    # sigh: it would be nice if all the solenoids weren't always initialized
+    hal_data['solenoid'][port.pin] = False 
+    return types.SolenoidPort(port)
+
+def checkSolenoidModule(module):
+    return module < 63
+
 def getSolenoid(solenoid_port, status):
-    pass
+    status.value = 0
+    return hal_data['solenoid'][solenoid_port.pin]
 
 def setSolenoid(solenoid_port, value, status):
-    pass
+    status.value = 0
+    hal_data['solenoid'][solenoid_port.pin] = value
 
 
 #############################################################################
@@ -668,11 +727,34 @@ HAL_NO_WAIT = 0
 HAL_WAIT_FOREVER = -1
 
 def delayTicks(ticks):
-    pass
+    # ticks is ns*3? don't use this.
+    assert False
 
 def delayMillis(ms):
-    pass
+    time.sleep(1000*ms)
 
 def delaySeconds(s):
-    pass
+    time.sleep(s)
+
+#############################################################################
+# CAN
+#############################################################################
+
+def FRC_NetworkCommunication_CANSessionMux_sendMessage(messageID, data, dataSize, periodMs, status):
+    assert False
+
+def FRC_NetworkCommunication_CANSessionMux_receiveMessage(messageID, messageIDMask, data, status):
+    assert False # returns dataSize, timeStamp
+
+def FRC_NetworkCommunication_CANSessionMux_openStreamSession(messageID, messageIDMask, maxMessages, status):
+    assert False # returns sessionHandle
+
+def FRC_NetworkCommunication_CANSessionMux_closeStreamSession(sessionHandle):
+    assert False
+
+def FRC_NetworkCommunication_CANSessionMux_readStreamSession(sessionHandle, messages, messagesToRead, status):
+    assert False # returns messagesRead
+
+def FRC_NetworkCommunication_CANSessionMux_getCANStatus(status):
+    assert False # returns all params
 

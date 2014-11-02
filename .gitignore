@@ -6,3 +6,12 @@ venv
 htmlcov
 *,cover
 
+build 
+dist
+MANIFEST
+
+version.py
+
+.project
+.pydevproject
+
