@@ -9,13 +9,16 @@
 # pthread opaque structures: TODO
 
 class MUTEX_ID:
-    pass
+    def __init__(self, lock):
+        self.lock = lock
 
 class SEMAPHORE_ID:
-    pass
+    def __init__(self, sem):
+        self.sem = sem
 
 class MULTIWAIT_ID:
-    pass
+    def __init__(self, cond):
+        self.cond = cond
 
 
 #############################################################################

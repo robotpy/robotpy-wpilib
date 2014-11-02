@@ -9,6 +9,7 @@
 from . import types
 
 import time
+import threading
 
 hal_data = {
     # don't fill this out, fill out the version in _reset_hal_data
@@ -48,7 +49,6 @@ def _reset_hal_data():
     }
 
 _reset_hal_data()
-print(hal_data)
 
 #
 # Misc constants
@@ -72,50 +72,55 @@ SEMAPHORE_EMPTY = 0
 SEMAPHORE_FULL = 1
 
 def initializeMutexRecursive():
-    assert False
+    return types.MUTEX_ID(threading.RLock())
 
 def initializeMutexNormal():
-    assert False
+    return types.MUTEX_ID(threading.Lock())
 
 def deleteMutex(sem):
-    assert False
+    sem.lock = None
 
 def takeMutex(sem):
-    assert False
+    sem.lock.acquire()
+    return 0
 
 def tryTakeMutex(sem):
-    assert False
+    if not sem.lock.acquire(False):
+        return -1
+    return 0
 
 def giveMutex(sem):
-    assert False
+    sem.lock.release()
+    return 0
 
 def initializeSemaphore(initial_value):
-    assert False
+    return types.SEMAPHORE_ID(threading.Semaphore(initial_value))
 
 def deleteSemaphore(sem):
-    assert False
+    sem.sem = None
 
 def takeSemaphore(sem):
-    assert False
+    sem.sem.acquire()
 
 def tryTakeSemaphore(sem):
-    assert False
+    if not sem.sem.acquire(False):
+        return -1
+    return 0
 
 def giveSemaphore(sem):
-    assert False
+    sem.sem.release()
 
 def initializeMultiWait():
-    assert False
+    return types.MULTIWAIT_ID(threading.Condition())
 
 def deleteMultiWait(sem):
-    assert False
+    sem.cond = None
 
 def takeMultiWait(sem, timeout):
-    assert False
+    sem.cond.wait() # timeout is ignored in C++ HAL
 
 def giveMultiWait(sem):
-    assert False
-
+    sem.cond.notifyAll() # hal uses pthread_cond_broadcast, which wakes all threads
 
 
 #############################################################################
