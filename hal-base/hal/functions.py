@@ -5,6 +5,7 @@ from .exceptions import HALError
 from .constants import *
 
 from hal_impl.types import *
+from hal_impl.types import _HALJoystickAxes, _HALJoystickPOVs
 from hal_impl.fndef import _dll, _RETFUNC, _VAR
 
 

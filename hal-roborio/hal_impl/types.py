@@ -1,5 +1,6 @@
 
 import ctypes as C
+from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
 
 #############################################################################
 # Semaphore
