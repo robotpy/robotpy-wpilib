@@ -11,44 +11,7 @@ from . import types
 import time
 import threading
 
-hal_data = {
-    # don't fill this out, fill out the version in _reset_hal_data
-}
-
-
-def _reset_hal_data():
-    '''Intended to be used by the test runner'''
-    global hal_data
-    hal_data = {
-        'accelerometer': {
-            'active': False,
-            'range': 0,
-            'x': 0,
-            'y': 0,
-            'z': 0
-        },
-                
-        'power': {
-            'vin_voltage': 0,
-            'vin_current': 0,
-            'user_voltage_6v': 6.0,
-            'user_current_6v': 0,
-            'user_voltage_5v': 5.0,
-            'user_current_5v': 0,
-            'user_voltage_3v3': 3.3,
-            'user_current_3v3': 0
-        },
-                
-        'solenoid': [None]*8,
-                
-        'pdp': {
-            'temperature': 0,
-            'voltage': 0,
-            'current': [0]*16
-        }
-    }
-
-_reset_hal_data()
+from .data import hal_data
 
 #
 # Misc constants
