@@ -17,9 +17,6 @@ class Trigger:
     For this, they only have to write the :func:`get` method to get the full
     functionality of the Trigger class.
     """
-    def __init__(self):
-        self.table = None
-
     def get(self):
         """Returns whether or not the trigger is active
 
@@ -34,9 +31,10 @@ class Trigger:
         """Returns whether :func:`get` return True or the internal table for
         :class:`SmartDashboard` use is pressed.
         """
-        #return self.get() or (self.table is not None and self.table.isConnected() and self.table.getBoolean("pressed", False))  #FIXME make is connected work?
-        return self.get() or (self.table is not None and
-                              self.table.getBoolean("pressed", False))
+        table = self.getTable()
+        #return self.get() or (table is not None and table.isConnected() and table.getBoolean("pressed", False))  #FIXME make is connected work?
+        return self.get() or (table is not None and
+                              table.getBoolean("pressed", False))
 
     def whenActive(self, command):
         """Starts the given command whenever the trigger just becomes active.
@@ -142,4 +140,4 @@ class Trigger:
             table.putBoolean("pressed", self.get())
 
     def getTable(self):
-        return table
+        return getattr(self, "table", None)

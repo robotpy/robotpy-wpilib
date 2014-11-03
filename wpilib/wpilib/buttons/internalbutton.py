@@ -29,4 +29,4 @@ class InternalButton(Button):
         self.pressed = pressed
 
     def get(self):
-        return pressed ^ inverted
+        return self.pressed ^ self.inverted
