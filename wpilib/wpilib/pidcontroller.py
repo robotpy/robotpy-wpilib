@@ -59,8 +59,20 @@ class PIDController(LiveWindowSendable):
         self.D = Kd     # factor for "derivative" control
         self.F = Kf     # factor for feedforward term
 
-        self.pidInput = source
-        self.pidOutput = output
+        if hasattr(source, "pidGet"):
+            self.pidInput = source.pidGet
+        elif callable(source):
+            self.pidInput = source
+        else:
+            raise ValueError("source is not a valid PID input")
+
+        if hasattr(output, "pidWrite"):
+            self.pidOutput = output.pidWrite
+        elif callable(output):
+            self.pidOutput = output
+        else:
+            raise ValueError("output is not a valid PID output")
+
         if period is None:
             self.period = PIDController.kDefaultPeriod
         else:
@@ -112,7 +124,7 @@ class PIDController(LiveWindowSendable):
 
         if enabled:
             with self.mutex:
-                input = pidInput.pidGet()
+                input = pidInput()
                 self.error = self.setpoint - input
                 if self.continuous:
                     if abs(self.error) > ((self.maximumInput - self.minimumInput) / 2.0):
@@ -146,7 +158,7 @@ class PIDController(LiveWindowSendable):
                 pidOutput = self.pidOutput
                 result = self.result
 
-            pidOutput.pidWrite(result)
+            pidOutput(result)
 
     def setPID(self, p, i, d, f=None):
         """Set the PID Controller gain parameters.
@@ -286,7 +298,7 @@ class PIDController(LiveWindowSendable):
         """
         with self.mutex:
             #return self.error
-            return self.getSetpoint() - self.pidInput.pidGet()
+            return self.getSetpoint() - self.pidInput()
 
     def setTolerance(self, percent):
         """Set the percentage error which is considered tolerable for use with
@@ -348,7 +360,7 @@ class PIDController(LiveWindowSendable):
         """Stop running the PIDController, this sets the output to zero before
         stopping."""
         with self.mutex:
-            self.pidOutput.pidWrite(0)
+            self.pidOutput(0)
             self.enabled = False
 
         table = self.getTable()
