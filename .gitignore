@@ -10,6 +10,8 @@ build
 dist
 MANIFEST
 
+docs/_build
+
 version.py
 
 .project
