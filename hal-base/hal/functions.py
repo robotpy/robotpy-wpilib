@@ -1,34 +1,13 @@
 import ctypes as C
 import os
 
-_dll = C.CDLL("./libHALAthena_shared.so", use_errno=True)
+from .exceptions import HALError
+from .constants import *
 
-class HALError(RuntimeError):
-    pass
+from hal_impl.types import *
+from hal_impl.fndef import _dll, _RETFUNC, _VAR
 
-def _RETFUNC(name, restype, *params, out=None, library=_dll,
-             errcheck=None, handle_missing=False):
-    prototype = C.CFUNCTYPE(restype, *tuple(param[1] for param in params))
-    paramflags = []
-    for param in params:
-        if out is not None and param[0] in out:
-            dir = 2
-        else:
-            dir = 1
-        if len(param) == 3:
-            paramflags.append((dir, param[0], param[2]))
-        else:
-            paramflags.append((dir, param[0]))
-    try:
-        func = prototype((name, library), tuple(paramflags))
-        if errcheck is not None:
-            func.errcheck = errcheck
-    except AttributeError:
-        if not handle_missing:
-            raise
-        def func(*args, **kwargs):
-            raise NotImplementedError
-    return func
+
 
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                 handle_missing=False):
@@ -44,25 +23,11 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
         return rv
     return outer
 
-def _VAR(name, type, library=_dll):
-    return type.in_dll(library, name)
-
 #############################################################################
 # Semaphore
 #############################################################################
 
-# pthread opaque structures
-class _pthread_mutex_t(C.Structure):
-    pass
-MUTEX_ID = C.POINTER(_pthread_mutex_t)
 
-class _sem_t(C.Structure):
-    pass
-SEMAPHORE_ID = C.POINTER(_sem_t)
-
-class _pthread_cond_t(C.Structure):
-    pass
-MULTIWAIT_ID = C.POINTER(_pthread_cond_t)
 
 SEMAPHORE_Q_FIFO = _VAR("SEMAPHORE_Q_FIFO", C.c_uint32)
 SEMAPHORE_Q_PRIORITY = _VAR("SEMAPHORE_Q_PRIORITY", C.c_uint32)
@@ -99,19 +64,6 @@ giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID))
 # HAL
 #############################################################################
 
-# opaque port structure
-class _Port(C.Structure):
-    pass
-Port = C.POINTER(_Port)
-
-class HALControlWord(C.Structure):
-    _fields_ = [("enabled", C.c_uint32, 1),
-                ("autonomous", C.c_uint32, 1),
-                ("test", C.c_uint32, 1),
-                ("eStop", C.c_uint32, 1),
-                ("fmsAttached", C.c_uint32, 1),
-                ("dsAttached", C.c_uint32, 1),
-                ("control_reserved", C.c_uint32, 26)]
 
 getPort = _RETFUNC("getPort", Port, ("pin", C.c_uint8))
 getPortWithModule = _RETFUNC("getPortWithModule", Port, ("module", C.c_uint8), ("pin", C.c_uint8))
@@ -129,35 +81,22 @@ def HALSetErrorData(errors, wait_ms):
     errors = errors.encode('utf-8')
     return _HALSetErrorData(errors, len(errors), wait_ms)
 
-HALGetControlWord = _RETFUNC("HALGetControlWord", C.c_int, ("data", C.POINTER(HALControlWord)), out=["data"])
+HALGetControlWord = _RETFUNC("HALGetControlWord", C.c_int, ("data", HALControlWord), out=["data"])
 
-kHALAllianceStationID_red1 = 0
-kHALAllianceStationID_red2 = 1
-kHALAllianceStationID_red3 = 2
-kHALAllianceStationID_blue1 = 3
-kHALAllianceStationID_blue2 = 4
-kHALAllianceStationID_blue3 = 5
+
 
 HALGetAllianceStation = _RETFUNC("HALGetAllianceStation", C.c_int, ("allianceStation", C.POINTER(C.c_int)), out=["allianceStation"])
 
-kMaxJoystickAxes = 12
-kMaxJoystickPOVs = 12
 
-class _HALJoystickAxes(C.Structure):
-    _fields_ = [("count", C.c_uint16),
-                ("axes", C.c_int16 * kMaxJoystickAxes)]
 
-class _HALJoystickPOVs(C.Structure):
-    _fields_ = [("count", C.c_uint16),
-                ("povs", C.c_int16 * kMaxJoystickPOVs)]
 
-_HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", C.POINTER(_HALJoystickAxes)))
+_HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", HALJoystickAxes))
 def HALGetJoystickAxes(joystickNum):
     axes = _HALJoystickAxes()
     _HALGetJoystickAxes(joystickNum, axes)
     return [x for x in axes.axes[0:axes.count]]
 
-_HALGetJoystickPOVs = _RETFUNC("HALGetJoystickPOVs", C.c_int, ("joystickNum", C.c_uint8), ("povs", C.POINTER(_HALJoystickPOVs)))
+_HALGetJoystickPOVs = _RETFUNC("HALGetJoystickPOVs", C.c_int, ("joystickNum", C.c_uint8), ("povs", HALJoystickPOVs))
 def HALGetJoystickPOVs(joystickNum):
     povs = _HALJoystickPOVs()
     _HALGetJoystickPOVs(joystickNum, povs)
@@ -184,100 +123,6 @@ HALNetworkCommunicationObserveUserProgramAutonomous = _RETFUNC("HALNetworkCommun
 HALNetworkCommunicationObserveUserProgramTeleop = _RETFUNC("HALNetworkCommunicationObserveUserProgramTeleop", None)
 HALNetworkCommunicationObserveUserProgramTest = _RETFUNC("HALNetworkCommunicationObserveUserProgramTest", None)
 
-class HALUsageReporting:
-    # enum tResourceType
-    kResourceType_Controller = 0
-    kResourceType_Module = 1
-    kResourceType_Language = 2
-    kResourceType_CANPlugin = 3
-    kResourceType_Accelerometer = 4
-    kResourceType_ADXL345 = 5
-    kResourceType_AnalogChannel = 6
-    kResourceType_AnalogTrigger = 7
-    kResourceType_AnalogTriggerOutput = 8
-    kResourceType_CANJaguar = 9
-    kResourceType_Compressor = 10
-    kResourceType_Counter = 11
-    kResourceType_Dashboard = 12
-    kResourceType_DigitalInput = 13
-    kResourceType_DigitalOutput = 14
-    kResourceType_DriverStationCIO = 15
-    kResourceType_DriverStationEIO = 16
-    kResourceType_DriverStationLCD = 17
-    kResourceType_Encoder = 18
-    kResourceType_GearTooth = 19
-    kResourceType_Gyro = 20
-    kResourceType_I2C = 21
-    kResourceType_Framework = 22
-    kResourceType_Jaguar = 23
-    kResourceType_Joystick = 24
-    kResourceType_Kinect = 25
-    kResourceType_KinectStick = 26
-    kResourceType_PIDController = 27
-    kResourceType_Preferences = 28
-    kResourceType_PWM = 29
-    kResourceType_Relay = 30
-    kResourceType_RobotDrive = 31
-    kResourceType_SerialPort = 32
-    kResourceType_Servo = 33
-    kResourceType_Solenoid = 34
-    kResourceType_SPI = 35
-    kResourceType_Task = 36
-    kResourceType_Ultrasonic = 37
-    kResourceType_Victor = 38
-    kResourceType_Button = 39
-    kResourceType_Command = 40
-    kResourceType_AxisCamera = 41
-    kResourceType_PCVideoServer = 42
-    kResourceType_SmartDashboard = 43
-    kResourceType_Talon = 44
-    kResourceType_HiTechnicColorSensor = 45
-    kResourceType_HiTechnicAccel = 46
-    kResourceType_HiTechnicCompass = 47
-    kResourceType_SRF08 = 48
-
-    # enum tInstances
-    kLanguage_LabVIEW = 1
-    kLanguage_CPlusPlus = 2
-    kLanguage_Java = 3
-    kLanguage_Python = 4
-
-    kCANPlugin_BlackJagBridge = 1
-    kCANPlugin_2CAN = 2
-
-    kFramework_Iterative = 1
-    kFramework_Simple = 2
-
-    kRobotDrive_ArcadeStandard = 1
-    kRobotDrive_ArcadeButtonSpin = 2
-    kRobotDrive_ArcadeRatioCurve = 3
-    kRobotDrive_Tank = 4
-    kRobotDrive_MecanumPolar = 5
-    kRobotDrive_MecanumCartesian = 6
-
-    kDriverStationCIO_Analog = 1
-    kDriverStationCIO_DigitalIn = 2
-    kDriverStationCIO_DigitalOut = 3
-
-    kDriverStationEIO_Acceleration = 1
-    kDriverStationEIO_AnalogIn = 2
-    kDriverStationEIO_AnalogOut = 3
-    kDriverStationEIO_Button = 4
-    kDriverStationEIO_LED = 5
-    kDriverStationEIO_DigitalIn = 6
-    kDriverStationEIO_DigitalOut = 7
-    kDriverStationEIO_FixedDigitalOut = 8
-    kDriverStationEIO_PWM = 9
-    kDriverStationEIO_Encoder = 10
-    kDriverStationEIO_TouchSlider = 11
-
-    kADXL345_SPI = 1
-    kADXL345_I2C = 2
-
-    kCommand_Scheduler = 1
-
-    kSmartDashboard_Instance = 1
-
 _HALReport = _RETFUNC("HALReport", C.c_uint32, ("resource", C.c_uint8), ("instanceNumber", C.c_uint8), ("context", C.c_uint8, 0), ("feature", C.c_char_p, None))
 def HALReport(resource, instanceNumber, context = 0, feature = None):
     if feature is not None:
@@ -287,10 +132,6 @@ def HALReport(resource, instanceNumber, context = 0, feature = None):
 #############################################################################
 # Accelerometer
 #############################################################################
-class AccelerometerRange:
-    kRange_2G = 0
-    kRange_4G = 1
-    kRange_8G = 2
 
 setAccelerometerActive = _RETFUNC("setAccelerometerActive", None, ("active", C.c_bool))
 setAccelerometerRange = _RETFUNC("setAccelerometerRange", None, ("range", C.c_int))
@@ -301,21 +142,7 @@ getAccelerometerZ = _RETFUNC("getAccelerometerZ", C.c_double)
 #############################################################################
 # Analog
 #############################################################################
-class AnalogTriggerType:
-    kInWindow = 0
-    kState = 1
-    kRisingPulse = 2
-    kFallingPulse = 3
 
-# opaque analog port
-class _AnalogPort(C.Structure):
-    pass
-AnalogPort = C.POINTER(_AnalogPort)
-
-# opaque analog trigger
-class _AnalogTrigger(C.Structure):
-    pass
-AnalogTrigger = C.POINTER(_AnalogTrigger)
 
 # Analog output functions
 initializeAnalogOutputPort = _STATUSFUNC("initializeAnalogOutputPort", AnalogPort, ("port", Port))
@@ -365,11 +192,6 @@ getAnalogTriggerOutput = _STATUSFUNC("getAnalogTriggerOutput", C.c_bool, ("analo
 # Compressor
 #############################################################################
 
-# opaque pcm
-class _PCM(C.Structure):
-    pass
-PCM = C.POINTER(_PCM)
-
 initializeCompressor = _RETFUNC("initializeCompressor", PCM, ("module", C.c_uint8))
 checkCompressorModule = _RETFUNC("checkCompressorModule", C.c_bool, ("module", C.c_uint8))
 
@@ -384,31 +206,6 @@ getCompressorCurrent = _STATUSFUNC("getCompressorCurrent", C.c_float, ("pcm", PC
 #############################################################################
 # Digital
 #############################################################################
-class Mode:
-    kTwoPulse = 0
-    kSemiperiod = 1
-    kPulseLength = 2
-    kExternalDirection = 3
-
-# opaque digital port
-class _DigitalPort(C.Structure):
-    pass
-DigitalPort = C.POINTER(_DigitalPort)
-
-# opaque PWM
-class _PWM(C.Structure):
-    pass
-PWM = C.POINTER(_PWM)
-
-# opaque counter
-class _Counter(C.Structure):
-    pass
-Counter = C.POINTER(_Counter)
-
-# opaque encoder
-class _Encoder(C.Structure):
-    pass
-Encoder = C.POINTER(_Encoder)
 
 initializeDigitalPort = _STATUSFUNC("initializeDigitalPort", DigitalPort, ("port", Port))
 checkPWMChannel = _RETFUNC("checkPWMChannel", C.c_bool, ("digital_port", DigitalPort))
@@ -557,11 +354,6 @@ i2CClose = _RETFUNC("i2CClose", None, ("port", C.c_uint8))
 # Interrupts
 #############################################################################
 
-# opaque interrupt
-class _Interrupt(C.Structure):
-    pass
-Interrupt = C.POINTER(_Interrupt)
-
 _InterruptHandlerFunction = C.CFUNCTYPE(None, C.c_uint32, C.c_void_p)
 _interruptHandlers = {}
 
@@ -599,11 +391,6 @@ setInterruptUpSourceEdge = _STATUSFUNC("setInterruptUpSourceEdge", None, ("inter
 #############################################################################
 # Notifier
 #############################################################################
-
-# opaque Notifier
-class _Notifier(C.Structure):
-    pass
-Notifier = C.POINTER(_Notifier)
 
 _NotifierProcessQueueFunction = C.CFUNCTYPE(None, C.c_uint32, C.c_void_p)
 _notifierProcessQueueFunctions = {}
@@ -654,11 +441,6 @@ getUserCurrent3V3 = _STATUSFUNC("getUserCurrent3V3", C.c_float)
 # Solenoid
 #############################################################################
 
-# opaque SolenoidPort
-class _SolenoidPort(C.Structure):
-    pass
-SolenoidPort = C.POINTER(_SolenoidPort)
-
 initializeSolenoidPort = _STATUSFUNC("initializeSolenoidPort", SolenoidPort, ("port", Port))
 checkSolenoidModule = _RETFUNC("checkSolenoidModule", C.c_bool, ("module", C.c_uint8))
 
@@ -674,4 +456,7 @@ HAL_WAIT_FOREVER = _VAR("HAL_WAIT_FOREVER", C.c_int32)
 delayTicks = _RETFUNC("delayTicks", None, ("ticks", C.c_int32))
 delayMillis = _RETFUNC("delayMillis", None, ("ms", C.c_double))
 delaySeconds = _RETFUNC("delaySeconds", None, ("s", C.c_double))
+
+
+del _RETFUNC, _STATUSFUNC, _VAR
 
