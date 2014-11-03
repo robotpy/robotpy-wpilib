@@ -48,3 +48,8 @@ from .timer import *
 from .ultrasonic import *
 from .utility import *
 from .victor import *
+
+try:
+    from .version import __version__
+except:
+    __version__ = 'master'
