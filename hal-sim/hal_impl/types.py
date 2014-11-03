@@ -24,7 +24,7 @@ class MULTIWAIT_ID:
 #############################################################################
 # HAL
 #############################################################################
-    
+
 class HALControlWord:
     def __init__(self):
         self.enabled = False
@@ -44,13 +44,13 @@ class HALJoystickAxes:
         self.count = 0
         self.axes = 0 # TODO: C.c_int16 * kMaxJoystickAxes
 _HALJoystickAxes = HALJoystickAxes
-        
+
 class HALJoystickPOVs:
     def __init__(self):
         self.count = 0
         self.povs = 0 # TODO: C.c_int16 * kMaxJoystickPOVs
 _HALJoystickPOVs = HALJoystickPOVs
-        
+
 #############################################################################
 # Analog
 #############################################################################
