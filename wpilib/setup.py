@@ -34,7 +34,7 @@ setup(
     description='WPILib',
     long_description=long_description,
     author='Peter Johnson, Dustin Spicuzza',
-    author_email='johnson.peter@gmail.com',
+    author_email='robotpy@googlegroups.com',
     url='https://github.com/robotpy',
     keywords='frc first robotics wpilib',
     packages=[base_package,
