@@ -31,7 +31,7 @@ with open(join(setup_dir, 'README.rst'), 'r') as readme_file:
 setup(
     name='robotpy-hal-base',
     version=__version__,
-    description='WPILib Harware Abstration Layer base',
+    description='WPILib Hardware Abstration Layer base',
     long_description=long_description,
     author='Peter Johnson, Dustin Spicuzza',
     author_email='robotpy@googlegroups.com',
