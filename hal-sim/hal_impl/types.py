@@ -2,11 +2,11 @@
 # These are opaque types used internally by the simulation HAL
 #
 
+import copy
+
 ######################################################
 # Semaphore
 #############################################################################
-
-# pthread opaque structures: TODO
 
 class MUTEX_ID:
     def __init__(self, lock):
@@ -26,13 +26,13 @@ class MULTIWAIT_ID:
 #############################################################################
 
 class HALControlWord:
-    def __init__(self):
-        self.enabled = False
-        self.autonomous = False
-        self.test = False
-        self.eStop = False
-        self.fmsAttached = False
-        self.dsAttached = False
+    def __init__(self, d):
+        self.enabled = d['enabled']
+        self.autonomous = d['autonomous']
+        self.test = d['test']
+        self.eStop = d['eStop']
+        self.fmsAttached = d['fms_attached']
+        self.dsAttached = d['ds_attached']
 
 class Port:
     def __init__(self, pin, module):
@@ -40,15 +40,15 @@ class Port:
         self.module = module
 
 class HALJoystickAxes:
-    def __init__(self):
-        self.count = 0
-        self.axes = 0 # TODO: C.c_int16 * kMaxJoystickAxes
+    def __init__(self, axes):
+        self.count = len(axes)
+        self.axes = axes[:]
 _HALJoystickAxes = HALJoystickAxes
 
 class HALJoystickPOVs:
-    def __init__(self):
-        self.count = 0
-        self.povs = 0 # TODO: C.c_int16 * kMaxJoystickPOVs
+    def __init__(self, povs):
+        self.count = len(povs)
+        self.povs = povs
 _HALJoystickPOVs = HALJoystickPOVs
 
 #############################################################################
@@ -57,7 +57,8 @@ _HALJoystickPOVs = HALJoystickPOVs
 
 # opaque analog port
 class AnalogPort:
-    pass
+    def __init__(self, port):
+        self.pin = port.pin
 
 # opaque analog trigger
 class AnalogTrigger:
@@ -69,7 +70,8 @@ class AnalogTrigger:
 
 # opaque pcm
 class PCM:
-    pass
+    def __init__(self, pcmid):
+        self.pcmid = pcmid 
 
 
 #############################################################################
@@ -78,7 +80,8 @@ class PCM:
 
 # opaque digital port
 class DigitalPort:
-    pass
+    def __init__(self, port):
+        self.pin = port.pin
 
 # opaque PWM
 class PWM:
@@ -116,6 +119,5 @@ class Notifier:
 class SolenoidPort:
     def __init__(self, port):
         self.pin = port.pin
-        self.module = port.module
 
 
