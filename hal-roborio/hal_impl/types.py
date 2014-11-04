@@ -1,6 +1,13 @@
-
 import ctypes as C
 from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
+
+__all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
+           "_HALControlWord", "HALControlWord", "Port",
+           "_HALJoystickAxes", "HALJoystickAxes",
+           "_HALJoystickPOVs", "HALJoystickPOVs",
+           "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
+           "Counter", "Encoder", "Interrupt", "Notifier",
+           "_SolenoidPort", "SolenoidPort"]
 
 #############################################################################
 # Semaphore
@@ -39,7 +46,6 @@ HALControlWord = C.POINTER(_HALControlWord)
 class _Port(C.Structure):
     pass
 Port = C.POINTER(_Port)
-
 
 class _HALJoystickAxes(C.Structure):
     _fields_ = [("count", C.c_uint16),
@@ -126,6 +132,3 @@ class _SolenoidPort(C.Structure):
     _fields_ = [('pin', C.c_uint8),
                 ('module', C.c_uint8)]
 SolenoidPort = C.POINTER(_SolenoidPort)
-
-
-del C

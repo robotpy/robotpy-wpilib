@@ -4,6 +4,14 @@ import warnings
 from .exceptions import CANError, CANMessageNotFound
 from hal_impl.fndef import _dll, _RETFUNC
 
+__all__ = ["CANError", "CANMessageNotFound",
+           "CAN_SEND_PERIOD_NO_REPEAT", "CAN_SEND_PERIOD_STOP_REPEATING",
+           "CAN_IS_FRAME_REMOTE", "CAN_IS_FRAME_11BIT", "CANStreamMessage",
+           "CANSessionMux_sendMessage", "CANSessionMux_receiveMessage",
+           "CANSessionMux_openStreamSession",
+           "CANSessionMux_closeStreamSession",
+           "CANSessionMux_readStreamSession", "CANSessionMux_getCANStatus"]
+
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                 handle_missing=False):
     realparams = list(params)

@@ -8,6 +8,8 @@ import inspect
 
 from . import functions as _dll
 
+__all__ = ["_dll", "_RETFUNC", "_VAR"]
+
 def gen_check(pname, ptype):
     
     if ptype is C.c_bool:

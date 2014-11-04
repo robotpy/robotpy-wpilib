@@ -4,7 +4,15 @@
 
 import copy
 
-######################################################
+__all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
+           "_HALControlWord", "HALControlWord", "Port",
+           "_HALJoystickAxes", "HALJoystickAxes",
+           "_HALJoystickPOVs", "HALJoystickPOVs",
+           "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
+           "Counter", "Encoder", "Interrupt", "Notifier",
+           "_SolenoidPort", "SolenoidPort"]
+
+#############################################################################
 # Semaphore
 #############################################################################
 
@@ -20,7 +28,6 @@ class MULTIWAIT_ID:
     def __init__(self, cond):
         self.cond = cond
 
-
 #############################################################################
 # HAL
 #############################################################################
@@ -33,6 +40,7 @@ class HALControlWord:
         self.eStop = d['eStop']
         self.fmsAttached = d['fms_attached']
         self.dsAttached = d['ds_attached']
+_HALControlWord = HALControlWord
 
 class Port:
     def __init__(self, pin, module):
@@ -40,13 +48,13 @@ class Port:
         self.module = module
 
 class HALJoystickAxes:
-    def __init__(self, axes):
+    def __init__(self, axes=[]):
         self.count = len(axes)
         self.axes = axes[:]
 _HALJoystickAxes = HALJoystickAxes
 
 class HALJoystickPOVs:
-    def __init__(self, povs):
+    def __init__(self, povs=[]):
         self.count = len(povs)
         self.povs = povs
 _HALJoystickPOVs = HALJoystickPOVs
@@ -119,5 +127,5 @@ class Notifier:
 class SolenoidPort:
     def __init__(self, port):
         self.pin = port.pin
-
+_SolenoidPort = SolenoidPort
 

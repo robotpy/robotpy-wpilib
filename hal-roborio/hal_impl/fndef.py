@@ -1,5 +1,6 @@
-
 import ctypes as C
+
+__all__ = ["_dll", "_RETFUNC", "_VAR"]
 
 _dll = C.CDLL("./libHALAthena_shared.so", use_errno=True)
 

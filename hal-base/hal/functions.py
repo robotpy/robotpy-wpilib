@@ -1,14 +1,11 @@
 import ctypes as C
-import os
+import os as _os
 
 from .exceptions import HALError
 from .constants import *
 
 from hal_impl.types import *
-from hal_impl.types import _HALJoystickAxes, _HALJoystickPOVs
-from hal_impl.fndef import _dll, _RETFUNC, _VAR
-
-
+from hal_impl.fndef import *
 
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                 handle_missing=False):
@@ -27,8 +24,6 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
 #############################################################################
 # Semaphore
 #############################################################################
-
-
 
 SEMAPHORE_Q_FIFO = _VAR("SEMAPHORE_Q_FIFO", C.c_uint32)
 SEMAPHORE_Q_PRIORITY = _VAR("SEMAPHORE_Q_PRIORITY", C.c_uint32)
@@ -65,7 +60,6 @@ giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID))
 # HAL
 #############################################################################
 
-
 getPort = _RETFUNC("getPort", Port, ("pin", C.c_uint8))
 getPortWithModule = _RETFUNC("getPortWithModule", Port, ("module", C.c_uint8), ("pin", C.c_uint8))
 _getHALErrorMessage = _RETFUNC("getHALErrorMessage", C.c_char_p, ("code", C.c_int32))
@@ -84,12 +78,7 @@ def HALSetErrorData(errors, wait_ms):
 
 HALGetControlWord = _RETFUNC("HALGetControlWord", C.c_int, ("data", HALControlWord), out=["data"])
 
-
-
 HALGetAllianceStation = _RETFUNC("HALGetAllianceStation", C.c_int, ("allianceStation", C.POINTER(C.c_int)), out=["allianceStation"])
-
-
-
 
 _HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", HALJoystickAxes))
 def HALGetJoystickAxes(joystickNum):
@@ -143,7 +132,6 @@ getAccelerometerZ = _RETFUNC("getAccelerometerZ", C.c_double)
 #############################################################################
 # Analog
 #############################################################################
-
 
 # Analog output functions
 initializeAnalogOutputPort = _STATUSFUNC("initializeAnalogOutputPort", AnalogPort, ("port", Port))
@@ -289,7 +277,7 @@ def spiTransaction(port, data_to_send):
     recv_buffer = C.c_uint8 * size
     rv = _spiTransaction(port, send_buffer, recv_buffer, size)
     if rv < 0:
-        raise IOError(os.strerror(ctypes.get_errno()))
+        raise IOError(_os.strerror(C.get_errno()))
     return [x for x in recv_buffer]
 
 _spiWrite = _RETFUNC("spiWrite", C.c_int32, ("port", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
@@ -298,14 +286,14 @@ def spiWrite(port, data_to_send):
     buffer = (C.c_uint8 * send_size)(*data_to_send)
     rv = _spiWrite(port, buffer, send_size)
     if rv < 0:
-        raise IOError(os.strerror(ctypes.get_errno()))
+        raise IOError(_os.strerror(C.get_errno()))
 
 _spiRead = _RETFUNC("spiRead", C.c_int32, ("port", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 def spiRead(port, count):
     buffer = C.c_uint8 * count
     rv = _spiRead(port, buffer, count)
     if rv < 0:
-        raise IOError(os.strerror(ctypes.get_errno()))
+        raise IOError(_os.strerror(C.get_errno()))
     return [x for x in buffer]
 
 spiClose = _RETFUNC("spiClose", None, ("port", C.c_uint8))
@@ -330,7 +318,7 @@ def i2CTransaction(port, device_address, data_to_send, receive_size):
     recv_buffer = C.c_uint8 * receive_size
     rv = _i2CTransaction(port, device_address, send_buffer, send_size, recv_buffer, receive_size)
     if rv < 0:
-        raise IOError(os.strerror(ctypes.get_errno()))
+        raise IOError(_os.strerror(C.get_errno()))
     return [x for x in recv_buffer]
 
 _i2CWrite = _RETFUNC("i2CWrite", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
@@ -339,14 +327,14 @@ def i2CWrite(port, device_address, data_to_send):
     buffer = (C.c_uint8 * send_size)(*data_to_send)
     rv = _i2CWrite(port, device_address, buffer, send_size)
     if rv < 0:
-        raise IOError(os.strerror(ctypes.get_errno()))
+        raise IOError(_os.strerror(C.get_errno()))
 
 _i2CRead = _RETFUNC("i2CRead", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 def i2CRead(port, device_address, count):
     buffer = C.c_uint8 * count
     rv = _i2CRead(port, device_address, buffer, count)
     if rv < 0:
-        raise IOError(os.strerror(ctypes.get_errno()))
+        raise IOError(_os.strerror(C.get_errno()))
     return [x for x in buffer]
 
 i2CClose = _RETFUNC("i2CClose", None, ("port", C.c_uint8))
@@ -457,7 +445,3 @@ HAL_WAIT_FOREVER = _VAR("HAL_WAIT_FOREVER", C.c_int32)
 delayTicks = _RETFUNC("delayTicks", None, ("ticks", C.c_int32))
 delayMillis = _RETFUNC("delayMillis", None, ("ms", C.c_double))
 delaySeconds = _RETFUNC("delaySeconds", None, ("s", C.c_double))
-
-
-del _RETFUNC, _STATUSFUNC, _VAR
-

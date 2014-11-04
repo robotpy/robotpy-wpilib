@@ -1,4 +1,3 @@
-
 # For robot code
 __halplatform__ = 'sim'
 
