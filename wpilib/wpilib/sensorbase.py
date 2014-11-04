@@ -7,6 +7,8 @@
 
 from .livewindowsendable import LiveWindowSendable
 
+__all__ = ["SensorBase"]
+
 class SensorBase(LiveWindowSendable): # TODO: Refactor
     """Base class for all sensors.
     Stores most recent status information as well as containing utility

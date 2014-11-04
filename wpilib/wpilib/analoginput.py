@@ -12,6 +12,8 @@ from .resource import Resource
 from .sensorbase import SensorBase
 from .timer import Timer
 
+__all__ = ["AnalogInput"]
+
 class AnalogInput(SensorBase):
     """Analog channel class.
 

@@ -5,6 +5,8 @@
 # the project.
 #----------------------------------------------------------------------------
 
+__all__ = ["CounterBase"]
+
 class CounterBase:
     """Interface for counting the number of ticks on a digital input channel.
     Encoders, Gear tooth sensors, and counters should all subclass this so it

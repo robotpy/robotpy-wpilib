@@ -5,6 +5,8 @@
 
 import hal
 
+__all__ = ["RobotBase"]
+
 class RobotBase:
     """Implement a Robot Program framework.
     The RobotBase class is intended to be subclassed by a user creating a

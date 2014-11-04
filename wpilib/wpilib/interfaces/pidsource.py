@@ -5,6 +5,8 @@
 # the project.
 #----------------------------------------------------------------------------
 
+__all__ = ["PIDSource"]
+
 class PIDSource:
     """This interface allows for PIDController to automatically read from this
     object.

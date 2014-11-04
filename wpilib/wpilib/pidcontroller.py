@@ -13,6 +13,8 @@ import hal
 from .timer import Timer
 from .livewindowsendable import LiveWindowSendable
 
+__all__ = ["PIDController"]
+
 class PIDController(LiveWindowSendable):
     """Class implements a PID Control Loop.
 

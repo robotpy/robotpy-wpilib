@@ -7,6 +7,8 @@
 
 import hal
 
+__all__ = ["Utility"]
+
 class Utility:
     """Contains global utility functions"""
 

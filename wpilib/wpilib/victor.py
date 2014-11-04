@@ -10,6 +10,8 @@ import hal
 from .livewindow import LiveWindow
 from .safepwm import SafePWM
 
+__all__ = ["Victor"]
+
 class Victor(SafePWM):
     """VEX Robotics Victor Speed Controller"""
     def __init__(self, channel):

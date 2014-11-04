@@ -10,6 +10,8 @@ import hal
 from .livewindow import LiveWindow
 from .pwm import PWM
 
+__all__ = ["Servo"]
+
 class Servo(PWM):
     """Standard hobby style servo.
 

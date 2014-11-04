@@ -1,6 +1,8 @@
 import hal
 import weakref
 
+__all__ = ["SPI"]
+
 def _freeSPI(port):
     hal.spiClose(port)
 

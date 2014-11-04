@@ -12,6 +12,8 @@ from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 from .timer import Timer
 
+__all__ = ["Gyro"]
+
 class Gyro(SensorBase):
     """Use a rate gyro to return the robots heading relative to a starting
     position.  The Gyro class tracks the robots heading based on the starting

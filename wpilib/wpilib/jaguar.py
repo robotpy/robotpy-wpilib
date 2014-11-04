@@ -10,6 +10,8 @@ import hal
 from .livewindow import LiveWindow
 from .safepwm import SafePWM
 
+__all__ = ["Jaguar"]
+
 class Jaguar(SafePWM):
     """Texas Instruments Jaguar Speed Controller as a PWM device."""
 

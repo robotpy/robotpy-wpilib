@@ -15,6 +15,8 @@ from .digitalinput import DigitalInput
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 
+__all__ = ["Counter"]
+
 def _freeCounter(counter):
     hal.setCounterUpdateWhenEmpty(counter, True)
     hal.clearCounterUpSource(counter)

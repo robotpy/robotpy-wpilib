@@ -11,6 +11,8 @@ import weakref
 from .livewindowsendable import LiveWindowSendable
 from .sensorbase import SensorBase
 
+__all__ = ["PWM"]
+
 def _freePWM(port):
     hal.setPWM(port, 0)
     hal.freePWMChannel(port)

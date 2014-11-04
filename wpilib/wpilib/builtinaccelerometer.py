@@ -9,6 +9,8 @@ import hal
 from .interfaces import Accelerometer
 from .livewindowsendable import LiveWindowSendable
 
+__all__ = ["BuiltInAccelerometer"]
+
 class BuiltInAccelerometer(LiveWindowSendable):
     """Built-in accelerometer.
 

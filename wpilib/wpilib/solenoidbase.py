@@ -11,6 +11,8 @@ import threading
 from .resource import Resource
 from .sensorbase import SensorBase
 
+__all__ = ["SolenoidBase"]
+
 class SolenoidBase(SensorBase):
     """SolenoidBase class is the common base class for the Solenoid and
     DoubleSolenoid classes."""

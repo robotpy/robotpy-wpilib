@@ -10,6 +10,8 @@ import hal
 from .analoginput import AnalogInput
 from .livewindowsendable import LiveWindowSendable
 
+__all__ = ["AnalogAccelerometer"]
+
 class AnalogAccelerometer(LiveWindowSendable):
     """Handle operation of an analog accelerometer.
     The accelerometer reads acceleration directly through the sensor. Many

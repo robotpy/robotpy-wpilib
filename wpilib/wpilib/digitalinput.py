@@ -9,6 +9,8 @@ import hal
 
 from .digitalsource import DigitalSource
 
+__all__ = ["DigitalInput"]
+
 class DigitalInput(DigitalSource):
     """Class to read a digital input. This class will read digital inputs and
     return the current value on the channel. Other devices such as encoders,

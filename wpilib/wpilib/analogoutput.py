@@ -11,6 +11,8 @@ from .livewindow import LiveWindow
 from .resource import Resource
 from .sensorbase import SensorBase
 
+__all__ = ["AnalogOutput"]
+
 class AnalogOutput(SensorBase):
     """Analog output class."""
 

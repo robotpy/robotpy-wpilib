@@ -12,6 +12,8 @@ from ..sendable import Sendable
 import collections
 import warnings
 
+__all__ = ["Scheduler"]
+
 class Scheduler(Sendable):
     """The Scheduler is a singleton which holds the top-level running commands.
     It is in charge of both calling the command's run() method and to make

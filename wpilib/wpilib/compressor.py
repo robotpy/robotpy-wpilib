@@ -2,6 +2,8 @@ import hal
 
 from .sensorbase import SensorBase
 
+__all__ = ["Compressor"]
+
 class Compressor(SensorBase):
     """Class for operating the PCM (Pneumatics compressor module)
     The PCM automatically will run in close-loop mode by default whenever a

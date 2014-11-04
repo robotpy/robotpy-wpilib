@@ -7,6 +7,8 @@
 
 from .command import Command
 
+__all__ = ["WaitForChildren"]
+
 class WaitForChildren(Command):
     """This command will only finish if whatever CommandGroup it is in has no
     active children.  If it is not a part of a CommandGroup, then it will

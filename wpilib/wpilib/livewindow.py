@@ -1,3 +1,5 @@
+__all__ = ["LiveWindow"]
+
 class _LiveWindowComponent:
     """A LiveWindow component is a device (sensor or actuator) that should be
     added to the SmartDashboard in test mode. The components are cached until

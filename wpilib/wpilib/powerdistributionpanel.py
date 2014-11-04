@@ -9,6 +9,8 @@ import hal
 
 from .sensorbase import SensorBase
 
+__all__ = ["PowerDistributionPanel"]
+
 class PowerDistributionPanel(SensorBase):
     """Class for getting voltage, current, and temperature from the CAN PDP"""
 

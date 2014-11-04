@@ -11,6 +11,8 @@ import weakref
 from .resource import Resource
 from .sensorbase import SensorBase
 
+__all__ = ["InterruptableSensorBase"]
+
 class InterruptableSensorBase(SensorBase):
     """Base for sensors to be used with interrupts"""
 

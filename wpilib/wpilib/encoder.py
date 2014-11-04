@@ -16,6 +16,8 @@ from .digitalinput import DigitalInput
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 
+__all__ = ["Encoder"]
+
 def _freeEncoder(encoder):
     hal.freeEncoder(encoder)
 

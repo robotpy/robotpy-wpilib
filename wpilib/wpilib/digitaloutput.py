@@ -10,6 +10,8 @@ import hal
 from .digitalsource import DigitalSource
 from .sensorbase import SensorBase
 
+__all__ = ["DigitalOutput"]
+
 def _freePWMGenerator(pwmGenerator):
     # Disable the output by routing to a dead bit.
     hal.setPWMOutputChannel(pwmGenerator, SensorBase.kDigitalChannels)

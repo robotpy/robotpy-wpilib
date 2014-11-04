@@ -10,6 +10,8 @@ import weakref
 from .robotstate import RobotState
 from .timer import Timer
 
+__all__ = ["MotorSafety"]
+
 class MotorSafety:
     """The MotorSafety object is constructed for every object that wants to
     implement the Motor Safety protocol. The helper object has the code to

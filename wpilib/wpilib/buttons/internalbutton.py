@@ -7,6 +7,8 @@
 
 from .button import Button
 
+__all__ = ["InternalButton"]
+
 class InternalButton(Button):
     """This class is intended to be used within a program.  The programmer can
     manually set its value.

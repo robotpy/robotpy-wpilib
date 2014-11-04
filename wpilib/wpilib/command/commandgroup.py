@@ -7,6 +7,8 @@
 
 from .command import Command
 
+__all__ = ["CommandGroup"]
+
 class CommandGroup(Command):
     """A CommandGroup is a list of commands which are executed in sequence.
 

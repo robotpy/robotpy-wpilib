@@ -11,6 +11,8 @@ from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 from .solenoidbase import SolenoidBase
 
+__all__ = ["DoubleSolenoid"]
+
 class DoubleSolenoid(SolenoidBase):
     """DoubleSolenoid class for running 2 channels of high voltage Digital
     Output.

@@ -1,3 +1,5 @@
+__all__ = ["Sendable"]
+
 class Sendable:
     """The base interface for objects that can be sent over the network
     through network tables."""

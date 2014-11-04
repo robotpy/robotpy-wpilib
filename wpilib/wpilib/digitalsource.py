@@ -12,6 +12,8 @@ from .resource import Resource
 from .sensorbase import SensorBase
 from .interruptablesensorbase import InterruptableSensorBase
 
+__all__ = ["DigitalSource"]
+
 class DigitalSource(InterruptableSensorBase):
     """DigitalSource Interface. The DigitalSource represents all the possible
     inputs for a counter or a quadrature encoder. The source may be either a

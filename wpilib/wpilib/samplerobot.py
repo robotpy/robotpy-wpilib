@@ -11,6 +11,8 @@ from .robotbase import RobotBase
 from .timer import Timer
 from .livewindow import LiveWindow
 
+__all__ = ["SampleRobot"]
+
 class SampleRobot(RobotBase):
     """A simple robot base class that knows the standard FRC competition
     states (disabled, autonomous, or operator controlled).

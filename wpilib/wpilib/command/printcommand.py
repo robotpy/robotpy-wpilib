@@ -7,6 +7,8 @@
 
 from .command import Command
 
+__all__ = ["PrintCommand"]
+
 class PrintCommand(Command):
     """A PrintCommand is a command which prints out a string when it is
     initialized, and then immediately finishes.

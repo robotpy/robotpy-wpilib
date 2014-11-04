@@ -5,6 +5,8 @@
 # the project.
 #----------------------------------------------------------------------------
 
+__all__ = ["GenericHID"]
+
 class GenericHID:
     """GenericHID Interface"""
 

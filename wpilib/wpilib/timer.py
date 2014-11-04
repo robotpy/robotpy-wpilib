@@ -7,6 +7,8 @@ import threading
 
 import hal
 
+__all__ = ["Timer"]
+
 class Timer:
     @staticmethod
     def getFPGATimestamp():

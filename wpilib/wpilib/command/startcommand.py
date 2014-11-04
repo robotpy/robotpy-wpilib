@@ -7,6 +7,8 @@
 
 from .command import Command
 
+__all__ = ["StartCommand"]
+
 class StartCommand(Command):
     """A StartCommand will call the start() method of another command when it
     is initialized and will finish immediately.

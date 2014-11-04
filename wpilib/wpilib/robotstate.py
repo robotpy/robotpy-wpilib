@@ -1,3 +1,5 @@
+__all__ = ["RobotState"]
+
 class RobotState:
     impl = None
 

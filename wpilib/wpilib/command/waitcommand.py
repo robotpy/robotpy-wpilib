@@ -7,6 +7,8 @@
 
 from .command import Command
 
+__all__ = ["WaitCommand"]
+
 class WaitCommand(Command):
     """A WaitCommand will wait for a certain amount of time before finishing.
     It is useful if you want a CommandGroup to pause for a moment.

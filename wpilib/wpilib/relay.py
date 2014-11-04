@@ -12,6 +12,8 @@ from .livewindow import LiveWindow
 from .resource import Resource
 from .sensorbase import SensorBase
 
+__all__ = ["Relay"]
+
 def _freeRelay(port):
     hal.setRelayForward(port, False)
     hal.setRelayReverse(port, False)

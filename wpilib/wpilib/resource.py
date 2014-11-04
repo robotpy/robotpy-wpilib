@@ -7,6 +7,8 @@
 
 import weakref
 
+__all__ = ["Resource"]
+
 class Resource:
     """Track resources in the program.
     The Resource class is a convenient way of keeping track of allocated

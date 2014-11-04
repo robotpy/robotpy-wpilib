@@ -1,5 +1,7 @@
 from .sendable import Sendable
 
+__all__ = ["LiveWindowSendable"]
+
 class LiveWindowSendable(Sendable):
     """Live Window Sendable is a special type of object sendable to the live
     window.

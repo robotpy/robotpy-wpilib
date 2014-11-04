@@ -10,6 +10,8 @@ import hal
 from .counter import Counter
 from .livewindow import LiveWindow
 
+__all__ = ["GearTooth"]
+
 class GearTooth(Counter):
     """Alias for counter class.
     Implement the gear tooth sensor supplied by FIRST. Currently there is no

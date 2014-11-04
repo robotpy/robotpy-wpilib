@@ -12,6 +12,8 @@ import warnings
 from .motorsafety import MotorSafety
 from .talon import Talon
 
+__all__ = ["RobotDrive"]
+
 class RobotDrive(MotorSafety):
     """Utility class for handling Robot drive based on a definition of the
     motor configuration.  The robot drive class handles basic driving for a

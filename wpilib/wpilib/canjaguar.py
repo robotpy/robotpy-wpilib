@@ -18,6 +18,8 @@ from .timer import Timer
 
 from . import _canjaguar as _cj
 
+__all__ = ["CANJaguar"]
+
 def _packPercentage(value):
     if value < -1.0:
         value = -1.0

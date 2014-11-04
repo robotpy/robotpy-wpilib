@@ -8,6 +8,8 @@
 import hal
 import math
 
+__all__ = ["Joystick"]
+
 class Joystick:
     """Handle input from standard Joysticks connected to the Driver Station.
     This class handles standard input that comes from the Driver Station. Each

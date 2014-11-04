@@ -8,6 +8,8 @@
 import hal
 import threading
 
+__all__ = ["Preferences"]
+
 class Preferences:
     """The preferences class provides a relatively simple way to save important
     values to the RoboRIO to access the next time the RoboRIO is booted.

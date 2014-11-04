@@ -10,6 +10,8 @@ import weakref
 
 from .analogtriggeroutput import AnalogTriggerOutput
 
+__all__ = ["AnalogTrigger"]
+
 def _freeAnalogTrigger(port):
     hal.cleanAnalogTrigger(port)
 

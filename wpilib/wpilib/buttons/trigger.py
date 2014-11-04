@@ -5,6 +5,8 @@
 # the project.
 #----------------------------------------------------------------------------
 
+__all__ = ["Trigger"]
+
 class Trigger:
     """This class provides an easy way to link commands to inputs.
 

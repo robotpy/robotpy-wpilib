@@ -7,6 +7,8 @@
 
 from .pidsource import PIDSource
 
+__all__ = ["Potentiometer"]
+
 class Potentiometer(PIDSource):
     def get(self):
         raise NotImplementedError

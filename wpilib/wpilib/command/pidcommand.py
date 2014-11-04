@@ -9,6 +9,8 @@ from .command import Command
 
 from ..pidcontroller import PIDController
 
+__all__ = ["PIDCommand"]
+
 class PIDCommand(Command):
     """This class defines a Command which interacts heavily with a PID loop.
 

@@ -7,6 +7,8 @@
 
 from .button import Button
 
+__all__ = ["JoystickButton"]
+
 class JoystickButton(Button):
     def __init__(self, joystick, buttonNumber):
         """Create a joystick button for triggering commands.

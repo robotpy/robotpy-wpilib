@@ -1,3 +1,5 @@
+__all__ = ["Controller"]
+
 class Controller:
     """An interface for controllers. Controllers run control loops, the most
     command are PID controllers and there variants, but this includes anything

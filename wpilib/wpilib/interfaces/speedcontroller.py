@@ -7,6 +7,8 @@
 
 from .pidoutput import PIDOutput
 
+__all__ = ["SpeedController"]
+
 class SpeedController(PIDOutput):
     """Interface for speed controlling devices."""
 

@@ -11,6 +11,8 @@ from .interfaces import Accelerometer
 from .spi import SPI
 from .sensorbase import SensorBase
 
+__all__ = ["ADXL345_SPI"]
+
 class ADXL345_SPI(SensorBase):
     kPowerCtlRegister = 0x2D
     kDataFormatRegister = 0x31

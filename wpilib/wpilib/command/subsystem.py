@@ -7,6 +7,8 @@
 
 from ..sendable import Sendable
 
+__all__ = ["Subsystem"]
+
 class Subsystem(Sendable):
     """This class defines a major component of the robot.
 

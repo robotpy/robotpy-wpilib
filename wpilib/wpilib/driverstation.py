@@ -12,6 +12,8 @@ import traceback
 from .motorsafety import MotorSafety
 from .timer import Timer
 
+__all__ = ["DriverStation"]
+
 class DriverStation:
     """Provide access to the network communication data to / from the Driver
     Station.

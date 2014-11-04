@@ -7,6 +7,8 @@
 
 import hal
 
+__all__ = ["AnalogTriggerOutput"]
+
 class AnalogTriggerOutput:
     """Class to represent a specific output from an analog trigger. This class
     is used to get the current output value and also as a DigitalSource to

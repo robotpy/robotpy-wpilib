@@ -8,6 +8,8 @@
 from .analoginput import AnalogInput
 from .livewindowsendable import LiveWindowSendable
 
+__all__ = ["AnalogPotentiometer"]
+
 class AnalogPotentiometer(LiveWindowSendable):
     """Class for reading analog potentiometers. Analog potentiometers read
     in an analog voltage that corresponds to a position. Usually the

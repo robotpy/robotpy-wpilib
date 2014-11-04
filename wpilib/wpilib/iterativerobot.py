@@ -9,6 +9,8 @@ from .robotbase import RobotBase
 from .timer import Timer
 from .livewindow import LiveWindow
 
+__all__ = ["IterativeRobot"]
+
 class IterativeRobot(RobotBase):
     """IterativeRobot implements a specific type of Robot Program framework,
     extending the RobotBase class.

@@ -11,6 +11,8 @@ from .interfaces import Accelerometer
 from .i2c import I2C
 from .sensorbase import SensorBase
 
+__all__ = ["ADXL345_I2C"]
+
 class ADXL345_I2C(SensorBase):
     kAddress = 0x1D
     kPowerCtlRegister = 0x2D

@@ -8,6 +8,8 @@
 import hal
 import weakref
 
+__all__ = ["I2C"]
+
 def _freeI2C(port):
     hal.i2CClose(port)
 

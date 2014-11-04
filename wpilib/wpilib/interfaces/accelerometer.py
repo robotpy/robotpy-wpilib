@@ -4,6 +4,8 @@
 # must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.
 #----------------------------------------------------------------------------
 
+__all__ = ["Accelerometer"]
+
 class Accelerometer:
     """Interface for 3-axis accelerometers"""
 

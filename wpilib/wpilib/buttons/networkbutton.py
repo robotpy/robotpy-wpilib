@@ -7,6 +7,8 @@
 
 from .button import Button
 
+__all__ = ["NetworkButton"]
+
 class NetworkButton(Button):
     def __init__(self, table, field):
         from ..networktables import NetworkTable

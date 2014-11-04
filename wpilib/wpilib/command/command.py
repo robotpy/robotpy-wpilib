@@ -12,6 +12,8 @@ from ..timer import Timer
 
 import threading
 
+__all__ = ["Command"]
+
 class Command(Sendable):
     """The Command class is at the very core of the entire command framework.
     Every command can be started with a call to start().

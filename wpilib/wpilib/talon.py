@@ -10,6 +10,8 @@ import hal
 from .livewindow import LiveWindow
 from .safepwm import SafePWM
 
+__all__ = ["Talon"]
+
 class Talon(SafePWM):
     """CTRE Talon Speed Controller"""
 

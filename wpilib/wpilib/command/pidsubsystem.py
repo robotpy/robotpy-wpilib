@@ -9,6 +9,8 @@ from .subsystem import Subsystem
 
 from ..pidcontroller import PIDController
 
+__all__ = ["PIDSubsystem"]
+
 class PIDSubsystem(Subsystem):
     """This class is designed to handle the case where there is a Subsystem
     which uses a single {@link PIDController} almost constantly (for instance,

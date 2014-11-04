@@ -11,6 +11,8 @@ from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 from .solenoidbase import SolenoidBase
 
+__all__ = ["Solenoid"]
+
 class Solenoid(SolenoidBase):
     """Solenoid class for running high voltage Digital Output.
 
