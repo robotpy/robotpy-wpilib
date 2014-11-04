@@ -14,10 +14,10 @@ def reset_hal_data():
     '''Intended to be used by the test runner'''
     global hal_data
     hal_data = {
-        
+
         'alliance_station': constants.kHALAllianceStationID_red1,
         'program_start': time.monotonic(),
-        
+
         'control': {
             'enabled': False,
             'autonomous': False,
@@ -26,7 +26,7 @@ def reset_hal_data():
             'fms_attached': False,
             'ds_attached': False
         },
-                
+
         # Joysticks are stored numbered 1-4. Element 0 is ignored.
         # buttons are stored as booleans
         # axes are stored as values between -1 and 1
@@ -38,10 +38,10 @@ def reset_hal_data():
                 'povs':    [-1]*constants.kMaxJoystickPOVs  # integers
             }* 6
         ],
-        
+
         'fpga_button': False,
         'error_data': None,
-        
+
         # built-in accelerometer on roboRIO
         'accelerometer': {
             'active': False,
@@ -50,17 +50,17 @@ def reset_hal_data():
             'y': 0,
             'z': 0
         },
-            
+
         # global for all
         'analog_sample_rate': 1024.0, # need a better default
-       
+
         # 8 analog channels, each is a dictionary.
-        
+
         'analog_out': [{
             'initialized': False,
             'voltage': 0.0
         }]*2,
-        
+
         # TODO: make this easier to use
         'analog_in': [{
             'initialized': False,
@@ -72,14 +72,14 @@ def reset_hal_data():
             'avg_voltage': 0,
             'lsb_weight': 1,    # TODO: better default
             'offset': 65535,    # TODO: better default
-            
+
             'accumulator_initialized': False,
             'accumulator_center': 0,
             'accumulator_value': 0,
             'accumulator_count': 0,
             'accumulator_deadband': 0,
         }],
-        
+
         # compressor control is here
         'compressor': {
             'enabled': False,
@@ -87,12 +87,12 @@ def reset_hal_data():
             'pressure_switch': False,
             'current': 0.0
         },
-                
+
         'digital': {
         },
-                
+
         'user_program_state': None, # starting, disabled, autonomous, teleop, test
-                
+
         'power': {
             'vin_voltage': 0,
             'vin_current': 0,
@@ -103,10 +103,10 @@ def reset_hal_data():
             'user_voltage_3v3': 3.3,
             'user_current_3v3': 0
         },
-        
+
         # solenoid values are True, False  
         'solenoid': [None]*8,
-                
+
         'pdp': {
             'temperature': 0,
             'voltage': 0,

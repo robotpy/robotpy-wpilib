@@ -79,7 +79,7 @@ class AnalogTrigger:
 # opaque pcm
 class PCM:
     def __init__(self, pcmid):
-        self.pcmid = pcmid 
+        self.pcmid = pcmid
 
 
 #############################################################################

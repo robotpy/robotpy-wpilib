@@ -124,7 +124,7 @@ def getPortWithModule(module, pin):
 def getHALErrorMessage(code):
     if code == 0:
         return ''
-    
+
     elif code == CTR_RxTimeout:
         return "CTRE CAN Recieve Timeout"
     elif code == CTR_InvalidParamValue:
@@ -149,7 +149,7 @@ def getHALErrorMessage(code):
         return "NIFPGA: Hardware Fault"
     elif code == NiFpga_Status_IrqTimeout:
         return "NIFPGA: Interrupt timeout"
-    
+
     elif code == ERR_CANSessionMux_InvalidBuffer:
         return "CAN: Invalid Buffer"
     elif code == ERR_CANSessionMux_MessageNotFound:
@@ -159,8 +159,8 @@ def getHALErrorMessage(code):
     elif code == ERR_CANSessionMux_NotAllowed:
         return "CAN: Not allowed"
     elif code == ERR_CANSessionMux_NotInitialized:
-        return "CAN: Not initialized" 
-    
+        return "CAN: Not initialized"
+
     elif code == SAMPLE_RATE_TOO_HIGH:
         return "HAL: Analog module sample rate is too high"
     elif code == VOLTAGE_OUT_OF_RANGE:
@@ -185,7 +185,7 @@ def getHALErrorMessage(code):
         return "HAL: Attempted to read AnalogTrigger pulse output."
     elif code == PARAMETER_OUT_OF_RANGE:
         return "HAL: A parameter is out of range."
-    
+
     else:
         return "Unknown error status"
 
@@ -199,7 +199,7 @@ def getFPGARevision(status):
 
 def getFPGATime(status):
     status.value = 0
-    return int((time.monotonic() - hal_data['program_time']) * 100000) 
+    return int((time.monotonic() - hal_data['program_time']) * 100000)
 
 def getFPGAButton(status):
     status.value = 0
@@ -291,11 +291,11 @@ def _checkAnalogIsFree(port):
         assert hal_data['analog_out'][port.pin]['initialized'] == False
     assert hal_data['analog_in'][port.pin]['initialized'] == False
     assert hal_data['analog_trigger'][port.pin]['initialized'] == False
-    
+
 def initializeAnalogOutputPort(port, status):
     _checkAnalogIsFree(port)
     status.value = 0
-    hal_data['analog_out'][port.pin]['initialized'] = True 
+    hal_data['analog_out'][port.pin]['initialized'] = True
     return types.AnalogPort(port)
 
 def setAnalogOutput(analog_port, voltage, status):
@@ -304,7 +304,7 @@ def setAnalogOutput(analog_port, voltage, status):
 
 def getAnalogOutput(analog_port, status):
     status.value = 0
-    return hal_data['analog_out'][analog_port.pin]['output'] 
+    return hal_data['analog_out'][analog_port.pin]['output']
 
 def checkAnalogOutputChannel(pin):
     return pin < kAnalogOutputPins
@@ -314,7 +314,7 @@ def initializeAnalogInputPort(port, status):
     status.value = 0
     #assert hal_data['analog_out'][port.pin] is None
     #assert hal_data['analog_trigger'][port.pin] is
-    hal_data['analog_in']['initialized'] = True 
+    hal_data['analog_in']['initialized'] = True
     return types.AnalogPort(port)
 
 def checkAnalogModule(module):
@@ -363,7 +363,7 @@ def getAnalogVoltsToValue(analog_port, voltage, status):
     elif voltage < 0.0:
         voltage = 0.0
         status.value = VOLTAGE_OUT_OF_RANGE
-    
+
     LSBWeight = getAnalogLSBWeight(analog_port, status)
     offset = getAnalogOffset(analog_port, status)
     return (int)((voltage + offset * 1.0e-9) / (LSBWeight * 1.0e-9))
@@ -391,7 +391,7 @@ def isAccumulatorChannel(analog_port, status):
 def initAccumulator(analog_port, status):
     status.value = 0
     hal_data['analog_in'][analog_port.pin]['accumulator_initialized'] = True
-    
+
 def resetAccumulator(analog_port, status):
     status.value = 0
     hal_data['analog_in'][analog_port.pin]['accumulator_center'] = 0
