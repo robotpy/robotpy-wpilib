@@ -38,8 +38,10 @@ from .robotstate import *
 from .safepwm import *
 from .samplerobot import *
 from .sendable import *
+from .sendablechooser import *
 from .sensorbase import *
 from .servo import *
+from .smartdashboard import *
 from .solenoidbase import *
 from .solenoid import *
 from .spi import *
