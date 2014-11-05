@@ -9,9 +9,6 @@ import hal
 
 __all__ = ["SmartDashboard"]
 
-class _defaultValueSentry:
-    pass
-
 class SmartDashboard:
     """The SmartDashboard class is the bridge between robot programs and the
     SmartDashboard on the laptop.
@@ -25,6 +22,9 @@ class SmartDashboard:
     # A table linking tables in the SmartDashboard to the SmartDashboardData
     # objects they came from.
     tablesToData = {}
+
+    class _defaultValueSentry:
+        pass
 
     @staticmethod
     def getTable():
