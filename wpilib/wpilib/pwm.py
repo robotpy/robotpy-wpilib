@@ -152,8 +152,7 @@ class PWM(LiveWindowSendable):
 
         .. note::
 
-            :func:`setMaxPositivePwm` and :func:`setMinNegativePwm` must be
-            called first.
+            :func:`setBounds` must be called first.
 
         :param pos: The position to set the servo between 0.0 and 1.0.
         """
@@ -174,8 +173,7 @@ class PWM(LiveWindowSendable):
 
         .. note::
 
-            :func:`setMaxPositivePwm` and :func:`setMinNegativePwm` must be
-            called first.
+            :func:`setBounds` must be called first.
 
         :returns: The position the servo is set to between 0.0 and 1.0.
         """
@@ -194,12 +192,7 @@ class PWM(LiveWindowSendable):
 
         .. note::
 
-            The following functions must be called first:
-            - :func:`setMaxPositivePwm`
-            - :func:`setMinNegativePwm`
-            - :func:`setCenterPwm`
-            - :func:`setMaxNegativePwm`
-            - :func:`setMinNegativePwm`
+            :func:`setBounds` must be called first.
 
         :param speed: The speed to set the speed controller between -1.0 and
             1.0.
@@ -231,11 +224,7 @@ class PWM(LiveWindowSendable):
 
         .. note::
 
-            The following functions must be called first:
-            - :func:`setMaxPositivePwm`
-            - :func:`setMinNegativePwm`
-            - :func:`setMaxNegativePwm`
-            - :func:`setMinNegativePwm`
+            :func:`setBounds` must be called first.
 
         :returns: The most recently set speed between -1.0 and 1.0.
         """
