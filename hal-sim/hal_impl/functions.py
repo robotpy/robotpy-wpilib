@@ -290,7 +290,6 @@ def _checkAnalogIsFree(port):
     if port.pin < kAnalogOutputPins:
         assert hal_data['analog_out'][port.pin]['initialized'] == False
     assert hal_data['analog_in'][port.pin]['initialized'] == False
-    assert hal_data['analog_trigger'][port.pin]['initialized'] == False
 
 def initializeAnalogOutputPort(port, status):
     _checkAnalogIsFree(port)
@@ -312,8 +311,6 @@ def checkAnalogOutputChannel(pin):
 def initializeAnalogInputPort(port, status):
     _checkAnalogIsFree(port)
     status.value = 0
-    #assert hal_data['analog_out'][port.pin] is None
-    #assert hal_data['analog_trigger'][port.pin] is
     hal_data['analog_in']['initialized'] = True
     return types.AnalogPort(port)
 
@@ -422,30 +419,81 @@ def getAccumulatorOutput(analog_port, status):
 def initializeAnalogTrigger(port, status):
     _checkAnalogIsFree(port)
     status.value = 0
+    return types.AnalogTrigger(port)
 
 def cleanAnalogTrigger(analog_trigger, status):
-    assert False
+    status.value = 0
+    hal_data['analog_in'][analog_trigger.pin]['initialized'] = False
 
 def setAnalogTriggerLimitsRaw(analog_trigger, lower, upper, status):
-    assert False
+    if lower > upper:
+        status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR 
+    else:
+        status.value = 0
+        hal_data['analog_in'][analog_trigger.pin]['trig_lower'] = lower
+        hal_data['analog_in'][analog_trigger.pin]['trig_upper'] = upper
 
 def setAnalogTriggerLimitsVoltage(analog_trigger, lower, upper, status):
-    assert False
+    if lower > upper:
+        status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR 
+    else:
+        status.value = 0 
+        hal_data['analog_in'][analog_trigger.pin]['trig_lower'] = getAnalogVoltsToValue(analog_trigger, lower, status)
+        hal_data['analog_in'][analog_trigger.pin]['trig_upper'] = getAnalogVoltsToValue(analog_trigger, upper, status)
+    
 
 def setAnalogTriggerAveraged(analog_trigger, use_averaged_value, status):
-    assert False
+    if hal_data['analog_in'][analog_trigger.pin]['trig_type'] is 'filtered':
+        status.value = INCOMPATIBLE_STATE
+    else:
+        status.value = 0    
+        hal_data['analog_in'][analog_trigger.pin]['trig_type'] = 'averaged' if use_averaged_value else None
 
 def setAnalogTriggerFiltered(analog_trigger, use_filtered_value, status):
+    if hal_data['analog_in'][analog_trigger.pin]['trig_type'] is 'averaged':
+        status.value = INCOMPATIBLE_STATE
+    else:
+        status.value = 0    
+        hal_data['analog_in'][analog_trigger.pin]['trig_type'] = 'filtered' if use_filtered_value else None
+
+def _get_trigger_value(analog_trigger):
+    ain = hal_data['analog_in'][analog_trigger.pin]
+    trig_type = ain['trig_type']
+    if trig_type is None:
+        return ain, ain['value']
+    if trig_type is 'averaged':
+        return ain, ain['avg_value']
+    if trig_type is 'filtered':
+        return ain, ain['value'] # XXX
     assert False
 
 def getAnalogTriggerInWindow(analog_trigger, status):
-    assert False
-
+    status.value = 0
+    ain, val = _get_trigger_value(analog_trigger)
+    return val >= ain['trig_lower'] and val <= ain['trig_upper']
+        
 def getAnalogTriggerTriggerState(analog_trigger, status):
-    assert False
+    # To work properly, this needs some other runtime component managing the
+    # state variable too, but this works well enough
+    status.value = 0
+    ain, val = _get_trigger_value(analog_trigger)
+    if val < ain['trig_lower']:
+        ain['trig_state'] = False
+        return False
+    elif val > ain['trig_upper']:
+        ain['trig_state'] = True
+        return True
+    else:
+        return ain['trig_state']
 
 def getAnalogTriggerOutput(analog_trigger, type, status):
-    assert False
+    if type == constants.AnalogTriggerType.kInWindow:
+        return getAnalogTriggerInWindow(analog_trigger, status)
+    if type == constants.AnalogTriggerType.kState:
+        return getAnalogTriggerTriggerState(analog_trigger, status)
+    else:
+        status.value = ANALOG_TRIGGER_PULSE_OUTPUT_ERROR
+        return False
 
 
 #############################################################################
@@ -501,74 +549,136 @@ def checkPWMChannel(digital_port):
 def checkRelayChannel(digital_port):
     return digital_port.pin < kRelayPins
 
+#
+# PWM
+#
+
 def setPWM(digital_port, value, status):
-    assert False
+    status.value = 0
+    hal_data['pwm'][digital_port.pin]['value'] = value
 
 def allocatePWMChannel(digital_port, status):
     status.value = 0
+    if hal_data['pwm'][digital_port.pin] is not None:
+        return False
+    
+    hal_data['pwm'][digital_port.pin] = {'period_scale': None, 'value': 0}
+    return True
 
 def freePWMChannel(digital_port, status):
     status.value = 0
+    hal_data['pwm'][digital_port.pin] = None
 
 def getPWM(digital_port, status):
-    assert False
+    status.value = 0
+    return hal_data['pwm'][digital_port.pin]['value']
 
 def latchPWMZero(digital_port, status):
-    assert False
+    # TODO: what does this do?
+    status.value = 0
+    hal_data['pwm'][digital_port.pin]['value'] = 0 #??
 
 def setPWMPeriodScale(digital_port, squelch_mask, status):
-    assert False
+    status.value = 0
+    hal_data['pwm'][digital_port.pin]['period_scale'] = squelch_mask
+
+#
+# DIO PWM
+#
 
 def allocatePWM(status):
-    assert False
+    status.value = 0
+    
+    for i, v in enumerate(hal_data['d0_pwm']):
+        if v is None:
+            break
+    else:
+        return None
+    
+    hal_data['d0_pwm'][i] = {'duty_cycle': None, 'pin': None}
+    return types.PWM(i)
 
 def freePWM(pwm, status):
-    assert False
-
+    status.value = 0
+    hal_data['d0_pwm'][pwm.idx] = None
+    
 def setPWMRate(rate, status):
-    assert False
+    status.value = 0
+    hal_data['d0_pwm_rate'] = rate
 
 def setPWMDutyCycle(pwm, duty_cycle, status):
-    assert False
+    status.value = 0
+    hal_data['d0_pwm'][pwm.idx]['duty_cycle'] = duty_cycle
 
 def setPWMOutputChannel(pwm, pin, status):
-    assert False
+    status.value = 0
+    hal_data['d0_pwm'][pwm.idx]['pin'] = pin
+
+#
+# Relay
+#
 
 def setRelayForward(digital_port, on, status):
-    assert False
+    status.value = 0
+    hal_data['relay'][digital_port.pin]['fwd'] = on
 
 def setRelayReverse(digital_port, on, status):
-    assert False
+    status.value = 0
+    hal_data['relay'][digital_port.pin]['rev'] = on
 
 def getRelayForward(digital_port, status):
-    assert False
+    return hal_data['relay'][digital_port.pin]['fwd']
 
 def getRelayReverse(digital_port, status):
-    assert False
+    status.value = 0
+    return hal_data['relay'][digital_port.pin]['rev']
+
+#
+# DIO
+#
 
 def allocateDIO(digital_port, input, status):
-    assert False
+    status.value = 0
+    if hal_data['dio'][digital_port.pin] is not None:
+        return False
+    hal_data['dio'][digital_port.pin] = {'value': 0, 'pulse_length': None, 'is_input': input }
 
 def freeDIO(digital_port, status):
-    assert False
+    status.value = 0
+    hal_data['dio'][digital_port.pin] = None
 
 def setDIO(digital_port, value, status):
-    assert False
+    status.value = 0
+    hal_data['dio'][digital_port.pin]['value'] = 1 if value else 0
 
 def getDIO(digital_port, status):
-    assert False
+    status.value = 0
+    return hal_data['dio'][digital_port.pin]['value']
 
 def getDIODirection(digital_port, status):
-    assert False
+    status.value = 0
+    return hal_data['dio'][digital_port.pin]['is_input']
 
 def pulse(digital_port, pulse_length, status):
-    assert False
+    status.value = 0
+    hal_data['dio'][digital_port.pin]['pulse_length'] = pulse_length
 
 def isPulsing(digital_port, status):
-    assert False
+    status.value = 0
+    return hal_data['dio'][digital_port.pin]['pulse_length'] is not None
 
 def isAnyPulsing(status):
-    assert False
+    status.value = 0
+    
+    for p in hal_data['dio']:
+        if p is not None and p['pulse_length'] is not None:
+            return True
+    return False
+    
+
+#
+# Counter
+#
 
 def initializeCounter(mode, status):
     assert False
@@ -639,6 +749,10 @@ def getCounterDirection(counter, status):
 def setCounterReverseDirection(counter, reverse_direction, status):
     assert False
 
+#
+# Encoder
+#
+
 def initializeEncoder(port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger, reverse_direction, status):
     assert False
 
@@ -673,7 +787,12 @@ def getEncoderSamplesToAverage(encoder, status):
     assert False
 
 def getLoopTiming(status):
-    assert False
+    status.value = 0
+    return hal_data['pwm_loop_timing']
+
+#
+# SPI
+#
 
 def spiInitialize(port, status):
     assert False
@@ -713,6 +832,10 @@ def spiGetSemaphore(port):
 
 def spiSetSemaphore(port, semaphore):
     assert False
+
+#
+# i2c
+#
 
 def i2CInitialize(port, status):
     assert False

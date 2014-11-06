@@ -206,6 +206,7 @@ freePWMChannel = _STATUSFUNC("freePWMChannel", None, ("digital_port", DigitalPor
 getPWM = _STATUSFUNC("getPWM", C.c_ushort, ("digital_port", DigitalPort))
 latchPWMZero = _STATUSFUNC("latchPWMZero", None, ("digital_port", DigitalPort))
 setPWMPeriodScale = _STATUSFUNC("setPWMPeriodScale", None, ("digital_port", DigitalPort), ("squelch_mask", C.c_uint32))
+
 allocatePWM = _STATUSFUNC("allocatePWM", PWM)
 freePWM = _STATUSFUNC("freePWM", None, ("pwm", PWM))
 setPWMRate = _STATUSFUNC("setPWMRate", None, ("rate", C.c_double))

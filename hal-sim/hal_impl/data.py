@@ -11,7 +11,17 @@ hal_data = {
 
 
 def reset_hal_data():
-    '''Intended to be used by the test runner'''
+    '''
+        Intended to be used by the test runner or simulator
+        
+        Subject to change until the simulator is fully developed, as the
+        usefulness of some of this isn't immediately clear yet.
+        
+        TODO: add comments stating which parameters are input, output, expected types
+        
+        TODO: initialization isn't consistent yet. Need to decide whether to
+              use None, or an explicit initialization key
+    '''
     global hal_data
     hal_data = {
 
@@ -36,8 +46,8 @@ def reset_hal_data():
                 'buttons': [None]+[False]*12, # numbered 1-12. element 0 is ignored
                 'axes':    [0]*constants.kMaxJoystickAxes,  # x is 0, y is 1, .. 
                 'povs':    [-1]*constants.kMaxJoystickPOVs  # integers
-            }* 6
-        ],
+            }
+        ]*6,
 
         'fpga_button': False,
         'error_data': None,
@@ -78,7 +88,13 @@ def reset_hal_data():
             'accumulator_value': 0,
             'accumulator_count': 0,
             'accumulator_deadband': 0,
-        }],
+            
+            # trigger values
+            'trig_lower': None,
+            'trig_upper': None,
+            'trig_type': None, # 'averaged' or 'filtered'
+            'trig_state': False,
+        }]*8,
 
         # compressor control is here
         'compressor': {
@@ -87,10 +103,25 @@ def reset_hal_data():
             'pressure_switch': False,
             'current': 0.0
         },
-
-        'digital': {
-        },
-
+                
+        # digital stuff here
+        
+        # pwm contains dicts with keys: value, period_scale
+        # -> value isn't sane
+        'pwm': [None]*20,
+        'pwm_loop_timing': 40, # this is the value the roboRIO returns
+               
+        # for pwm attached to a DIO
+        'd0_pwm': [None]*6, # dict with keys: duty_cycle, pin
+        'd0_pwm_rate': None,
+                
+        'relay': [{
+            'fwd': False,
+            'rev': False,
+        }]*8,
+                
+        'dio': [None]*10, # dict keys: value, is_input, pulse_length
+        
         'user_program_state': None, # starting, disabled, autonomous, teleop, test
 
         'power': {

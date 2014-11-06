@@ -70,7 +70,8 @@ class AnalogPort:
 
 # opaque analog trigger
 class AnalogTrigger:
-    pass
+    def __init__(self, port):
+        self.pin = port.pin
 
 #############################################################################
 # Compressor
@@ -93,7 +94,8 @@ class DigitalPort:
 
 # opaque PWM
 class PWM:
-    pass
+    def __init__(self, idx):
+        self.idx = idx
 
 # opaque counter
 class Counter:
