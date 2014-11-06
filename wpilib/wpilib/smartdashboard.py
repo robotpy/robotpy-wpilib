@@ -105,7 +105,7 @@ class SmartDashboard:
         :returns: the value
         """
         table = SmartDashboard.getTable()
-        if defaultValue is _defaultValueSentry:
+        if defaultValue is SmartDashboard._defaultValueSentry:
             return table.getBoolean(key)
         else:
             return table.getBoolean(key, defaultValue)
@@ -132,7 +132,7 @@ class SmartDashboard:
         :returns: the value
         """
         table = SmartDashboard.getTable()
-        if defaultValue is _defaultValueSentry:
+        if defaultValue is SmartDashboard._defaultValueSentry:
             return table.getNumber(key)
         else:
             return table.getNumber(key, defaultValue)
@@ -159,7 +159,7 @@ class SmartDashboard:
         :returns: the value
         """
         table = SmartDashboard.getTable()
-        if defaultValue is _defaultValueSentry:
+        if defaultValue is SmartDashboard._defaultValueSentry:
             return table.getString(key)
         else:
             return table.getString(key, defaultValue)
