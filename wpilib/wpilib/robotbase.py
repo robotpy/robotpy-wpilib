@@ -4,6 +4,7 @@
 # the project.
 
 import hal
+import warnings
 
 __all__ = ["RobotBase"]
 
@@ -31,14 +32,19 @@ class RobotBase:
         # TODO: See if the next line is necessary
         # Resource.RestartProgram()
 
-        #TODO:from networktables import NetworkTable
-        #TODO:NetworkTable.setServerMode()#must be before b
+        try:
+            from networktables import NetworkTable
+            NetworkTable.setServerMode()#must be before b
+        except ImportError:
+            warnings.warn("networktables not found", ImportWarning)
+            NetworkTable = None
 
         from .driverstation import DriverStation
         self.ds = DriverStation.getInstance()
 
-        #TODO:NetworkTable.getTable("")   # forces network tables to initialize
-        #TODO:NetworkTable.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", False)
+        if NetworkTable is not None:
+            NetworkTable.getTable("")   # forces network tables to initialize
+            NetworkTable.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", False)
 
     def free(self):
         """Free the resources for a RobotBase class."""
