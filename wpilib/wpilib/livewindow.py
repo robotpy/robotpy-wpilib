@@ -33,7 +33,7 @@ class LiveWindow:
         """
         print("Initializing the components first time")
         if LiveWindow.livewindowTable is None:
-            from .networktables import NetworkTable
+            from networktables import NetworkTable
             LiveWindow.livewindowTable = NetworkTable.getTable("LiveWindow")
         for component, c in LiveWindow.components.items():
             print("Initializing table for '%s' '%s'" % (c.subsystem, c.name))
@@ -78,7 +78,7 @@ class LiveWindow:
             LiveWindow.liveWindowEnabled = enabled
             if LiveWindow.statusTable is None:
                 if LiveWindow.livewindowTable is None:
-                    from .networktables import NetworkTable
+                    from networktables import NetworkTable
                     LiveWindow.livewindowTable = NetworkTable.getTable("LiveWindow")
                 LiveWindow.statusTable = LiveWindow.livewindowTable.getSubTable("~STATUS~")
             LiveWindow.statusTable.putBoolean("LW Enabled", enabled)

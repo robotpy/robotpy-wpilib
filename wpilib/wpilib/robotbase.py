@@ -31,7 +31,7 @@ class RobotBase:
         # TODO: See if the next line is necessary
         # Resource.RestartProgram()
 
-        #TODO:from .networktables import NetworkTable
+        #TODO:from networktables import NetworkTable
         #TODO:NetworkTable.setServerMode()#must be before b
 
         from .driverstation import DriverStation

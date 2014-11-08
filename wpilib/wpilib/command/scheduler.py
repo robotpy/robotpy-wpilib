@@ -210,7 +210,7 @@ class Scheduler(Sendable):
 
     def initTable(self, subtable):
         self.table = subtable
-        from ..networktables import StringArray, NumberArray
+        from networktables import StringArray, NumberArray
         self.commands = StringArray()
         self.ids = NumberArray()
         self.toCancel = NumberArray()

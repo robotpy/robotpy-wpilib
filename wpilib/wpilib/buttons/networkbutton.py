@@ -11,7 +11,7 @@ __all__ = ["NetworkButton"]
 
 class NetworkButton(Button):
     def __init__(self, table, field):
-        from ..networktables import NetworkTable
+        from networktables import NetworkTable
         if isinstance(table, NetworkTable):
             self.table = table
         else:

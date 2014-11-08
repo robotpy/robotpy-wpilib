@@ -32,7 +32,7 @@ class SendableChooser(Sendable):
     def __init__(self):
         """Instantiates a SendableChooser.
         """
-        from .networktables import StringArray
+        from networktables import StringArray
         self.choices = StringArray()
         self.values = []
         self.defaultChoice = None
@@ -92,7 +92,7 @@ class SendableChooser(Sendable):
         selected = table.getString(self.SELECTED, None)
         for i, choice in enumerate(self.choices):
             if choice == selected:
-                return values[i]
+                return self.values[i]
         return self.defaultValue
 
     def getSmartDashboardType(self):

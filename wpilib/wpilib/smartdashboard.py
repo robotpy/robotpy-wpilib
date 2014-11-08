@@ -29,7 +29,7 @@ class SmartDashboard:
     @staticmethod
     def getTable():
         if SmartDashboard.table is None:
-            from .networktables import NetworkTable
+            from networktables import NetworkTable
             SmartDashboard.table = NetworkTable.getTable("SmartDashboard")
             hal.HALReport(hal.HALUsageReporting.kResourceType_SmartDashboard,
                           hal.HALUsageReporting.kSmartDashboard_Instance)

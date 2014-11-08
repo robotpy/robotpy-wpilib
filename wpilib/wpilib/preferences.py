@@ -105,7 +105,7 @@ class Preferences:
                 self.keylist.append(key)
             self.values[key] = value
             try:
-                from .networktables import NetworkTable
+                from networktables import NetworkTable
                 NetworkTable.getTable(self.TABLE_NAME).putString(key, value)
             except ImportError:
                 pass
@@ -326,7 +326,7 @@ class Preferences:
                 output.write(self.endComment)
 
             try:
-                from .networktables import NetworkTable
+                from networktables import NetworkTable
                 NetworkTable.getTable(self.TABLE_NAME).putBoolean(self.SAVE_FIELD, False)
             except ImportError:
                 pass
@@ -365,7 +365,7 @@ class Preferences:
                             keylist.append(name)
                             self.values[name] = value
                             try:
-                                from .networktables import NetworkTable
+                                from networktables import NetworkTable
                                 NetworkTable.getTable(self.TABLE_NAME).putString(name, result)
                             except ImportError:
                                 pass
@@ -382,7 +382,7 @@ class Preferences:
             print("Done Reading")
 
         try:
-            from .networktables import NetworkTable
+            from networktables import NetworkTable
             NetworkTable.getTable(self.TABLE_NAME).putBoolean(self.SAVE_FIELD, False)
             # TODO: Verify that this works even though it changes with
             # subtables. Should work since preferences shouldn't have subtables.
@@ -404,7 +404,7 @@ class Preferences:
                         except ValueError:
                             pass
                         try:
-                            from .networktables import NetworkTable
+                            from networktables import NetworkTable
                             NetworkTable.getTable(self.TABLE_NAME).putString(key, '"')
                         except ImportError:
                             pass
