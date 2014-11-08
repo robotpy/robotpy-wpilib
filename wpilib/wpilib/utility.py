@@ -46,14 +46,3 @@ class Utility:
         :returns: True if the button is currently pressed down
         """
         return hal.getFPGAButton()
-
-    @staticmethod
-    def sendErrorStreamToDriverStation(enabled):
-        """Control whether to send System.err output to the driver station's
-        error pane.
-
-        :param enabled: If true, send error stream to driver station,
-            otherwise disable sending error stream
-        """
-        # TODO: implement?
-        pass
