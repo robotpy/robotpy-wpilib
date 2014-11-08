@@ -37,7 +37,7 @@ class Talon(SafePWM):
         """
         super().__init__(channel)
         self.setBounds(2.037, 1.539, 1.513, 1.487, 0.989)
-        self.setPeriodMultiplier(self.PeriodMultiplier.k2X)
+        self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
         self.setRaw(self.centerPwm)
         self.setZeroLatch()
 
