@@ -108,9 +108,10 @@ class PIDController(LiveWindowSendable):
     def free(self):
         """Free the PID object"""
         # TODO: is this useful in Python?  Should make TableListener weakref.
-        self.freed = True
-        self.pidInput = None
-        self.pidOutput = None
+        with self.mutex:
+            self.freed = True
+            self.pidInput = None
+            self.pidOutput = None
 
     def calculate(self):
         """Read the input, calculate the output accordingly, and write to the
@@ -392,13 +393,14 @@ class PIDController(LiveWindowSendable):
             Ki = table.getNumber("i", 0.0)
             Kd = table.getNumber("d", 0.0)
             Kf = table.getNumber("f", 0.0)
-            if (self.P != Kp or self.I != Ki or self.D != Kd or self.F != Kf):
+            if (self.getP() != Kp or self.getI() != Ki or self.getD() != Kd or
+                self.getF() != Kf):
                 self.setPID(Kp, Ki, Kd, Kf)
         elif key == "setpoint":
-            if self.setpoint != float(value):
+            if self.getSetpoint() != float(value):
                 self.setSetpoint(float(value))
         elif key == "enabled":
-            if self.enabled != bool(value):
+            if self.isEnable() != bool(value):
                 if bool(value):
                     self.enable()
                 else:
