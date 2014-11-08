@@ -275,7 +275,7 @@ class NetworkTableClient(NetworkTableNode):
                                                self, typeManager)
         self.writeManager = WriteManager(self.adapter, self.entryStore, 1.0)
 
-        self.entryStore.setOutgoingReceiver(TransactionDirtier(self.writeManager))
+        self.entryStore.setOutgoingReceiver(self.writeManager)
         self.entryStore.setIncomingReceiver(None)
         self.writeManager.start()
 

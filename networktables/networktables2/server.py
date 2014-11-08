@@ -313,8 +313,8 @@ class NetworkTableServer(NetworkTableNode):
 
         self.incomingStreamMonitor = ServerIncomingStreamMonitor(self.streamProvider, self.entryStore, self, self.connectionList, typeManager)
 
-        self.entryStore.setIncomingReceiver(TransactionDirtier(self.writeManager))
-        self.entryStore.setOutgoingReceiver(TransactionDirtier(self.writeManager))
+        self.entryStore.setIncomingReceiver(self.writeManager)
+        self.entryStore.setOutgoingReceiver(self.writeManager)
 
         self.incomingStreamMonitor.start()
         self.writeManager.start()

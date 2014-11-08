@@ -6,8 +6,7 @@ import warnings
 
 from .networktableentry import NetworkTableEntry
 
-__all__ = ["AbstractNetworkTableEntryStore", "TransactionDirtier",
-           "WriteManager"]
+__all__ = ["AbstractNetworkTableEntryStore", "WriteManager"]
 
 class AbstractNetworkTableEntryStore:
     """An entry store that handles storing entries and applying transactions
@@ -133,27 +132,6 @@ class AbstractNetworkTableEntryStore:
             while entry in self.namedEntries.values():
                 listener.valueChanged(table, entry.name, entry.getValue(), True)
 
-class TransactionDirtier:
-    """A transaction receiver that marks all Table entries as dirty in the
-    entry store. Entries will not be passed to the continuing receiver if
-    they are already dirty
-    """
-
-    def __init__(self, continuingReceiver):
-        self.continuingReceiver = continuingReceiver
-
-    def offerOutgoingAssignment(self, entry):
-        if entry.isDirty:
-            return
-        entry.makeDirty()
-        self.continuingReceiver.offerOutgoingAssignment(entry)
-
-    def offerOutgoingUpdate(self, entry):
-        if entry.isDirty:
-            return
-        entry.makeDirty()
-        self.continuingReceiver.offerOutgoingUpdate(entry)
-
 class WriteManager:
     """A write manager is a IncomingEntryReceiver that buffers transactions
     and then and then dispatches them to a flushable transaction receiver
@@ -203,6 +181,11 @@ class WriteManager:
             self.thread.join()
 
     def offerOutgoingAssignment(self, entry):
+        # Mark entry as dirty to avoid duplicate updates
+        if entry.isDirty:
+            return
+        entry.makeDirty()
+
         with self.transactionsLock:
             self.incomingAssignmentQueue.append(entry)
             if len(self.incomingAssignmentQueue) >= self.queueSize:
@@ -210,6 +193,11 @@ class WriteManager:
                 warnings.warn("assignment queue overflowed. decrease the rate at which you create new entries or increase the write buffer size", ResourceWarning)
 
     def offerOutgoingUpdate(self, entry):
+        # Mark entry as dirty to avoid duplicate updates
+        if entry.isDirty:
+            return
+        entry.makeDirty()
+
         with self.transactionsLock:
             self.incomingUpdateQueue.append(entry)
             if len(self.incomingUpdateQueue) >= self.queueSize:
