@@ -47,13 +47,16 @@ class InterruptableSensorBase(SensorBase):
         return self._interrupt
 
     def requestInterrupts(self, handler=None):
-        """Request interrupts asynchronously on this digital input.
+        """Request one of the 8 interrupts asynchronously on this digital
+        input.
 
         :param handler: (optional)
             The function that will be called whenever there is an interrupt
-            on this device.  Request interrupts in synchronus mode where the
+            on this device.  Request interrupts in synchronous mode where the
             user program interrupt handler will be called when an interrupt
-            occurs. The default is interrupt on rising edges only.
+            occurs. The default is interrupt on rising edges only.  If not
+            specified, the user program will have to explicitly wait for the
+            interrupt to occur using waitForInterrupt.
         """
         if self.interrupt is not None:
             raise ValueError("The interrupt has already been allocated")
