@@ -128,6 +128,8 @@ class RobotBase:
         try:
             robot = robot_cls()
         except:
+            from .driverstation import DriverStation
+            DriverStation.reportError("ERROR Could not instantiate robot", True)
             print("WARNING: Robots don't quit!")
             print("ERROR: Could not instantiate robot "+robot_cls.__name__+"!")
             raise
@@ -142,5 +144,7 @@ class RobotBase:
             raise
         else:
             # startCompetition never returns unless exception occurs....
+            from .driverstation import DriverStation
+            DriverStation.reportError("ERROR startCompetition() returned", False)
             print("WARNING: Robots don't quit!")
             print("---> Unexpected return from startCompetition() method.")
