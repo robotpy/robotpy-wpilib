@@ -53,5 +53,5 @@ from .victor import *
 
 try:
     from .version import __version__
-except:
+except ImportError:
     __version__ = 'master'

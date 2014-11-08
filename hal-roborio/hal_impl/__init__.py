@@ -3,5 +3,5 @@ __halplatform__ = 'roboRIO'
 
 try:
     from .version import __version__
-except:
+except ImportError:
     __version__ = 'master'
