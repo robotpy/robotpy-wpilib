@@ -23,7 +23,7 @@ class DriverStation:
         kDSAnalogInScaling (float): Scaling factor from raw values to volts
     """
 
-    kJoystickPorts = 4
+    kJoystickPorts = 6
     kDSAnalogInScaling = 5.0 / 1023.0
     lastEnabled = False
 
@@ -159,13 +159,14 @@ class DriverStation:
         :returns: The value of the axis on the joystick.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
-            raise IndexError("Joystick index is out of range, should be 0-3")
+            raise IndexError("Joystick index is out of range, should be 0-5")
 
         if axis < 0 or axis >= hal.kMaxJoystickAxes:
             raise IndexError("Joystick axis is out of range")
 
         with self.mutex:
             if axis >= len(self.joystickAxes[stick]):
+                self.reportError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick), False)
                 return 0.0
             value = self.joystickAxes[stick][axis]
 
@@ -182,13 +183,14 @@ class DriverStation:
         pressed.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
-            raise IndexError("Joystick index is out of range, should be 0-3")
+            raise IndexError("Joystick index is out of range, should be 0-5")
 
         if pov < 0 or pov >= hal.kMaxJoystickPOVs:
             raise IndexError("Joystick POV is out of range")
 
         with self.mutex:
             if pov >= len(self.joystickPOVs[stick]):
+                self.reportError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick), False)
                 return 0.0
             return self.joystickPOVs[stick][pov]
 
