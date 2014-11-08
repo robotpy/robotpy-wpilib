@@ -8,6 +8,7 @@
 import hal
 
 from .digitalsource import DigitalSource
+from .livewindow import LiveWindow
 
 __all__ = ["DigitalInput"]
 
@@ -29,6 +30,7 @@ class DigitalInput(DigitalSource):
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_DigitalInput,
                       channel)
+        LiveWindow.addSensorChannel("DigitalInput", channel, self)
 
     def get(self):
         """Get the value from a digital input channel. Retrieve the value of
