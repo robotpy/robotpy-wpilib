@@ -1,17 +1,6 @@
 wpilib package
 ==============
 
-Subpackages
------------
-
-.. toctree::
-
-    wpilib.buttons
-    wpilib.interfaces
-
-Submodules
-----------
-
 wpilib.adxl345_i2c module
 -------------------------
 
@@ -400,14 +389,6 @@ wpilib.utility module
 ---------------------
 
 .. automodule:: wpilib.utility
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-wpilib.version module
----------------------
-
-.. automodule:: wpilib.version
     :members:
     :undoc-members:
     :show-inheritance:

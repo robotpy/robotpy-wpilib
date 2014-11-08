@@ -11,8 +11,11 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
-   setup
    wpilib
+   wpilib.buttons
+   wpilib.command
+   wpilib.interfaces
+   networktables
 
 
 Indices and tables
