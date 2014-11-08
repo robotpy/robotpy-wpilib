@@ -248,54 +248,6 @@ class ServerConnectionList:
             for connection in self.connections:
                 connection.ensureAlive()
 
-class ServerIncomingStreamMonitor:
-    """Thread that monitors for incoming connections
-    """
-
-    def __init__(self, streamProvider, entryStore, incomingListener,
-                 adapterListener, typeManager):
-        """Create a new incoming stream monitor
-        :param streamProvider: the stream provider to retrieve streams from
-        :param entryStore: the entry store for the server
-        :param incomingListener: the listener that is notified of new connections
-        :param adapterListener: the listener that will listen to adapter events
-        """
-        self.streamProvider = streamProvider
-        self.entryStore = entryStore
-        self.incomingListener = incomingListener
-        self.adapterListener = adapterListener
-        self.typeManager = typeManager
-        self.monitorThread = None
-        self.running = False
-
-    def start(self):
-        """Start the monitor thread
-        """
-        if self.monitorThread is not None:
-            self.stop()
-        self.running = True
-        self.monitorThread = threading.Thread(target=self._run,
-                                              name="Server Incoming Stream Monitor Thread")
-        self.monitorThread.daemon = True
-        self.monitorThread.start()
-
-    def stop(self):
-        """Stop the monitor thread
-        """
-        if self.monitorThread is not None:
-            self.running = False
-            self.monitorThread.join()
-
-    def _run(self):
-        while self.running:
-            try:
-                newStream = self.streamProvider.accept()
-                if newStream is not None:
-                    connectionAdapter = ServerConnectionAdapter(newStream, self.entryStore, self.entryStore, self.adapterListener, self.typeManager)
-                    self.incomingListener.onNewConnection(connectionAdapter)
-            except IOError as e:
-                pass #could not get a new stream for some reason. ignore and continue
-
 class NetworkTableServer(NetworkTableNode):
     """A server node in NetworkTables 2.0
     """
@@ -305,23 +257,29 @@ class NetworkTableServer(NetworkTableNode):
         :param streamProvider:
         """
         super().__init__(ServerNetworkTableEntryStore(self))
-        typeManager = NetworkTableEntryTypeManager()
+        self.typeManager = NetworkTableEntryTypeManager()
         self.streamProvider = streamProvider
 
         self.connectionList = ServerConnectionList()
         self.writeManager = WriteManager(self.connectionList, self.entryStore, None)
 
-        self.incomingStreamMonitor = ServerIncomingStreamMonitor(self.streamProvider, self.entryStore, self, self.connectionList, typeManager)
-
         self.entryStore.setIncomingReceiver(self.writeManager)
         self.entryStore.setOutgoingReceiver(self.writeManager)
 
-        self.incomingStreamMonitor.start()
+        # start incoming stream monitor
+        self.running = True
+        self.monitorThread = threading.Thread(target=self._incomingMonitor,
+                                              name="Server Incoming Stream Monitor Thread")
+        self.monitorThread.daemon = True
+        self.monitorThread.start()
+
+        # start write manager
         self.writeManager.start()
 
     def close(self):
         try:
-            self.incomingStreamMonitor.stop()
+            self.running = False
+            self.monitorThread.join()
             self.writeManager.stop()
             self.connectionList.closeAll()
             time.sleep(1) #To get around bug where an error will occur in select if the socket server is closed before all sockets finish closing
@@ -330,11 +288,19 @@ class NetworkTableServer(NetworkTableNode):
         except IOError as e:
             print("Error during close: %s" % e)
 
-    def onNewConnection(self, connectionAdapter):
-        self.connectionList.add(connectionAdapter)
-
     def isConnected(self):
         return True
 
     def isServer(self):
         return True
+
+    def _incomingMonitor(self):
+        while self.running:
+            try:
+                newStream = self.streamProvider.accept()
+                if newStream is not None:
+                    connectionAdapter = ServerConnectionAdapter(newStream, self.entryStore, self.entryStore, self.connectionList, self.typeManager)
+                    self.connectionList.add(connectionAdapter)
+            except IOError as e:
+                pass #could not get a new stream for some reason. ignore and continue
+
