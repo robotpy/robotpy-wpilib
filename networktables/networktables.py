@@ -100,12 +100,12 @@ class NetworkTableSubListenerAdapter:
             return
 
         #TODO implement sub table listening better
-        endSubTable = relativeKey.find(NetworkTable.PATH_SEPARATOR,
-                                       len(self.prefix)+1)
+        endSubTable = key.find(NetworkTable.PATH_SEPARATOR,
+                               len(self.prefix)+1)
         if endSubTable == -1:
             return
 
-        subTableKey = relativeKey[len(self.prefix)+1:endSubTable]
+        subTableKey = key[len(self.prefix)+1:endSubTable]
         if subTableKey in self.notifiedTables:
             return
 
