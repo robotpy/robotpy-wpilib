@@ -22,10 +22,10 @@ class NetworkTableConnectionListenerAdapter:
         self.targetListener = targetListener
 
     def connected(self, remote):
-        self.targetListener.connected(targetSource)
+        self.targetListener.connected(self.targetSource)
 
     def disconnected(self, remote):
-        self.targetListener.disconnected(targetSource)
+        self.targetListener.disconnected(self.targetSource)
 
 class NetworkTableKeyListenerAdapter:
     """An adapter that is used to filter value change notifications for a
@@ -314,7 +314,7 @@ class NetworkTable:
         if adapter is not None:
             raise ValueError("Cannot add the same listener twice")
         adapter = NetworkTableConnectionListenerAdapter(self, listener)
-        connectionListenerMap[listener] = adapter
+        self.connectionListenerMap[listener] = adapter
         self.node.addConnectionListener(adapter, immediateNotify)
 
     def removeConnectionListener(self, listener):
@@ -373,8 +373,8 @@ class NetworkTable:
         return self.containsKey(key)
 
     def containsSubTable(self, key):
-        subtablePrefix = self.absoluteKeyCache.get(key)+PATH_SEPARATOR
-        for key in node.getEntryStore().keys():
+        subtablePrefix = self.absoluteKeyCache.get(key)+self.PATH_SEPARATOR
+        for key in self.node.getEntryStore().keys():
             if key.startswith(subtablePrefix):
                 return True
         return False

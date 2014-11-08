@@ -21,7 +21,7 @@ class SocketStreamFactory:
         self.port = port
 
     def createStream(self):
-        return SocketStream(socket.create_connection((host, port)))
+        return SocketStream(socket.create_connection((self.host, self.port)))
 
 class SocketServerStreamProvider:
     def __init__(self, port):

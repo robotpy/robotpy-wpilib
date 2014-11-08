@@ -126,8 +126,8 @@ class ClientConnectionAdapter:
                 self.connection = NetworkTableConnection(stream, self.typeManager)
                 self.readThread = ConnectionMonitorThread(self,
                         self.connection, name="Client Connection Reader Thread")
-                readThread.daemon = True
-                readThread.start()
+                self.readThread.daemon = True
+                self.readThread.start()
                 self.connection.sendClientHello()
                 self.gotoState(CONNECTED_TO_SERVER)
             except IOError:

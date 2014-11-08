@@ -20,7 +20,7 @@ class NetworkTableEntryType:
         self.name = name
 
     def __str__(self):
-        return "NetworkTable type: %s" % name
+        return "NetworkTable type: %s" % self.name
 
     def sendValue(self, value, wstream):
         """send a value over a data output stream
@@ -96,7 +96,7 @@ class ArrayEntryType(ComplexEntryType):
 
     def sendValue(self, value, wstream):
         if len(value) > 255:
-            raise IOError("Cannot write %s as %s. Arrays have a max length of 255 values" % (value, name))
+            raise IOError("Cannot write %s as %s. Arrays have a max length of 255 values" % (value, self.name))
         wstream.writeByte(len(value))
         for v in value:
             self.elementType.sendValue(v, wstream)
@@ -108,7 +108,7 @@ class ArrayEntryType(ComplexEntryType):
             dataArray.append(self.elementType.readValue(rstream))
         return dataArray
 
-    def internalizeValue(self, key, externalRepresentation, currentInteralValue):
+    def internalizeValue(self, key, externalRepresentation, currentInternalValue):
         if not isinstance(externalRepresentation, self.externalArrayType):
             raise TypeError("%s is not a %s" % (externalRepresentation, self.externalArrayType))
 
@@ -117,7 +117,7 @@ class ArrayEntryType(ComplexEntryType):
             internalArray.clear()
         else:
             internalArray = []
-        internalArray.extend(externalArrayData)
+        internalArray.extend(externalRepresentation)
         return internalArray
 
     def exportValue(self, key, internalData, externalRepresentation):

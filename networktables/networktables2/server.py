@@ -226,7 +226,7 @@ class ServerConnectionList:
             for connection in self.connections:
                 print("Close: %s" % connection)
                 connection.shutdown(True)
-            connections.clear()
+            self.connections.clear()
 
     def offerOutgoingAssignment(self, entry):
         with self.connectionsLock:
