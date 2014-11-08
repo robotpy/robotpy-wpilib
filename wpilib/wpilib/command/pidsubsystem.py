@@ -27,6 +27,7 @@ class PIDSubsystem(Subsystem):
         It will use the class name as its name unless otherwise specified.
         It will also space the time between PID loop calculations to be equal
         to the given period.
+        
         :param p: the proportional value
         :param i: the integral value
         :param d: the derivative value
@@ -42,37 +43,41 @@ class PIDSubsystem(Subsystem):
         """Returns the PIDController used by this PIDSubsystem.
         Use this if you would like to fine tune the pid loop.
 
-        Notice that calling setSetpoint(...) on the controller
+        Notice that calling :meth:`setSetpoint` on the controller
         will not result in the setpoint being trimmed to be in
-        the range defined by setSetpointRange(...).
+        the range defined by :meth:`setSetpointRange`.
 
-        :returns: the PIDController used by this PIDSubsystem
+        :returns: the :class:`.PIDController` used by this PIDSubsystem
         """
         return self.controller
 
     def setSetpointRelative(self, deltaSetpoint):
         """Adds the given value to the setpoint.
-        If setRange(...) was used, then the bounds will still be honored by
+        If :meth:`setRange` was used, then the bounds will still be honored by
         this method.
+        
         :param deltaSetpoint: the change in the setpoint
         """
         self.setSetpoint(self.getSetpoint() + deltaSetpoint)
 
     def setSetpoint(self, setpoint):
-        """Sets the setpoint to the given value.  If setRange(...) was called,
+        """Sets the setpoint to the given value.  If :meth:`setRange` was called,
         then the given setpoint will be trimmed to fit within the range.
+        
         :param setpoint: the new setpoint
         """
         self.controller.setSetpoint(setpoint)
 
     def getSetpoint(self):
         """Returns the setpoint.
+        
         :returns: the setpoint
         """
         return self.controller.getSetpoint()
 
     def getPosition(self):
         """Returns the current position
+        
         :returns: the current position
         """
         return self.returnPIDInput()
@@ -96,6 +101,7 @@ class PIDSubsystem(Subsystem):
     def setAbsoluteTolerance(self, t):
         """Set the absolute error which is considered tolerable for use with
         OnTarget.
+        
         :param t: The absolute tolerance (same range as the PIDInput values)
         """
         self.controller.setAbsoluteTolerance(t)
@@ -103,7 +109,8 @@ class PIDSubsystem(Subsystem):
     def setPercentTolerance(self, p):
         """Set the percentage error which is considered tolerable for use with
         OnTarget.
-        :param t: The percentage tolerance (value of 15.0 == 15 percent)
+        
+        :param p: The percentage tolerance (value of 15.0 == 15 percent)
         """
         self.controller.setPercentTolerance(p)
 
@@ -112,6 +119,7 @@ class PIDSubsystem(Subsystem):
         input range, determined by setAbsoluteTolerance or setPercentTolerance.
         This assumes that the maximum and minimum input were set using
         setInput.
+        
         :returns: True if the error is less than the tolerance
         """
         return self.controller.onTarget()
@@ -147,12 +155,12 @@ class PIDSubsystem(Subsystem):
         pass
 
     def enable(self):
-        """Enables the internal PIDController
+        """Enables the internal :class:`.PIDController`
         """
         self.controller.enable()
 
     def disable(self):
-        """Disables the internal PIDController
+        """Disables the internal :class:`.PIDController`
         """
         self.controller.disable()
 

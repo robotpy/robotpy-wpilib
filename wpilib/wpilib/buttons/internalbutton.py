@@ -11,15 +11,15 @@ __all__ = ["InternalButton"]
 
 class InternalButton(Button):
     """This class is intended to be used within a program.  The programmer can
-    manually set its value.
-    Also includes a setting for whether or not it should invert its value.
+    manually set its value. Includes a setting for whether or not it should
+    invert its value.
     """
 
     def __init__(self, inverted=False):
         """Creates an InternalButton which is inverted depending on the input.
 
-        :param inverted: if False, then this button is pressed when set to
-        True, otherwise it is pressed when set to False.
+        :param inverted: If False, then this button is pressed when set to
+                         True, otherwise it is pressed when set to False.
         """
         self.pressed = inverted
         self.inverted = inverted

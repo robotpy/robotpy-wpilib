@@ -24,7 +24,7 @@ class Scheduler(Sendable):
     have Commands function correctly. However, this is already done for you
     if you use the CommandBased Robot template.
 
-    :see: Command
+    .. seealso:: :class:`.Command`
     """
 
     @staticmethod
@@ -58,14 +58,13 @@ class Scheduler(Sendable):
         self.runningCommandsChanged = False
 
     def add(self, command):
-        """Adds the command to the {@link Scheduler}. This will not add the
-        {@link Command} immediately, but will instead wait for the proper time in
-        the {@link Scheduler#run()} loop before doing so. The command returns
-        immediately and does nothing if given null.
+        """Adds the command to the Scheduler. This will not add the
+        :class:`.Command` immediately, but will instead wait for the proper time in
+        the :meth:`run` loop before doing so. The command returns immediately
+        and does nothing if given null.
 
-        <p>Adding a {@link Command} to the {@link Scheduler} involves the
-        {@link Scheduler} removing any {@link Command} which has shared
-        requirements.</p>
+        Adding a :class:`.Command` to the :class:`.Scheduler` involves the
+        Scheduler removing any Command which has shared requirements.
 
         :param command: the command to add
         """
@@ -74,7 +73,7 @@ class Scheduler(Sendable):
 
     def addButton(self, button):
         """Adds a button to the Scheduler. The Scheduler will poll
-        the button during its run().
+        the button during its :meth:`run`.
 
         :param button: the button to add
         """
@@ -82,11 +81,11 @@ class Scheduler(Sendable):
 
     def _add(self, command):
         """Adds a command immediately to the Scheduler. This should only be
-        called in the run() loop. Any command with conflicting
+        called in the :meth:`run` loop. Any command with conflicting
         requirements will be removed, unless it is uninterruptable. Giving
         None does nothing.
 
-        :param command: the Command to add
+        :param command: the :class:`.Command` to add
         """
         if command is None:
             return
@@ -161,9 +160,9 @@ class Scheduler(Sendable):
         self.updateTable()
 
     def registerSubsystem(self, system):
-        """Registers a Subsystem to this Scheduler, so that the
+        """Registers a :class:`.Subsystem` to this Scheduler, so that the
         Scheduler might know if a default Command needs to be
-        run. All Subsystems should call this.
+        run. All :class:`.Subsystem` objects should call this.
 
         :param system: the system
         """
@@ -171,7 +170,7 @@ class Scheduler(Sendable):
             self.subsystems.add(system)
 
     def remove(self, command):
-        """Removes the Command from the Scheduler.
+        """Removes the :class:`.Command` from the Scheduler.
 
         :param command: the command to remove
         """
@@ -215,9 +214,9 @@ class Scheduler(Sendable):
         self.ids = NumberArray()
         self.toCancel = NumberArray()
 
-        self.table.putValue("Names", commands)
-        self.table.putValue("Ids", ids)
-        self.table.putValue("Cancel", toCancel)
+        self.table.putValue("Names", self.commands)
+        self.table.putValue("Ids", self.ids)
+        self.table.putValue("Cancel", self.toCancel)
 
     def updateTable(self):
         table = self.getTable()

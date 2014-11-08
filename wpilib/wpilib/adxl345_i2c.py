@@ -60,7 +60,7 @@ class ADXL345_I2C(SensorBase):
         """Set the measuring range of the accelerometer.
 
         :param range: The maximum acceleration, positive or negative, that
-        the accelerometer will measure.
+                      the accelerometer will measure.
         """
         if range == self.k2G:
             value = 0

@@ -30,8 +30,8 @@ class Trigger:
         raise NotImplementedError
 
     def grab(self):
-        """Returns whether :func:`get` return True or the internal table for
-        :class:`SmartDashboard` use is pressed.
+        """Returns whether :meth:`get` returns True or the internal table for
+        :class:`.SmartDashboard` use is pressed.
         """
         table = self.getTable()
         #return self.get() or (table is not None and table.isConnected() and table.getBoolean("pressed", False))  #FIXME make is connected work?
@@ -58,7 +58,7 @@ class Trigger:
     def whileActive(self, command):
         """Constantly starts the given command while the button is held.
 
-        :func:`Command.start` will be called repeatedly while the trigger is
+        :meth:`Command.start` will be called repeatedly while the trigger is
         active, and will be canceled when the trigger becomes inactive.
 
         :param command: the command to start
@@ -131,7 +131,7 @@ class Trigger:
         Scheduler.getInstance().addButton(execute)
 
     def getSmartDashboardType(self):
-        """These methods continue to return the "Button" SmartDashboard type
+        """These methods continue to return the "Button" :class:`.SmartDashboard` type
         until we decided to create a Trigger widget type for the dashboard.
         """
         return "Button"

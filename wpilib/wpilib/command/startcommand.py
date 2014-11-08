@@ -18,7 +18,7 @@ class StartCommand(Command):
         """Instantiates a StartCommand which will start the
         given command whenever its initialize() is called.
 
-        :param commandToStart: the Command to start
+        :param commandToStart: the :class:`.Command` to start
         """
         super().__init__("Start(%s)" % commandToStart)
         self.commandToFork = commandToStart

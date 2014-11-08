@@ -24,6 +24,7 @@ class PIDCommand(Command):
         It will use the class name as its name unless otherwise specified.
         It will also space the time between PID loop calculations to be equal
         to the given period.
+        
         :param p: the proportional value
         :param i: the integral value
         :param d: the derivative value
@@ -58,27 +59,31 @@ class PIDCommand(Command):
 
     def setSetpointRelative(self, deltaSetpoint):
         """Adds the given value to the setpoint.
-        If setRange(...) was used, then the bounds will still be honored by
+        If :meth:`setRange` was used, then the bounds will still be honored by
         this method.
+        
         :param deltaSetpoint: the change in the setpoint
         """
         self.setSetpoint(self.getSetpoint() + deltaSetpoint)
 
     def setSetpoint(self, setpoint):
-        """Sets the setpoint to the given value.  If setRange(...) was called,
+        """Sets the setpoint to the given value.  If :meth:`setRange` was called,
         then the given setpoint will be trimmed to fit within the range.
+        
         :param setpoint: the new setpoint
         """
         self.controller.setSetpoint(setpoint)
 
     def getSetpoint(self):
         """Returns the setpoint.
+        
         :returns: the setpoint
         """
         return self.controller.getSetpoint()
 
     def getPosition(self):
         """Returns the current position
+        
         :returns: the current position
         """
         return self.returnPIDInput()
@@ -91,7 +96,7 @@ class PIDCommand(Command):
 
         All subclasses of PIDCommand must override this method.
 
-        This method will be called in a different thread then the Scheduler
+        This method will be called in a different thread then the :class:`.Scheduler`
         thread.
 
         :returns: the value the pid loop should use as input

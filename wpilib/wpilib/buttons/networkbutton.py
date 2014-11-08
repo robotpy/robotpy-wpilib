@@ -19,4 +19,4 @@ class NetworkButton(Button):
         self.field = field
 
     def get(self):
-        return self.table.isConnected() and self.table.getBoolean(field, False)
+        return self.table.isConnected() and self.table.getBoolean(self.field, False)

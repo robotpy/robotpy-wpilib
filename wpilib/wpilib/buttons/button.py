@@ -15,7 +15,7 @@ class Button(Trigger):
     It is very easy to link a button to a command.  For instance, you could
     link the trigger button of a joystick to a "score" command.
 
-    This class represents a subclass of Trigger that is specifically aimed at
+    This class represents a subclass of :class:`.Trigger` that is specifically aimed at
     buttons on an operator interface as a common use case of the more
     generalized Trigger objects. This is a simple wrapper around Trigger with
     the method names renamed to fit the Button object use.
@@ -31,7 +31,7 @@ class Button(Trigger):
     def whileHeld(self, command):
         """Constantly starts the given command while the button is held.
 
-        :func:`Command.start` will be called repeatedly while the button is
+        :meth:`.Command.start` will be called repeatedly while the button is
         held, and will be canceled when the button is released.
 
         :param command: the command to start

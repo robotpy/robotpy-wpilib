@@ -5,6 +5,7 @@
 # the project.
 #----------------------------------------------------------------------------
 
+from .scheduler import Scheduler
 from ..sendable import Sendable
 
 __all__ = ["Subsystem"]
@@ -23,14 +24,14 @@ class Subsystem(Sendable):
     subsystems can have default commands which are started if there is no
     command running which requires this subsystem.
 
-    :see: Command
+    .. seealso:: :class:`.Command`
     """
 
     def __init__(self, name=None):
         """Creates a subsystem.
 
         :param name: the name of the subsystem; if None, it will be set to the
-            name to the name of the class.
+                     name to the name of the class.
         """
         # The name
         if name is None:
@@ -61,10 +62,10 @@ class Subsystem(Sendable):
         """Sets the default command.  If this is not called or is called with
         None, then there will be no default command for the subsystem.
 
-        :warning: This should NOT be called in a constructor if the subsystem
-        is a singleton.
-
         :param command: the default command (or None if there should be none)
+        
+        .. warning:: This should NOT be called in a constructor if the subsystem
+                     is a singleton.
         """
         if command is None:
             self.defaultCommand = None
@@ -82,6 +83,7 @@ class Subsystem(Sendable):
 
     def getDefaultCommand(self):
         """Returns the default command (or None if there is none).
+        
         :returns: the default command
         """
         if not self.initializedDefaultCommand:
@@ -91,6 +93,7 @@ class Subsystem(Sendable):
 
     def setCurrentCommand(self, command):
         """Sets the current command
+        
         :param command: the new current command
         """
         self.currentCommand = command
@@ -114,6 +117,7 @@ class Subsystem(Sendable):
 
     def getCurrentCommand(self):
         """Returns the command which currently claims this subsystem.
+        
         :returns: the command which currently claims this subsystem
         """
         return self.currentCommand
@@ -124,6 +128,7 @@ class Subsystem(Sendable):
     def getName(self):
         """Returns the name of this subsystem, which is by default the class
         name.
+        
         :returns: the name of this subsystem
         """
         return self.name

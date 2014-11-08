@@ -14,9 +14,9 @@ class JoystickButton(Button):
         """Create a joystick button for triggering commands.
 
         :param joystick: The GenericHID object that has the button (e.g.
-            Joystick, KinectStick, etc)
+                         :class:`.Joystick`, :class:`.KinectStick`, etc)
         :param buttonNumber: The button number
-            (see :func:`GenericHID.getRawButton`)
+                             (see :meth:`GenericHID.getRawButton`)
         """
         super().__init__()
         self.joystick = joystick

@@ -12,20 +12,18 @@ __all__ = ["CommandGroup"]
 class CommandGroup(Command):
     """A CommandGroup is a list of commands which are executed in sequence.
 
-    Commands in a CommandGroup are added using the addSequential(...) method
-    and are called sequentially.
-    CommandGroups are themselves Commands and can be given to other
-    CommandGroups.
+    Commands in a CommandGroup are added using the :meth:`addSequential` method
+    and are called sequentially. CommandGroups are themselves Commands and can
+    be given to other CommandGroups.
 
     CommandGroups will carry all of the requirements of their subcommands.
-    Additional requirements can be specified by calling requires(...)
+    Additional requirements can be specified by calling :meth:`requires`
     normally in the constructor.
 
     CommandGroups can also execute commands in parallel, simply by adding them
     using addParallel(...).
 
-    :see: Command
-    :see: Subsystem
+    .. seealso:: :class:`.Command`, :class:`Subsystem`
     """
 
     class Entry:
@@ -50,8 +48,9 @@ class CommandGroup(Command):
 
     def __init__(self, name=None):
         """Creates a new CommandGroup with the given name.
+        
         :param name: the name for this command group (optional).  If None,
-            the name of this command will be set to its class name.
+                     the name of this command will be set to its class name.
         """
         super().__init__(name)
         # The commands in this group (stored in entries)
@@ -129,7 +128,7 @@ class CommandGroup(Command):
 
             self.commands.append(CommandGroup.Entry(command, CommandGroup.Entry.BRANCH_CHILD, timeout))
             for reqt in command.getRequirements():
-                requires(reqt)
+                self.requires(reqt)
 
     def _initialize(self):
         self.currentCommandIndex = None
