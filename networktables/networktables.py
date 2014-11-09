@@ -14,8 +14,9 @@ class NetworkTableConnectionListenerAdapter:
     """
 
     def __init__(self, targetSource, targetListener):
-        """:param targetSource: the source where the event will appear to come
-            from
+        """
+        :param targetSource: the source where the event will appear to come
+                             from
         :param targetListener: the listener where events will be forwarded
         """
         self.targetSource = targetSource
@@ -34,11 +35,12 @@ class NetworkTableKeyListenerAdapter:
 
     def __init__(self, relativeKey, fullKey, targetSource, targetListener):
         """Create a new adapter
+        
         :param relativeKey: the name of the key relative to the table (this
-            is what the listener will receiver as the key)
+                            is what the listener will receiver as the key)
         :param fullKey: the full name of the key in the NetworkTableNode
         :param targetSource: the source that events passed to the target
-            listener will appear to come from
+                             listener will appear to come from
         :param targetListener: the listener where events are forwarded to
         """
         self.relativeKey = relativeKey
@@ -58,10 +60,11 @@ class NetworkTableListenerAdapter:
 
     def __init__(self, prefix, targetSource, targetListener):
         """Create a new adapter
+        
         :param prefix: the prefix that will be filtered/removed from the
-            beginning of the key
+                       beginning of the key
         :param targetSource: the source that events passed to the target
-            listener will appear to come from
+                             listener will appear to come from
         :param targetListener: the listener where events are forwarded to
         """
         self.prefix = prefix
@@ -84,9 +87,10 @@ class NetworkTableSubListenerAdapter:
 
     def __init__(self, prefix, targetSource, targetListener):
         """Create a new adapter
+        
         :param prefix: the prefix of the current table
         :param targetSource: the source that events passed to the target
-            listener will appear to come from
+                             listener will appear to come from
         :param targetListener: the listener where events are forwarded to
         """
         self.prefix = prefix
@@ -119,6 +123,7 @@ class NetworkTableProvider:
 
     def __init__(self, node):
         """Create a new NetworkTableProvider for a given NetworkTableNode
+        
         :param node: the node that handles the actual network table
         """
         self.node = node
@@ -150,7 +155,8 @@ class NetworkTableModeServer:
     """
     @staticmethod
     def createNode(ipAddress, port):
-        """:param ipAddress: the IP address configured by the user
+        """
+        :param ipAddress: the IP address configured by the user
         :param port: the port configured by the user
         :returns: a new node that can back a network table
         """
@@ -162,7 +168,8 @@ class NetworkTableModeClient:
     """
     @staticmethod
     def createNode(ipAddress, port):
-        """:param ipAddress: the IP address configured by the user
+        """
+        :param ipAddress: the IP address configured by the user
         :param port: the port configured by the user
         :returns: a new node that can back a network table
         """
@@ -206,7 +213,8 @@ class NetworkTable:
     @staticmethod
     def setTableProvider(provider):
         """set the table provider for static network tables methods
-        This must be called before initalize or getTable
+        
+        .. warning:: This must be called before :meth:`initalize` or :meth:`getTable`
         """
         with NetworkTable.staticMutex:
             NetworkTable.checkInit()
@@ -215,7 +223,8 @@ class NetworkTable:
     @staticmethod
     def setServerMode():
         """set that network tables should be a server
-        This must be called before initalize or getTable
+        
+        .. warning:: This must be called before :meth:`initalize` or :meth:`getTable`
         """
         with NetworkTable.staticMutex:
             NetworkTable.checkInit();
@@ -224,7 +233,8 @@ class NetworkTable:
     @staticmethod
     def setClientMode():
         """set that network tables should be a client
-        This must be called before initalize or getTable
+        
+        .. warning:: This must be called before :meth:`initalize` or :meth:`getTable`
         """
         with NetworkTable.staticMutex:
             NetworkTable.checkInit()
@@ -234,8 +244,10 @@ class NetworkTable:
     def setTeam(team):
         """set the team the robot is configured for (this will set the ip
         address that network tables will connect to in client mode)
-        This must be called before initalize or getTable
+        
         :param team: the team number
+        
+        .. warning:: This must be called before :meth:`initalize` or :meth:`getTable`
         """
         NetworkTable.setIPAddress("10.%d.%d.2" % divmod(team, 100))
 
@@ -243,6 +255,8 @@ class NetworkTable:
     def setIPAddress(address):
         """:param address: the adress that network tables will connect to in
         client mode
+        
+        .. warning:: This must be called before :meth:`initalize` or :meth:`getTable`
         """
         with NetworkTable.staticMutex:
             NetworkTable.checkInit()
@@ -396,7 +410,7 @@ class NetworkTable:
 
         :param key: the key name
         :param defaultValue: the default value if the key is None.  If not
-            specified, raises KeyError if the key is None.
+                             specified, raises KeyError if the key is None.
         :returns: the key
         """
         try:
@@ -423,7 +437,7 @@ class NetworkTable:
 
         :param key: the key name
         :param defaultValue: the default value if the key is None.  If not
-            specified, raises KeyError if the key is None.
+                             specified, raises KeyError if the key is None.
         :returns: the key
         """
         try:
@@ -450,7 +464,7 @@ class NetworkTable:
 
         :param key: the key name
         :param defaultValue: the default value if the key is None.  If not
-            specified, raises KeyError if the key is None.
+                             specified, raises KeyError if the key is None.
         :returns: the key
         """
         try:
@@ -484,7 +498,7 @@ class NetworkTable:
 
         :param key: the key name
         :param defaultValue: the default value if the key is None.  If not
-            specified, raises KeyError if the key is None.
+                             specified, raises KeyError if the key is None.
         :returns: the key
         """
         try:
