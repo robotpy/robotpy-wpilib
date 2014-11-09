@@ -137,7 +137,7 @@ class BooleanArray(ArrayData):
         return super().__contains__(bool(key))
 
     def __setitem__(self, key, value):
-        super().__setitem(key, bool(value))
+        super().__setitem__(key, bool(value))
 
     def append(self, obj):
         super().append(bool(obj))
@@ -165,7 +165,7 @@ class NumberArray(ArrayData):
         return super().__contains__(float(key))
 
     def __setitem__(self, key, value):
-        super().__setitem(key, float(value))
+        super().__setitem__(key, float(value))
 
     def append(self, obj):
         super().append(float(obj))
@@ -193,7 +193,7 @@ class StringArray(ArrayData):
         return super().__contains__(str(key))
 
     def __setitem__(self, key, value):
-        super().__setitem(key, str(value))
+        super().__setitem__(key, str(value))
 
     def append(self, obj):
         super().append(str(obj))
