@@ -129,7 +129,7 @@ class I2C:
     def broadcast(self, registerAddress, data):
         """Send a broadcast write to all devices on the I2C bus.
 
-        This is not currently implemented!
+        .. warning:: This is not currently implemented!
 
         :param registerAddress:
             The register to write on all devices on the bus.

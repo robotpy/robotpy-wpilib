@@ -25,8 +25,9 @@ class PowerDistributionPanel(SensorBase):
         return hal.getPDPTemperature()
 
     def getCurrent(self, channel):
-        """:returns: The current of one of the PDP channels (channels 0-15)
-        in Amperes
+        """
+            :returns: The current of one of the PDP channels (channels 0-15)
+                      in Amperes
         """
         SensorBase.checkPDPChannel(channel)
         return hal.getPDPChannelCurrent(channel)

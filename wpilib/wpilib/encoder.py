@@ -36,6 +36,7 @@ class Encoder(SensorBase):
     them to be zeroed before use.
 
     Instance variables:
+    
     - aSource: The A phase of the quad encoder
     - bSource: The B phase of the quad encoder
     - indexSource: The index source (available on some encoders)
@@ -52,6 +53,7 @@ class Encoder(SensorBase):
 
         Positional arguments may be either channel numbers or `DigitalSource`
         sources in the following order:
+        
         - aSource, bSource
         - aSource, bSource, indexSource
         - aChannel, bChannel
@@ -150,7 +152,7 @@ class Encoder(SensorBase):
         self.indexSource = indexSource
         self.encodingType = encodingType
         self.distancePerPulse = 1.0 # distance of travel for each encoder tick
-        self.pidSource = PIDSourceParameter.kDistance
+        self.pidSource = PIDSource.PIDSourceParameter.kDistance
         self._encoder = None
         self.counter = None
         self.index = 0

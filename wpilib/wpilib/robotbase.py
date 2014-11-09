@@ -97,7 +97,7 @@ class RobotBase:
         """Determine if the robot is currently in Operator Control mode.
 
         :returns: True if the robot is currently operating in Tele-Op mode as
-        determined by the field controls.
+            determined by the field controls.
         """
         return self.ds.isOperatorControl()
 
@@ -105,7 +105,7 @@ class RobotBase:
         """Indicates if new data is available from the driver station.
 
         :returns: Has new data arrived over the network since the last time
-        this function was called?
+            this function was called?
         """
         return self.ds.isNewControlData()
 

@@ -76,15 +76,15 @@ class InterruptableSensorBase(SensorBase):
         """Allocate the interrupt
 
         :param watcher: True if the interrupt should be in synchronous mode
-        where the user program will have to explicitly wait for the interrupt
-        to occur.
+            where the user program will have to explicitly wait for the interrupt
+            to occur.
         """
         if self.interrupt is not None:
             raise ValueError("The interrupt has already been allocated")
 
         try:
             self.interruptIndex = \
-                    InterruptibleSensorBase.interrupts.allocate(self)
+                    InterruptableSensorBase.interrupts.allocate(self)
         except IndexError:
             raise IndexError("No interrupts are left to be allocated")
 
@@ -101,7 +101,7 @@ class InterruptableSensorBase(SensorBase):
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
         self._interrupt_finalizer()
-        InterruptibleSensorBase.interrupts.free(self.interruptIndex)
+        InterruptableSensorBase.interrupts.free(self.interruptIndex)
         self.interruptIndex = None
 
     def waitForInterrupt(self, timeout, ignorePrevious=True):

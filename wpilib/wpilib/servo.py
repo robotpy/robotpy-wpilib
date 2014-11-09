@@ -28,8 +28,8 @@ class Servo(PWM):
     def __init__(self, channel):
         """Constructor.
 
-        By default `kDefaultMaxServoPWM` ms is used as the maxPWM value
-        By default `kDefaultMinServoPWM` ms is used as the minPWM value
+        * By default `kDefaultMaxServoPWM` ms is used as the maxPWM value
+        * By default `kDefaultMinServoPWM` ms is used as the minPWM value
 
         :param channel: The PWM channel to which the servo is attached.
         """

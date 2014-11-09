@@ -14,12 +14,12 @@ class Sendable:
             self.updateTable()
 
     def getTable(self):
-        """:returns: the table that is currently associated with the sendable
-        """
+        """:returns: the table that is currently associated with the sendable"""
         return getattr(self, "table", None)
 
     def getSmartDashboardType(self):
-        """:returns: the string representation of the named data type that
-            will be used by the smart dashboard for this sendable
+        """
+            :returns: the string representation of the named data type that
+                will be used by the smart dashboard for this sendable
         """
         raise NotImplementedError

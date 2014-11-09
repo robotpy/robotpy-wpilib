@@ -8,6 +8,7 @@
 import hal
 
 from .analoginput import AnalogInput
+from .interfaces import PIDSource
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 from .timer import Timer

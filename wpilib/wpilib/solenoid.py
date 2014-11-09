@@ -25,6 +25,7 @@ class Solenoid(SolenoidBase):
 
         Arguments can be supplied as positional or keyword.  Acceptable
         positional argument combinations are:
+        
         - channel
         - moduleNumber, channel
 

@@ -32,31 +32,30 @@ class Relay(SensorBase):
     """
 
     class Value:
-        """The state to drive a Relay to.
-
-        Values:
-
-        - kOff: off
-        - kOn: on for relays with defined direction
-        - kForward: forward
-        - kReverse: reverse
-        """
+        """The state to drive a Relay to."""
+        
+        #: Off
         kOff = 0
+        
+        #: On for relays with defined direction
         kOn = 1
+        
+        #: Forward
         kForward = 2
+        
+        #: Reverse
         kReverse = 3
 
     class Direction:
-        """The Direction(s) that a relay is configured to operate in.
-
-        Values:
-
-        - kBoth: both directions are valid
-        - kForward: only forward is valid
-        - kReverse: only reverse is valid
-        """
+        """The Direction(s) that a relay is configured to operate in."""
+        
+        #: Both directions are valid
         kBoth = 0
+        
+        #: Only forward is valid
         kForward = 1
+        
+        #: Only reverse is valid
         kReverse = 2
 
     relayChannels = Resource(SensorBase.kRelayChannels * 2)

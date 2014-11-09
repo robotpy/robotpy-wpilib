@@ -18,7 +18,7 @@ class RobotDrive(MotorSafety):
     """Utility class for handling Robot drive based on a definition of the
     motor configuration.  The robot drive class handles basic driving for a
     robot. Currently, 2 and 4 motor standard drive trains are supported. In
-    the future other drive types like swerve and meccanum might be
+    the future other drive types like swerve and mecanum might be
     implemented. Motor channel numbers are passed supplied on creation of
     the class. Those are used for either the drive function (intended for
     hand created drive code, such as autonomous) or with the Tank/Arcade
@@ -26,18 +26,18 @@ class RobotDrive(MotorSafety):
     """
 
     class MotorType:
-        """The location of a motor on the robot for the purpose of driving.
-
-        Values:
-
-        - kFrontLeft: front left
-        - kFrontRight: front right
-        - kRearLeft: rear left
-        - kRearRight: rear right
-        """
+        """The location of a motor on the robot for the purpose of driving."""
+        
+        #: Front left
         kFrontLeft = 0
+        
+        #: Front right
         kFrontRight = 1
+        
+        #: Rear left
         kRearLeft = 2
+        
+        #: Rear right
         kRearRight = 3
 
     kDefaultExpirationTime = 0.1
@@ -59,6 +59,7 @@ class RobotDrive(MotorSafety):
         a two or four wheel drive system, respectively.
 
         When positional arguments are used, these are the two accepted orders:
+        
         - leftMotor, rightMotor
         - frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor
 
@@ -67,7 +68,7 @@ class RobotDrive(MotorSafety):
         Either channel numbers or motor controllers can be passed (determined
         by whether the passed object has a `set` function).  If channel
         numbers are passed, the motorController keyword argument, if present,
-        is the motor controller class to use; if unspecified, Talon is used.
+        is the motor controller class to use; if unspecified, :class:`.Talon` is used.
         """
         super().__init__()
 
@@ -174,6 +175,7 @@ class RobotDrive(MotorSafety):
         Either two joysticks (with optional specified axis) or two raw values
         may be passed positionally, along with an optional squaredInputs
         boolean.  The valid positional combinations are:
+        
         - leftStick, rightStick
         - leftStick, rightStick, squaredInputs
         - leftStick, leftAxis, rightStick, rightAxis
@@ -277,6 +279,7 @@ class RobotDrive(MotorSafety):
         Either one or two joysticks (with optional specified axis) or two raw
         values may be passed positionally, along with an optional
         squaredInputs boolean.  The valid positional combinations are:
+        
         - stick
         - stick, squaredInputs
         - moveStick, moveAxis, rotateStick, rotateAxis
@@ -507,14 +510,14 @@ class RobotDrive(MotorSafety):
         """Holonomic Drive method for Mecanum wheeled robots.
 
         This is an alias to :func:`mecanumDrive_Polar` for backward
-        compatability.
+        compatibility.
 
         :param magnitude: The speed that the robot should drive in a given
             direction.  [-1.0..1.0]
         :param direction: The direction the robot should drive. The direction
-            and maginitute are independent of the rotation rate.
+            and magnitude are independent of the rotation rate.
         :param rotation: The rate of rotation for the robot that is
-            completely independent of the magnitute or direction.  [-1.0..1.0]
+            completely independent of the magnitude or direction.  [-1.0..1.0]
         """
         self.mecanumDrive_Polar(magnitude, direction, rotation)
 
@@ -599,7 +602,7 @@ class RobotDrive(MotorSafety):
         This only impacts the drive() entry-point.
 
         :param sensitivity: Effectively sets the turning sensitivity (or turn
-        radius for a given value)
+            radius for a given value)
         """
         self.sensitivity = sensitivity
 

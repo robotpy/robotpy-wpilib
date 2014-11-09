@@ -27,39 +27,28 @@ class PWM(LiveWindowSendable):
 
     As of revision 0.1.4 of the FPGA, the FPGA interprets the 0-255 values as
     follows:
+    
     - 255 = full "forward"
     - 254 to 129 = linear scaling from "full forward" to "center"
     - 128 = center value
     - 127 to 2 = linear scaling from "center" to "full reverse"
     - 1 = full "reverse"
     - 0 = disabled (i.e. PWM output is held low)
-
-    Class variables:
-
-    kDefaultPwmPeriod: the default PWM period measured in ms.
-
+    
     kDefaultPwmPeriod is the 1x period (5.05 ms).  In hardware, the period
     scaling is implemented as an output squelch to get longer periods for old
     devices.
 
     - 20ms periods (50 Hz) are the "safest" setting in that this works for all
-        devices
+      devices
     - 20ms periods seem to be desirable for Vex Motors
     - 20ms periods are the specified period for HS-322HD servos, but work
-        reliably down to 10.0 ms; starting at about 8.5ms, the servo sometimes
-        hums and get hot; by 5.0ms the hum is nearly continuous
+      reliably down to 10.0 ms; starting at about 8.5ms, the servo sometimes
+      hums and get hot; by 5.0ms the hum is nearly continuous
     - 10ms periods work well for Victor 884
     - 5ms periods allows higher update rates for Luminary Micro Jaguar speed
-        controllers.
-        Due to the shipping firmware on the Jaguar, we can't run the update
-        period less than 5.05 ms.
-
-    kDefaultPwmCenter: the PWM range center in ms
-
-    kDefaultPwmStepsDown: the number of PWM steps below the centerpoint
-
-    kPwmDisabled: the value to use to disable
-
+      controllers. Due to the shipping firmware on the Jaguar, we can't run the
+      update period less than 5.05 ms.
     """
     class PeriodMultiplier:
         """Represents the amount to multiply the minimum servo-pulse pwm
@@ -69,9 +58,16 @@ class PWM(LiveWindowSendable):
         k2X = 2
         k4X = 4
 
+    #: the default PWM period measured in ms.
     kDefaultPwmPeriod = 5.05
+    
+    #: the PWM range center in ms
     kDefaultPwmCenter = 1.5
+    
+    #: the number of PWM steps below the centerpoint
     kDefaultPwmStepsDown = 1000
+    
+    #: the value to use to disable
     kPwmDisabled = 0
 
     def __init__(self, channel):
@@ -112,8 +108,8 @@ class PWM(LiveWindowSendable):
         """Optionally eliminate the deadband from a speed controller.
 
         :param eliminateDeadband: If True, set the motor curve on the Jaguar
-        to eliminate the deadband in the middle of the range. Otherwise, keep
-        the full range without modifying any values.
+            to eliminate the deadband in the middle of the range. Otherwise, keep
+            the full range without modifying any values.
         """
         self.eliminateDeadband = eliminateDeadband
 

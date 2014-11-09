@@ -71,6 +71,7 @@ class DigitalSource(InterruptableSensorBase):
 
     def getAnalogTriggerForRouting(self):
         """Is this an analog trigger
+        
         :returns: True if this is an analog trigger
         """
         return False

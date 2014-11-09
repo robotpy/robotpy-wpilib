@@ -8,6 +8,7 @@
 import hal
 
 from .analoginput import AnalogInput
+from .livewindow import LiveWindow
 from .livewindowsendable import LiveWindowSendable
 
 __all__ = ["AnalogAccelerometer"]
@@ -23,7 +24,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         """Create a new instance of Accelerometer from either an existing
         AnalogChannel or from an analog channel port index.
 
-        :param channel: port index or an already initialized analog channel
+        :param channel: port index or an already initialized :class:`.AnalogInput`
         """
         if not hasattr(channel, "getAverageVoltage"):
             channel = AnalogInput(channel)
@@ -48,7 +49,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         """Set the accelerometer sensitivity.
 
         This sets the sensitivity of the accelerometer used for calculating
-        the acceleration.  The sensitivity varys by accelerometer model.
+        the acceleration.  The sensitivity varies by accelerometer model.
         There are constants defined for various models.
 
         :param sensitivity: The sensitivity of accelerometer in Volts per G.
@@ -58,7 +59,7 @@ class AnalogAccelerometer(LiveWindowSendable):
     def setZero(self, zero):
         """Set the voltage that corresponds to 0 G.
 
-        The zero G voltage varys by accelerometer model. There are constants
+        The zero G voltage varies by accelerometer model. There are constants
         defined for various models.
 
         :param zero: The zero G voltage.

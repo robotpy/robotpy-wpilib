@@ -254,7 +254,7 @@ class NetworkTable:
     @staticmethod
     def setIPAddress(address):
         """:param address: the adress that network tables will connect to in
-        client mode
+            client mode
         
         .. warning:: This must be called before :meth:`initalize` or :meth:`getTable`
         """

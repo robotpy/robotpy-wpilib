@@ -6,6 +6,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import warnings
 import weakref
 
 from .interfaces.counterbase import CounterBase
@@ -34,17 +35,18 @@ class Counter(SensorBase):
     """
 
     class Mode:
-        """Mode determines how and what the counter counts
-
-        Values:
-        - kTwoPulse: two pulse mode
-        - kSemiperiod: semi period mode
-        - kPulseLength: pulse length mode
-        - kExternalDirection: external direction mode
-        """
+        """Mode determines how and what the counter counts"""
+        
+        #: two pulse mode
         kTwoPulse = 0
+        
+        #: semi period mode
         kSemiperiod = 1
+        
+        #: pulse length mode
         kPulseLength = 2
+        
+        #: external direction mode
         kExternalDirection = 3
 
     EncodingType = CounterBase.EncodingType
@@ -55,8 +57,9 @@ class Counter(SensorBase):
 
         The counter will start counting immediately.
 
-        Positional arguments may be either channel numbers, `DigitalSource`
-        sources, or `AnalogTrigger` sources in the following order:
+        Positional arguments may be either channel numbers, :class:`.DigitalSource`
+        sources, or :class:`.AnalogTrigger` sources in the following order:
+        
         - (none)
         - upSource
         - upChannel
@@ -78,15 +81,16 @@ class Counter(SensorBase):
 
         :param upSource: The source that should be used for up counting.
         :param downSource: The source that should be used for down counting
-            or direction control.
+                           or direction control.
         :param upChannel: The digital input index that should be used for up
-            counting.
+                          counting.
         :param downChannel: The digital input index that should be used for
-            down counting or direction control.
+                            down counting or direction control.
         :param analogTrigger: An analog trigger for up counting (assumed to
-            be of kState type; use :func:`setUpSource` for other options).
+                              be of kState type; use :func:`setUpSource`
+                              for other options).
         :param mode:
-            How and what the counter counts (see `Mode`).  Defaults to
+            How and what the counter counts (see :class:`.Mode`).  Defaults to
             `Mode.kTwoPulse` for zero or one positional arguments, and
             `Mode.kExternalDirection` for two positional arguments.
         :param inverted:
@@ -184,7 +188,7 @@ class Counter(SensorBase):
                 self.setUpSourceEdge(True, False)
             else:
                 self.setUpSourceEdge(True, True)
-            self.setDownSourceEdge(inverted, True)
+            self.setDownSourceEdge(inverse, True)
 
     @property
     def counter(self):
@@ -200,6 +204,7 @@ class Counter(SensorBase):
 
         This function accepts either a digital channel index, a
         `DigitalSource`, or an `AnalogTrigger` as positional arguments:
+        
         - source
         - channel
         - analogTrigger, triggerType
@@ -217,9 +222,9 @@ class Counter(SensorBase):
         :param channel: the digital port to count
         :param source: the digital source to count
         :param analogTrigger:
-            The analog trigger object that is used for the Up Source
+            The :class:`.AnalogTrigger` object that is used for the Up Source
         :param triggerType:
-            The analog trigger output that will trigger the counter.
+            The :class:`.AnalogTrigger` output that will trigger the counter.
             Defaults to kState if not specified.
         """
         if self.counter is None:
@@ -292,6 +297,7 @@ class Counter(SensorBase):
 
         This function accepts either a digital channel index, a
         `DigitalSource`, or an `AnalogTrigger` as positional arguments:
+        
         - source
         - channel
         - analogTrigger, triggerType
@@ -481,7 +487,7 @@ class Counter(SensorBase):
     def getStopped(self):
         """Determine if the clock is stopped. Determine if the clocked input
         is stopped based on the MaxPeriod value set using the
-        :func:`SetMaxPeriod` method.  If the clock exceeds the MaxPeriod,
+        :func:`setMaxPeriod` method.  If the clock exceeds the MaxPeriod,
         then the device (and counter) are assumed to be stopped and it
         returns True.
 

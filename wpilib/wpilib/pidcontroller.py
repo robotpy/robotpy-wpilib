@@ -18,9 +18,9 @@ __all__ = ["PIDController"]
 class PIDController(LiveWindowSendable):
     """Class implements a PID Control Loop.
 
-    Creates a separate thread which reads the given PIDSource and takes
+    Creates a separate thread which reads the given :class:`.PIDSource` and takes
     care of the integral calculations, as well as writing the given
-    PIDOutput.
+    :class:`.PIDOutput`.
     """
     kDefaultPeriod = .05
     instances = 0
@@ -45,11 +45,12 @@ class PIDController(LiveWindowSendable):
 
     def __init__(self, Kp, Ki, Kd, source, output, period=None, Kf=0.0):
         """Allocate a PID object with the given constants for P, I, D, and F
+        
         :param Kp: the proportional coefficient
         :param Ki: the integral coefficient
         :param Kd: the derivative coefficient
-        :param source: The PIDSource object that is used to get values
-        :param output: The PIDOutput object that is set to the output
+        :param source: The :class:`.PIDSource` that is used to get values
+        :param output: The :class:`.PIDOutput` object that is set to the output
             percentage
         :param period: the loop time for doing calculations. This particularly
             effects calculations of the integral and differential terms.
@@ -236,13 +237,14 @@ class PIDController(LiveWindowSendable):
         to the setpoint.
 
         :param continuous: Set to True turns on continuous, False turns off
-        continuous
+            continuous
         """
         with self.mutex:
             self.continuous = continuous
 
     def setInputRange(self, minimumInput, maximumInput):
         """Sets the maximum and minimum values expected from the input.
+        
         :param minimumInput: the minimum percentage expected from the input
         :param maximumInput: the maximum percentage expected from the output
         """
@@ -309,7 +311,7 @@ class PIDController(LiveWindowSendable):
 
         :param percent: error which is tolerable
 
-        .. deprecated::
+        .. deprecated:: 2015.1
 
             Use :func:`setPercentTolerance` or :func:`setAbsoluteTolerance`
             instead.
@@ -325,7 +327,7 @@ class PIDController(LiveWindowSendable):
         :func:`onTarget`.
 
         :param absvalue: absolute error which is tolerable in the units of the
-        input object
+            input object
         """
         with self.mutex:
             self.onTarget = lambda self: \
@@ -339,12 +341,12 @@ class PIDController(LiveWindowSendable):
         """
         with self.mutex:
             self.onTarget = lambda self: \
-                    self.PercentageTolerance_onTarget(percent)
+                    self.PercentageTolerance_onTarget(percentage)
 
     def onTarget(self):
         """Return True if the error is within the percentage of the total input
         range, determined by setTolerance. This assumes that the maximum and
-        minimum input were set using setInput.
+        minimum input were set using :func:`setInput`.
 
         :returns: True if the error is less than the tolerance
         """

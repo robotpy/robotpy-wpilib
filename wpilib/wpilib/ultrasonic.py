@@ -9,6 +9,7 @@ import hal
 import threading
 import weakref
 
+from .counter import Counter
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 from .timer import Timer
@@ -25,15 +26,6 @@ class Ultrasonic(SensorBase):
     becomes high as the ping is transmitted and goes low when the echo is
     received. The time that the line is high determines the round trip
     distance (time of flight).
-
-    Class variables:
-
-    - kPingtime: Time (sec) for the ping trigger pulse.
-    - kPriority: Priority that the ultrasonic round robin task runs.
-    - kMaxUltrasonicTime: Max time (ms) between readings.
-    - kSpeedOfSoundInchesPerSec
-    - sensors: ultrasonic sensor list
-    - automaticEnabled: automatic round robin mode
     """
 
     class Unit:
@@ -41,20 +33,29 @@ class Ultrasonic(SensorBase):
         kInches = 0
         kMillimeters = 1
 
+    #: Time (sec) for the ping trigger pulse.
     kPingTime = 10 * 1e-6
+    
+    #: Priority that the ultrasonic round robin task runs.
     kPriority = 90
+    
+    #: Max time (ms) between readings.
     kMaxUltrasonicTime = 0.1
     kSpeedOfSoundInchesPerSec = 1130.0 * 12.0
 
-    static_mutex = threading.RLock()
+    _static_mutex = threading.RLock()
+    
+    #: ultrasonic sensor list
     sensors = weakref.WeakSet()
+    
+    #: Automatic round robin mode
     automaticEnabled = False
     instances = 0
-    thread = None
+    _thread = None
 
     @staticmethod
     def isAutomaticMode():
-        with Ultrasonic.static_mutex:
+        with Ultrasonic._static_mutex:
             return Ultrasonic.automaticEnabled
 
     @staticmethod
@@ -63,10 +64,11 @@ class Ultrasonic(SensorBase):
         and pings each one in turn. The counter is configured to read the
         timing of the returned echo pulse.
 
-        DANGER WILL ROBINSON, DANGER WILL ROBINSON: This code runs as a task
-        and assumes that none of the ultrasonic sensors will change while
-        it's running. If one does, then this will certainly break. Make sure
-        to disable automatic mode before changing anything with the sensors!!
+        .. warning:: DANGER WILL ROBINSON, DANGER WILL ROBINSON: This code runs
+            as a task and assumes that none of the ultrasonic sensors will
+            change while it's running. If one does, then this will certainly
+            break. Make sure to disable automatic mode before changing
+            anything with the sensors!!
         """
         while Ultrasonic.isAutomaticMode():
             count = 0
@@ -97,10 +99,10 @@ class Ultrasonic(SensorBase):
         :param units: The units returned in either kInches or kMillimeters
         """
         # Convert to DigitalInput and DigitalOutput if necessary
-        if not hasattr(pingChannel, channel):
+        if not hasattr(pingChannel, 'channel'):
             from .digitaloutput import DigitalOutput
             pingChannel = DigitalOutput(pingChannel)
-        if not hasattr(echoChannel, channel):
+        if not hasattr(echoChannel, 'channel'):
             from .digitalinput import DigitalInput
             echoChannel = DigitalInput(echoChannel)
         self.pingChannel = pingChannel
@@ -108,8 +110,8 @@ class Ultrasonic(SensorBase):
         self.units = units
         self.enabled = True # make it available for round robin scheduling
 
-        if Ultrasonic.thread is None or not Ultrasonic.thread.is_alive():
-            Ultrasonic.thread = threading.Thread(
+        if Ultrasonic._thread is None or not Ultrasonic._thread.is_alive():
+            Ultrasonic._thread = threading.Thread(
                     target=Ultrasonic.ultrasonicChecker,
                     name="ultrasonicChecker")
             Ultrasonic.daemon = True
@@ -140,7 +142,7 @@ class Ultrasonic(SensorBase):
         """
         if enabling and Ultrasonic.isAutomaticMode():
             return # ignore the case of no change
-        with Ultrasonic.static_mutex:
+        with Ultrasonic._static_mutex:
             Ultrasonic.automaticEnabled = enabling
 
         if enabling:
@@ -150,11 +152,11 @@ class Ultrasonic(SensorBase):
                 if u is not None:
                     u.counter.reset()
             # Start round robin task
-            Ultrasonic.thread.start()
+            Ultrasonic._thread.start()
         else:
             # disabling automatic mode. Wait for background task to stop
             # running.
-            while Ultrasonic.thread.is_alive():
+            while Ultrasonic._thread.is_alive():
                 # wait just a little longer than the ping time for
                 # round-robin to stop
                 Timer.delay(.15)
@@ -208,7 +210,7 @@ class Ultrasonic(SensorBase):
             ultrasonic sensor. If there is no valid value yet, i.e. at least
             one measurement hasn't complted, then return 0.
         """
-        return getRangeInches() * 25.4
+        return self.getRangeInches() * 25.4
 
     def pidGet(self):
         """Get the range in the current DistanceUnit (PIDSource interface).

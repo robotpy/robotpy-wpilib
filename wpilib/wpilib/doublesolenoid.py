@@ -6,6 +6,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import warnings
 
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
@@ -32,6 +33,7 @@ class DoubleSolenoid(SolenoidBase):
 
         Arguments can be supplied as positional or keyword.  Acceptable
         positional argument combinations are:
+        
         - forwardChannel, reverseChannel
         - moduleNumber, forwardChannel, reverseChannel
 

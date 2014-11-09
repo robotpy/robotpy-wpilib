@@ -122,7 +122,7 @@ class ADXL345_SPI(SensorBase):
         """Get the acceleration of all axes in Gs.
 
         :returns: X,Y,Z tuple of acceleration measured on all axes of the
-            ADXL345 in Gs.
+                  ADXL345 in Gs.
         """
         # Select the data address.
         data = [0] * 7

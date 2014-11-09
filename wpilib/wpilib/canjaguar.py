@@ -120,16 +120,15 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
             _cj.LM_API_ICTRL_T_SET])
 
     class Mode:
-        """Control Mode.
-
-        Values:
-        - kEncoder: Sets an encoder as the speed reference only.
-        - kQuadEncoder: Sets a quadrature encoder as the position and speed
-            reference.
-        - kPotentiometer: Sets a potentiometer as the position reference only.
-        """
+        """Control Mode."""
+        
+        #: Sets an encoder as the speed reference only.
         kEncoder = 0
+        
+        #: Sets a quadrature encoder as the position and speed reference.
         kQuadEncoder = 1
+        
+        #: Sets a potentiometer as the position reference only.
         kPotentiometer = 2
 
     class ControlMode:
@@ -150,38 +149,38 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
     kReverseLimit = 2
 
     class NeutralMode:
-        """Determines how the Jaguar behaves when sending a zero signal.
-
-        Values:
-        - Jumper: Use the NeutralMode that is set by the jumper wire on the
-            CAN device
-        - Brake: Stop the motor's rotation by applying a force.
-        - Coast: Do not attempt to stop the motor. Instead allow it to coast
-            to a stop without applying resistance.
-        """
+        """Determines how the Jaguar behaves when sending a zero signal."""
+        
+        #: Use the NeutralMode that is set by the jumper wire on the CAN device
         Jumper = 0
+        
+        #: Stop the motor's rotation by applying a force.
         Brake = 1
+        
+        #: Do not attempt to stop the motor. Instead allow it to coast
+        #: to a stop without applying resistance.
         Coast = 2
 
     class LimitMode:
         """Determines which sensor to use for position reference.
         Limit switches will always be used to limit the rotation. This can
         not be disabled.
-
-        Values:
-        - SwitchInputsOnly: Disables the soft position limits and only uses
-            the limit switches to limit rotation.  See `getForwardLimitOK`
-            and `getReverseLimitOK`.
-        - SoftPositionLimits: Enables the soft position limits on the Jaguar.
-            These will be used in addition to the limit switches. This does
-            not disable the behavior of the limit switch input.
-            See `configSoftPositionLimits`.
         """
+        
+        #: Disables the soft position limits and only uses
+        #: the limit switches to limit rotation.  See `getForwardLimitOK`
+        #: and `getReverseLimitOK`.
         SwitchInputsOnly = 0
+        
+        #: Enables the soft position limits on the Jaguar.
+        #: These will be used in addition to the limit switches. This does
+        #: not disable the behavior of the limit switch input.
+        #: See `configSoftPositionLimits`.
         SoftPositionLimits = 1
 
     def __init__(self, deviceNumber):
-        """Constructor for the CANJaguar device.<br>
+        """Constructor for the CANJaguar device.
+        
         By default the device is configured in Percent mode.
         The control mode can be changed by calling one of the control modes.
 
@@ -303,8 +302,9 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         """Get the recently set outputValue set point.
 
         The scale and the units depend on the mode the Jaguar is in.
+        
         - In percentVbus mode, the outputValue is from -1.0 to 1.0 (same as
-            PWM Jaguar).
+          PWM Jaguar).
         - In voltage mode, the outputValue is in volts.
         - In current mode, the outputValue is in amps.
         - In speed mode, the outputValue is in rotations/minute.
@@ -318,8 +318,9 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         """Sets the output set-point value.
 
         The scale and the units depend on the mode the Jaguar is in.
+        
         - In percentVbus Mode, the outputValue is from -1.0 to 1.0 (same as
-            PWM Jaguar).
+          PWM Jaguar).
         - In voltage Mode, the outputValue is in volts.
         - In current Mode, the outputValue is in amps.
         - In speed mode, the outputValue is in rotations/minute.
@@ -531,8 +532,8 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
 
         if not self.neutralModeVerified:
             try:
-                data = getMessage(_cj.LM_API_CFG_BRAKE_COAST,
-                                  _cj.CAN_MSGID_FULL_M)
+                data = self.getMessage(_cj.LM_API_CFG_BRAKE_COAST,
+                                       _cj.CAN_MSGID_FULL_M)
                 mode = data[0]
                 if mode == self.neutralMode:
                     self.neutralModeVerified = True
@@ -631,7 +632,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
                 self.requestMessage(_cj.LM_API_CFG_MAX_VOUT)
 
         if not self.voltageRampRateVerified:
-            if self.controlMode == ControlMode.PercentVbus:
+            if self.controlMode == CANJaguar.ControlMode.PercentVbus:
                 try:
                     data = self.getMessage(_cj.LM_API_VOLT_SET_RAMP,
                                            _cj.CAN_MSGID_FULL_M)
@@ -644,7 +645,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
                 except frccan.CANMessageNotFound:
                     # Verification is needed but not available - request it again.
                     self.requestMessage(_cj.LM_API_VOLT_SET_RAMP)
-            elif self.controlMode == ControlMode.Voltage:
+            elif self.controlMode == CANJaguar.ControlMode.Voltage:
                 try:
                     data = self.getMessage(_cj.LM_API_VCOMP_COMP_RAMP,
                                            _cj.CAN_MSGID_FULL_M)
@@ -686,7 +687,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
     def disable(self):
         """Common interface for disabling a motor.
 
-        .. deprecated ::
+        .. deprecated :: 2015
             Use :func:`disableControl` instead.
         """
         warnings.warn("use disableControl instead", DeprecationWarning)
@@ -821,7 +822,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
             raise ValueError("PID does not apply in Percent or Voltage control modes")
         return self.d
 
-    def enableControl(encoderInitialPosition=0.0):
+    def enableControl(self, encoderInitialPosition=0.0):
         """Enable the closed loop controller.
 
         Start actually controlling the output based on the feedback.
@@ -830,7 +831,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         encoder state.
 
         :param encoderInitialPosition: Encoder position to set if position
-        with encoder reference (default of 0.0).  Ignored otherwise.
+            with encoder reference (default of 0.0).  Ignored otherwise.
         """
         if self.controlMode == self.ControlMode.PercentVbus:
             self.sendMessage(_cj.LM_API_VOLT_T_EN, None)
@@ -943,7 +944,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         self.setSpeedReference(_cj.LM_REF_NONE)
         self.setPID(p, i, d)
 
-    def setCurrentModeEncoder(codesPerRev, p, i, d):
+    def setCurrentModeEncoder(self, codesPerRev, p, i, d):
         """Enable controlling the motor current with a PID loop, and enable
         speed sensing from a non-quadrature encoder.
 
@@ -1215,16 +1216,17 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         :returns: True if the motor is allowed to turn in the reverse direction.
         """
         self.updatePeriodicStatus()
-        return (self.limits & kReverseLimit) != 0
+        return (self.limits & self.kReverseLimit) != 0
 
     def getFaults(self):
         """Get the status of any faults the Jaguar has detected.
 
         :returns: A bit-mask of faults defined by the "Faults" constants.
-        - `kCurrentFault`
-        - `kBusVoltageFault`
-        - `kTemperatureFault`
-        - `GateDriverFault`
+        
+                  - `kCurrentFault`
+                  - `kBusVoltageFault`
+                  - `kTemperatureFault`
+                  - `GateDriverFault`
         """
         self.updatePeriodicStatus()
         return self.faults

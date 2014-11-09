@@ -142,7 +142,7 @@ class Joystick:
         """For the current joystick, return the axis determined by the
         argument.
 
-        This is for cases where the joystick axis is returned programatically,
+        This is for cases where the joystick axis is returned programmatically,
         otherwise one of the previous functions would be preferable (for
         example :func:`getX`).
 
@@ -213,7 +213,7 @@ class Joystick:
 
         :param pov: which POV (default is 0)
         :returns: The angle of the POV in degrees, or -1 if the POV is not
-        pressed.
+                  pressed.
         """
         return self.ds.getStickPOV(self.port, pov)
 

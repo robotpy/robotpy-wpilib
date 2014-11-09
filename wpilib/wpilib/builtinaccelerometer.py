@@ -21,6 +21,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
 
     def __init__(self, range=Accelerometer.Range.k8G):
         """Constructor.
+        
         :param range: The range the accelerometer will measure.  Defaults to
             +/-8g if unspecified.
         """
@@ -43,20 +44,23 @@ class BuiltInAccelerometer(LiveWindowSendable):
         hal.setAccelerometerActive(True)
 
     def getX(self):
-        """:returns: The acceleration of the RoboRIO along the X axis in
-            g-forces
+        """
+           :returns: The acceleration of the RoboRIO along the X axis in
+                     g-forces
         """
         return hal.getAccelerometerX()
 
     def getY(self):
-        """:returns: The acceleration of the RoboRIO along the Y axis in
-            g-forces
+        """
+           :returns: The acceleration of the RoboRIO along the Y axis in
+                     g-forces
         """
         return hal.getAccelerometerY()
 
     def getZ(self):
-        """:returns: The acceleration of the RoboRIO along the Z axis in
-            g-forces
+        """
+           :returns: The acceleration of the RoboRIO along the Z axis in
+                     g-forces
         """
         return hal.getAccelerometerZ()
 

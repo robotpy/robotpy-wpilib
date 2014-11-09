@@ -20,25 +20,23 @@ class IterativeRobot(RobotBase):
 
     This class is intended to implement the "old style" default code, by
     providing the following functions which are called by the main loop,
-    startCompetition(), at the appropriate times:
+    :meth:`startCompetition`, at the appropriate times:
 
-    robotInit() -- provide for initialization at robot power-on
+    - robotInit() -- provide for initialization at robot power-on
 
     init() functions -- each of the following functions is called once when the
-        appropriate mode is entered:
+    appropriate mode is entered:
 
-    - DisabledInit()   -- called only when first disabled
-    - AutonomousInit() -- called each and every time autonomous is entered from
-                          another mode
-    - TeleopInit()     -- called each and every time teleop is entered from
-                          another mode
-    - TestInit()       -- called each and every time test mode is entered from
-                          another mode
+    - :meth:`disabledInit`   -- called only when first disabled
+    - :meth:`autonomousInit` -- called each and every time autonomous is entered from another mode
+    - :meth:`teleopInit`     -- called each and every time teleop is entered from another mode
+    - :meth:`testInit`       -- called each and every time test mode is entered from another mode
 
     Periodic() functions -- each of these functions is called iteratively at
-        the appropriate periodic rate (aka the "slow loop").  The period of
-        the iterative robot is synced to the driver station control packets,
-        giving a periodic frequency of about 50Hz (50 times per second).
+    the appropriate periodic rate (aka the "slow loop").  The period of
+    the iterative robot is synced to the driver station control packets,
+    giving a periodic frequency of about 50Hz (50 times per second).
+    
     - disabledPeriodic()
     - autonomousPeriodic()
     - teleopPeriodic()

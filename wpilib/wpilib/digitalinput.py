@@ -36,7 +36,7 @@ class DigitalInput(DigitalSource):
         """Get the value from a digital input channel. Retrieve the value of
         a single digital input channel from the FPGA.
 
-        :returns: the stats of the digital input
+        :returns: the state of the digital input
         """
         if self.port is None:
             raise ValueError("operation on freed port")

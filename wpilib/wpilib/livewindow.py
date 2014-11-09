@@ -112,7 +112,7 @@ class LiveWindow:
         :param subsystem: The subsystem this component is part of.
         :param name: The name of this component.
         :param component: A LiveWindowSendable component that represents a
-        actuator.
+            actuator.
         """
         LiveWindow.components[component] = \
                 _LiveWindowComponent(subsystem, name, False)

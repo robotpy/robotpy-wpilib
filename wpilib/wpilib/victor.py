@@ -30,6 +30,7 @@ class Victor(SafePWM):
             The calibration procedure can be found in the Victor 884 User
             Manual available from VEX Robotics:
             http://content.vexrobotics.com/docs/ifi-v884-users-manual-9-25-06.pdf
+            
             - 2.027ms = full "forward"
             - 1.525ms = the "high end" of the deadband range
             - 1.507ms = center of the deadband range (off)

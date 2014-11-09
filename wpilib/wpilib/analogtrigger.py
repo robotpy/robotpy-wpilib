@@ -24,7 +24,7 @@ class AnalogTrigger:
         """Constructor for an analog trigger given a channel number or analog
         input.
 
-        :param channel: the port index or `AnalogInput` to use for the analog
+        :param channel: the port index or :class:`.AnalogInput` to use for the analog
             trigger.  Treated as an AnalogInput if the provided object has a
             getChannel function.
         """
@@ -131,7 +131,7 @@ class AnalogTrigger:
         return hal.getAnalogTriggerTriggerState(self.port)
 
     def createOutput(self, type):
-        """Creates an AnalogTriggerOutput object. Gets an output object that
+        """Creates an :class:`.AnalogTriggerOutput` object. Gets an output object that
         can be used for routing. Caller is responsible for deleting the
         AnalogTriggerOutput object.
 

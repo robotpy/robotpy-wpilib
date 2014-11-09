@@ -112,7 +112,7 @@ class ADXL345_I2C(SensorBase):
         """Get the acceleration of all axes in Gs.
 
         :returns: X,Y,Z tuple of acceleration measured on all axes of the
-            ADXL345 in Gs.
+                  ADXL345 in Gs.
         """
         data = self.i2c.read(self.kDataRegister, 6)
 

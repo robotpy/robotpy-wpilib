@@ -11,7 +11,7 @@ __all__ = ["AnalogTriggerOutput"]
 
 class AnalogTriggerOutput:
     """Class to represent a specific output from an analog trigger. This class
-    is used to get the current output value and also as a DigitalSource to
+    is used to get the current output value and also as a :class:`.DigitalSource` to
     provide routing of an output to digital subsystems on the FPGA such as
     Counter, Encoder, and Interrupt.
 

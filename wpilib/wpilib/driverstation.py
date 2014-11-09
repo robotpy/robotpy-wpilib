@@ -16,14 +16,12 @@ __all__ = ["DriverStation"]
 
 class DriverStation:
     """Provide access to the network communication data to / from the Driver
-    Station.
+    Station."""
 
-    Class variables:
-        kJoystickPorts (int): The number of joystick ports
-        kDSAnalogInScaling (float): Scaling factor from raw values to volts
-    """
-
+    #: The number of joystick ports
     kJoystickPorts = 6
+    
+    #: Scaling factor from raw values to volts
     kDSAnalogInScaling = 5.0 / 1023.0
     lastEnabled = False
 
@@ -180,7 +178,7 @@ class DriverStation:
 
         :param pov: which POV
         :returns: The angle of the POV in degrees, or -1 if the POV is not
-        pressed.
+                  pressed.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-5")
@@ -267,7 +265,8 @@ class DriverStation:
     def getAlliance(self):
         """Get the current alliance from the FMS.
 
-        :returns: The current alliance (see :class:`Alliance`)
+        :returns: The current alliance
+        :rtype: :class:`.Alliance`
         """
         with self.mutex:
             if self.allianceStationID in (hal.kHALAllianceStationID_red1,
@@ -314,9 +313,10 @@ class DriverStation:
         The FMS does not currently send the official match time to the robots.
         This returns the time since the enable signal sent from the Driver
         Station.
-        At the beginning of autonomous, the time is reset to 0.0 seconds.
-        At the beginning of teleop, the time is reset to +15.0 seconds.
-        If the robot is disabled, this returns 0.0 seconds.
+        
+        * At the beginning of autonomous, the time is reset to 0.0 seconds.
+        * At the beginning of teleop, the time is reset to +15.0 seconds.
+        * If the robot is disabled, this returns 0.0 seconds.
 
         .. warning::
 
@@ -331,9 +331,9 @@ class DriverStation:
 
     @staticmethod
     def reportError(error, printTrace):
-        """Report error to Driver Station.
-        Also prints error to sys.stderr
-        Optionally appends stack trace to error message
+        """Report error to Driver Station, and also prints error to `sys.stderr`. 
+        Optionally appends stack trace to error message.
+        
         :param printTrace: If True, append stack trace to error string
         """
         errorString = error
@@ -357,7 +357,7 @@ class DriverStation:
         be executing for diagnostic purposes only.
 
         :param entering: If True, starting disabled code; if False, leaving
-        disabled code
+            disabled code
         """
         self.userInDisabled = entering
 
@@ -366,7 +366,7 @@ class DriverStation:
         be executing for diagnostic purposes only.
 
         :param entering: If True, starting autonomous code; if False, leaving
-        autonomous code
+            autonomous code
         """
         self.userInAutonomous = entering
 
