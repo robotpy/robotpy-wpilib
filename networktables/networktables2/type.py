@@ -1,3 +1,5 @@
+import struct as _struct
+
 class ComplexData:
     def __init__(self, type):
         self.type = type
@@ -36,44 +38,42 @@ class NetworkTableEntryType:
         """
         raise NotImplementedError
 
+class BasicEntryType(NetworkTableEntryType):
+    def __init__(self, id, name, STRUCT):
+        super().__init__(id, name)
+        self.STRUCT = _struct.Struct(STRUCT)
+
+    def sendValue(self, value, wstream):
+        wstream.write(self.STRUCT.pack(value))
+
+    def readValue(self, rstream):
+        return rstream.readStruct(self.STRUCT)[0]
+
+class StringEntryType(NetworkTableEntryType):
+    """a string type
+    """
+    LEN = _struct.Struct('>H')
+
+    def __init__(self, id, name):
+        super().__init__(id, name)
+
+    def sendValue(self, value, wstream):
+        s = value.encode('utf-8')
+        wstream.write(self.LEN.pack(len(s)))
+        wstream.write(s)
+
+    def readValue(self, rstream):
+        sLen = rstream.readStruct(self.LEN)[0]
+        return rstream.read(sLen).decode('utf-8')
+
 class DefaultEntryTypes:
     BOOLEAN_RAW_ID = 0x00
     DOUBLE_RAW_ID = 0x01
     STRING_RAW_ID = 0x02
 
-    class Boolean(NetworkTableEntryType):
-        """a boolean entry type
-        """
-        def __init__(self):
-            super().__init__(DefaultEntryTypes.BOOLEAN_RAW_ID, "Boolean")
-        def sendValue(self, value, wstream):
-            wstream.writeBoolean(bool(value))
-        def readValue(self, rstream):
-            return rstream.readBoolean()
-
-    class Double(NetworkTableEntryType):
-        """a double floating point type
-        """
-        def __init__(self):
-            super().__init__(DefaultEntryTypes.DOUBLE_RAW_ID, "Double")
-        def sendValue(self, value, wstream):
-            wstream.writeDouble(float(value))
-        def readValue(self, rstream):
-            return rstream.readDouble()
-
-    class String(NetworkTableEntryType):
-        """a string type
-        """
-        def __init__(self):
-            super().__init__(DefaultEntryTypes.STRING_RAW_ID, "String")
-        def sendValue(self, value, wstream):
-            wstream.writeUTF(str(value))
-        def readValue(self, rstream):
-            return rstream.readUTF()
-
-DefaultEntryTypes.BOOLEAN = DefaultEntryTypes.Boolean()
-DefaultEntryTypes.DOUBLE = DefaultEntryTypes.Double()
-DefaultEntryTypes.STRING = DefaultEntryTypes.String()
+    BOOLEAN = BasicEntryType(BOOLEAN_RAW_ID, "Boolean", '?')
+    DOUBLE = BasicEntryType(DOUBLE_RAW_ID, "Double", '>d')
+    STRING = StringEntryType(STRING_RAW_ID, "String")
 
 class ComplexEntryType(NetworkTableEntryType):
     def __init__(self, id, name):

@@ -4,7 +4,6 @@ import time
 from .common import *
 from .connection import *
 from .networktablenode import NetworkTableNode
-from .stream import StreamEOF
 from .type import NetworkTableEntryTypeManager
 
 __all__ = ["NetworkTableServer"]
@@ -101,7 +100,7 @@ class ServerConnectionAdapter:
     def clientHello(self, protocolRevision):
         if self.connectionState != GOT_CONNECTION_FROM_CLIENT:
             raise BadMessageError("A server should not receive a client hello after it has already connected/entered an error state")
-        if protocolRevision != NetworkTableConnection.PROTOCOL_REVISION:
+        if protocolRevision != PROTOCOL_REVISION:
             self.connection.sendProtocolVersionUnsupported()
             raise BadMessageError("Client Connected with bad protocol revision: 0x%x" % protocolRevision)
         else:

@@ -1,40 +1,92 @@
+import struct
 import threading
 
 from .networktableentry import NetworkTableEntry
-from .stream import ReadStream, WriteStream
 
-__all__ = ["BadMessageError", "NetworkTableConnection",
-           "ConnectionMonitorThread"]
+__all__ = ["BadMessageError", "StreamEOF", "NetworkTableConnection",
+           "ConnectionMonitorThread", "PROTOCOL_REVISION"]
 
 class BadMessageError(IOError):
     pass
 
-class NetworkTableMessageType:
-    """The definitions of all of the protocol message types
+class StreamEOF(IOError):
+    pass
 
-    - KEEP_ALIVE: A keep alive message that the client sends
-    - CLIENT_HELLO: a client hello message that a client sends
-    - PROTOCOL_VERSION_UNSUPPORTED: a protocol version unsupported message
-        that the server sends to a client
-    - ENTRY_ASSIGNMENT: an entry assignment message
-    - FIELD_UPDATE: a field update message
-    """
-    KEEP_ALIVE = 0x00
-    CLIENT_HELLO = 0x01
-    PROTOCOL_VERSION_UNSUPPORTED = 0x02
-    SERVER_HELLO_COMPLETE = 0x03
-    ENTRY_ASSIGNMENT = 0x10
-    FIELD_UPDATE = 0x11
+PROTOCOL_REVISION = 0x0200
+
+# The definitions of all of the protocol message types
+
+class Message:
+    def __init__(self, HEADER, STRUCT=None):
+        self.HEADER = HEADER
+        if STRUCT is None:
+            self.STRUCT = None
+        else:
+            self.STRUCT = struct.Struct(STRUCT)
+
+    def send(self, wstream, *args):
+        wstream.write(self.HEADER)
+        if self.STRUCT is not None:
+            wstream.write(self.STRUCT.pack(*args))
+
+    def read(self, rstream):
+        return rstream.readStruct(self.STRUCT)
+
+class NamedMessage(Message):
+    NAME_LEN_STRUCT = struct.Struct('>H')
+
+    def __init__(self, HEADER, STRUCT=None):
+        super().__init__(HEADER, STRUCT)
+
+    def send(self, wstream, name, *args):
+        wstream.write(self.HEADER)
+        name = name.encode('utf-8')
+        wstream.write(self.NAME_LEN_STRUCT.pack(len(name)))
+        wstream.write(name)
+        if self.STRUCT is not None:
+            wstream.write(self.STRUCT.pack(*args))
+
+    def read(self, rstream):
+        nameLen = rstream.readStruct(self.NAME_LEN_STRUCT)[0]
+        name = rstream.read(nameLen).decode('utf-8')
+        return name, rstream.readStruct(self.STRUCT)
+
+# A keep alive message that the client sends
+KEEP_ALIVE = Message(b'\x00')
+# A client hello message that a client sends
+CLIENT_HELLO = Message(b'\x01', '>H')
+# A protocol version unsupported message that the server sends to a client
+PROTOCOL_UNSUPPORTED = Message(b'\x02', '>H')
+# A server hello complete message that a server sends
+SERVER_HELLO_COMPLETE = Message(b'\x03')
+# An entry assignment message
+ENTRY_ASSIGNMENT = NamedMessage(b'\x10', '>bHH')
+# A field update message
+FIELD_UPDATE = Message(b'\x11', '>HH')
+
+class ReadStream:
+    def __init__(self, f):
+        self.f = f
+
+    def read(self, size=-1):
+        data = self.f.read(size)
+        if size is not None and size > 0 and len(data) != size:
+            raise StreamEOF("end of file")
+        return data
+
+    def readStruct(self, s):
+        data = self.f.read(s.size)
+        if len(data) != s.size:
+            raise StreamEOF("end of file")
+        return s.unpack(data)
 
 class NetworkTableConnection:
     """An abstraction for the NetworkTable protocol
     """
-    PROTOCOL_REVISION = 0x0200
-
     def __init__(self, stream, typeManager):
         self.stream = stream
         self.rstream = ReadStream(stream.getInputStream())
-        self.wstream = WriteStream(stream.getOutputStream())
+        self.wstream = stream.getOutputStream()
         self.typeManager = typeManager
         self.write_lock = threading.RLock()
         self.isValid = True
@@ -44,77 +96,64 @@ class NetworkTableConnection:
             self.isValid = False
             self.stream.close()
 
-    def sendMessageHeader(self, messageType):
-        with self.write_lock:
-            self.wstream.writeByte(messageType)
-
     def flush(self):
         with self.write_lock:
             self.wstream.flush()
 
     def sendKeepAlive(self):
         with self.write_lock:
-            self.sendMessageHeader(NetworkTableMessageType.KEEP_ALIVE)
+            KEEP_ALIVE.send(self.wstream)
             self.flush()
 
     def sendClientHello(self):
         with self.write_lock:
-            self.sendMessageHeader(NetworkTableMessageType.CLIENT_HELLO)
-            self.wstream.writeChar(self.PROTOCOL_REVISION)
+            CLIENT_HELLO.send(self.wstream, PROTOCOL_REVISION)
             self.flush()
 
     def sendServerHelloComplete(self):
         with self.write_lock:
-            self.sendMessageHeader(NetworkTableMessageType.SERVER_HELLO_COMPLETE)
+            SERVER_HELLO_COMPLETE.send(self.wstream)
             self.flush()
 
     def sendProtocolVersionUnsupported(self):
         with self.write_lock:
-            self.sendMessageHeader(NetworkTableMessageType.PROTOCOL_VERSION_UNSUPPORTED)
-            self.wstream.writeChar(self.PROTOCOL_REVISION)
+            PROTOCOL_UNSUPPORTED.send(self.wstream, PROTOCOL_REVISION)
             self.flush()
 
     def sendEntryAssignment(self, entry):
         with self.write_lock:
-            self.sendMessageHeader(NetworkTableMessageType.ENTRY_ASSIGNMENT)
-            self.wstream.writeUTF(entry.name)
-            self.wstream.writeByte(entry.getType().id)
-            self.wstream.writeChar(entry.getId())
-            self.wstream.writeChar(entry.getSequenceNumber())
+            ENTRY_ASSIGNMENT.send(self.wstream, entry.name, entry.getType().id,
+                                  entry.getId(), entry.getSequenceNumber())
             entry.sendValue(self.wstream)
 
     def sendEntryUpdate(self, entry):
         with self.write_lock:
-            self.sendMessageHeader(NetworkTableMessageType.FIELD_UPDATE)
-            self.wstream.writeChar(entry.getId())
-            self.wstream.writeChar(entry.getSequenceNumber())
+            FIELD_UPDATE.send(self.wstream, entry.getId(),
+                              entry.getSequenceNumber())
             entry.sendValue(self.wstream)
 
     def read(self, adapter):
-        messageType = self.rstream.readByte()
-        if messageType == NetworkTableMessageType.KEEP_ALIVE:
+        messageType = self.rstream.read(1)
+        if messageType == KEEP_ALIVE.HEADER:
             adapter.keepAlive()
-        elif messageType == NetworkTableMessageType.CLIENT_HELLO:
-            protocolRevision = self.rstream.readChar()
+        elif messageType == CLIENT_HELLO.HEADER:
+            protocolRevision = CLIENT_HELLO.read(self.rstream)[0]
             adapter.clientHello(protocolRevision)
-        elif messageType == NetworkTableMessageType.SERVER_HELLO_COMPLETE:
+        elif messageType == SERVER_HELLO_COMPLETE.HEADER:
             adapter.serverHelloComplete()
-        elif messageType == NetworkTableMessageType.PROTOCOL_VERSION_UNSUPPORTED:
-            protocolRevision = self.rstream.readChar()
+        elif messageType == PROTOCOL_UNSUPPORTED.HEADER:
+            protocolRevision = PROTOCOL_UNSUPPORTED.read(self.rstream)[0]
             adapter.protocolVersionUnsupported(protocolRevision)
-        elif messageType == NetworkTableMessageType.ENTRY_ASSIGNMENT:
-            entryName = self.rstream.readUTF()
-            typeId = self.rstream.readByte()
+        elif messageType == ENTRY_ASSIGNMENT.HEADER:
+            entryName, (typeId, entryId, entrySequenceNumber) = \
+                    ENTRY_ASSIGNMENT.read(self.rstream)
             entryType = self.typeManager.getType(typeId)
             if entryType is None:
                 raise BadMessageError("Unknown data type: 0x%x" % typeId)
-            entryId = self.rstream.readChar()
-            entrySequenceNumber = self.rstream.readChar()
             value = entryType.readValue(self.rstream)
             adapter.offerIncomingAssignment(NetworkTableEntry(entryName, entryType, value, id=entryId, sequenceNumber=entrySequenceNumber))
-        elif messageType == NetworkTableMessageType.FIELD_UPDATE:
-            entryId = self.rstream.readChar()
-            entrySequenceNumber = self.rstream.readChar()
+        elif messageType == FIELD_UPDATE.HEADER:
+            entryId, entrySequenceNumber = FIELD_UPDATE.read(self.rstream)
             entry = adapter.getEntry(entryId)
             if entry is None:
                 raise BadMessageError("Received update for unknown entry id: %d " % entryId)
