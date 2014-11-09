@@ -8,7 +8,8 @@ class NamedSendable(Sendable):
     """
 
     def getName(self):
-        """:returns: The name of the subtable of SmartDashboard that the
-        Sendable object will use
+        """
+            :returns: The name of the subtable of SmartDashboard that the
+                      :class:`.Sendable` object will use
         """
         raise NotImplementedError

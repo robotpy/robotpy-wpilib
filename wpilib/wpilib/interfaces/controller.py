@@ -11,6 +11,6 @@ class Controller:
 
     def disable(self):
         """Stops the control loop from running until explicitly re-enabled by
-        calling :func:`enable`.
+        calling :meth:`enable`.
         """
         raise NotImplementedError

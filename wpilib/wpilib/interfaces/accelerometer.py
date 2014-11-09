@@ -20,8 +20,8 @@ class Accelerometer:
         accelerometer.
 
         :param range: The maximum acceleration, positive or negative, that
-        the accelerometer will measure.  Not all accelerometers support all
-        ranges.
+                      the accelerometer will measure.  Not all accelerometers
+                      support all ranges.
         """
         raise NotImplementedError
 

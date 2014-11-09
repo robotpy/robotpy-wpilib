@@ -25,7 +25,8 @@ class SpeedController(PIDOutput):
 
         :param speed: The speed to set.  Value should be between -1.0 and 1.0.
         :param syncGroup: The update group to add this set() to, pending
-        updateSyncGroup().  If 0 (or unspecified), update immediately.
+                          updateSyncGroup().  If 0 (or unspecified), update
+                          immediately.
         """
         raise NotImplementedError
 

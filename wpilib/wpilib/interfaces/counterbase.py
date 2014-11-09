@@ -12,53 +12,57 @@ class CounterBase:
     Encoders, Gear tooth sensors, and counters should all subclass this so it
     can be used to build more advanced classes for control and driving.
 
-    All counters will immediately start counting - reset() them if you need them
-    to be zeroed before use.
+    All counters will immediately start counting - :meth:`reset` them if you
+    need them to be zeroed before use.
     """
 
     class EncodingType:
-        """The number of edges for the counterbase to increment or decrement on
-
-        Values:
-        - k1X: Count only the rising edge
-        - k2X: Count both the rising and falling edge
-        - k4X: Count rising and falling on both channels
-        """
+        """The number of edges for the counterbase to increment or decrement on"""
+        
+        #: Count only the rising edge
         k1X = 0
+        
+        #: Count both the rising and falling edge
         k2X = 1
+        
+        #: Count rising and falling on both channels
         k4X = 2
 
     def get(self):
         """Get the count
+        
         :returns: the count
         """
         raise NotImplementedError
 
     def reset(self):
-        """Reset the count to zero
-        """
+        """Reset the count to zero"""
         raise NotImplementedError
 
     def getPeriod(self):
         """Get the time between the last two edges counted
+        
         :returns: the time beteween the last two ticks in seconds
         """
         raise NotImplementedError
 
     def setMaxPeriod(self, maxPeriod):
         """Set the maximum time between edges to be considered stalled
+        
         :param maxPeriod: the maximum period in seconds
         """
         raise NotImplementedError
 
     def getStopped(self):
         """Determine if the counter is not moving
+        
         :returns: True if the counter has not changed for the max period
         """
         raise NotImplementedError
 
     def getDirection(self):
         """Determine which direction the counter is going
+        
         :returns: True for one direction, False for the other
         """
         raise NotImplementedError

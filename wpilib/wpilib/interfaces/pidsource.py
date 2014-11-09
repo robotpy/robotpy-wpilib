@@ -8,19 +8,20 @@
 __all__ = ["PIDSource"]
 
 class PIDSource:
-    """This interface allows for PIDController to automatically read from this
+    """This interface allows for :class:`.PIDController` to automatically read from this
     object.
     """
 
     class PIDSourceParameter:
         """A description for the type of output value to provide to a
-        :class:`PIDController`"""
+        :class:`.PIDController`"""
         kDistance = 0
         kRate = 1
         kAngle = 2
 
     def pidGet(self):
-        """Get the result to use in PIDController
+        """Get the result to use in :class:`.PIDController`
+        
         :returns: the result to use in PIDController
         """
         raise NotImplementedError

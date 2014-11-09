@@ -12,7 +12,11 @@ class GenericHID:
 
     class Hand:
         """Which hand the Human Interface Device is associated with."""
+        
+        #: Left hand
         kLeft = 0
+        
+        #: Right hand
         kRight = 1
 
     def getX(self, hand=None):
@@ -63,6 +67,7 @@ class GenericHID:
 
     def getTrigger(self, hand=None):
         """Is the trigger pressed
+        
         :param hand: which hand (default right)
         :returns: True if the trigger for the given hand is pressed
         """
@@ -70,6 +75,7 @@ class GenericHID:
 
     def getTop(self, hand=None):
         """Is the top button pressed
+        
         :param hand: which hand (default right)
         :returns: True if the top button for the given hand is pressed
         """
@@ -96,6 +102,6 @@ class GenericHID:
 
         :param pov: which POV (default is 0)
         :returns: The angle of the POV in degrees, or -1 if the POV is not
-        pressed.
+                  pressed.
         """
         raise NotImplementedError

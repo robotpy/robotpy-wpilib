@@ -8,12 +8,12 @@
 __all__ = ["PIDOutput"]
 
 class PIDOutput:
-    """This interface allows :class:`PIDController` to write its results to
+    """This interface allows :class:`.PIDController` to write its results to
     its output.
     """
 
     def pidWrite(self, output):
-        """Set the output to the value calculated by PIDController.
+        """Set the output to the value calculated by :class:`.PIDController`.
 
         :param output: the value calculated by PIDController
         """
