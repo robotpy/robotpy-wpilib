@@ -122,6 +122,45 @@ def reset_hal_data():
                 
         'dio': [None]*10, # dict keys: value, is_input, pulse_length
         
+        'encoder': [{
+            'initialized': False,
+            'config': [None]*6, # list of pins/modules
+            'count': 0,
+            'period': 0,
+            'max_period': 0,
+            'direction': False,
+            'reverse_direction': False,
+            'samples_to_average': 0,
+        }]*4,
+        
+        # There is a lot of config involved here... 
+        'counter': [{
+            'initialized': False,
+            'count': 0,
+            'period': 0,
+            'max_period': 0,
+            'direction': False,
+            'reverse_direction': False,
+            'samples_to_average': 0,
+            'mode': 0,
+            'average_size': 0,
+            
+            'up_source_channel': 0,
+            'up_source_trigger': False,
+            'down_source_channel': 0,
+            'down_source_trigger': False,
+            
+            'update_when_empty': False,
+            
+            'up_rising_edge': False,
+            'up_falling_edge': False,
+            'down_rising_edge': False,
+            'down_falling_edge': False,
+            
+            'pulse_length_threshold': 0
+            
+        }]*8,
+        
         'user_program_state': None, # starting, disabled, autonomous, teleop, test
 
         'power': {

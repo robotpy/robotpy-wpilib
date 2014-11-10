@@ -6,6 +6,7 @@ import time
 import threading
 
 from .data import hal_data
+from hal.functions import setCounterUpSourceEdge
 
 #
 # Misc constants
@@ -681,110 +682,187 @@ def isAnyPulsing(status):
 #
 
 def initializeCounter(mode, status):
-    assert False
+    status.value = 0
+    for idx in range(0, len(hal_data['counter'])):
+        cnt = hal_data['counter'][idx]
+        if cnt['initialized'] == False:
+            cnt['initialized'] = True
+            cnt['mode'] = mode
+            return types.Counter(idx), idx 
+    
+    status.value = NO_AVAILABLE_RESOURCES
+    return None, -1
+
 
 def freeCounter(counter, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['initialized'] = False
 
 def setCounterAverageSize(counter, size, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['average_size'] = size
 
 def setCounterUpSource(counter, pin, analog_trigger, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['up_source_channel'] = pin
+    hal_data['counter'][counter.idx]['up_source_trigger'] = analog_trigger
+    
+    if hal_data['counter'][counter.idx]['mode'] in \
+       [constants.Mode.kTwoPulse, constants.Mode.kExternalDirection]:
+        setCounterUpSourceEdge(counter, True, False, status) 
 
 def setCounterUpSourceEdge(counter, rising_edge, falling_edge, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['up_rising_edge'] = rising_edge
+    hal_data['counter'][counter.idx]['up_falling_edge'] = falling_edge
 
 def clearCounterUpSource(counter, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['up_rising_edge'] = False
+    hal_data['counter'][counter.idx]['up_falling_edge'] = False
+    hal_data['counter'][counter.idx]['up_source_channel'] = 0
+    hal_data['counter'][counter.idx]['up_source_trigger'] = False
 
 def setCounterDownSource(counter, pin, analog_trigger, status):
-    assert False
+    status.value = 0
+    if hal_data['counter'][counter.idx]['mode'] not in \
+       [constants.Mode.kTwoPulse, constants.Mode.kExternalDirection]:
+        status.value = PARAMETER_OUT_OF_RANGE
+        return
+    
+    hal_data['counter'][counter.idx]['down_source_channel'] = pin
+    hal_data['counter'][counter.idx]['down_source_trigger'] = analog_trigger
+    
 
 def setCounterDownSourceEdge(counter, rising_edge, falling_edge, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['down_rising_edge'] = rising_edge
+    hal_data['counter'][counter.idx]['down_falling_edge'] = falling_edge
 
 def clearCounterDownSource(counter, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['down_rising_edge'] = False
+    hal_data['counter'][counter.idx]['down_falling_edge'] = False
+    hal_data['counter'][counter.idx]['down_source_channel'] = 0
+    hal_data['counter'][counter.idx]['down_source_trigger'] = False
 
 def setCounterUpDownMode(counter, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['mode'] = constants.Mode.kTwoPulse
 
 def setCounterExternalDirectionMode(counter, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['mode'] = constants.Mode.kExternalDirection
 
 def setCounterSemiPeriodMode(counter, high_semi_period, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['mode'] = constants.Mode.kSemiperiod
+    hal_data['counter'][counter.idx]['up_rising_edge'] = high_semi_period
+    hal_data['counter'][counter.idx]['update_when_empty'] = False
 
 def setCounterPulseLengthMode(counter, threshold, status):
-    assert False
+    hal_data['counter'][counter.idx]['mode'] = constants.Mode.kPulseLength
+    hal_data['counter'][counter.idx]['pulse_length_threshold'] = threshold
 
 def getCounterSamplesToAverage(counter, status):
-    assert False
+    status.value = 0
+    return hal_data['counter'][counter.idx]['samples_to_average']
 
 def setCounterSamplesToAverage(counter, samples_to_average, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['samples_to_average'] = samples_to_average
 
 def resetCounter(counter, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['count'] = 0
 
 def getCounter(counter, status):
-    assert False
+    status.value = 0
+    return hal_data['counter'][counter.idx]['count']
 
 def getCounterPeriod(counter, status):
-    assert False
+    status.value = 0
+    return hal_data['counter'][counter.idx]['period']
 
 def setCounterMaxPeriod(counter, max_period, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['max_period'] = max_period
 
 def setCounterUpdateWhenEmpty(counter, enabled, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['update_when_empty'] = enabled
 
 def getCounterStopped(counter, status):
-    assert False
+    status.value = 0
+    cnt = hal_data['counter'][counter.idx]
+    return cnt['period'] > cnt['max_period']
 
 def getCounterDirection(counter, status):
-    assert False
+    status.value = 0
+    return hal_data['counter'][counter.idx]['direction']
 
 def setCounterReverseDirection(counter, reverse_direction, status):
-    assert False
+    status.value = 0
+    hal_data['counter'][counter.idx]['reverse_direction'] = reverse_direction
 
 #
 # Encoder
 #
 
 def initializeEncoder(port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger, reverse_direction, status):
-    assert False
+    status.value = 0
+    for idx in range(0, len(hal_data['encoder'])):
+        enc = hal_data['encoder'][idx]
+        if enc['initialized'] == False:
+            enc['initialized'] = True
+            enc['config'] = [port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger]
+            enc['reverse_direction'] = reverse_direction
+            return types.Encoder(idx), idx 
+        
+    # I think HAL fails silently.. 
+    status.value = NO_AVAILABLE_RESOURCES
+    return None, -1
 
 def freeEncoder(encoder, status):
-    assert False
+    status.value = 0
+    hal_data['encoder'][encoder.idx]['initialized'] = False
 
 def resetEncoder(encoder, status):
-    assert False
+    status.value = 0
+    hal_data['encoder'][encoder.idx]['count'] = 0
 
 def getEncoder(encoder, status):
-    assert False
+    status.value = 0
+    return hal_data['encoder'][encoder.idx]['count']
 
 def getEncoderPeriod(encoder, status):
-    assert False
+    status.value = 0
+    return hal_data['encoder'][encoder.idx]['period']
 
 def setEncoderMaxPeriod(encoder, max_period, status):
-    assert False
+    status.value = 0
+    hal_data['encoder'][encoder.idx]['max_period'] = max_period
 
 def getEncoderStopped(encoder, status):
-    assert False
+    status.value = 0
+    enc = hal_data['encoder'][encoder.idx]
+    return enc['period'] > enc['max_period']
 
 def getEncoderDirection(encoder, status):
-    assert False
+    status.value = 0
+    return hal_data['encoder'][encoder.idx]['direction']
 
 def setEncoderReverseDirection(encoder, reverse_direction, status):
-    assert False
+    status.value = 0
+    hal_data['encoder'][encoder.idx]['reverse_direction'] = reverse_direction
 
 def setEncoderSamplesToAverage(encoder, samples_to_average, status):
-    assert False
+    status.value = 0
+    hal_data['encoder'][encoder.idx]['samples_to_average'] = samples_to_average
 
 def getEncoderSamplesToAverage(encoder, status):
-    assert False
+    status.value = 0
+    return hal_data['encoder'][encoder.idx]['samples_to_average']
 
 def getLoopTiming(status):
     status.value = 0

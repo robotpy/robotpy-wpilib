@@ -103,7 +103,8 @@ class Counter:
 
 # opaque encoder
 class Encoder:
-    pass
+    def __init__(self, idx):
+        self.idx = idx
 
 #############################################################################
 # Interrupts
