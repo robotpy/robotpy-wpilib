@@ -37,11 +37,11 @@ def reset_hal_data():
             'ds_attached': False
         },
 
-        # Joysticks are stored numbered 1-4. Element 0 is ignored.
+        # Joysticks are stored numbered 0-5.
         # buttons are stored as booleans
         # axes are stored as values between -1 and 1
         # povs are stored as integer values
-        'joysticks': [None] + [
+        'joysticks': [
             {
                 'buttons': [None]+[False]*12, # numbered 1-12. element 0 is ignored
                 'axes':    [0]*constants.kMaxJoystickAxes,  # x is 0, y is 1, .. 
