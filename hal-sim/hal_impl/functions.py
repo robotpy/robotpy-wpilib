@@ -6,7 +6,6 @@ import time
 import threading
 
 from .data import hal_data
-from hal.functions import setCounterUpSourceEdge
 
 #
 # Misc constants
