@@ -37,6 +37,10 @@ def reset_hal_data():
             'fms_attached': False,
             'ds_attached': False
         },
+                     
+        # key:   resource type
+        # value: list of instance numbers
+        'reports': {},
 
         # Joysticks are stored numbered 0-5.
         # buttons are stored as booleans

@@ -249,7 +249,8 @@ def HALNetworkCommunicationObserveUserProgramTest():
     hal_data['user_program_state'] = 'test'
 
 def HALReport(resource, instanceNumber, context=0, feature=None):
-    pass
+    # TODO: context/feature?
+    hal_data['reports'].setdefault(resource, []).append(instanceNumber)
 
 
 #############################################################################
