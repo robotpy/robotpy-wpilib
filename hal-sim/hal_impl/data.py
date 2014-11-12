@@ -23,7 +23,8 @@ def reset_hal_data():
               use None, or an explicit initialization key
     '''
     global hal_data
-    hal_data = {
+    hal_data.clear()
+    hal_data.update({
 
         'alliance_station': constants.kHALAllianceStationID_red1,
         'program_start': time.monotonic(),
@@ -182,6 +183,6 @@ def reset_hal_data():
             'voltage': 0,
             'current': [0]*16
         }
-    }
+    })
 
 reset_hal_data()
