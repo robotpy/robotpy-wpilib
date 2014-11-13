@@ -5,9 +5,9 @@ import math
 @pytest.mark.parametrize("kw,mc",
         [(False, None), (False, ""), (False, "Victor"),
          (True, None), (True, ""), (True, "Victor")])
-def test_init_two(kw, mc, wpilib, hal):
-    hal.getFPGATime.return_value = 1000
-    hal.getLoopTiming.return_value = wpilib.SensorBase.kSystemClockTicksPerMicrosecond
+def test_init_two(kw, mc, wpimock, halmock):
+    halmock.getFPGATime.return_value = 1000
+    halmock.getLoopTiming.return_value = wpimock.SensorBase.kSystemClockTicksPerMicrosecond
 
     if mc is None:
         left = MagicMock()
@@ -18,19 +18,19 @@ def test_init_two(kw, mc, wpilib, hal):
 
     if kw:
         if mc:
-            drive = wpilib.RobotDrive(leftMotor=left, rightMotor=right,
-                                      motorController=getattr(wpilib, mc))
+            drive = wpimock.RobotDrive(leftMotor=left, rightMotor=right,
+                                      motorController=getattr(wpimock, mc))
         else:
-            drive = wpilib.RobotDrive(leftMotor=left, rightMotor=right)
+            drive = wpimock.RobotDrive(leftMotor=left, rightMotor=right)
     else:
         if mc:
-            drive = wpilib.RobotDrive(left, right,
-                                      motorController=getattr(wpilib, mc))
+            drive = wpimock.RobotDrive(left, right,
+                                      motorController=getattr(wpimock, mc))
         else:
-            drive = wpilib.RobotDrive(left, right)
+            drive = wpimock.RobotDrive(left, right)
 
-    assert drive.maxOutput == wpilib.RobotDrive.kDefaultMaxOutput
-    assert drive.sensitivity == wpilib.RobotDrive.kDefaultSensitivity
+    assert drive.maxOutput == wpimock.RobotDrive.kDefaultMaxOutput
+    assert drive.sensitivity == wpimock.RobotDrive.kDefaultSensitivity
     assert drive.safetyEnabled
 
     assert drive.frontLeftMotor is None
@@ -43,9 +43,9 @@ def test_init_two(kw, mc, wpilib, hal):
         right.set.assert_called_once_with(0.0, 0x80)
     else:
         if mc:
-            mclass = getattr(wpilib, mc)
+            mclass = getattr(wpimock, mc)
         else:
-            mclass = wpilib.Talon
+            mclass = wpimock.Talon
         assert isinstance(drive.rearLeftMotor, mclass)
         assert isinstance(drive.rearRightMotor, mclass)
         assert drive.rearLeftMotor.getChannel() == left
@@ -55,9 +55,9 @@ def test_init_two(kw, mc, wpilib, hal):
 @pytest.mark.parametrize("kw,mc",
         [(False, None), (False, ""), (False, "Victor"),
          (True, None), (True, ""), (True, "Victor")])
-def test_init_four(kw, mc, wpilib, hal):
-    hal.getFPGATime.return_value = 1000
-    hal.getLoopTiming.return_value = wpilib.SensorBase.kSystemClockTicksPerMicrosecond
+def test_init_four(kw, mc, wpimock, halmock):
+    halmock.getFPGATime.return_value = 1000
+    halmock.getLoopTiming.return_value = wpimock.SensorBase.kSystemClockTicksPerMicrosecond
 
     if mc is None:
         fleft = MagicMock()
@@ -72,25 +72,25 @@ def test_init_four(kw, mc, wpilib, hal):
 
     if kw:
         if mc:
-            drive = wpilib.RobotDrive(frontLeftMotor=fleft,
+            drive = wpimock.RobotDrive(frontLeftMotor=fleft,
                                       rearLeftMotor=rleft,
                                       frontRightMotor=fright,
                                       rearRightMotor=rright,
-                                      motorController=getattr(wpilib, mc))
+                                      motorController=getattr(wpimock, mc))
         else:
-            drive = wpilib.RobotDrive(frontLeftMotor=fleft,
+            drive = wpimock.RobotDrive(frontLeftMotor=fleft,
                                       rearLeftMotor=rleft,
                                       frontRightMotor=fright,
                                       rearRightMotor=rright)
     else:
         if mc:
-            drive = wpilib.RobotDrive(fleft, rleft, fright, rright,
-                                      motorController=getattr(wpilib, mc))
+            drive = wpimock.RobotDrive(fleft, rleft, fright, rright,
+                                      motorController=getattr(wpimock, mc))
         else:
-            drive = wpilib.RobotDrive(fleft, rleft, fright, rright)
+            drive = wpimock.RobotDrive(fleft, rleft, fright, rright)
 
-    assert drive.maxOutput == wpilib.RobotDrive.kDefaultMaxOutput
-    assert drive.sensitivity == wpilib.RobotDrive.kDefaultSensitivity
+    assert drive.maxOutput == wpimock.RobotDrive.kDefaultMaxOutput
+    assert drive.sensitivity == wpimock.RobotDrive.kDefaultSensitivity
     assert drive.safetyEnabled
 
     if mc is None:
@@ -105,9 +105,9 @@ def test_init_four(kw, mc, wpilib, hal):
         rright.set.assert_called_once_with(0.0, 0x80)
     else:
         if mc:
-            mclass = getattr(wpilib, mc)
+            mclass = getattr(wpimock, mc)
         else:
-            mclass = wpilib.Talon
+            mclass = wpimock.Talon
         assert isinstance(drive.frontLeftMotor, mclass)
         assert isinstance(drive.rearLeftMotor, mclass)
         assert isinstance(drive.frontRightMotor, mclass)
@@ -118,42 +118,42 @@ def test_init_four(kw, mc, wpilib, hal):
         assert drive.rearRightMotor.getChannel() == rright
         # TODO: test hal.setPWM() outputs
 
-def test_init_error(wpilib, hal):
-    hal.getFPGATime.return_value = 1000
+def test_init_error(wpimock, halmock):
+    halmock.getFPGATime.return_value = 1000
 
     with pytest.raises(ValueError):
-        wpilib.RobotDrive()
+        wpimock.RobotDrive()
     with pytest.raises(ValueError):
-        wpilib.RobotDrive(1)
+        wpimock.RobotDrive(1)
 
-def test_init_warning(wpilib, hal, recwarn):
-    hal.getFPGATime.return_value = 1000
-    wpilib.RobotDrive(MagicMock(), MagicMock(), foo=5)
+def test_init_warning(wpimock, halmock, recwarn):
+    halmock.getFPGATime.return_value = 1000
+    wpimock.RobotDrive(MagicMock(), MagicMock(), foo=5)
     w = recwarn.pop(RuntimeWarning)
     assert issubclass(w.category, RuntimeWarning)
     assert 'foo' in str(w.message)
 
 @pytest.fixture(scope="function")
-def drive_lr(wpilib, hal):
+def drive_lr(wpimock, halmock):
     """Left/right drive (mocks out setLeftRightMotorOutputs)."""
-    hal.getFPGATime.return_value = 1000
+    halmock.getFPGATime.return_value = 1000
     left = MagicMock()
     right = MagicMock()
-    drive = wpilib.RobotDrive(left, right)
+    drive = wpimock.RobotDrive(left, right)
     drive.setLeftRightMotorOutputs = MagicMock()
     left.reset_mock()
     right.reset_mock()
     return drive
 
 @pytest.fixture(scope="function")
-def drive4(wpilib, hal):
+def drive4(wpimock, halmock):
     """4-motor drive"""
-    hal.getFPGATime.return_value = 1000
+    halmock.getFPGATime.return_value = 1000
     m1 = MagicMock()
     m2 = MagicMock()
     m3 = MagicMock()
     m4 = MagicMock()
-    drive = wpilib.RobotDrive(m1, m2, m3, m4)
+    drive = wpimock.RobotDrive(m1, m2, m3, m4)
     m1.reset_mock()
     m2.reset_mock()
     m3.reset_mock()
@@ -429,25 +429,25 @@ def test_setLeftRightMotorOutputs_error(motor, drive4):
 
 @pytest.mark.parametrize("val,result",
                          [(1.1, 1.0), (-1.1, -1.0), (0.9, 0.9), (-0.9, -0.9)])
-def test_limit(val, result, wpilib):
-    assert wpilib.RobotDrive.limit(val) == result
+def test_limit(val, result, wpimock):
+    assert wpimock.RobotDrive.limit(val) == result
 
 @pytest.mark.parametrize("val,result",
         [((0.6,-0.7,0.8,0.9), (0.6,-0.7,0.8,0.9)),
          ((2.0,1.0,-1.0,0.5), (1.0,0.5,-0.5,0.25)),
          ((-2.0,-0.5,0.0,1.0), (-1.0,-0.25,0.0,0.5))])
-def test_normalize(val, result, wpilib):
+def test_normalize(val, result, wpimock):
     speeds = list(val)
-    wpilib.RobotDrive.normalize(speeds)
+    wpimock.RobotDrive.normalize(speeds)
     assert tuple(speeds) == result
 
 @pytest.mark.parametrize("angle", [-30, 0, 30])
-def test_rotateVector(angle, wpilib):
+def test_rotateVector(angle, wpimock):
     x = 0.6
     y = 0.7
     cosA = math.cos(math.radians(angle))
     sinA = math.sin(math.radians(angle))
-    assert wpilib.RobotDrive.rotateVector(x, y, angle) == \
+    assert wpimock.RobotDrive.rotateVector(x, y, angle) == \
             ((x * cosA - y * sinA), (x * sinA + y * cosA))
 
 @pytest.mark.parametrize("motor", ["kFrontLeft", "kFrontRight",
