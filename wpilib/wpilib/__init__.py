@@ -9,6 +9,7 @@ from .analogtriggeroutput import *
 from .builtinaccelerometer import *
 from .canjaguar import *
 from .compressor import *
+from .controllerpower import *
 from .counter import *
 from .digitalinput import *
 from .digitaloutput import *

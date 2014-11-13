@@ -173,10 +173,16 @@ def reset_hal_data():
             'vin_current': 0,
             'user_voltage_6v': 6.0,
             'user_current_6v': 0,
+            'user_active_6v': False,
+            'user_faults_6v': 0,
             'user_voltage_5v': 5.0,
             'user_current_5v': 0,
+            'user_active_5v': False,
+            'user_faults_5v': 0,
             'user_voltage_3v3': 3.3,
-            'user_current_3v3': 0
+            'user_current_3v3': 0,
+            'user_active_3v3': False,
+            'user_faults_3v3': 0,
         },
 
         # solenoid values are True, False  

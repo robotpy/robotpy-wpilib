@@ -1020,6 +1020,14 @@ def getUserCurrent6V(status):
     status.value = 0
     return hal_data['power']['user_current_6v']
 
+def getUserActive6V(status):
+    status.value = 0
+    return hal_data['power']['user_active_6v']
+
+def getUserCurrentFaults6V(status):
+    status.value = 0
+    return hal_data['power']['user_faults_6v']
+
 def getUserVoltage5V(status):
     status.value = 0
     return hal_data['power']['user_voltage_5v']
@@ -1028,6 +1036,14 @@ def getUserCurrent5V(status):
     status.value = 0
     return hal_data['power']['user_current_5v']
 
+def getUserActive5V(status):
+    status.value = 0
+    return hal_data['power']['user_active_5v']
+
+def getUserCurrentFaults5V(status):
+    status.value = 0
+    return hal_data['power']['user_faults_5v']
+
 def getUserVoltage3V3(status):
     status.value = 0
     return hal_data['power']['user_voltage_3v3']
@@ -1035,6 +1051,14 @@ def getUserVoltage3V3(status):
 def getUserCurrent3V3(status):
     status.value = 0
     return hal_data['power']['user_current_3v3']
+
+def getUserActive3V3(status):
+    status.value = 0
+    return hal_data['power']['user_active_3v3']
+
+def getUserCurrentFaults3V3(status):
+    status.value = 0
+    return hal_data['power']['user_faults_3v3']
 
 #############################################################################
 # Solenoid

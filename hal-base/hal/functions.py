@@ -422,10 +422,16 @@ getVinVoltage = _STATUSFUNC("getVinVoltage", C.c_float)
 getVinCurrent = _STATUSFUNC("getVinCurrent", C.c_float)
 getUserVoltage6V = _STATUSFUNC("getUserVoltage6V", C.c_float)
 getUserCurrent6V = _STATUSFUNC("getUserCurrent6V", C.c_float)
+getUserActive6V = _STATUSFUNC("getUserActive6V", C.c_bool)
+getUserCurrentFaults6V = _STATUSFUNC("getUserCurrentFaults6V", C.c_int)
 getUserVoltage5V = _STATUSFUNC("getUserVoltage5V", C.c_float)
 getUserCurrent5V = _STATUSFUNC("getUserCurrent5V", C.c_float)
+getUserActive5V = _STATUSFUNC("getUserActive5V", C.c_bool)
+getUserCurrentFaults5V = _STATUSFUNC("getUserCurrentFaults5V", C.c_int)
 getUserVoltage3V3 = _STATUSFUNC("getUserVoltage3V3", C.c_float)
 getUserCurrent3V3 = _STATUSFUNC("getUserCurrent3V3", C.c_float)
+getUserActive3V3 = _STATUSFUNC("getUserActive3V3", C.c_bool)
+getUserCurrentFaults3V3 = _STATUSFUNC("getUserCurrentFaults3V3", C.c_int)
 
 #############################################################################
 # Solenoid
