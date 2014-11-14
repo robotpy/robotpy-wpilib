@@ -4,9 +4,9 @@ import pytest
 def pdp(wpilib):
     return wpilib.PowerDistributionPanel()
 
-@pytest.function(scope="function")
+@pytest.fixture(scope="function")
 def pdp_data(hal_data):
-    return hal_data['voltage']
+    return hal_data['pdp']
 
 def test_pdp_getVoltage(pdp, pdp_data):
     pdp_data['voltage'] = 3.14
