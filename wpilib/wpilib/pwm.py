@@ -74,6 +74,7 @@ class PWM(LiveWindowSendable):
         """Allocate a PWM given a channel.
 
         :param channel: The PWM channel.
+        :type channel: int
         """
         SensorBase.checkPWMChannel(channel)
         self.channel = channel
@@ -110,6 +111,7 @@ class PWM(LiveWindowSendable):
         :param eliminateDeadband: If True, set the motor curve on the Jaguar
             to eliminate the deadband in the middle of the range. Otherwise, keep
             the full range without modifying any values.
+        :type eliminateDeadband: bool
         """
         self.eliminateDeadband = eliminateDeadband
 
@@ -121,10 +123,15 @@ class PWM(LiveWindowSendable):
         as the deadband bracket.
 
         :param max: The max PWM pulse width in ms
+        :type max: float
         :param deadbandMax: The high end of the deadband range pulse width in ms
+        :type deadbandMax: float
         :param center: The center (off) pulse width in ms
+        :type center: float
         :param deadbandMin: The low end of the deadband pulse width in ms
+        :type deadbandMin: float
         :param min: The minimum pulse width in ms
+        :type min: float
         """
         loopTime = hal.getLoopTiming()/(SensorBase.kSystemClockTicksPerMicrosecond*1e3)
 
@@ -138,6 +145,7 @@ class PWM(LiveWindowSendable):
         """Gets the channel number associated with the PWM Object.
 
         :returns: The channel number.
+        :rtype: int
         """
         return self.channel
 
@@ -151,6 +159,7 @@ class PWM(LiveWindowSendable):
             :func:`setBounds` must be called first.
 
         :param pos: The position to set the servo between 0.0 and 1.0.
+        :type pos: float
         """
         if pos < 0.0:
             pos = 0.0
@@ -172,6 +181,7 @@ class PWM(LiveWindowSendable):
             :func:`setBounds` must be called first.
 
         :returns: The position the servo is set to between 0.0 and 1.0.
+        :rtype: float
         """
         value = self.getRaw()
         if value < self.getMinNegativePwm():
@@ -192,6 +202,7 @@ class PWM(LiveWindowSendable):
 
         :param speed: The speed to set the speed controller between -1.0 and
             1.0.
+        :type speed: float
         """
         # clamp speed to be in the range 1.0 >= speed >= -1.0
         if speed < -1.0:
@@ -223,6 +234,7 @@ class PWM(LiveWindowSendable):
             :func:`setBounds` must be called first.
 
         :returns: The most recently set speed between -1.0 and 1.0.
+        :rtype: float
         """
         value = self.getRaw()
         if value > self.getMaxPositivePwm():
@@ -242,6 +254,7 @@ class PWM(LiveWindowSendable):
         Write a raw value to a PWM channel.
 
         :param value: Raw PWM value.  Range 0 - 255.
+        :type value: int
         """
         if self.port is None:
             raise ValueError("operation on freed port")
@@ -253,6 +266,7 @@ class PWM(LiveWindowSendable):
         Read a raw value from a PWM channel.
 
         :returns: Raw PWM control value.  Range: 0 - 255.
+        :rtype: int
         """
         if self.port is None:
             raise ValueError("operation on freed port")
@@ -262,6 +276,7 @@ class PWM(LiveWindowSendable):
         """Slow down the PWM signal for old devices.
 
         :param mult: The period multiplier to apply to this channel
+        :type mult: PWM.PeriodMultiplier
         """
         if self.port is None:
             raise ValueError("operation on freed port")
