@@ -560,15 +560,19 @@ def setPWM(digital_port, value, status):
 
 def allocatePWMChannel(digital_port, status):
     status.value = 0
-    if hal_data['pwm'][digital_port.pin] is not None:
+    if hal_data['pwm'][digital_port.pin]['initialized']:
         return False
     
-    hal_data['pwm'][digital_port.pin] = {'period_scale': None, 'value': 0}
+    hal_data['pwm'][digital_port.pin]['initialized'] = True
     return True
 
 def freePWMChannel(digital_port, status):
     status.value = 0
-    hal_data['pwm'][digital_port.pin] = None
+    assert hal_data['pwm'][digital_port.pin]['initialized']
+    hal_data['pwm'][digital_port.pin]['initialized'] = False
+    hal_data['pwm'][digital_port.pin]['value'] = 0
+    hal_data['pwm'][digital_port.pin]['period_scale'] = None
+    hal_data['pwm'][digital_port.pin]['zero_latch'] = False
 
 def getPWM(digital_port, status):
     status.value = 0
@@ -577,7 +581,7 @@ def getPWM(digital_port, status):
 def latchPWMZero(digital_port, status):
     # TODO: what does this do?
     status.value = 0
-    hal_data['pwm'][digital_port.pin]['value'] = 0 #??
+    hal_data['pwm'][digital_port.pin]['zero_latch'] = True
 
 def setPWMPeriodScale(digital_port, squelch_mask, status):
     status.value = 0
