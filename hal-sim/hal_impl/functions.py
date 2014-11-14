@@ -199,7 +199,7 @@ def getFPGARevision(status):
 
 def getFPGATime(status):
     status.value = 0
-    return int((time.monotonic() - hal_data['program_time']) * 100000)
+    return int((time.monotonic() - hal_data['program_start']) * 100000)
 
 def getFPGAButton(status):
     status.value = 0
