@@ -113,7 +113,12 @@ def reset_hal_data():
         
         # pwm contains dicts with keys: value, period_scale
         # -> value isn't sane
-        'pwm': [None]*20,
+        'pwm': [{
+            'initialized': False,
+            'value': 0,
+            'period_scale': None,
+            'zero_latch': False,
+        }]*20,
         'pwm_loop_timing': 40, # this is the value the roboRIO returns
                
         # for pwm attached to a DIO

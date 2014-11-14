@@ -32,7 +32,9 @@ class Solenoid(SolenoidBase):
         Alternatively, the above names can be used as keyword arguments.
 
         :param moduleNumber: The module number of the solenoid module to use.
+        :type moduleNumber: int
         :param channel: The channel on the module to control.
+        :type channel: int
         """
         # keyword arguments
         channel = kwargs.pop("channel", None)
@@ -81,6 +83,7 @@ class Solenoid(SolenoidBase):
         """Set the value of a solenoid.
 
         :param on: Turn the solenoid output off or on.
+        :type on: bool
         """
         with self.mutex:
             hal.setSolenoid(self.port, on)
@@ -89,6 +92,7 @@ class Solenoid(SolenoidBase):
         """Read the current value of the solenoid.
 
         :returns: The current value of the solenoid.
+        :rtype: bool
         """
         with self.mutex:
             return hal.getSolenoid(self.port)

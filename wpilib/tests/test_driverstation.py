@@ -1,18 +1,33 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
-def test_init(wpilib, hal):
+#
+# Module-specific Fixtures
+#
+
+@pytest.fixture(scope="function")
+def ds(wpimock, halmock):
     with patch("wpilib.driverstation.threading") as mockthread:
-        ds = wpilib.DriverStation.getInstance()
+        myds = wpimock.DriverStation.getInstance()
+    halmock.reset_mock()
+    return myds
+
+#
+# Tests
+#
+
+def test_init(wpimock, halmock):
+    with patch("wpilib.driverstation.threading") as mockthread:
+        ds = wpimock.DriverStation.getInstance()
         assert mockthread.Thread.called
         assert mockthread.Thread.return_value.daemon == True
         assert mockthread.Thread.return_value.start.called
         assert ds.mutex == mockthread.RLock.return_value
         mockthread.Condition.assert_called_once_with(ds.mutex)
         assert ds.dataSem == mockthread.Condition.return_value
-    assert ds.packetDataAvailableSem == hal.initializeMutexNormal.return_value
-    hal.HALSetNewDataSem.assert_called_once_with(ds.packetDataAvailableSem)
-    assert ds.controlWord == hal.HALControlWord.return_value
+    assert ds.packetDataAvailableSem == halmock.initializeMutexNormal.return_value
+    halmock.HALSetNewDataSem.assert_called_once_with(ds.packetDataAvailableSem)
+    assert ds.controlWord == halmock.HALControlWord.return_value
     assert ds.allianceStationID == -1
     assert ds.approxMatchTimeOffset == -1.0
     assert ds.userInDisabled == False
@@ -22,30 +37,23 @@ def test_init(wpilib, hal):
     assert ds.newControlData == False
     assert ds.thread_keepalive == True
 
-@pytest.fixture(scope="function")
-def ds(wpilib, hal):
-    with patch("wpilib.driverstation.threading") as mockthread:
-        myds = wpilib.DriverStation.getInstance()
-    hal.reset_mock()
-    return myds
-
 def test_release(ds):
     assert ds.thread_keepalive
     ds.release()
     assert not ds.thread_keepalive
 
-def test_task(ds, hal):
+def test_task(ds, halmock):
     # exit function after one iteration
     def unalive(sem):
         assert sem == ds.packetDataAvailableSem
         ds.thread_keepalive = False
-    hal.takeMutex = unalive
+    halmock.takeMutex = unalive
     ds.getData = MagicMock()
     ds.task()
     assert ds.getData.called
     assert ds.dataSem.notify_all.called
 
-def test_task_safetyCounter(ds, hal):
+def test_task_safetyCounter(ds, halmock):
     # exit function after 5 iterations
     class unalive:
         def __init__(self):
@@ -54,22 +62,22 @@ def test_task_safetyCounter(ds, hal):
             self.count += 1
             if self.count >= 5:
                 ds.thread_keepalive = False
-    hal.takeMutex = unalive()
+    halmock.takeMutex = unalive()
     ds.getData = MagicMock()
     with patch("wpilib.driverstation.MotorSafety") as mocksafety:
         ds.task()
         assert mocksafety.checkMotors.called
 
 @pytest.mark.parametrize("mode", ["Disabled", "Autonomous", "Teleop", "Test"])
-def test_task_usermode(mode, ds, hal):
+def test_task_usermode(mode, ds, halmock):
     # exit function after one iteration
     def unalive(sem):
         ds.thread_keepalive = False
-    hal.takeMutex = unalive
+    halmock.takeMutex = unalive
     ds.getData = MagicMock()
     setattr(ds, "userIn"+mode, True)
     ds.task()
-    assert getattr(hal, "HALNetworkCommunicationObserveUserProgram"+mode).called
+    assert getattr(halmock, "HALNetworkCommunicationObserveUserProgram"+mode).called
 
 def test_waitForData(ds):
     ds.waitForData()
@@ -79,40 +87,40 @@ def test_waitForData_timeout(ds):
     ds.waitForData(5.0)
     ds.dataSem.wait.assert_called_once_with(5.0)
 
-def test_getData(ds, hal):
-    hal.getFPGATime.return_value = 1000
+def test_getData(ds, halmock):
+    halmock.getFPGATime.return_value = 1000
     ds.getData()
-    assert ds.controlWord == hal.HALGetControlWord.return_value
-    assert ds.allianceStationID == hal.HALGetAllianceStation.return_value
+    assert ds.controlWord == halmock.HALGetControlWord.return_value
+    assert ds.allianceStationID == halmock.HALGetAllianceStation.return_value
     assert ds.newControlData
     # TODO: check joystick values
 
-def test_getData_matchtime(ds, wpilib):
+def test_getData_matchtime(ds, wpimock):
     with patch("wpilib.driverstation.Timer") as timermock:
         timermock.getFPGATimestamp.return_value = 17.0
 
         # in auto
-        wpilib.DriverStation.lastEnabled = False
+        wpimock.DriverStation.lastEnabled = False
         ds.controlWord.enabled = True
         ds.controlWord.autonomous = True
         ds.getData()
         assert ds.approxMatchTimeOffset == 17.0
 
         # starting teleop
-        wpilib.DriverStation.lastEnabled = False
+        wpimock.DriverStation.lastEnabled = False
         ds.controlWord.enabled = True
         ds.controlWord.autonomous = False
         ds.getData()
         assert ds.approxMatchTimeOffset == 2.0
 
         # disabling
-        wpilib.DriverStation.lastEnabled = True
+        wpimock.DriverStation.lastEnabled = True
         ds.controlWord.enabled = False
         ds.getData()
         assert ds.approxMatchTimeOffset == -1.0
 
-def test_getBatteryVoltage(ds, hal):
-    assert ds.getBatteryVoltage() == hal.getVinVoltage.return_value
+def test_getBatteryVoltage(ds, halmock):
+    assert ds.getBatteryVoltage() == halmock.getVinVoltage.return_value
 
 def test_getStickAxis(ds):
     ds.joystickAxes[2][0] = 127
@@ -120,7 +128,7 @@ def test_getStickAxis(ds):
     ds.joystickAxes[0][1] = -128
     assert ds.getStickAxis(0, 1) == -1.0
 
-def test_getStickAxis_limits(ds, hal):
+def test_getStickAxis_limits(ds, halmock):
     with pytest.raises(IndexError):
         ds.getStickAxis(-1, 1)
     with pytest.raises(IndexError):
@@ -128,13 +136,13 @@ def test_getStickAxis_limits(ds, hal):
     with pytest.raises(IndexError):
         ds.getStickAxis(0, -1)
     with pytest.raises(IndexError):
-        ds.getStickAxis(0, hal.kMaxJoystickAxes)
+        ds.getStickAxis(0, halmock.kMaxJoystickAxes)
 
 def test_getStickPOV(ds):
     ds.joystickPOVs[2][0] = 30
     assert ds.getStickPOV(2, 0) == 30
 
-def test_getStickPOV_limits(ds, hal):
+def test_getStickPOV_limits(ds, halmock):
     with pytest.raises(IndexError):
         ds.getStickPOV(-1, 1)
     with pytest.raises(IndexError):
@@ -142,7 +150,7 @@ def test_getStickPOV_limits(ds, hal):
     with pytest.raises(IndexError):
         ds.getStickPOV(0, -1)
     with pytest.raises(IndexError):
-        ds.getStickPOV(0, hal.kMaxJoystickPOVs)
+        ds.getStickPOV(0, halmock.kMaxJoystickPOVs)
 
 def test_getStickButtons(ds):
     ds.joystickButtons[0] = 0x13
@@ -194,10 +202,10 @@ def test_isNewControlData(ds):
 
 @pytest.mark.parametrize("alliance",
         ["red1", "red2", "red3", "blue1", "blue2", "blue3", -1])
-def test_getAlliance(alliance, ds, hal):
+def test_getAlliance(alliance, ds, halmock):
     if alliance != -1:
         result = getattr(ds.Alliance, alliance[:-1].title())
-        alliance = getattr(hal, "kHALAllianceStationID_"+alliance)
+        alliance = getattr(halmock, "kHALAllianceStationID_"+alliance)
     else:
         result = ds.Alliance.Invalid
     ds.allianceStationID = alliance
@@ -205,10 +213,10 @@ def test_getAlliance(alliance, ds, hal):
 
 @pytest.mark.parametrize("alliance",
         ["red1", "red2", "red3", "blue1", "blue2", "blue3", -1])
-def test_getLocation(alliance, ds, hal):
+def test_getLocation(alliance, ds, halmock):
     if alliance != -1:
         result = int(alliance[-1])
-        alliance = getattr(hal, "kHALAllianceStationID_"+alliance)
+        alliance = getattr(halmock, "kHALAllianceStationID_"+alliance)
     else:
         result = 0
     ds.allianceStationID = alliance

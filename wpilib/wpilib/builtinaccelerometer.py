@@ -74,8 +74,8 @@ class BuiltInAccelerometer(LiveWindowSendable):
             table.putNumber("Y", self.getY())
             table.putNumber("Z", self.getZ())
 
-    def startLiveWindowMode(self):
+    def startLiveWindowMode(self): # pragma: no cover
         pass
 
-    def stopLiveWindowMode(self):
+    def stopLiveWindowMode(self): # pragma: no cover
         pass
