@@ -312,7 +312,7 @@ def checkAnalogOutputChannel(pin):
 def initializeAnalogInputPort(port, status):
     _checkAnalogIsFree(port)
     status.value = 0
-    hal_data['analog_in']['initialized'] = True
+    hal_data['analog_in'][port.pin]['initialized'] = True
     return types.AnalogPort(port)
 
 def checkAnalogModule(module):
