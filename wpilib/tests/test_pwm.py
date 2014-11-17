@@ -44,7 +44,10 @@ def test_pwm_create_limits(wpilib):
     with pytest.raises(IndexError):
         _ = wpilib.PWM(wpilib.SensorBase.kPwmChannels)
 
-
+def test_pwm_create_all(wpilib):
+    pwms = []
+    for i in range(wpilib.SensorBase.kPwmChannels):
+        pwms.append(wpilib.PWM(i))
 
 def test_pwm_free(pwm, pwm_data, wpilib):
     assert pwm.port == pwm._port

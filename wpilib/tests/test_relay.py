@@ -60,6 +60,12 @@ def test_relay_create(direction, hal, hal_data, wpilib, relay_data):
 
     check_initRelay(2, direction, relay, relay_data, hal, hal_data, wpilib)
 
+def test_relay_create_all(wpilib):
+    relays = []
+    for i in range(wpilib.SensorBase.kRelayChannels):
+        relays.append(wpilib.Relay(i))
+
+
 def test_relay_create_error(hal, wpilib):
     _ = wpilib.Relay(3)
     with pytest.raises(IndexError):

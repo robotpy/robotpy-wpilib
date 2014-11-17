@@ -46,13 +46,12 @@ def reset_hal_data():
         # buttons are stored as booleans
         # axes are stored as values between -1 and 1
         # povs are stored as integer values
-        'joysticks': [
-            {
-                'buttons': [None]+[False]*12, # numbered 1-12. element 0 is ignored
-                'axes':    [0]*constants.kMaxJoystickAxes,  # x is 0, y is 1, .. 
-                'povs':    [-1]*constants.kMaxJoystickPOVs  # integers
-            }
-        ]*6,
+        'joysticks': [{
+            'buttons': [None]+[False]*12, # numbered 1-12. element 0 is ignored
+            'axes':    [0]*constants.kMaxJoystickAxes,  # x is 0, y is 1, .. 
+            'povs':    [-1]*constants.kMaxJoystickPOVs  # integers
+        
+        } for _ in range(6)],
 
         'fpga_button': False,
         'error_data': None,
@@ -74,7 +73,8 @@ def reset_hal_data():
         'analog_out': [{
             'initialized': False,
             'voltage': 0.0
-        }]*2,
+
+        } for _ in range(2)],
 
         # TODO: make this easier to use
         'analog_in': [{
@@ -99,7 +99,8 @@ def reset_hal_data():
             'trig_upper': None,
             'trig_type': None, # 'averaged' or 'filtered'
             'trig_state': False,
-        }]*8,
+
+        } for _ in range(8)],
 
         # compressor control is here
         'compressor': {
@@ -118,7 +119,9 @@ def reset_hal_data():
             'value': 0,
             'period_scale': None,
             'zero_latch': False,
-        }]*20,
+
+        } for _ in range(20)],
+
         'pwm_loop_timing': 40, # this is the value the roboRIO returns
                
         # for pwm attached to a DIO
@@ -128,7 +131,8 @@ def reset_hal_data():
         'relay': [{
             'fwd': False,
             'rev': False,
-        }]*8,
+
+        } for _ in range(8)],
                 
         'dio': [None]*10, # dict keys: value, is_input, pulse_length
         
@@ -141,7 +145,8 @@ def reset_hal_data():
             'direction': False,
             'reverse_direction': False,
             'samples_to_average': 0,
-        }]*4,
+
+        } for _ in range(4)],
         
         # There is a lot of config involved here... 
         'counter': [{
@@ -169,7 +174,7 @@ def reset_hal_data():
             
             'pulse_length_threshold': 0
             
-        }]*8,
+        } for _ in range(8)],
         
         'user_program_state': None, # starting, disabled, autonomous, teleop, test
 
