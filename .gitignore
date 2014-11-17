@@ -17,3 +17,7 @@ version.py
 .project
 .pydevproject
 
+#PyCharm Project files
+*.iml
+.idea/*
+.pycharmproject
