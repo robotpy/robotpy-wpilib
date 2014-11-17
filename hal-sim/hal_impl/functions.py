@@ -309,11 +309,11 @@ def getAnalogOutput(analog_port, status):
 def checkAnalogOutputChannel(pin):
     return pin < kAnalogOutputPins
 
-def initializeAnalogInputPort(port, status):
-    _checkAnalogIsFree(port)
+def initializeAnalogInputPort(analog_port, status):
+    _checkAnalogIsFree(analog_port)
     status.value = 0
-    hal_data['analog_in']['initialized'] = True
-    return types.AnalogPort(port)
+    hal_data['analog_in'][analog_port.pin]['initialized'] = True
+    return types.AnalogPort(analog_port)
 
 def checkAnalogModule(module):
     return module == 1
