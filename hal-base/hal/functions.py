@@ -76,7 +76,7 @@ def HALSetErrorData(errors, wait_ms):
     errors = errors.encode('utf-8')
     return _HALSetErrorData(errors, len(errors), wait_ms)
 
-HALGetControlWord = _RETFUNC("HALGetControlWord", C.c_int, ("data", HALControlWord), out=["data"])
+HALGetControlWord = _RETFUNC("HALGetControlWord", C.c_int, ("data", HALControlWordPtr), out=["data"])
 
 HALGetAllianceStation = _RETFUNC("HALGetAllianceStation", C.c_int, ("allianceStation", C.POINTER(C.c_int)), out=["allianceStation"])
 

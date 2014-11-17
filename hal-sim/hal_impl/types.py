@@ -5,7 +5,7 @@
 import copy
 
 __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
-           "_HALControlWord", "HALControlWord", "Port",
+           "HALControlWord", "HALControlWordPtr", "Port",
            "_HALJoystickAxes", "HALJoystickAxes",
            "_HALJoystickPOVs", "HALJoystickPOVs",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
@@ -33,14 +33,14 @@ class MULTIWAIT_ID:
 #############################################################################
 
 class HALControlWord:
-    def __init__(self, d):
-        self.enabled = d['enabled']
-        self.autonomous = d['autonomous']
-        self.test = d['test']
-        self.eStop = d['eStop']
-        self.fmsAttached = d['fms_attached']
-        self.dsAttached = d['ds_attached']
-_HALControlWord = HALControlWord
+    def __init__(self, d={}):
+        self.enabled = d.get('enabled', False)
+        self.autonomous = d.get('autonomous', False)
+        self.test = d.get('test', False)
+        self.eStop = d.get('eStop', False)
+        self.fmsAttached = d.get('fms_attached',False)
+        self.dsAttached = d.get('ds_attached', False)
+HALControlWordPtr = HALControlWord
 
 class Port:
     def __init__(self, pin, module):

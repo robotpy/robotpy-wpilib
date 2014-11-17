@@ -2,7 +2,7 @@ import ctypes as C
 from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
 
 __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
-           "_HALControlWord", "HALControlWord", "Port",
+           "HALControlWord", "HALControlWordPtr", "Port",
            "_HALJoystickAxes", "HALJoystickAxes",
            "_HALJoystickPOVs", "HALJoystickPOVs",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
@@ -32,7 +32,7 @@ MULTIWAIT_ID = C.POINTER(_pthread_cond_t)
 # HAL
 #############################################################################
 
-class _HALControlWord(C.Structure):
+class HALControlWord(C.Structure):
     _fields_ = [("enabled", C.c_uint32, 1),
                 ("autonomous", C.c_uint32, 1),
                 ("test", C.c_uint32, 1),
@@ -40,7 +40,7 @@ class _HALControlWord(C.Structure):
                 ("fmsAttached", C.c_uint32, 1),
                 ("dsAttached", C.c_uint32, 1),
                 ("control_reserved", C.c_uint32, 26)]
-HALControlWord = C.POINTER(_HALControlWord)
+HALControlWordPtr = C.POINTER(HALControlWord)
 
 # opaque port structure
 class _Port(C.Structure):

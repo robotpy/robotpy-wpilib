@@ -231,7 +231,7 @@ def HALSetNewDataSem(sem):
     pass
 
 def HALInitialize(mode=0):
-    pass
+    return True
 
 def HALNetworkCommunicationObserveUserProgramStarting():
     hal_data['user_program_state'] = 'starting'
