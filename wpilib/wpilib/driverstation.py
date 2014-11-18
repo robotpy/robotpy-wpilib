@@ -50,7 +50,8 @@ class DriverStation:
         self.mutex = threading.RLock()
         self.dataSem = threading.Condition(self.mutex)
 
-        self.packetDataAvailableSem = hal.initializeMutexNormal()
+        self.packetDataAvailableMutex = hal.initializeMutexNormal()
+        self.packetDataAvailableSem = hal.initializeMultiWait()
         hal.HALSetNewDataSem(self.packetDataAvailableSem)
 
         self.controlWord = hal.HALControlWord()
@@ -83,7 +84,8 @@ class DriverStation:
         """Provides the service routine for the DS polling thread."""
         safetyCounter = 0
         while self.thread_keepalive:
-            hal.takeMutex(self.packetDataAvailableSem)
+            hal.takeMultiWait(self.packetDataAvailableSem,
+                              self.packetDataAvailableMutex, 0)
             with self.mutex:
                 self.getData()
             with self.dataSem:

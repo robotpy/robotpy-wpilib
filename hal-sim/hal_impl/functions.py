@@ -104,7 +104,7 @@ def initializeMultiWait():
 def deleteMultiWait(sem):
     sem.cond = None
 
-def takeMultiWait(sem, timeout):
+def takeMultiWait(sem, mutex, timeout):
     sem.cond.wait() # timeout is ignored in C++ HAL
 
 def giveMultiWait(sem):

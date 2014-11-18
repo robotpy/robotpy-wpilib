@@ -53,7 +53,7 @@ giveSemaphore = _RETFUNC("giveSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
 initializeMultiWait = _RETFUNC("initializeMultiWait", MULTIWAIT_ID)
 deleteMultiWait = _RETFUNC("deleteMultiWait", None, ("sem", MULTIWAIT_ID))
 takeMultiWait = _RETFUNC("takeMultiWait", C.c_int8, ("sem", MULTIWAIT_ID),
-                         ("timeout", C.c_int32))
+                         ("mutex", MUTEX_ID), ("timeout", C.c_int32))
 giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID))
 
 #############################################################################
@@ -99,7 +99,7 @@ def HALGetJoystickButtons(joystickNum):
     _HALGetJoystickButtons(joystickNum, buttons, count)
     return buttons.value
 
-HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MUTEX_ID))
+HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MULTIWAIT_ID))
 
 _HALInitialize = _RETFUNC("HALInitialize", C.c_int, ("mode", C.c_int, 0))
 def HALInitialize(mode = 0):
