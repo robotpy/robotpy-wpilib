@@ -99,7 +99,8 @@ class PWM:
 
 # opaque counter
 class Counter:
-    pass
+    def __init__(self, idx):
+        self.idx = idx
 
 # opaque encoder
 class Encoder:
