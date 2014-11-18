@@ -154,9 +154,8 @@ class Counter(SensorBase):
             else:
                 raise ValueError("didn't specify up source")
         if downSource is None:
-            if downChannel is None:
-                raise ValueError("didn't specify down source")
-            downSource = DigitalInput(downChannel)
+            if downChannel is not None:
+                downSource = DigitalInput(downChannel)
 
         # save to instance variables
         self.upSource = upSource
