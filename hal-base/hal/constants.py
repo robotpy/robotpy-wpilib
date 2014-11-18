@@ -67,6 +67,10 @@ class HALUsageReporting:
     kResourceType_HiTechnicAccel = 46
     kResourceType_HiTechnicCompass = 47
     kResourceType_SRF08 = 48
+    kResourceType_AnalogOutput = 49
+    kResourceType_VictorSP = 50
+    kResourceType_TalonSRX = 51
+    kResourceType_CANTalonSRX = 52
 
     # enum tInstances
     kLanguage_LabVIEW = 1
