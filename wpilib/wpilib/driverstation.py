@@ -76,6 +76,10 @@ class DriverStation:
         self.thread.daemon = True
         self.thread.start()
 
+    def __del__(self):
+        hal.deleteMultiWait(self.packetDataAvailableSem)
+        hal.deleteMutex(self.packetDataAvailableMutex)
+
     def release(self):
         """Kill the thread"""
         self.thread_keepalive = False
