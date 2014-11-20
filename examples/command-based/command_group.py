@@ -1,9 +1,11 @@
 from wpilib.command import CommandGroup
 
 
-#This is a template Command Group, CommandGroupName should, of course, be replaced by the
-#name of your desired Command Group
 class CommandGroupName(CommandGroup):
+    """
+    This is a template Command Group, CommandGroupName should, of course, be replaced by the
+    name of your desired Command Group
+    """
 
     def __init__(self, name=None):
         # Add Commands here:

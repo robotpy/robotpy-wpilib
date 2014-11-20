@@ -1,11 +1,11 @@
 from wpilib.command import CommandGroup
-import robot
-from ..commands.close_claw import CloseClaw
-from ..commands.wait_for_pressure import WaitForPressure
-from ..commands.check_for_hot_goal import CheckForHotGoal
-from ..commands.set_pivot_setpoint import SetPivotSetpoint
-from ..commands.drive_forward import DriveForward
-from ..commands.shoot import Shoot
+import global_vars
+from commands.close_claw import CloseClaw
+from commands.wait_for_pressure import WaitForPressure
+from commands.check_for_hot_goal import CheckForHotGoal
+from commands.set_pivot_setpoint import SetPivotSetpoint
+from commands.drive_forward import DriveForward
+from commands.shoot import Shoot
 #TODO Check this when done
 
 
@@ -18,7 +18,7 @@ class DriveAndShootAutonomous(CommandGroup):
     def __init__(self):
         self.addSequential(CloseClaw())
         self.addSequential(WaitForPressure(), 2)
-        if robot.is_real():
+        if global_vars.is_real():
             #NOTE: Simulation doesn't currently have the concept of hot.
             self.addSequential(CheckForHotGoal(2))
         self.addSequential(SetPivotSetpoint(45))

@@ -1,8 +1,8 @@
 import wpilib
 import math
 from wpilib.command import Subsystem
-from .. import robot
-from ..commands.drive_with_joystick import DriveWithJoystick
+from global_vars import subsystems, is_real
+from commands.drive_with_joystick import DriveWithJoystick
 
 
 class DriveTrain(Subsystem):
@@ -40,7 +40,7 @@ class DriveTrain(Subsystem):
         self.right_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
         self.left_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
 
-        if robot.is_real():
+        if is_real():
             #Converts to feet
             self.right_encoder.setDistancePerPulse(0.0785398)
             self.left_encoder.setDistancePerPulse(0.0785398)
@@ -54,7 +54,7 @@ class DriveTrain(Subsystem):
 
         #Configure gyro
         self.gyro = wpilib.Gyro(2)
-        if robot.is_real():
+        if is_real():
             #TODO: Handle more gracefully
             self.gyro.setSensitivity(0.007)
 

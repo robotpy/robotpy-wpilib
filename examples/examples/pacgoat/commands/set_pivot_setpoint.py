@@ -1,5 +1,5 @@
 from wpilib.command import Command
-from .. import robot
+from global_vars import subsystems
 
 #TODO Check this when done
 
@@ -12,14 +12,14 @@ class SetPivotSetpoint(Command):
     """
 
     def __init__(self, setpoint):
-        self.requires(robot.pivot)
+        self.requires(subsystems["pivot"])
         self.setpoint = setpoint
         super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        robot.pivot.enable()
-        robot.pivot.setSetpoint(self.setpoint)
+        subsystems["pivot"].enable()
+        subsystems["pivot"].setSetpoint(self.setpoint)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -27,7 +27,7 @@ class SetPivotSetpoint(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return robot.pivot.onTarget()
+        return subsystems["pivot"].onTarget()
 
     def end(self):
         """Called once after isFinished returns true"""

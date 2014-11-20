@@ -1,7 +1,8 @@
 from wpilib.command import Command
-from .. import robot
+from global_vars import subsystems
 
 #TODO finish this
+
 
 class CheckForHotGoal(Command):
     """
@@ -22,7 +23,7 @@ class CheckForHotGoal(Command):
         pass
 
     def isFinished(self):
-        return self.isTimedOut() or robot.shooter.goal_is_hot()
+        return self.isTimedOut() or subsystems["shooter"].goal_is_hot()
 
     def end(self):
         pass

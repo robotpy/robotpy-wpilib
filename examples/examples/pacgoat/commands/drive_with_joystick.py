@@ -1,6 +1,5 @@
 from wpilib.command import Command
-from .. import robot
-
+from global_vars import subsystems, oi
 #TODO Check this when done
 
 class DriveWithJoystick(Command):
@@ -10,7 +9,7 @@ class DriveWithJoystick(Command):
     """
 
     def __init__(self):
-        self.requires(robot.drivetrain)
+        self.requires(subsystems["drivetrain"])
         super().__init__()
 
     def initialize(self):
@@ -19,7 +18,7 @@ class DriveWithJoystick(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        robot.drivetrain.tankDrive(robot.Oi.get_joystick())
+        subsystems["drivetrain"].tankDrive(oi.get_joystick())
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
@@ -27,7 +26,7 @@ class DriveWithJoystick(Command):
 
     def end(self):
         """Called once after isFinished returns true"""
-        robot.drivetrain.stop()
+        subsystems["drivetrain"].stop()
 
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""

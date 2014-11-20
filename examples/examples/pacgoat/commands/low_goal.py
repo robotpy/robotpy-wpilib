@@ -1,7 +1,7 @@
 from wpilib.command import CommandGroup
 
-from ..subsystems.collector import Collector
-from ..subsystems.pivot import Pivot
+from subsystems.collector import Collector
+from subsystems.pivot import Pivot
 
 from .extend_shooter import ExtendShooter
 from .set_collection_speed import SetCollectionSpeed

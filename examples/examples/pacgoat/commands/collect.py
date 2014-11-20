@@ -1,8 +1,10 @@
 from wpilib.command import CommandGroup
-from .. import robot
-from . import *
-from ..subsystems.pivot import Pivot
-from ..subsystems.collector import Collector
+from commands.set_collection_speed import SetCollectionSpeed
+from commands.close_claw import CloseClaw
+from commands.set_pivot_setpoint import SetPivotSetpoint
+from commands.wait_for_ball import WaitForBall
+from subsystems.pivot import Pivot
+from subsystems.collector import Collector
 
 
 #TODO Check this when done

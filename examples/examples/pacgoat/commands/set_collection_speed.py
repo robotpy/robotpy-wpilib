@@ -1,5 +1,5 @@
 from wpilib.command import Command
-from .. import robot
+from global_vars import subsystems
 
 #TODO Check this when done
 
@@ -14,13 +14,13 @@ class SetCollectionSpeed(Command):
     speed = 0
 
     def __init__(self, speed):
-        self.requires(robot.collector)
+        self.requires(subsystems["collector"])
         self.speed = speed
         super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        robot.collector.set_speed(self.speed)
+        subsystems["collector"].set_speed(self.speed)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""

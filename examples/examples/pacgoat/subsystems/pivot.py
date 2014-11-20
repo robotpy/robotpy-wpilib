@@ -1,6 +1,6 @@
 import wpilib
 from wpilib.command import PIDSubsystem
-from .. import robot
+from global_vars import is_simulated
 
 
 class Pivot(PIDSubsystem):
@@ -19,7 +19,7 @@ class Pivot(PIDSubsystem):
         super().__init__(7, 0, 8, name="Pivot")
         self.setAbsoluteTolerance(0.005)
         self.getPIDController().setContinuous(False)
-        if robot.is_simulation():
+        if is_simulated():
             #PID is different in simulation.
             self.getPIDController().setPID(0.5, 0.001, 2)
             self.setAbsoluteTolerance(5)

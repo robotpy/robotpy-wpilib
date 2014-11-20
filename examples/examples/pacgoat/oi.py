@@ -1,14 +1,14 @@
 import wpilib
 from wpilib.buttons import JoystickButton
-from .commands.collect import Collect
-from .commands.drive_forward import DriveForward
-from .commands.low_goal import LowGoal
-from .commands.set_collection_speed import SetCollectionSpeed
-from .commands.set_pivot_setpoint import SetPivotSetpoint
-from .commands.shoot import Shoot
-from .subsystems.collector import Collector
-from .subsystems.pivot import Pivot
-from .triggers.double_button import DoubleButton
+from commands.collect import Collect
+from commands.drive_forward import DriveForward
+from commands.low_goal import LowGoal
+from commands.set_collection_speed import SetCollectionSpeed
+from commands.set_pivot_setpoint import SetPivotSetpoint
+from commands.shoot import Shoot
+from subsystems.collector import Collector
+from subsystems.pivot import Pivot
+from triggers.double_button import DoubleButton
 
 
 class Oi(object):

@@ -1,7 +1,6 @@
 import wpilib
 from wpilib.command import Subsystem
-from .. import robot
-
+from global_vars import is_real
 
 class Pneumatics(Subsystem):
     """
@@ -14,7 +13,7 @@ class Pneumatics(Subsystem):
 
     def __init__(self):
         self.pressure_sensor = wpilib.AnalogInput(3)
-        if robot.is_real():
+        if is_real():
             self.compressor = wpilib.Compressor()
 
         wpilib.LiveWindow.addSensor("Pneumatics", "Pressure Sensor", self.pressure_sensor)
@@ -26,7 +25,7 @@ class Pneumatics(Subsystem):
 
     def start(self):
         """:return Whether or not the system is fully pressurized"""
-        if robot.is_real():
+        if is_real():
             return self.MAX_PRESSURE <= self.pressure_sensor.getVoltage()
         else:
             return True

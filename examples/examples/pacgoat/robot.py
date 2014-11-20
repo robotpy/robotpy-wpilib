@@ -9,6 +9,7 @@ from subsystems.pivot import Pivot
 from subsystems.pneumatics import Pneumatics
 from subsystems.Shooter import Shooter
 from oi import Oi
+import global_vars
 
 
 class Robot(wpilib.IterativeRobot):
@@ -20,18 +21,18 @@ class Robot(wpilib.IterativeRobot):
         """
 
         #Initialize the subsystems
-        self.drivetrain = DriveTrain()
-        self.collector = Collector()
-        self.shooter = Shooter()
-        self.pneumatics = Pneumatics()
-        self.pivot = Pivot()
-        wpilib.SmartDashboard.putData(self.drivetrain)
-        wpilib.SmartDashboard.putData(self.collector)
-        wpilib.SmartDashboard.putData(self.shooter)
-        wpilib.SmartDashboard.putData(self.pneumatics)
-        wpilib.SmartDashboard.putData(self.pivot)
+        global_vars.subsystems["drivetrain"] = DriveTrain()
+        global_vars.subsystems["collector"] = Collector()
+        global_vars.subsystems["shooter"] = Shooter()
+        global_vars.subsystems["pneumatics"] = Pneumatics()
+        global_vars.subsystems["pivot"] = Pivot()
+        wpilib.SmartDashboard.putData(global_vars.subsystems["drivetrain"])
+        wpilib.SmartDashboard.putData(global_vars.subsystems["collector"])
+        wpilib.SmartDashboard.putData(global_vars.subsystems["shooter"])
+        wpilib.SmartDashboard.putData(global_vars.subsystems["pneumatics"])
+        wpilib.SmartDashboard.putData(global_vars.subsystems["pivot"])
 
-        self.oi = Oi()
+        global_vars.oi = Oi()
 
         #instantiate the command used for the autonomous period
         self.auto_chooser = wpilib.SendableChooser()
@@ -40,7 +41,7 @@ class Robot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putData("Auto Mode", self.auto_chooser)
 
         #Pressurize the pneumatics
-        self.pneumatics.start()
+        global_vars.subsystems["pneumatics"].start()
 
     def autonomousInit(self):
         self.autonomous_command = self.auto_chooser.getSelected()
@@ -70,26 +71,19 @@ class Robot(wpilib.IterativeRobot):
         wpilib.LiveWindow.run()
 
     def disabledInit(self):
-        self.shooter.unlatch()
+        global_vars.subsystems["shooter"].unlatch()
 
     def disabledPeriodic(self):
         """This function is called periodically while disabled."""
         self.log()
 
     def log(self):
-        self.pneumatics.write_pressure()
+        global_vars.subsystems["shooter"].write_pressure()
         wpilib.SmartDashboard.putNumber("Pivot Pot Value", self.pivot.get_angle())
         wpilib.SmartDashboard.putNumber("Left Distance", self.drivetrain.get_left_encoder().getDistance())
         wpilib.SmartDashboard.putNumber("Right Distance", self.drivetrain.get_right_encoder().getDistance())
 
 
-def is_simulator():
-    return True
-
-
-def is_real():
-    return False
-
-
 if __name__ == "__main__":
+    global_vars.real = False
     wpilib.RobotBase.main(Robot)

@@ -1,5 +1,5 @@
 from wpilib.command import Command
-from .. import robot
+from global_vars import subsystems
 
 #TODO Check this when done
 
@@ -7,13 +7,13 @@ class ExtendShooter(Command):
     """Extend the shooter and retract it after a second."""
 
     def __init__(self):
-        self.requires(robot.shooter)
+        self.requires(subsystems["shooter"])
         self.setTimeout(1)
         super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        robot.shooter.extend_both()
+        subsystems["shooter"].extend_both()
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -25,7 +25,7 @@ class ExtendShooter(Command):
 
     def end(self):
         """Called once after isFinished returns true"""
-        robot.shooter.extend_both()
+        subsystems["shooter"].extend_both()
 
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
