@@ -54,7 +54,7 @@ class DriverStation:
         self.packetDataAvailableSem = hal.initializeMultiWait()
         hal.HALSetNewDataSem(self.packetDataAvailableSem)
 
-        self.controlWord = hal.HALControlWord()
+        self.controlWord = hal.HALGetControlWord()
         self.allianceStationID = -1
         self.joystickAxes = []
         self.joystickPOVs = []
@@ -218,7 +218,8 @@ class DriverStation:
         :returns: True if the robot is enabled, False otherwise.
         """
         with self.mutex:
-            return self.controlWord.enabled != 0
+            return (self.controlWord.enabled != 0 and
+                    self.controlWord.dsAttached != 0)
 
     def isDisabled(self):
         """Gets a value indicating whether the Driver Station requires the
@@ -370,7 +371,9 @@ class DriverStation:
                  stackstr += '  ' + traceback.format_exc().lstrip(trc)
             errorString += ':\n' + stackstr
         #print(errorString, file=sys.stderr)
-        hal.HALSetErrorData(errorString, 0)
+        controlWord = hal.HALGetControlWord()
+        if controlWord.dsAttached != 0:
+            hal.HALSetErrorData(errorString, 0)
 
     def InDisabled(self, entering):
         """Only to be used to tell the Driver Station what code you claim to

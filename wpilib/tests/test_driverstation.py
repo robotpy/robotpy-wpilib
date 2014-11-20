@@ -28,7 +28,7 @@ def test_init(wpimock, halmock):
     assert ds.packetDataAvailableMutex == halmock.initializeMutexNormal.return_value
     assert ds.packetDataAvailableSem == halmock.initializeMultiWait.return_value
     halmock.HALSetNewDataSem.assert_called_once_with(ds.packetDataAvailableSem)
-    assert ds.controlWord == halmock.HALControlWord.return_value
+    assert ds.controlWord == halmock.HALGetControlWord.return_value
     assert ds.allianceStationID == -1
     assert ds.approxMatchTimeOffset == -1.0
     assert ds.userInDisabled == False
