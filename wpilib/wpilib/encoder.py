@@ -51,12 +51,20 @@ class Encoder(SensorBase):
 
         The encoder will start counting immediately.
 
-        Positional arguments may be either channel numbers or `DigitalSource`
-        sources in the following order:
+        The a, b, and optional index channel arguments may be either channel
+        numbers or `DigitalSource` sources. There may also be a boolean
+        reverseDirection, and an encodingType according to the following
+        list.
         
         - aSource, bSource
+        - aSource, bSource, reverseDirection
+        - aSource, bSource, reverseDirection, encodingType
+        - aSource, bSource, indexSource, reverseDirection
         - aSource, bSource, indexSource
         - aChannel, bChannel
+        - aChannel, bChannel, reverseDirection
+        - aChannel, bChannel, reverseDirection, encodingType
+        - aChannel, bChannel, indexChannel, reverseDirection
         - aChannel, bChannel, indexChannel
 
         For positional arguments, if the passed object has a
@@ -100,24 +108,57 @@ class Encoder(SensorBase):
         aChannel = kwargs.pop("aChannel", None)
         bChannel = kwargs.pop("bChannel", None)
         indexChannel = kwargs.pop("indexChannel", None)
-        reverseDirection = kwargs.pop("reverseDirection", False)
+        reverseDirection = kwargs.pop("reverseDirection", None)
         encodingType = kwargs.pop("encodingType", self.EncodingType.k4X)
 
         if kwargs:
             warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
                           RuntimeWarning)
 
-        # positional arguments
+        #Positional arguments
+        arglist = list(reversed(args))
+
+        #Temp source variables, don't know if they are sources or
+        #channels yet.
         a = None
         b = None
         index = None
-        if len(args) == 2:
-            a, b = args
-        elif len(args) == 3:
-            a, b, index = args
-        elif len(args) != 0:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
 
+        #Take care of a and b first
+        if aSource is None and aChannel is None:
+            a = arglist.pop()
+        if bSource is None and bChannel is None:
+            b = arglist.pop()
+
+        #The next one would be either index or reverseDirection,
+        # if we don't have them already
+        if len(arglist) is not 0:
+            next_element = arglist.pop()
+            #Is it reverseDirection?
+            if reverseDirection is None and isinstance(next_element, bool):
+                reverseDirection = next_element
+            #Must be indexChannel, then
+            else:
+                index = next_element
+
+        #If we still have arguments, it would be either encodingType,
+        # or reverseDirection
+        if len(arglist) is not 0:
+            next_element = arglist.pop()
+            if reverseDirection is None and isinstance(next_element, bool):
+                reverseDirection = next_element
+            else:
+                self.encodingType = next_element
+
+        #If we still have arguments, there is a trouble here.
+        if len(arglist) is not 0:
+            raise ValueError("Still have positional arguments, and I don't need any more info!" % str(arglist))
+
+        #If we still don't have a value for reverseDirection, set it to false:
+        if reverseDirection is None:
+            reverseDirection = False
+
+        #Figure out what is source and what is channel.
         if a is not None:
             if hasattr(a, "getChannelForRouting"):
                 aSource = a
