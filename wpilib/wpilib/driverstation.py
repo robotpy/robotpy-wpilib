@@ -256,6 +256,12 @@ class DriverStation:
             return not (self.controlWord.autonomous != 0 or
                         self.controlWord.test != 0)
 
+    def isSysActive(self):
+        return hal.HALGetSystemActive()
+
+    def isBrownedOut(self):
+        return hal.HALGetBrownedOut()
+
     def isNewControlData(self):
         """Has a new control packet from the driver station arrived since the
         last time this function was called?
@@ -313,6 +319,14 @@ class DriverStation:
         """
         with self.mutex:
             return self.controlWord.fmsAttached != 0
+
+    def isDSAttached(self):
+        """Is the driver station attached to the robot?
+
+        :returns: True if the robot is being controlled by a driver station.
+        """
+        with self.mutex:
+            return self.controlWord.dsAttached != 0
 
     def getMatchTime(self):
         """Return the approximate match time.

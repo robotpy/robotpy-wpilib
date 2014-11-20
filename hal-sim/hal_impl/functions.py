@@ -227,6 +227,14 @@ def HALGetJoystickButtons(joystickNum, buttons, count):
     buttons.value = sum(int(v) << i for i, v in enumerate(b[1:]))
     buttons.count = len(b)-1
 
+def HALGetSystemActive(status):
+    status.value = 0
+    return True
+
+def HALGetBrownedOut(status):
+    status.value = 0
+    return False
+
 def HALSetNewDataSem(sem):
     pass
 

@@ -101,6 +101,9 @@ def HALGetJoystickButtons(joystickNum):
 
 HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MULTIWAIT_ID))
 
+HALGetSystemActive = _STATUSFUNC("HALGetSystemActive", C.c_bool)
+HALGetBrownedOut = _STATUSFUNC("HALGetBrownedOut", C.c_bool)
+
 _HALInitialize = _RETFUNC("HALInitialize", C.c_int, ("mode", C.c_int, 0))
 def HALInitialize(mode = 0):
     rv = _HALInitialize(mode)
