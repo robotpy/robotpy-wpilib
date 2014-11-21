@@ -152,7 +152,7 @@ class Encoder(SensorBase):
 
         #If we still have arguments, there is a trouble here.
         if len(arglist) is not 0:
-            raise ValueError("Still have positional arguments, and I don't need any more info!" % str(arglist))
+            raise ValueError("Unmatched arguments: " + str(arglist))
 
         #If we still don't have a value for reverseDirection, set it to false:
         if reverseDirection is None:
