@@ -132,7 +132,7 @@ class Encoder(SensorBase):
 
         #The next one would be either index or reverseDirection,
         # if we don't have them already
-        if len(arglist) is not 0:
+        if len(arglist) != 0:
             next_element = arglist.pop()
             #Is it reverseDirection?
             if reverseDirection is None and isinstance(next_element, bool):
@@ -143,7 +143,7 @@ class Encoder(SensorBase):
 
         #If we still have arguments, it would be either encodingType,
         # or reverseDirection
-        if len(arglist) is not 0:
+        if len(arglist) != 0:
             next_element = arglist.pop()
             if reverseDirection is None and isinstance(next_element, bool):
                 reverseDirection = next_element
@@ -151,7 +151,7 @@ class Encoder(SensorBase):
                 self.encodingType = next_element
 
         #If we still have arguments, there is a trouble here.
-        if len(arglist) is not 0:
+        if len(arglist) != 0:
             raise ValueError("Unmatched arguments: " + str(arglist))
 
         #If we still don't have a value for reverseDirection, set it to false:
