@@ -25,15 +25,15 @@ class Pivot(PIDSubsystem):
             self.setAbsoluteTolerance(5)
 
         #Motor to move the pivot
-        self.motor = wpilib.Victor(5)
+        self.motor = wpilib.Victor(4)
 
         #Sensors for measuring the position of the pivot.
-        self.upper_limit_switch = wpilib.DigitalInput(13)
-        self.lower_limit_switch = wpilib.DigitalInput(12)
+        self.upper_limit_switch = wpilib.DigitalInput(12)
+        self.lower_limit_switch = wpilib.DigitalInput(11)
 
         #0 degrees is vertical facing up.
         #Angle increases the more forward the pivot goes.
-        self.pot = wpilib.AnalogPotentiometer(1)
+        self.pot = wpilib.AnalogPotentiometer(0)
 
         #Put everything to the LiveWindow for testing.
         wpilib.LiveWindow.addSensor("Pivot", "Upper Limit Switch", self.upper_limit_switch)

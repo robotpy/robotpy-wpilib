@@ -15,10 +15,10 @@ class DriveTrain(Subsystem):
         self.robot = robot
 
         #Configure drive motors
-        self.front_left_cim = wpilib.Victor(1)
-        self.front_right_cim = wpilib.Victor(2)
-        self.back_left_cim = wpilib.Victor(3)
-        self.back_right_cim = wpilib.Victor(4)
+        self.front_left_cim = wpilib.Victor(0)
+        self.front_right_cim = wpilib.Victor(1)
+        self.back_left_cim = wpilib.Victor(2)
+        self.back_right_cim = wpilib.Victor(3)
         wpilib.LiveWindow.addActuator("DriveTrain", "Front Left CIM", self.front_left_cim)
         wpilib.LiveWindow.addActuator("DriveTrain", "Front Right CIM", self.front_right_cim)
         wpilib.LiveWindow.addActuator("DriveTrain", "Back Left CIM", self.back_left_cim)
@@ -37,8 +37,8 @@ class DriveTrain(Subsystem):
         self.drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kRearRight, True)
 
         #Configure encoders
-        self.right_encoder = wpilib.Encoder(1, 2, reverseDirection=True)
-        self.left_encoder = wpilib.Encoder(3, 4, reverseDirection=False)
+        self.right_encoder = wpilib.Encoder(0, 1, reverseDirection=True)
+        self.left_encoder = wpilib.Encoder(2, 3, reverseDirection=False)
         self.right_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
         self.left_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
 
@@ -55,7 +55,7 @@ class DriveTrain(Subsystem):
         wpilib.LiveWindow.addSensor("DriveTrain", "Left Encoder", self.left_encoder)
 
         #Configure gyro
-        self.gyro = wpilib.Gyro(2)
+        self.gyro = wpilib.Gyro(1)
         if robot.is_real():
             #TODO: Handle more gracefully
             self.gyro.setSensitivity(0.007)

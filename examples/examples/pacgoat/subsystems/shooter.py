@@ -18,12 +18,12 @@ class Shooter(Subsystem):
         self.robot = robot
 
         #Configure Devices
-        self.hot_goal_sensor = wpilib.DigitalInput(3)
-        self.piston1 = wpilib.DoubleSolenoid(1, 3, 4)
-        self.piston2 = wpilib.DoubleSolenoid(1, 5, 6)
-        self.latch_piston = wpilib.Solenoid(1, 2)
-        self.piston1_reed_switch_front = wpilib.DigitalInput(9)
-        self.piston1_reed_switch_back = wpilib.DigitalInput(11)
+        self.hot_goal_sensor = wpilib.DigitalInput(4)
+        self.piston1 = wpilib.DoubleSolenoid(0, 2, 3)
+        self.piston2 = wpilib.DoubleSolenoid(0, 4, 5)
+        self.latch_piston = wpilib.Solenoid(0, 1)
+        self.piston1_reed_switch_front = wpilib.DigitalInput(8)
+        self.piston1_reed_switch_back = wpilib.DigitalInput(10)
 
         #Put everything to the LiveWindow for testing.
         wpilib.LiveWindow.addSensor("Shooter", "Hot Goal Sensor", self.hot_goal_sensor)

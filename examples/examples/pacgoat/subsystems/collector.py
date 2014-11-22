@@ -15,10 +15,10 @@ class Collector(Subsystem):
 
     def __init__(self, robot):
         #Configure devices
-        self.roller_motor = wpilib.Victor(6)
-        self.ball_detector = wpilib.DigitalInput(10)
-        self.open_detector = wpilib.DigitalInput(6)
-        self.piston = wpilib.Solenoid(1, 1)
+        self.roller_motor = wpilib.Victor(5)
+        self.ball_detector = wpilib.DigitalInput(9)
+        self.open_detector = wpilib.DigitalInput(5)
+        self.piston = wpilib.Solenoid(0, 0)
         self.robot = robot
 
         #Put everything to the LiveWindow for testing.

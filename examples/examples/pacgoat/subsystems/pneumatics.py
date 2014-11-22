@@ -12,7 +12,7 @@ class Pneumatics(Subsystem):
 
     def __init__(self, robot):
         self.robot = robot
-        self.pressure_sensor = wpilib.AnalogInput(3)
+        self.pressure_sensor = wpilib.AnalogInput(2)
         if robot.is_real():
             self.compressor = wpilib.Compressor()
 

@@ -7,7 +7,7 @@ from subsystems.collector import Collector
 from subsystems.drivetrain import DriveTrain
 from subsystems.pivot import Pivot
 from subsystems.pneumatics import Pneumatics
-from subsystems.Shooter import Shooter
+from subsystems.shooter import Shooter
 from oi import Oi
 
 
