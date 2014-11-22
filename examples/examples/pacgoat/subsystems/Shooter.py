@@ -14,7 +14,9 @@ class Shooter(Subsystem):
     and ignores the latch.
     """
 
-    def __init__(self):
+    def __init__(self, robot):
+        self.robot = robot
+
         #Configure Devices
         self.hot_goal_sensor = wpilib.DigitalInput(3)
         self.piston1 = wpilib.DoubleSolenoid(1, 3, 4)

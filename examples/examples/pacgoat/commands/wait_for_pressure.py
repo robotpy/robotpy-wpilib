@@ -1,6 +1,4 @@
 from wpilib.command import Command
-from global_vars import subsystems
-
 #TODO Check this when done
 
 
@@ -11,8 +9,9 @@ class WaitForPressure(Command):
     condition.
     """
 
-    def __init__(self):
-        self.requires(subsystems["pneumatics"])
+    def __init__(self, robot):
+        self.requires(robot.pneumatics)
+        self.robot = robot
         super().__init__()
 
     def initialize(self):
@@ -25,7 +24,7 @@ class WaitForPressure(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return subsystems["pneumatics"].is_pressurized()
+        return self.robot.pneumatics.is_pressurized()
 
     def end(self):
         """Called once after isFinished returns true"""

@@ -1,6 +1,4 @@
 from wpilib.command import Command
-from global_vars import subsystems
-
 #TODO Check this when done
 
 
@@ -11,8 +9,9 @@ class WaitForBall(Command):
     condition.
     """
 
-    def __init__(self):
-        self.requires(subsystems["collector"])
+    def __init__(self, robot):
+        self.requires(robot.collector)
+        self.robot = robot
         super().__init__()
 
     def initialize(self):
@@ -25,7 +24,7 @@ class WaitForBall(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return subsystems["collector"].has_ball()
+        return self.robot.collector.has_ball()
 
     def end(self):
         """Called once after isFinished returns true"""

@@ -13,12 +13,13 @@ class Collector(Subsystem):
     STOP = 0
     REVERSE = -1
 
-    def __init__(self):
+    def __init__(self, robot):
         #Configure devices
         self.roller_motor = wpilib.Victor(6)
         self.ball_detector = wpilib.DigitalInput(10)
         self.open_detector = wpilib.DigitalInput(6)
         self.piston = wpilib.Solenoid(1, 1)
+        self.robot = robot
 
         #Put everything to the LiveWindow for testing.
         wpilib.LiveWindow.addActuator("Collector", "Roller Motor", self.roller_motor)

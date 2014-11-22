@@ -13,9 +13,9 @@ from subsystems.collector import Collector
 class Collect(CommandGroup):
     """Get the robot set to collect balls."""
 
-    def __init__(self):
-        self.addSequential(SetCollectionSpeed(Collector.FORWARD))
-        self.addParallel(CloseClaw())
-        self.addSequential(SetPivotSetpoint(Pivot.COLLECT))
-        self.addSequential(WaitForBall())
+    def __init__(self, robot):
+        self.addSequential(SetCollectionSpeed(robot, Collector.FORWARD))
+        self.addParallel(CloseClaw(robot))
+        self.addSequential(SetPivotSetpoint(robot, Pivot.COLLECT))
+        self.addSequential(WaitForBall(robot))
         super().__init__()

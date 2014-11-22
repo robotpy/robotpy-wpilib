@@ -1,5 +1,4 @@
 from wpilib.command import Command
-from global_vars import subsystems
 
 #TODO Check this when done
 
@@ -14,27 +13,28 @@ class DriveForward(Command):
     TOLERANCE = .1
     KP = -1.0/5.0
 
-    def __init__(self, dist=10, max_speed=.5):
+    def __init__(self, robot, dist=10, max_speed=.5):
         """The constructor"""
         #Signal that we require ExampleSubsystem
-        self.requires(subsystems["drivetrain"])
+        self.requires(robot.drivetrain)
         self.distance = dist
         self.drive_forward_speed = max_speed
+        self.robot = robot
         super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        subsystems["drivetrain"].get_right_encoder().reset()
+        self.robot.drivetrain.get_right_encoder().reset()
         self.setTimeout(2)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        error = self.distance - subsystems["drivetrain"].get_right_encoder().get()
+        error = self.distance - self.robot.drivetrain.get_right_encoder().get()
         if self.drive_forward_speed * self.KP * error >= self.drive_forward_speed:
-            subsystems["drivetrain"].tank_drive(self.drive_forward_speed, self.drive_forward_speed)
+            self.robot.drivetrain.tank_drive(self.drive_forward_speed, self.drive_forward_speed)
         else:
             speed = self.drive_forward_speed * self.KP * error
-            subsystems["drivetrain"].tank_drive(speed, speed)
+            self.robot.drivetrain.tank_drive(speed, speed)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
@@ -42,7 +42,7 @@ class DriveForward(Command):
 
     def end(self):
         """Called once after isFinished returns true"""
-        subsystems["drivetrain"].stop()
+        self.robot.drivetrain.stop()
 
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""

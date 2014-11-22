@@ -1,5 +1,4 @@
 from wpilib.command import Command
-from global_vars import subsystems
 
 #TODO Check this when done
 
@@ -7,13 +6,14 @@ from global_vars import subsystems
 class OpenClaw(Command):
     """Opens the claw."""
 
-    def __init__(self):
-        self.requires(subsystems["collector"])
+    def __init__(self, robot):
+        self.requires(robot.collector)
+        self.robot = robot
         super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        subsystems["collector"].open()
+        self.robot.collector.open()
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -21,7 +21,7 @@ class OpenClaw(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return subsystems["collector"].is_open()
+        return self.robot.collector.is_open()
 
     def end(self):
         """Called once after isFinished returns true"""

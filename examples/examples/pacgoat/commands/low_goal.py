@@ -12,8 +12,8 @@ from .set_pivot_setpoint import SetPivotSetpoint
 class LowGoal(CommandGroup):
     """Spit the ball out into the low goal assuming that the robot is in front of it."""
 
-    def __init__(self):
-        self.addSequential(SetPivotSetpoint(Pivot.LOW_GOAL))
-        self.addSequential(SetCollectionSpeed(Collector.REVERSE))
-        self.addSequential(ExtendShooter())
+    def __init__(self, robot):
+        self.addSequential(SetPivotSetpoint(robot, Pivot.LOW_GOAL))
+        self.addSequential(SetCollectionSpeed(robot, Collector.REVERSE))
+        self.addSequential(ExtendShooter(robot))
         super().__init__()

@@ -1,7 +1,6 @@
 import wpilib
 import math
 from wpilib.command import Subsystem
-from global_vars import subsystems, is_real
 from commands.drive_with_joystick import DriveWithJoystick
 
 
@@ -11,7 +10,10 @@ class DriveTrain(Subsystem):
     information about it's speed and position.
     """
 
-    def __init__(self):
+    def __init__(self, robot):
+
+        self.robot = robot
+
         #Configure drive motors
         self.front_left_cim = wpilib.Victor(1)
         self.front_right_cim = wpilib.Victor(2)
@@ -35,12 +37,12 @@ class DriveTrain(Subsystem):
         self.drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kRearRight, True)
 
         #Configure encoders
-        self.right_encoder = wpilib.Encoder(1, 2, True, wpilib.Encoder.EncodingType.k4X)
-        self.left_encoder = wpilib.Encoder(3, 4, False, wpilib.Encoder.EncodingType.k4X)
+        self.right_encoder = wpilib.Encoder(1, 2, reverseDirection=True)
+        self.left_encoder = wpilib.Encoder(3, 4, reverseDirection=False)
         self.right_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
         self.left_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
 
-        if is_real():
+        if robot.is_real():
             #Converts to feet
             self.right_encoder.setDistancePerPulse(0.0785398)
             self.left_encoder.setDistancePerPulse(0.0785398)
@@ -54,17 +56,20 @@ class DriveTrain(Subsystem):
 
         #Configure gyro
         self.gyro = wpilib.Gyro(2)
-        if is_real():
+        if robot.is_real():
             #TODO: Handle more gracefully
             self.gyro.setSensitivity(0.007)
 
         wpilib.LiveWindow.addSensor("DriveTrain", "Gyro", self.gyro)
 
+        super().__init__()
+
     def initDefaultCommand(self):
         """
-        When other commands aren't using the drivetrain, allow tank drive with the joystick.
+        When other commands aren't using the drivetrain, allow tank drive with
+        the joystick.
         """
-        self.setDefaultCommand(DriveWithJoystick())
+        self.setDefaultCommand(DriveWithJoystick(self.robot))
 
     def tank_drive(self, *args, **kwargs):
         joy = kwargs.pop("joy", None)

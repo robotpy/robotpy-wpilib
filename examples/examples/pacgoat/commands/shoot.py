@@ -13,9 +13,9 @@ from commands.open_claw import OpenClaw
 class Shoot(CommandGroup):
     """Shoot the ball at the current angle."""
 
-    def __init__(self):
-        self.addSequential(WaitForPressure())
-        self.addSequential(SetCollectionSpeed(Collector.STOP))
-        self.addSequential(OpenClaw())
-        self.addSequential(ExtendShooter)
+    def __init__(self, robot):
+        self.addSequential(WaitForPressure(robot))
+        self.addSequential(SetCollectionSpeed(robot, Collector.STOP))
+        self.addSequential(OpenClaw(robot))
+        self.addSequential(ExtendShooter(robot))
         super().__init__()

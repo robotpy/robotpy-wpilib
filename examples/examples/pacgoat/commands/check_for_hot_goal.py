@@ -1,5 +1,4 @@
 from wpilib.command import Command
-from global_vars import subsystems
 
 #TODO finish this
 
@@ -11,8 +10,8 @@ class CheckForHotGoal(Command):
     points than get none. When called sequentially, this command will block until
     the hot goal is detected or until it is timed out.
     """
-    def __init__(self, time):
-
+    def __init__(self, time, robot):
+        self.robot = robot
         self.setTimeout(time)
         super().__init__()
 
@@ -23,7 +22,7 @@ class CheckForHotGoal(Command):
         pass
 
     def isFinished(self):
-        return self.isTimedOut() or subsystems["shooter"].goal_is_hot()
+        return self.isTimedOut() or self.robot.shooter.goal_is_hot()
 
     def end(self):
         pass
