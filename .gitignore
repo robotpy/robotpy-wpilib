@@ -21,3 +21,8 @@ version.py
 *.iml
 .idea/*
 .pycharmproject
+
+#Java parser output
+lextab.py
+parser.out
+parsetab.py
