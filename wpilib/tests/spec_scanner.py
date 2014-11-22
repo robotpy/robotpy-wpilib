@@ -44,12 +44,13 @@ if __name__ == "__main__":
     end_head = "\033[0m"
     dash_bar = "-----------------------"
     tab = "    "
+    arrowtab = "--> "
 
     output = scan_specifications(wpilib, sys.argv[1])
     for item in output:
 
         print()
-        print("{}{}{}".format(dash_bar, item["name"], dash_bar))
+        print("".join([dash_bar, item["name"], dash_bar]))
         print()
         if item["correct"]:
             print("".join([green_head, "present and all correct!!", end_head]))
@@ -66,4 +67,4 @@ if __name__ == "__main__":
                 if method["present"]:
                     print("".join([green_head, tab, method_name, " present", end_head]))
                 else:
-                    print("".join([red_head, tab, method_name, " NOT present", end_head]))
+                    print("".join([red_head, arrowtab, method_name, " NOT present", end_head]))
