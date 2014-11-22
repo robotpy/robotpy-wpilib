@@ -38,21 +38,21 @@ class DriveTrain(Subsystem):
 
         #Configure encoders
         self.right_encoder = wpilib.Encoder(0, 1, reverseDirection=True)
-        self.left_encoder = wpilib.Encoder(2, 3, reverseDirection=False)
+        #self.left_encoder = wpilib.Encoder(2, 3, reverseDirection=False)
         self.right_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
-        self.left_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
+        #self.left_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
 
         if robot.is_real():
             #Converts to feet
             self.right_encoder.setDistancePerPulse(0.0785398)
-            self.left_encoder.setDistancePerPulse(0.0785398)
+            #self.left_encoder.setDistancePerPulse(0.0785398)
         else:
             #Convert to feet 4in diameter wheels with 360 tick simulated encoders.
             self.right_encoder.setDistancePerPulse((4*math.pi)/(360*12))
-            self.left_encoder.setDistancePerPulse((4*math.pi)/(360*12))
+            #self.left_encoder.setDistancePerPulse((4*math.pi)/(360*12))
 
         wpilib.LiveWindow.addSensor("DriveTrain", "Right Encoder", self.right_encoder)
-        wpilib.LiveWindow.addSensor("DriveTrain", "Left Encoder", self.left_encoder)
+        #wpilib.LiveWindow.addSensor("DriveTrain", "Left Encoder", self.left_encoder)
 
         #Configure gyro
         self.gyro = wpilib.Gyro(1)
@@ -88,7 +88,7 @@ class DriveTrain(Subsystem):
 
     def get_left_encoder(self):
         """:return The encoder getting the distance and speed of the right side of the drivetrain."""
-        return self.left_encoder
+        #return self.left_encoder
 
     def get_right_encoder(self):
         """:return The encoder getting the distance and speed of the right side of the drivetrain."""

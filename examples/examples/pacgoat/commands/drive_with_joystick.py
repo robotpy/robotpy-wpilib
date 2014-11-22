@@ -8,9 +8,9 @@ class DriveWithJoystick(Command):
     """
 
     def __init__(self, robot):
+        super().__init__()
         self.requires(robot.drivetrain)
         self.robot = robot
-        super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""

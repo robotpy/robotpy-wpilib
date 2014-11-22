@@ -12,10 +12,10 @@ class SetCollectionSpeed(Command):
     speed = 0
 
     def __init__(self, robot, speed):
+        super().__init__()
         self.requires(robot.collector)
         self.speed = speed
         self.robot = robot
-        super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""

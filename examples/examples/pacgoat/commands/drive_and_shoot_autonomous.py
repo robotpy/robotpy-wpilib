@@ -15,6 +15,7 @@ class DriveAndShootAutonomous(CommandGroup):
     """
 
     def __init__(self, robot):
+        super().__init__()
         self.addSequential(CloseClaw(robot))
         self.addSequential(WaitForPressure(robot), 2)
         if robot.is_real():
@@ -23,4 +24,3 @@ class DriveAndShootAutonomous(CommandGroup):
         self.addSequential(SetPivotSetpoint(robot, 45))
         self.addSequential(DriveForward(robot, 8, 0.3))
         self.addSequential(Shoot(robot))
-        super().__init__()

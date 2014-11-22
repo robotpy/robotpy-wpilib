@@ -11,9 +11,9 @@ class CheckForHotGoal(Command):
     the hot goal is detected or until it is timed out.
     """
     def __init__(self, time, robot):
+        super().__init__()
         self.robot = robot
         self.setTimeout(time)
-        super().__init__()
 
     def initialize(self):
         pass

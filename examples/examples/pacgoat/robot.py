@@ -25,19 +25,19 @@ class Robot(wpilib.IterativeRobot):
         self.shooter = Shooter(self)
         self.pneumatics = Pneumatics(self)
         self.pivot = Pivot(self)
-        wpilib.SmartDashboard.putData(self.drivetrain)
-        wpilib.SmartDashboard.putData(self.collector)
-        wpilib.SmartDashboard.putData(self.shooter)
-        wpilib.SmartDashboard.putData(self.pneumatics)
-        wpilib.SmartDashboard.putData(self.pivot)
+        #wpilib.SmartDashboard.putData(self.drivetrain)
+        #wpilib.SmartDashboard.putData(self.collector)
+        #wpilib.SmartDashboard.putData(self.shooter)
+        #wpilib.SmartDashboard.putData(self.pneumatics)
+        #wpilib.SmartDashboard.putData(self.pivot)
 
-        self.oi = Oi()
+        self.oi = Oi(self)
 
         #instantiate the command used for the autonomous period
         self.auto_chooser = wpilib.SendableChooser()
         self.auto_chooser.addDefault("Drive and Shoot", DriveAndShootAutonomous(self))
         self.auto_chooser.addObject("Drive Forward", DriveForward(self))
-        wpilib.SmartDashboard.putData("Auto Mode", self.auto_chooser)
+        #wpilib.SmartDashboard.putData("Auto Mode", self.auto_chooser)
 
         #Pressurize the pneumatics
         self.pneumatics.start()
@@ -77,15 +77,16 @@ class Robot(wpilib.IterativeRobot):
         self.log()
 
     def log(self):
+        return False
         self.shooter.write_pressure()
         wpilib.SmartDashboard.putNumber("Pivot Pot Value", self.pivot.get_angle())
-        wpilib.SmartDashboard.putNumber("Left Distance", self.drivetrain.get_left_encoder().getDistance())
+        #wpilib.SmartDashboard.putNumber("Left Distance", self.drivetrain.get_left_encoder().getDistance())
         wpilib.SmartDashboard.putNumber("Right Distance", self.drivetrain.get_right_encoder().getDistance())
 
     def is_real(self):
         return False
 
-    def is_simulation(self):
+    def is_simulated(self):
         return True
 
 if __name__ == "__main__":

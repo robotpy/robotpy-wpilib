@@ -13,7 +13,7 @@ class LowGoal(CommandGroup):
     """Spit the ball out into the low goal assuming that the robot is in front of it."""
 
     def __init__(self, robot):
+        super().__init__()
         self.addSequential(SetPivotSetpoint(robot, Pivot.LOW_GOAL))
         self.addSequential(SetCollectionSpeed(robot, Collector.REVERSE))
         self.addSequential(ExtendShooter(robot))
-        super().__init__()

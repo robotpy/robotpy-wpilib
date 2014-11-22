@@ -15,12 +15,12 @@ class DriveForward(Command):
 
     def __init__(self, robot, dist=10, max_speed=.5):
         """The constructor"""
+        super().__init__()
         #Signal that we require ExampleSubsystem
         self.requires(robot.drivetrain)
         self.distance = dist
         self.drive_forward_speed = max_speed
         self.robot = robot
-        super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""

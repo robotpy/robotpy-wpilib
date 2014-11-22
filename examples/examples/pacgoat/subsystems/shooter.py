@@ -23,7 +23,7 @@ class Shooter(Subsystem):
         self.piston2 = wpilib.DoubleSolenoid(0, 4, 5)
         self.latch_piston = wpilib.Solenoid(0, 1)
         self.piston1_reed_switch_front = wpilib.DigitalInput(8)
-        self.piston1_reed_switch_back = wpilib.DigitalInput(10)
+        self.piston1_reed_switch_back = wpilib.DigitalInput(7)
 
         #Put everything to the LiveWindow for testing.
         wpilib.LiveWindow.addSensor("Shooter", "Hot Goal Sensor", self.hot_goal_sensor)

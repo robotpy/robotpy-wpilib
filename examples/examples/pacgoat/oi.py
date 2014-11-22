@@ -19,23 +19,23 @@ class Oi(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, robot):
         self.joystick = wpilib.Joystick(1)
 
-        JoystickButton(self.joystick, 12).whenPressed(LowGoal())
-        JoystickButton(self.joystick, 10).whenPressed(Collect())
+        JoystickButton(self.joystick, 12).whenPressed(LowGoal(robot))
+        JoystickButton(self.joystick, 10).whenPressed(Collect(robot))
 
-        JoystickButton(self.joystick, 11).whenPressed(SetPivotSetpoint(Pivot.SHOOT))
-        JoystickButton(self.joystick, 9).whenPressed(SetPivotSetpoint(Pivot.SHOOT_NEAR))
+        JoystickButton(self.joystick, 11).whenPressed(SetPivotSetpoint(robot,Pivot.SHOOT))
+        JoystickButton(self.joystick, 9).whenPressed(SetPivotSetpoint(robot,Pivot.SHOOT_NEAR))
 
-        DoubleButton(self.joystick, 2, 3).whenActive(Shoot())
+        DoubleButton(self.joystick, 2, 3).whenActive(Shoot(robot))
 
         #SmartDashboard Buttons
-        wpilib.SmartDashboard.putData("Drive Forward", DriveForward(2.25))
-        wpilib.SmartDashboard.putData("Drive Backward", DriveForward(-2.25))
-        wpilib.SmartDashboard.putData("Start Rollers", SetCollectionSpeed(Collector.FORWARD))
-        wpilib.SmartDashboard.putData("Stop Rollers", SetCollectionSpeed(Collector.STOP))
-        wpilib.SmartDashboard.putData("Reverse Rollers", SetCollectionSpeed(Collector.REVERSE))
+        #wpilib.SmartDashboard.putData("Drive Forward", DriveForward(robot,2.25))
+        #wpilib.SmartDashboard.putData("Drive Backward", DriveForward(robot,-2.25))
+        #wpilib.SmartDashboard.putData("Start Rollers", SetCollectionSpeed(robot,Collector.FORWARD))
+        #wpilib.SmartDashboard.putData("Stop Rollers", SetCollectionSpeed(robot,Collector.STOP))
+        #wpilib.SmartDashboard.putData("Reverse Rollers", SetCollectionSpeed(robot,Collector.REVERSE))
 
     def get_joystick(self):
         return self.joystick

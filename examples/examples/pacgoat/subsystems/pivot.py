@@ -9,7 +9,7 @@ class Pivot(PIDSubsystem):
     """
 
     #Constants for some useful angles
-    COLLLECT = 105
+    COLLECT = 105
     LOW_GOAL = 90
     SHOOT = 45
     SHOOT_NEAR = 30
@@ -28,8 +28,8 @@ class Pivot(PIDSubsystem):
         self.motor = wpilib.Victor(4)
 
         #Sensors for measuring the position of the pivot.
-        self.upper_limit_switch = wpilib.DigitalInput(12)
-        self.lower_limit_switch = wpilib.DigitalInput(11)
+        self.upper_limit_switch = wpilib.DigitalInput(2)
+        self.lower_limit_switch = wpilib.DigitalInput(3)
 
         #0 degrees is vertical facing up.
         #Angle increases the more forward the pivot goes.

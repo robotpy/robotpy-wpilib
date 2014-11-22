@@ -6,10 +6,10 @@ class ExtendShooter(Command):
     """Extend the shooter and retract it after a second."""
 
     def __init__(self, robot):
+        super().__init__()
         self.requires(robot.shooter)
         self.setTimeout(1)
         self.robot = robot
-        super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""

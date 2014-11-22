@@ -14,8 +14,8 @@ class Shoot(CommandGroup):
     """Shoot the ball at the current angle."""
 
     def __init__(self, robot):
+        super().__init__()
         self.addSequential(WaitForPressure(robot))
         self.addSequential(SetCollectionSpeed(robot, Collector.STOP))
         self.addSequential(OpenClaw(robot))
         self.addSequential(ExtendShooter(robot))
-        super().__init__()

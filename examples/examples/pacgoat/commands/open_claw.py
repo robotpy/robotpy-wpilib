@@ -7,9 +7,9 @@ class OpenClaw(Command):
     """Opens the claw."""
 
     def __init__(self, robot):
+        super().__init__()
         self.requires(robot.collector)
         self.robot = robot
-        super().__init__()
 
     def initialize(self):
         """Called just before this Command runs the first time."""
