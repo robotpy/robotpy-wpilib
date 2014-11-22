@@ -38,24 +38,32 @@ def scan_specifications(python_object, java_dir):
 
 if __name__ == "__main__":
     import wpilib
+
+    green_head = "\033[92m"
+    red_head = "\033[91m"
+    end_head = "\033[0m"
+    dash_bar = "-----------------------"
+    tab = "    "
+
     output = scan_specifications(wpilib, sys.argv[1])
     for item in output:
 
         print()
-        print("----------------------{}---------------------------".format(item["name"]))
+        print("{}{}{}".format(dash_bar, item["name"], dash_bar))
         print()
         if item["correct"]:
-            print("present and all correct!!")
+            print("".join([green_head, "present and all correct!!", end_head]))
         elif not item["present"]:
-            print("NOT present!!!!!!!!!!!!!!!!!!")
+            print("".join([red_head, "NOT present", end_head]))
         else:
-            print("present, but NOT correct!!!!!!!!!!!!!!!!!!")
+            print("".join([red_head, "present, but NOT correct", end_head]))
             print()
             print("Displaying methods:")
             print()
 
             for method in item["methods"]:
+                method_name = item["name"] + "." + method["name"] + "()"
                 if method["present"]:
-                    print("    " + item["name"] + "." + method["name"] + " present")
+                    print("".join([green_head, tab, method_name, " present", end_head]))
                 else:
-                    print("    " + item["name"] + "." + method["name"] + " NOT present!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    print("".join([red_head, tab, method_name, " NOT present", end_head]))
