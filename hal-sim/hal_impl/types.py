@@ -8,6 +8,7 @@ __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
            "HALControlWord", "HALControlWordPtr", "Port",
            "_HALJoystickAxes", "HALJoystickAxes",
            "_HALJoystickPOVs", "HALJoystickPOVs",
+           "_HALJoystickButtons", "HALJoystickButtons",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
            "Counter", "Encoder", "Interrupt", "Notifier",
            "_SolenoidPort", "SolenoidPort"]
@@ -58,6 +59,12 @@ class HALJoystickPOVs:
         self.count = len(povs)
         self.povs = povs
 _HALJoystickPOVs = HALJoystickPOVs
+
+class HALJoystickButtons:
+    def __init__(self, buttons=0, count=0):
+        self.buttons = buttons
+        self.count = count
+_HALJoystickButtons = HALJoystickButtons
 
 #############################################################################
 # Analog

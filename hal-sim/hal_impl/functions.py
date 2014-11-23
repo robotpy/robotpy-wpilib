@@ -223,10 +223,10 @@ def HALGetJoystickAxes(joystickNum, axes):
 def HALGetJoystickPOVs(joystickNum, povs):
     return map(int, hal_data['joysticks'][joystickNum]['povs'][:])
 
-def HALGetJoystickButtons(joystickNum, buttons, count):
+def HALGetJoystickButtons(joystickNum, buttons):
     # buttons are stored as booleans for ease of use, convert to integer
     b = hal_data['joysticks'][joystickNum]['buttons']
-    buttons.value = sum(int(v) << i for i, v in enumerate(b[1:]))
+    buttons.buttons = sum(int(v) << i for i, v in enumerate(b[1:]))
     buttons.count = len(b)-1
 
 def HALGetMatchTime():

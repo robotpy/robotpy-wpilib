@@ -60,7 +60,6 @@ class DriverStation:
         for i in range(self.kJoystickPorts):
             self.joystickAxes.append([0]*hal.kMaxJoystickAxes)
             self.joystickPOVs.append([0]*hal.kMaxJoystickPOVs)
-        self.joystickButtons = [0]*self.kJoystickPorts
 
         self.userInDisabled = False
         self.userInAutonomous = False
@@ -129,7 +128,6 @@ class DriverStation:
 
             # Get the status of all of the joysticks
             for stick in range(self.kJoystickPorts):
-                self.joystickButtons[stick] = hal.HALGetJoystickButtons(stick)
                 self.joystickAxes[stick] = hal.HALGetJoystickAxes(stick)
                 self.joystickPOVs[stick] = hal.HALGetJoystickPOVs(stick)
 
@@ -188,18 +186,21 @@ class DriverStation:
                 return 0.0
             return self.joystickPOVs[stick][pov]
 
-    def getStickButtons(self, stick):
-        """The state of the buttons on the joystick.
-        12 buttons (4 msb are unused) from the joystick.
+    def getStickButton(self, stick, button):
+        """The state of a button on the joystick.
 
         :param stick: The joystick to read.
-        :returns: The state of the buttons on the joystick.
+        :param button: The button number to be read.
+        :returns: The state of the button.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-3")
 
-        with self.mutex:
-            return self.joystickButtons[stick]
+        buttons = hal.HALGetJoystickButtons(stick)
+        if button >= buttons.count:
+            self.reportError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick), False)
+            return False
+        return ((0x1 << (button - 1)) & buttons.buttons) != 0
 
     def isEnabled(self):
         """Gets a value indicating whether the Driver Station requires the

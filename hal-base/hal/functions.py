@@ -92,12 +92,11 @@ def HALGetJoystickPOVs(joystickNum):
     _HALGetJoystickPOVs(joystickNum, povs)
     return [x for x in povs.povs[0:povs.count]]
 
-_HALGetJoystickButtons = _RETFUNC("HALGetJoystickButtons", C.c_int, ("joystickNum", C.c_uint8), ("buttons", C.POINTER(C.c_uint32)), ("count", C.POINTER(C.c_uint8)))
+_HALGetJoystickButtons = _RETFUNC("HALGetJoystickButtons", C.c_int, ("joystickNum", C.c_uint8), ("buttons", HALJoystickButtons))
 def HALGetJoystickButtons(joystickNum):
-    buttons = C.c_uint32(0)
-    count = C.c_uint8(0)
-    _HALGetJoystickButtons(joystickNum, buttons, count)
-    return buttons.value
+    buttons = _HALJoystickButtons()
+    _HALGetJoystickButtons(joystickNum, buttons)
+    return buttons
 
 HALGetMatchTime = _RETFUNC("HALGetMatchTime", C.c_int, ("matchTime", C.POINTER(C.c_float)), out=["matchTime"])
 

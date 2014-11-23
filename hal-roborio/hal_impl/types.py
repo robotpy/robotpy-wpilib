@@ -5,6 +5,7 @@ __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
            "HALControlWord", "HALControlWordPtr", "Port",
            "_HALJoystickAxes", "HALJoystickAxes",
            "_HALJoystickPOVs", "HALJoystickPOVs",
+           "_HALJoystickButtons", "HALJoystickButtons",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
            "Counter", "Encoder", "Interrupt", "Notifier",
            "_SolenoidPort", "SolenoidPort"]
@@ -56,6 +57,11 @@ class _HALJoystickPOVs(C.Structure):
     _fields_ = [("count", C.c_uint16),
                 ("povs", C.c_int16 * kMaxJoystickPOVs)]
 HALJoystickPOVs = C.POINTER(_HALJoystickPOVs)
+
+class _HALJoystickButtons(C.Structure):
+    _fields_ = [("buttons", C.c_uint32),
+                ("count", C.c_uint8)]
+HALJoystickButtons = C.POINTER(_HALJoystickButtons)
 
 #############################################################################
 # Analog

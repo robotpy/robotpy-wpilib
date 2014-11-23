@@ -206,7 +206,7 @@ class Joystick:
         :param button: The button number to be read.
         :returns: The state of the button.
         """
-        return ((0x1 << (button - 1)) & self.ds.getStickButtons(self.port)) != 0
+        return self.ds.getStickButton(self.port, button)
 
     def getPOV(self, pov=0):
         """Get the state of a POV on the joystick.

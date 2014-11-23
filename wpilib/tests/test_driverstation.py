@@ -128,15 +128,18 @@ def test_getStickPOV_limits(ds, halmock):
     with pytest.raises(IndexError):
         ds.getStickPOV(0, halmock.kMaxJoystickPOVs)
 
-def test_getStickButtons(ds):
-    ds.joystickButtons[0] = 0x13
-    assert ds.getStickButtons(0) == 0x13
+def test_getStickButton(ds, halmock):
+    class ButtonsMock:
+        buttons = 0x13
+        count = 12
+    halmock.HALGetJoystickButtons.return_value = ButtonsMock()
+    assert ds.getStickButton(0, 1) == True
 
-def test_getStickButtons_limits(ds):
+def test_getStickButton_limits(ds):
     with pytest.raises(IndexError):
-        ds.getStickButtons(-1)
+        ds.getStickButton(-1, 1)
     with pytest.raises(IndexError):
-        ds.getStickButtons(ds.kJoystickPorts)
+        ds.getStickButton(ds.kJoystickPorts, 1)
 
 def test_isEnabled(ds):
     ds.controlWord.enabled = 1
