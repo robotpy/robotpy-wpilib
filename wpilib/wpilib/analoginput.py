@@ -182,7 +182,7 @@ class AnalogInput(SensorBase):
             raise IndexError(
                     "Accumulators are only available on slot %d on channels %s"
                     % (AnalogInput.kAccumulatorSlot,
-                       ",".join([str(c) for c in AnalogInput.kAccumulatorChannels])))
+                       ",".join(str(c) for c in AnalogInput.kAccumulatorChannels)))
         self.accumulatorOffset = 0
         hal.initAccumulator(self.port)
 
