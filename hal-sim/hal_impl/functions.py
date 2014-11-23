@@ -105,10 +105,12 @@ def deleteMultiWait(sem):
     sem.cond = None
 
 def takeMultiWait(sem, mutex, timeout):
-    sem.cond.wait() # timeout is ignored in C++ HAL
+    with sem.cond:
+        sem.cond.wait() # timeout is ignored in C++ HAL
 
 def giveMultiWait(sem):
-    sem.cond.notifyAll() # hal uses pthread_cond_broadcast, which wakes all threads
+    with sem.cond:
+        sem.cond.notifyAll() # hal uses pthread_cond_broadcast, which wakes all threads
 
 
 #############################################################################
