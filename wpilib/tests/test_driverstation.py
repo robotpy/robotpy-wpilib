@@ -30,7 +30,6 @@ def test_init(wpimock, halmock):
     halmock.HALSetNewDataSem.assert_called_once_with(ds.packetDataAvailableSem)
     assert ds.controlWord == halmock.HALGetControlWord.return_value
     assert ds.allianceStationID == -1
-    assert ds.approxMatchTimeOffset == -1.0
     assert ds.userInDisabled == False
     assert ds.userInAutonomous == False
     assert ds.userInTeleop == False
@@ -95,30 +94,6 @@ def test_getData(ds, halmock):
     assert ds.allianceStationID == halmock.HALGetAllianceStation.return_value
     assert ds.newControlData
     # TODO: check joystick values
-
-def test_getData_matchtime(ds, wpimock):
-    with patch("wpilib.driverstation.Timer") as timermock:
-        timermock.getFPGATimestamp.return_value = 17.0
-
-        # in auto
-        wpimock.DriverStation.lastEnabled = False
-        ds.controlWord.enabled = True
-        ds.controlWord.autonomous = True
-        ds.getData()
-        assert ds.approxMatchTimeOffset == 17.0
-
-        # starting teleop
-        wpimock.DriverStation.lastEnabled = False
-        ds.controlWord.enabled = True
-        ds.controlWord.autonomous = False
-        ds.getData()
-        assert ds.approxMatchTimeOffset == 2.0
-
-        # disabling
-        wpimock.DriverStation.lastEnabled = True
-        ds.controlWord.enabled = False
-        ds.getData()
-        assert ds.approxMatchTimeOffset == -1.0
 
 def test_getBatteryVoltage(ds, halmock):
     assert ds.getBatteryVoltage() == halmock.getVinVoltage.return_value
@@ -229,13 +204,8 @@ def test_isFMSAttached(ds):
     ds.controlWord.fmsAttached = 0
     assert not ds.isFMSAttached()
 
-def test_getMatchTime(ds):
-    ds.approxMatchTimeOffset = -1.0
-    assert ds.getMatchTime() == 0.0
-    ds.approxMatchTimeOffset = 1.0
-    with patch("wpilib.driverstation.Timer") as timermock:
-        timermock.getFPGATimestamp.return_value = 2.0
-        assert ds.getMatchTime() == 1.0
+def test_getMatchTime(ds, halmock):
+    assert ds.getMatchTime() == halmock.HALGetMatchTime.return_value
 
 def test_InDisabled(ds):
     ds.InDisabled(True)

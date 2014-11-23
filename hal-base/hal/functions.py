@@ -99,6 +99,8 @@ def HALGetJoystickButtons(joystickNum):
     _HALGetJoystickButtons(joystickNum, buttons, count)
     return buttons.value
 
+HALGetMatchTime = _RETFUNC("HALGetMatchTime", C.c_int, ("matchTime", C.POINTER(C.c_float)), out=["matchTime"])
+
 HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MULTIWAIT_ID))
 
 HALGetSystemActive = _STATUSFUNC("HALGetSystemActive", C.c_bool)

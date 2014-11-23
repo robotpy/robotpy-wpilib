@@ -229,6 +229,9 @@ def HALGetJoystickButtons(joystickNum, buttons, count):
     buttons.value = sum(int(v) << i for i, v in enumerate(b[1:]))
     buttons.count = len(b)-1
 
+def HALGetMatchTime():
+    return hal_data['match_time']
+
 def HALGetSystemActive(status):
     status.value = 0
     return True

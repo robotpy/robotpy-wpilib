@@ -53,6 +53,8 @@ def reset_hal_data():
         
         } for _ in range(6)],
 
+        'match_time': 0.0,
+
         'fpga_button': False,
         'error_data': None,
 

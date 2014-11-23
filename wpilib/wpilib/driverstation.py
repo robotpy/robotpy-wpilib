@@ -10,7 +10,6 @@ import sys
 import traceback
 
 from .motorsafety import MotorSafety
-from .timer import Timer
 
 __all__ = ["DriverStation"]
 
@@ -63,7 +62,6 @@ class DriverStation:
             self.joystickPOVs.append([0]*hal.kMaxJoystickPOVs)
         self.joystickButtons = [0]*self.kJoystickPorts
 
-        self.approxMatchTimeOffset = -1.0
         self.userInDisabled = False
         self.userInAutonomous = False
         self.userInTeleop = False
@@ -135,14 +133,6 @@ class DriverStation:
                 self.joystickAxes[stick] = hal.HALGetJoystickAxes(stick)
                 self.joystickPOVs[stick] = hal.HALGetJoystickPOVs(stick)
 
-            if not DriverStation.lastEnabled and self.isEnabled():
-                # If starting teleop, assume that autonomous just took up 15 seconds
-                if self.isAutonomous():
-                    self.approxMatchTimeOffset = Timer.getFPGATimestamp()
-                else:
-                    self.approxMatchTimeOffset = Timer.getFPGATimestamp() - 15.0
-            elif DriverStation.lastEnabled and not self.isEnabled():
-                self.approxMatchTimeOffset = -1.0
             DriverStation.lastEnabled = self.isEnabled()
 
             self.newControlData = True
@@ -346,9 +336,7 @@ class DriverStation:
 
         :returns: Match time in seconds since the beginning of autonomous
         """
-        if self.approxMatchTimeOffset < 0.0:
-            return 0.0
-        return Timer.getFPGATimestamp() - self.approxMatchTimeOffset
+        return hal.HALGetMatchTime()
 
     @staticmethod
     def reportError(error, printTrace):
