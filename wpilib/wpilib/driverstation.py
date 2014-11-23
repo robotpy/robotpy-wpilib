@@ -19,10 +19,6 @@ class DriverStation:
 
     #: The number of joystick ports
     kJoystickPorts = 6
-    
-    #: Scaling factor from raw values to volts
-    kDSAnalogInScaling = 5.0 / 1023.0
-    lastEnabled = False
 
     class Alliance:
         """The robot alliance that the robot is a part of"""
@@ -53,14 +49,6 @@ class DriverStation:
         self.packetDataAvailableSem = hal.initializeMultiWait()
         hal.HALSetNewDataSem(self.packetDataAvailableSem)
 
-        self.controlWord = hal.HALGetControlWord()
-        self.allianceStationID = -1
-        self.joystickAxes = []
-        self.joystickPOVs = []
-        for i in range(self.kJoystickPorts):
-            self.joystickAxes.append([0]*hal.kMaxJoystickAxes)
-            self.joystickPOVs.append([0]*hal.kMaxJoystickPOVs)
-
         self.userInDisabled = False
         self.userInAutonomous = False
         self.userInTeleop = False
@@ -87,13 +75,12 @@ class DriverStation:
         while self.thread_keepalive:
             hal.takeMultiWait(self.packetDataAvailableSem,
                               self.packetDataAvailableMutex, 0)
-            with self.mutex:
-                self.getData()
             with self.dataSem:
                 self.dataSem.notify_all()
+            with self.mutex:
+                self.newControlData = True
             safetyCounter += 1
             if safetyCounter >= 5:
-                # print("Checking safety")
                 MotorSafety.checkMotors()
                 safetyCounter = 0
             if self.userInDisabled:
@@ -113,27 +100,6 @@ class DriverStation:
         """
         with self.dataSem:
             self.dataSem.wait(timeout)
-
-    def getData(self):
-        """Copy data from the DS task for the user.
-        If no new data exists, it will just be returned, otherwise
-        the data will be copied from the DS polling loop.
-        """
-        with self.mutex:
-            # Get the status data
-            self.controlWord = hal.HALGetControlWord()
-
-            # Get the location/alliance data
-            self.allianceStationID = hal.HALGetAllianceStation()
-
-            # Get the status of all of the joysticks
-            for stick in range(self.kJoystickPorts):
-                self.joystickAxes[stick] = hal.HALGetJoystickAxes(stick)
-                self.joystickPOVs[stick] = hal.HALGetJoystickPOVs(stick)
-
-            DriverStation.lastEnabled = self.isEnabled()
-
-            self.newControlData = True
 
     def getBatteryVoltage(self):
         """Read the battery voltage.
@@ -156,11 +122,12 @@ class DriverStation:
         if axis < 0 or axis >= hal.kMaxJoystickAxes:
             raise IndexError("Joystick axis is out of range")
 
-        with self.mutex:
-            if axis >= len(self.joystickAxes[stick]):
-                self.reportError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick), False)
-                return 0.0
-            value = self.joystickAxes[stick][axis]
+        joystickAxes = hal.HALGetJoystickAxes(stick)
+
+        if axis >= len(joystickAxes):
+            self.reportError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick), False)
+            return 0.0
+        value = joystickAxes[axis]
 
         if value < 0:
             return value / 128.0
@@ -180,11 +147,12 @@ class DriverStation:
         if pov < 0 or pov >= hal.kMaxJoystickPOVs:
             raise IndexError("Joystick POV is out of range")
 
-        with self.mutex:
-            if pov >= len(self.joystickPOVs[stick]):
-                self.reportError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick), False)
-                return 0.0
-            return self.joystickPOVs[stick][pov]
+        joystickPOVs = hal.HALGetJoystickPOVs(stick)
+
+        if pov >= len(joystickPOVs):
+            self.reportError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick), False)
+            return 0.0
+        return joystickPOVs[pov]
 
     def getStickButton(self, stick, button):
         """The state of a button on the joystick.
@@ -208,9 +176,8 @@ class DriverStation:
 
         :returns: True if the robot is enabled, False otherwise.
         """
-        with self.mutex:
-            return (self.controlWord.enabled != 0 and
-                    self.controlWord.dsAttached != 0)
+        controlWord = hal.HALGetControlWord()
+        return controlWord.enabled != 0 and controlWord.dsAttached != 0
 
     def isDisabled(self):
         """Gets a value indicating whether the Driver Station requires the
@@ -226,8 +193,8 @@ class DriverStation:
 
         :returns: True if autonomous mode should be enabled, False otherwise.
         """
-        with self.mutex:
-            return self.controlWord.autonomous != 0
+        controlWord = hal.HALGetControlWord()
+        return controlWord.autonomous != 0
 
     def isTest(self):
         """Gets a value indicating whether the Driver Station requires the
@@ -235,7 +202,8 @@ class DriverStation:
 
         :returns: True if test mode should be enabled, False otherwise.
         """
-        return self.controlWord.test != 0
+        controlWord = hal.HALGetControlWord()
+        return controlWord.test != 0
 
     def isOperatorControl(self):
         """Gets a value indicating whether the Driver Station requires the
@@ -244,9 +212,8 @@ class DriverStation:
         :returns: True if operator-controlled mode should be enabled,
             False otherwise.
         """
-        with self.mutex:
-            return not (self.controlWord.autonomous != 0 or
-                        self.controlWord.test != 0)
+        controlWord = hal.HALGetControlWord()
+        return not (controlWord.autonomous != 0 or controlWord.test != 0)
 
     def isSysActive(self):
         return hal.HALGetSystemActive()
@@ -272,17 +239,17 @@ class DriverStation:
         :returns: The current alliance
         :rtype: :class:`.Alliance`
         """
-        with self.mutex:
-            if self.allianceStationID in (hal.kHALAllianceStationID_red1,
-                                          hal.kHALAllianceStationID_red2,
-                                          hal.kHALAllianceStationID_red3):
-                return self.Alliance.Red
-            elif self.allianceStationID in (hal.kHALAllianceStationID_blue1,
-                                            hal.kHALAllianceStationID_blue2,
-                                            hal.kHALAllianceStationID_blue3):
-                return self.Alliance.Blue
-            else:
-                return self.Alliance.Invalid
+        allianceStationID = hal.HALGetAllianceStation()
+        if allianceStationID in (hal.kHALAllianceStationID_red1,
+                                 hal.kHALAllianceStationID_red2,
+                                 hal.kHALAllianceStationID_red3):
+            return self.Alliance.Red
+        elif allianceStationID in (hal.kHALAllianceStationID_blue1,
+                                   hal.kHALAllianceStationID_blue2,
+                                   hal.kHALAllianceStationID_blue3):
+            return self.Alliance.Blue
+        else:
+            return self.Alliance.Invalid
 
     def getLocation(self):
         """Gets the location of the team's driver station controls.
@@ -290,18 +257,18 @@ class DriverStation:
         :returns: The location of the team's driver station controls:
             1, 2, or 3
         """
-        with self.mutex:
-            if self.allianceStationID in (hal.kHALAllianceStationID_red1,
-                                          hal.kHALAllianceStationID_blue1):
-                return 1
-            elif self.allianceStationID in (hal.kHALAllianceStationID_red2,
-                                            hal.kHALAllianceStationID_blue2):
-                return 2
-            elif self.allianceStationID in (hal.kHALAllianceStationID_red3,
-                                            hal.kHALAllianceStationID_blue3):
-                return 3
-            else:
-                return 0
+        allianceStationID = hal.HALGetAllianceStation()
+        if allianceStationID in (hal.kHALAllianceStationID_red1,
+                                 hal.kHALAllianceStationID_blue1):
+            return 1
+        elif allianceStationID in (hal.kHALAllianceStationID_red2,
+                                   hal.kHALAllianceStationID_blue2):
+            return 2
+        elif allianceStationID in (hal.kHALAllianceStationID_red3,
+                                   hal.kHALAllianceStationID_blue3):
+            return 3
+        else:
+            return 0
 
     def isFMSAttached(self):
         """Is the driver station attached to a Field Management System?
@@ -309,16 +276,16 @@ class DriverStation:
         :returns: True if the robot is competing on a field being controlled
             by a Field Management System
         """
-        with self.mutex:
-            return self.controlWord.fmsAttached != 0
+        controlWord = hal.HALGetControlWord()
+        return controlWord.fmsAttached != 0
 
     def isDSAttached(self):
         """Is the driver station attached to the robot?
 
         :returns: True if the robot is being controlled by a driver station.
         """
-        with self.mutex:
-            return self.controlWord.dsAttached != 0
+        controlWord = hal.HALGetControlWord()
+        return controlWord.dsAttached != 0
 
     def getMatchTime(self):
         """Return the approximate match time.

@@ -28,8 +28,6 @@ def test_init(wpimock, halmock):
     assert ds.packetDataAvailableMutex == halmock.initializeMutexNormal.return_value
     assert ds.packetDataAvailableSem == halmock.initializeMultiWait.return_value
     halmock.HALSetNewDataSem.assert_called_once_with(ds.packetDataAvailableSem)
-    assert ds.controlWord == halmock.HALGetControlWord.return_value
-    assert ds.allianceStationID == -1
     assert ds.userInDisabled == False
     assert ds.userInAutonomous == False
     assert ds.userInTeleop == False
@@ -48,9 +46,8 @@ def test_task(ds, halmock):
         assert sem == ds.packetDataAvailableSem
         ds.thread_keepalive = False
     halmock.takeMultiWait = unalive
-    ds.getData = MagicMock()
     ds.task()
-    assert ds.getData.called
+    assert ds.newControlData
     assert ds.dataSem.notify_all.called
 
 def test_task_safetyCounter(ds, halmock):
@@ -63,7 +60,6 @@ def test_task_safetyCounter(ds, halmock):
             if self.count >= 5:
                 ds.thread_keepalive = False
     halmock.takeMultiWait = unalive()
-    ds.getData = MagicMock()
     with patch("wpilib.driverstation.MotorSafety") as mocksafety:
         ds.task()
         assert mocksafety.checkMotors.called
@@ -74,7 +70,6 @@ def test_task_usermode(mode, ds, halmock):
     def unalive(sem, mutex, timeout):
         ds.thread_keepalive = False
     halmock.takeMultiWait = unalive
-    ds.getData = MagicMock()
     setattr(ds, "userIn"+mode, True)
     ds.task()
     assert getattr(halmock, "HALNetworkCommunicationObserveUserProgram"+mode).called
@@ -87,22 +82,17 @@ def test_waitForData_timeout(ds):
     ds.waitForData(5.0)
     ds.dataSem.wait.assert_called_once_with(5.0)
 
-def test_getData(ds, halmock):
-    halmock.getFPGATime.return_value = 1000
-    ds.getData()
-    assert ds.controlWord == halmock.HALGetControlWord.return_value
-    assert ds.allianceStationID == halmock.HALGetAllianceStation.return_value
-    assert ds.newControlData
-    # TODO: check joystick values
-
 def test_getBatteryVoltage(ds, halmock):
     assert ds.getBatteryVoltage() == halmock.getVinVoltage.return_value
 
-def test_getStickAxis(ds):
-    ds.joystickAxes[2][0] = 127
-    assert ds.getStickAxis(2, 0) == 1.0
-    ds.joystickAxes[0][1] = -128
-    assert ds.getStickAxis(0, 1) == -1.0
+@pytest.mark.parametrize("stick,axis,value", [(2, 0, 127), (0, 1, -128)])
+def test_getStickAxis(ds, halmock, stick, axis, value):
+    axes = [0]*axis
+    axes.append(value)
+    halmock.HALGetJoystickAxes.return_value = axes
+    expect = value / 127.0 if value >= 0 else value / 128.0
+    assert ds.getStickAxis(stick, axis) == expect
+    halmock.HALGetJoystickAxes.assert_called_once_with(stick)
 
 def test_getStickAxis_limits(ds, halmock):
     with pytest.raises(IndexError):
@@ -114,9 +104,10 @@ def test_getStickAxis_limits(ds, halmock):
     with pytest.raises(IndexError):
         ds.getStickAxis(0, halmock.kMaxJoystickAxes)
 
-def test_getStickPOV(ds):
-    ds.joystickPOVs[2][0] = 30
+def test_getStickPOV(ds, halmock):
+    halmock.HALGetJoystickPOVs.return_value = [30]
     assert ds.getStickPOV(2, 0) == 30
+    halmock.HALGetJoystickPOVs.assert_called_once_with(2)
 
 def test_getStickPOV_limits(ds, halmock):
     with pytest.raises(IndexError):
@@ -129,11 +120,10 @@ def test_getStickPOV_limits(ds, halmock):
         ds.getStickPOV(0, halmock.kMaxJoystickPOVs)
 
 def test_getStickButton(ds, halmock):
-    class ButtonsMock:
-        buttons = 0x13
-        count = 12
-    halmock.HALGetJoystickButtons.return_value = ButtonsMock()
+    halmock.HALGetJoystickButtons.return_value.buttons = 0x11
+    halmock.HALGetJoystickButtons.return_value.count = 12
     assert ds.getStickButton(0, 1) == True
+    halmock.HALGetJoystickButtons.assert_called_once_with(0)
 
 def test_getStickButton_limits(ds):
     with pytest.raises(IndexError):
@@ -141,35 +131,35 @@ def test_getStickButton_limits(ds):
     with pytest.raises(IndexError):
         ds.getStickButton(ds.kJoystickPorts, 1)
 
-def test_isEnabled(ds):
-    ds.controlWord.enabled = 1
+def test_isEnabled(ds, halmock):
+    halmock.HALGetControlWord.return_value.enabled = 1
     assert ds.isEnabled()
-    ds.controlWord.enabled = 0
+    halmock.HALGetControlWord.return_value.enabled = 0
     assert not ds.isEnabled()
 
-def test_isDisabled(ds):
-    ds.controlWord.enabled = 0
+def test_isDisabled(ds, halmock):
+    halmock.HALGetControlWord.return_value.enabled = 0
     assert ds.isDisabled()
-    ds.controlWord.enabled = 1
+    halmock.HALGetControlWord.return_value.enabled = 1
     assert not ds.isDisabled()
 
-def test_isAutonomous(ds):
-    ds.controlWord.autonomous = 1
+def test_isAutonomous(ds, halmock):
+    halmock.HALGetControlWord.return_value.autonomous = 1
     assert ds.isAutonomous()
-    ds.controlWord.autonomous = 0
+    halmock.HALGetControlWord.return_value.autonomous = 0
     assert not ds.isAutonomous()
 
-def test_isTest(ds):
-    ds.controlWord.test = 1
+def test_isTest(ds, halmock):
+    halmock.HALGetControlWord.return_value.test = 1
     assert ds.isTest()
-    ds.controlWord.test = 0
+    halmock.HALGetControlWord.return_value.test = 0
     assert not ds.isTest()
 
 @pytest.mark.parametrize("auto,test,oper",
         [(0, 0, True), (0, 1, False), (1, 0, False), (1, 1, False)])
-def test_isOperatorControl(auto, test, oper, ds):
-    ds.controlWord.autonomous = auto
-    ds.controlWord.test = test
+def test_isOperatorControl(auto, test, oper, ds, halmock):
+    halmock.HALGetControlWord.return_value.autonomous = auto
+    halmock.HALGetControlWord.return_value.test = test
     assert ds.isOperatorControl() == oper
 
 def test_isNewControlData(ds):
@@ -187,7 +177,7 @@ def test_getAlliance(alliance, ds, halmock):
         alliance = getattr(halmock, "kHALAllianceStationID_"+alliance)
     else:
         result = ds.Alliance.Invalid
-    ds.allianceStationID = alliance
+    halmock.HALGetAllianceStation.return_value = alliance
     assert ds.getAlliance() == result
 
 @pytest.mark.parametrize("alliance",
@@ -198,13 +188,13 @@ def test_getLocation(alliance, ds, halmock):
         alliance = getattr(halmock, "kHALAllianceStationID_"+alliance)
     else:
         result = 0
-    ds.allianceStationID = alliance
+    halmock.HALGetAllianceStation.return_value = alliance
     assert ds.getLocation() == result
 
-def test_isFMSAttached(ds):
-    ds.controlWord.fmsAttached = 1
+def test_isFMSAttached(ds, halmock):
+    halmock.HALGetControlWord.return_value.fmsAttached = 1
     assert ds.isFMSAttached()
-    ds.controlWord.fmsAttached = 0
+    halmock.HALGetControlWord.return_value.fmsAttached = 0
     assert not ds.isFMSAttached()
 
 def test_getMatchTime(ds, halmock):
