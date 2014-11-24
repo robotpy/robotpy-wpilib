@@ -1,4 +1,5 @@
 import os
+from os.path import dirname, join
 import sys
 import plyj.parser
 import plyj.model as m
@@ -230,9 +231,18 @@ def print_list(inp):
 
 
 if __name__ == "__main__":
+
+    # Guarantee that this is being ran on the current source tree
+    sys.path.insert(0, join(dirname(__file__), '..'))
     import wpilib
 
-    output = scan_specifications(wpilib, sys.argv[1:])
+    if len(sys.argv) == 1:
+        print("Usage: python spec_scanner.py wpilibj_path")
+        exit(1)
+
+    wpilibj_path = join(sys.argv[1], 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj')
+
+    output = scan_specifications(wpilib, [wpilibj_path])
     text_list = list()
     for item in output:
         text_list.extend(stringize_summary(item))
