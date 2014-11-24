@@ -58,6 +58,7 @@ class Gyro(SensorBase):
         Timer.delay(1.0)
 
         self.analog.initAccumulator()
+        self.analog.setAccumulatorInitialValue(1)
         self.analog.resetAccumulator()
 
         Timer.delay(Gyro.kCalibrationSampleTime)
