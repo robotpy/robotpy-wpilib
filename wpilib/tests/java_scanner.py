@@ -19,7 +19,7 @@ tab = "    "
 arrowtab = "--> "
 
 
-def scan_specifications(python_object, java_dirs):
+def compare_folders(python_object, java_dirs):
     """
     Parses through java_dirs and matches java objects to objects in
     python_object and returns a summary of it's findings.
@@ -139,9 +139,13 @@ def parse_docstring(docstring):
 
 
 def stringize_summary(summary):
+    """
+    :param summary: a single comparison summary dictionary, as output by compare_object().
+    :returns A list of {"text": "", "color": ""} values, corresponding to lines of text.
+    """
+    output = list()
 
-    output = []
-
+    #Figure out what the status message and color should be for the
     if not summary["present"]:
         status_message = "Not Present"
         status_color = "red"
@@ -171,11 +175,17 @@ def stringize_summary(summary):
             #Get all children that are methods.
             methods = [cl for cl in summary["children"] if cl["type"] == "MethodDeclaration" or cl["type"] == "ConstructorDeclaration"]
             if len(methods) != 0:
+
+                #This is to figure out if we can hide the methods, if none of them are red.
                 methods_match = True
-                method_buffer = []
+                method_buffer = list()
+
+                #Print the header to a buffer
                 method_buffer.append({"text": "", "color": ""})
                 method_buffer.append({"text": "Methods:", "color": ""})
                 method_buffer.append({"text": "", "color": ""})
+
+                #Recurse for all of the methods
                 for f in methods:
                     for t in stringize_summary(f):
                         if t["color"] == "red":
@@ -184,32 +194,46 @@ def stringize_summary(summary):
                         else:
                             t["text"] = tab + t["text"]
                         method_buffer.append(t)
+
+                #Print a final space
                 method_buffer.append({"text": "", "color": ""})
 
+                #If we can hide the methods, just print out a summary. Otherwise extend output with method_buffer.
                 if methods_match:
                     output.append({"text": "All methods are either correct or ignored, hiding {} methods".format(len(methods)), "color": "green"})
                 else:
                     output.extend(method_buffer)
 
+            #Get all children that are classes.
             subclasses = [cl for cl in summary["children"] if cl["type"] == "ClassDeclaration"]
             if len(subclasses) != 0:
+
+                #This is to figure out if we can hide the subclasses, if none of them are red.
                 subclasses_match = True
                 subclass_buffer = list()
+
+                #Print the header to the buffer
                 subclass_buffer.append({"text": "", "color": ""})
                 subclass_buffer.append({"text": "Subclasses:", "color": ""})
+
+                #Recurse for all of the classes
                 for f in subclasses:
                     for t in stringize_summary(f):
                         t["text"] = tab + t["text"]
                         if t["color"] == "red":
                             subclasses_match = False
                         subclass_buffer.append(t)
+
+                #Print a final space
                 subclass_buffer.append({"text": "", "color": ""})
 
+                #If we can hide the subclasses, just print out a summary. Otherwise extend output with subclass_buffer.
                 if subclasses_match:
                     output.append({"text": "All sub-classes are either correct or ignored, hiding {} sub-classes".format(len(subclasses)), "color": "green"})
                 else:
                     output.extend(subclass_buffer)
 
+    #For methods, just print it out in name(argument, argument, ...) syntax.
     elif summary["type"] == "MethodDeclaration" or summary["type"] == "ConstructorDeclaration":
         arguments = "(" + ", ".join(arg["type"] + " " + arg["name"] for arg in summary["parameters"]) + ")"
         text = summary["name"] + arguments + " " + status_message
@@ -219,6 +243,11 @@ def stringize_summary(summary):
 
 
 def print_list(inp):
+    """
+    :param inp: A list of {"text": "", "color": ""} values, corresponding to lines of text
+    Prints inp as colored text.
+    """
+    #For each
     for text in inp:
         if text["color"] == "green":
             print(green_head + text["text"] + end_head)
@@ -237,12 +266,12 @@ if __name__ == "__main__":
     import wpilib
 
     if len(sys.argv) == 1:
-        print("Usage: python spec_scanner.py wpilibj_path")
+        print("Usage: python java_scanner.py wpilibj_path")
         exit(1)
 
     wpilibj_path = join(sys.argv[1], 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj')
 
-    output = scan_specifications(wpilib, [wpilibj_path])
+    output = compare_folders(wpilib, [wpilibj_path])
     text_list = list()
     for item in output:
         text_list.extend(stringize_summary(item))
