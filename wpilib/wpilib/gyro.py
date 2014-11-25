@@ -58,15 +58,20 @@ class Gyro(SensorBase):
         Timer.delay(1.0)
 
         self.analog.initAccumulator()
+        self.analog.setAccumulatorInitialValue(1)
         self.analog.resetAccumulator()
 
         Timer.delay(Gyro.kCalibrationSampleTime)
 
         value, count = self.analog.getAccumulatorOutput()
 
-        self.center = int(float(value) / float(count) + .5)
+        span = 0
+        if float(count) != 0:
+            span = float(value) / float(count)
 
-        self.offset = (float(value) / float(count)) - self.center
+        self.center = int(span + .5)
+
+        self.offset = span - self.center
 
         self.analog.setAccumulatorCenter(self.center)
         self.analog.resetAccumulator()
