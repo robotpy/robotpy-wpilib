@@ -93,7 +93,7 @@ def reset_hal_data():
             'accumulator_initialized': False,
             'accumulator_center': 0,
             'accumulator_value': 0,
-            'accumulator_count': 0,
+            'accumulator_count': 1, # don't make zero, or divide by zero error occurs
             'accumulator_deadband': 0,
             
             # trigger values
