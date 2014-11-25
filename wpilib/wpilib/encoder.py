@@ -21,6 +21,52 @@ __all__ = ["Encoder"]
 def _freeEncoder(encoder):
     hal.freeEncoder(encoder)
 
+
+def match_arglist(args, kwargs, templates):
+    """
+    This compares args and kwargs against the argument templates in templates,
+    :param args: The list of positional arguments
+    :param kwargs: The list of keyword arguments
+    :param templates: A list of dictionaries corresponding to possible
+    argument list formats.
+
+    An argument list is basically a list of argument name, type tuples.
+
+    :returns The id of the selected template
+    :returns A dictionary of argument name, value tuples.
+    """
+
+    #Try each template until we find one that works
+    for template in templates:
+        #List copies of the arguments
+        arglist = list(reversed(args))
+        kwarglist = [k for k in kwargs]
+        results = dict()
+        valid = True
+
+        #Scan through all arguments and set valid to false if we find an issue.
+        for argument_pair in template:
+            #Check kwargs first, then check args
+            if argument_pair[0] in kwarglist:
+                results[argument_pair[0]] = kwarglist.pop(argument_pair[0])
+            elif len(arglist) > 0:
+                results[argument_pair[0]] = arglist.pop()
+            else:
+                results[argument_pair[0]] = None
+
+            #If the types dont match, and the type is not None, stop and try the next template.
+            if not isinstance(results[argument_pair[0]], argument_pair[1]) and argument_pair[1] is not None:
+                valid = False
+                break
+
+        #If the results are valid and the argument lists are empty, return the results.
+        if valid and len(arglist) == 0 and len(kwarglist) == 0:
+            return templates.index(template), results
+
+    #We found nothing, then
+    raise ValueError("Attribute error, attributes given did not match any argument templates.")
+
+
 class Encoder(SensorBase):
     """Class to read quad encoders. Quadrature encoders are devices that count
     shaft rotation and can sense direction. The output of the QuadEncoder class
@@ -101,79 +147,30 @@ class Encoder(SensorBase):
             either exactly match the spec'd count or be double (2x) the
             spec'd count.  Defaults to k4X if unspecified.
         """
+
+
+        argument_templates = [[("aSource", DigitalInput), ("bSource", DigitalInput)],
+                              [("aSource", DigitalInput), ("bSource", DigitalInput), ("reverseDirection", bool)],
+                              [("aSource", DigitalInput), ("bSource", DigitalInput), ("reverseDirection", bool), ("encodingType", int)],
+                              [("aSource", DigitalInput), ("bSource", DigitalInput), ("indexSource", DigitalInput)],
+                              [("aSource", DigitalInput), ("bSource", DigitalInput), ("indexSource", DigitalInput), ("reverseDirection", bool)],
+                              [("aChannel", int), ("bChannel", int)],
+                              [("aChannel", int), ("bChannel", int), ("reverseDirection", bool)],
+                              [("aChannel", int), ("bChannel", int), ("reverseDirection", bool), ("encodingType", int)],
+                              [("aChannel", int), ("bChannel", int), ("indexChannel", int)],
+                              [("aChannel", int), ("bChannel", int), ("indexChannel", int), ("reverseDirection", bool)]]
+
+        index, results = match_arglist(args, kwargs, argument_templates)
+
         # keyword arguments
-        aSource = kwargs.pop("aSource", None)
-        bSource = kwargs.pop("bSource", None)
-        indexSource = kwargs.pop("indexSource", None)
-        aChannel = kwargs.pop("aChannel", None)
-        bChannel = kwargs.pop("bChannel", None)
-        indexChannel = kwargs.pop("indexChannel", None)
-        reverseDirection = kwargs.pop("reverseDirection", None)
-        encodingType = kwargs.pop("encodingType", self.EncodingType.k4X)
-
-        if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
-
-        #Positional arguments
-        arglist = list(reversed(args))
-
-        #Temp source variables, don't know if they are sources or
-        #channels yet.
-        a = None
-        b = None
-        index = None
-
-        #Take care of a and b first
-        if aSource is None and aChannel is None:
-            a = arglist.pop()
-        if bSource is None and bChannel is None:
-            b = arglist.pop()
-
-        #The next one would be either index or reverseDirection,
-        # if we don't have them already
-        if len(arglist) != 0:
-            next_element = arglist.pop()
-            #Is it reverseDirection?
-            if reverseDirection is None and isinstance(next_element, bool):
-                reverseDirection = next_element
-            #Must be indexChannel, then
-            else:
-                index = next_element
-
-        #If we still have arguments, it would be either encodingType,
-        # or reverseDirection
-        if len(arglist) != 0:
-            next_element = arglist.pop()
-            if reverseDirection is None and isinstance(next_element, bool):
-                reverseDirection = next_element
-            else:
-                self.encodingType = next_element
-
-        #If we still have arguments, there is a trouble here.
-        if len(arglist) != 0:
-            raise ValueError("Unmatched arguments: " + str(arglist))
-
-        #If we still don't have a value for reverseDirection, set it to false:
-        if reverseDirection is None:
-            reverseDirection = False
-
-        #Figure out what is source and what is channel.
-        if a is not None:
-            if hasattr(a, "getChannelForRouting"):
-                aSource = a
-            else:
-                aChannel = a
-        if b is not None:
-            if hasattr(b, "getChannelForRouting"):
-                bSource = b
-            else:
-                bChannel = b
-        if index is not None:
-            if hasattr(index, "getChannelForRouting"):
-                indexSource = index
-            else:
-                indexChannel = index
+        aSource = results.pop("aSource", None)
+        bSource = results.pop("bSource", None)
+        indexSource = results.pop("indexSource", None)
+        aChannel = results.pop("aChannel", None)
+        bChannel = results.pop("bChannel", None)
+        indexChannel = results.pop("indexChannel", None)
+        reverseDirection = results.pop("reverseDirection", False)
+        encodingType = results.pop("encodingType", self.EncodingType.k4X)
 
         # convert channels into sources
         if aSource is None:
