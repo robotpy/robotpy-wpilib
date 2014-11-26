@@ -77,6 +77,8 @@ class DriverStation:
                               self.packetDataAvailableMutex, 0)
             with self.dataSem:
                 self.dataSem.notify_all()
+            # need to get the control word to keep the motors enabled
+            hal.HALGetControlWord()
             with self.mutex:
                 self.newControlData = True
             safetyCounter += 1

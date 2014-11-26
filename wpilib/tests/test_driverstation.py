@@ -49,6 +49,7 @@ def test_task(ds, halmock):
     ds.task()
     assert ds.newControlData
     assert ds.dataSem.notify_all.called
+    halmock.HALGetControlWord.assert_called_once()
 
 def test_task_safetyCounter(ds, halmock):
     # exit function after 5 iterations
