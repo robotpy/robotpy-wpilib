@@ -48,7 +48,7 @@ class Timer:
 
         :param seconds: Length of time to pause
         """
-        hal.delaySeconds(seconds)
+        hal.delaySeconds(float(seconds))
 
     def __init__(self):
         self.mutex = threading.RLock()
