@@ -14,7 +14,7 @@ def test_utility_getFPGATime(util, hal_data, monkeypatch):
     import time
     monkeypatch.setattr(time, 'monotonic', lambda: 3.14)
     hal_data['program_start'] = 1
-    assert util.getFPGATime() == 2.14 * 100000
+    assert util.getFPGATime() == 2.14 * 1000000
 
 def test_utility_getUserButton(util, hal_data):
     hal_data['fpga_button'] = True
