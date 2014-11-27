@@ -42,26 +42,35 @@ def match_arglist(args, kwargs, templates):
         arglist = list(reversed(args))
         kwarglist = [k for k in kwargs]
         results = dict()
-        valid = True
 
         #Scan through all arguments and set valid to false if we find an issue.
-        for argument_pair in template:
+        for arg_name, arg_identity in template:
             #Check kwargs first, then check args
-            if argument_pair[0] in kwarglist:
-                results[argument_pair[0]] = kwarglist.pop(argument_pair[0])
+            if arg_name in kwarglist:
+                value = kwarglist.pop(arg_name)
             elif len(arglist) > 0:
-                results[argument_pair[0]] = arglist.pop()
+                value = arglist.pop()
             else:
-                results[argument_pair[0]] = None
+                value = None
 
-            #If the types dont match, and the type is not None, stop and try the next template.
-            if not isinstance(results[argument_pair[0]], argument_pair[1]) and argument_pair[1] is not None:
-                valid = False
-                break
+            results[arg_name] = value
 
-        #If the results are valid and the argument lists are empty, return the results.
-        if valid and len(arglist) == 0 and len(kwarglist) == 0:
-            return templates.index(template), results
+            #Check to see if identities match:
+
+            if arg_identity is not None:
+
+                if isinstance(arg_identity, str) and len(arg_identity) != 0:
+                    if not hasattr(value, arg_identity):
+                        break
+                elif isinstance(arg_identity, list) and len(arg_identity) != 0:
+                    if len([not hasattr(value, arg) for arg in arg_identity]) == True:
+                        break
+                elif not isinstance(value, arg_identity):
+                        break
+        else:
+            #If the results are valid and the argument lists are empty, return the results.
+            if len(arglist) == 0 and len(kwarglist) == 0:
+                return templates.index(template), results
 
     #We found nothing, then
     raise ValueError("Attribute error, attributes given did not match any argument templates.")
@@ -149,11 +158,11 @@ class Encoder(SensorBase):
         """
 
 
-        argument_templates = [[("aSource", DigitalInput), ("bSource", DigitalInput)],
-                              [("aSource", DigitalInput), ("bSource", DigitalInput), ("reverseDirection", bool)],
-                              [("aSource", DigitalInput), ("bSource", DigitalInput), ("reverseDirection", bool), ("encodingType", int)],
-                              [("aSource", DigitalInput), ("bSource", DigitalInput), ("indexSource", DigitalInput)],
-                              [("aSource", DigitalInput), ("bSource", DigitalInput), ("indexSource", DigitalInput), ("reverseDirection", bool)],
+        argument_templates = [[("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting")],
+                              [("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting"), ("reverseDirection", bool)],
+                              [("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting"), ("reverseDirection", bool), ("encodingType", int)],
+                              [("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting"), ("indexSource", "getChannelForRouting")],
+                              [("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting"), ("indexSource", "getChannelForRouting"), ("reverseDirection", bool)],
                               [("aChannel", int), ("bChannel", int)],
                               [("aChannel", int), ("bChannel", int), ("reverseDirection", bool)],
                               [("aChannel", int), ("bChannel", int), ("reverseDirection", bool), ("encodingType", int)],
