@@ -516,7 +516,7 @@ def getAnalogTriggerOutput(analog_trigger, type, status):
 
 def initializeCompressor(module):
     assert module == 0 # don't support multiple modules for now
-    hal_data['compressor'] = dict(enabled=True)
+    hal_data['compressor']['initialized'] = True
     return types.PCM(module)
 
 def checkCompressorModule(module):
@@ -524,7 +524,7 @@ def checkCompressorModule(module):
 
 def getCompressor(pcm, status):
     status.value = 0
-    return hal_data['compressor']['enabled']
+    return hal_data['compressor']['on']
 
 def setClosedLoopControl(pcm, value, status):
     status.value = 0

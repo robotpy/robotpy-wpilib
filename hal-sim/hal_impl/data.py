@@ -106,8 +106,9 @@ def reset_hal_data():
 
         # compressor control is here
         'compressor': {
-            'enabled': False,
-            'closed_loop_enabled': True,
+            'initialized': False,
+            'on': False,
+            'closed_loop_enabled': False,
             'pressure_switch': False,
             'current': 0.0
         },
