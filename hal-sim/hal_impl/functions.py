@@ -657,13 +657,15 @@ def getRelayReverse(digital_port, status):
 
 def allocateDIO(digital_port, input, status):
     status.value = 0
-    if hal_data['dio'][digital_port.pin] is not None:
+    dio = hal_data['dio'][digital_port.pin]
+    if dio['initialized']:
         return False
-    hal_data['dio'][digital_port.pin] = {'value': 0, 'pulse_length': None, 'is_input': input }
+    dio['initialized'] = True
+    dio['is_input'] = input
 
 def freeDIO(digital_port, status):
     status.value = 0
-    hal_data['dio'][digital_port.pin] = None
+    hal_data['dio'][digital_port.pin]['initialized'] = False
 
 def setDIO(digital_port, value, status):
     status.value = 0

@@ -137,7 +137,12 @@ def reset_hal_data():
 
         } for _ in range(8)],
                 
-        'dio': [None]*10, # dict keys: value, is_input, pulse_length
+        'dio': [{
+            'initialized': False,
+            'value': 0,
+            'pulse_length': None,
+            'is_input': False
+        } for _ in range(10)],
         
         'encoder': [{
             'initialized': False,
