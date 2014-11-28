@@ -406,7 +406,7 @@ def initAccumulator(analog_port, status):
 def resetAccumulator(analog_port, status):
     status.value = 0
     hal_data['analog_in'][analog_port.pin]['accumulator_center'] = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_count'] = 0
+    hal_data['analog_in'][analog_port.pin]['accumulator_count'] = 1
     hal_data['analog_in'][analog_port.pin]['accumulator_value'] = 0
 
 def setAccumulatorCenter(analog_port, center, status):
