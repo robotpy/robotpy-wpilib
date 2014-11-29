@@ -21,4 +21,4 @@ class MyRobot(wpilib.IterativeRobot):
             self.shifter.set(wpilib.DoubleSolenoid.Value.kReverse)
 
 if __name__ == "__main__":
-    wpilib.RobotBase.main(MyRobot)
+    wpilib.run(MyRobot)

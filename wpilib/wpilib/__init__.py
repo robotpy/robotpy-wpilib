@@ -52,6 +52,8 @@ from .ultrasonic import *
 from .utility import *
 from .victor import *
 
+from ._impl.main import run
+
 try:
     from .version import __version__
 except ImportError:

@@ -41,5 +41,6 @@ setup(
     author_email='robotpy@googlegroups.com',
     url='https://github.com/robotpy',
     keywords='frc first robotics hal can',
-    packages=['hal']
+    packages=['hal'],
+    entry_points={'robotpy': [ 'run = hal.main:Main' ]}
     )
