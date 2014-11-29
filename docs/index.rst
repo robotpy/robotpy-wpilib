@@ -15,7 +15,6 @@ Contents:
    wpilib.buttons
    wpilib.command
    wpilib.interfaces
-   networktables
 
 
 Indices and tables

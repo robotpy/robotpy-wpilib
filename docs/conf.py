@@ -20,7 +20,6 @@ from os.path import abspath, join, dirname
 
 sys.path.insert(0, abspath(join(dirname(__file__), '..', 'wpilib')))
 sys.path.insert(0, abspath(join(dirname(__file__), '..', 'hal-base')))
-sys.path.insert(0, abspath(join(dirname(__file__), '..', 'networktables')))
 sys.path.insert(0, abspath(join(dirname(__file__), '..', 'hal-sim')))
 
 import wpilib
