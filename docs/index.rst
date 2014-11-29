@@ -11,6 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
+   internal
+
    wpilib
    wpilib.buttons
    wpilib.command
