@@ -326,7 +326,7 @@ class DriverStation:
             trc = 'Traceback (most recent call last):\n'
             stackstr = trc + ''.join(traceback.format_list(stack))
             if exc is not None:
-                 stackstr += '  ' + traceback.format_exc().lstrip(trc)
+                stackstr += '  ' + traceback.format_exc().lstrip(trc)
             errorString += ':\n' + stackstr
         #print(errorString, file=sys.stderr)
         controlWord = hal.HALGetControlWord()
