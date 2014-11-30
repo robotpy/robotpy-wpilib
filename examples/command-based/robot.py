@@ -35,4 +35,4 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.LiveWindow.run()
 
 if __name__ == "__main__":
-    wpilib.RobotBase.main(MyRobot)
+    wpilib.run(MyRobot)

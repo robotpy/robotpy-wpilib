@@ -90,4 +90,4 @@ class Robot(wpilib.IterativeRobot):
         return True
 
 if __name__ == "__main__":
-    wpilib.RobotBase.main(Robot)
+    wpilib.run(Robot)

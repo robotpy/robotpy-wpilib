@@ -25,4 +25,4 @@ class MyRobot(wpilib.SampleRobot):
         pass
 
 if __name__ == "__main__":
-    wpilib.RobotBase.main(MyRobot)
+    wpilib.run(MyRobot)
