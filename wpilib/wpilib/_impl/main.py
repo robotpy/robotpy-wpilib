@@ -4,6 +4,8 @@ import inspect
 
 from pkg_resources import iter_entry_points
 
+from .logconfig import configure_logging
+
 def run(robot_class):
     '''
         This function gets called in robot.py like so::
@@ -29,6 +31,9 @@ def run(robot_class):
     subparser = parser.add_subparsers(dest='command', help="commands")
     subparser.required = True
     
+    parser.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help="Enable debug logging")
+    
     has_cmd = False
     
     for entry_point in iter_entry_points(group='robotpy', name=None):
@@ -43,6 +48,9 @@ def run(robot_class):
         exit(1)
     
     options = parser.parse_args()
+    
+    configure_logging(options.verbose)
+    
     retval = options.cmdobj.run(options, robot_class)
     
     if retval is None:
