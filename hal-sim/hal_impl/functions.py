@@ -5,6 +5,7 @@ from . import types
 import time
 import threading
 
+from . import data
 from .data import hal_data
 
 #
@@ -241,7 +242,7 @@ def HALGetBrownedOut(status):
     return False
 
 def HALSetNewDataSem(sem):
-    pass
+    data.hal_newdata_sem = sem
 
 def HALInitialize(mode=0):
     return True

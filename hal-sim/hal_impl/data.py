@@ -5,9 +5,14 @@
 from hal import constants
 import time
 
+#: Dictionary of all robot data
 hal_data = {
     # don't fill this out, fill out the version in reset_hal_data
 }
+
+#: A multiwait object. Use hal.giveMultiWait() to set this when
+#: driver station related data has been updated
+hal_newdata_sem = None
 
 
 def reset_hal_data():
@@ -22,13 +27,16 @@ def reset_hal_data():
         TODO: initialization isn't consistent yet. Need to decide whether to
               use None, or an explicit initialization key
     '''
-    global hal_data
+    global hal_data, hal_newdata_sem
+    hal_newdata_sem = None
+    
     hal_data.clear()
     hal_data.update({
 
         'alliance_station': constants.kHALAllianceStationID_red1,
         'program_start': time.monotonic(),
 
+        # See driver station notes above
         'control': {
             'enabled': False,
             'autonomous': False,
@@ -41,6 +49,8 @@ def reset_hal_data():
         # key:   resource type
         # value: list of instance numbers
         'reports': {},
+
+        # See driver station notes above
 
         # Joysticks are stored numbered 0-5.
         # buttons are stored as booleans
