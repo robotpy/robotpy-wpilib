@@ -19,7 +19,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
-         #Check if we've completed 100 loops (approximately 2 seconds)
+        #Check if we've completed 100 loops (approximately 2 seconds)
         if self.auto_loop_counter < 100:
             #Drive forwards at half speed
             self.robot_drive.drive(-0.5, 0)
