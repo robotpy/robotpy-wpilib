@@ -14,12 +14,12 @@ class Timer:
         controller.subscribe('time', 'gazebo.msgs.Float64', self.on_time)
 
         # wait for time before returning
-        logging.info("Waiting for first timestamp from gazebo")
+        logger.info("Waiting for first timestamp from gazebo")
         
         with self.cond:
             self.cond.wait()
             
-        logging.info("Time acquired (simulation time is %s)" % self.simTime)
+        logger.info("Time acquired (simulation time is %s)" % self.simTime)
 
     def on_time(self, msg):
         with self.cond:
