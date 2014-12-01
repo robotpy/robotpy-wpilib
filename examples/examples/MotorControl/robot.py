@@ -18,11 +18,14 @@ class MyRobot(wpilib.SampleRobot):
     kUpdatePeriod = 0.005
     
     def robotInit(self):
+        '''Robot initialization function'''
+        
         self.motor = wpilib.Talon(0)        # initialize the motor as a Talon on channel 0
         self.stick = wpilib.Joystick(0)     # initialize the joystick on port 0
         
     def operatorControl(self):
         '''Runs the motor from a joystick.'''
+        
         while self.isOperatorControl() and self.isEnabled():
             
             # Set the motor's output.

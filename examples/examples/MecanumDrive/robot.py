@@ -18,6 +18,8 @@ class MyRobot(wpilib.SampleRobot):
     joystickChannel     = 0;
 
     def robotInit(self):
+        '''Robot initialization function'''
+        
         self.robotDrive = wpilib.RobotDrive(self.frontLeftChannel,
                                             self.rearLeftChannel,
                                             self.frontRightChannel,
@@ -35,6 +37,7 @@ class MyRobot(wpilib.SampleRobot):
     
     def operatorControl(self):
         '''Runs the motors with Mecanum drive.'''
+        
         self.robotDrive.setSafetyEnabled(True)
         while self.isOperatorControl() and self.isEnabled():
             
