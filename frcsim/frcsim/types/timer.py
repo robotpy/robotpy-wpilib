@@ -26,10 +26,6 @@ class Timer:
             self.simTime = Float64.FromString(msg).data 
             self.cond.notify_all()
 
-# Hook: 
-# - anywhere that time is
-# - need to setup match time
-
     def wait(self, seconds):
 
         start = self.simTime
