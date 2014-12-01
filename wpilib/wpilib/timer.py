@@ -102,3 +102,21 @@ class Timer:
             temp = self.get()
             self.accumulatedTime = temp
             self.running = False
+            
+    def hasPeriodPassed(self, period):
+        """Check if the period specified has passed and if it has, advance the start
+        time by that period. This is useful to decide if it's time to do periodic
+        work without drifting later by the time it took to get around to checking.
+ 
+        :param period: The period to check for (in seconds).
+        :returns: If the period has passed.
+        """
+        
+        with self.mutex:
+            if self.get() > period:
+                # Advance the start time by the period
+                # Don't set it to the current time... we want to avoid drift
+                self.startTime += (period * 1000)
+                return True
+            
+            return False
