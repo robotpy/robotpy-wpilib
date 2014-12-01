@@ -83,7 +83,7 @@ class SampleRobot(RobotBase):
         default version runs), then the robotInit(), disabled(), autonomous()
         and operatorControl() methods will be called.
         """
-        raise NotImplementedError
+        self._no_robot_main = True
 
     def startCompetition(self):
         """Start a competition.
@@ -97,9 +97,9 @@ class SampleRobot(RobotBase):
         hal.HALReport(hal.HALUsageReporting.kResourceType_Framework,
                       hal.HALUsageReporting.kFramework_Simple)
 
-        try:
-            self.robotMain()
-        except NotImplementedError:
+        self.robotMain()
+            
+        if hasattr(self, '_no_robot_main'):
             # first and one-time initialization
             #TODO:LiveWindow.setEnabled(False)
             self.robotInit()
