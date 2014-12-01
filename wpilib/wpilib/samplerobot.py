@@ -36,7 +36,7 @@ class SampleRobot(RobotBase):
         """
         print("Default robotInit() method running, consider providing your own")
 
-    def disabled():
+    def disabled(self):
         """Disabled should go here.
         Users should overload this method to run code that should run while
         the field is disabled.
