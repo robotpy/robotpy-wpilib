@@ -5,7 +5,8 @@ from ..msgs.driver_station_pb2 import DriverStation
 from ..msgs.joystick_pb2 import Joystick
 
 import hal
-from hal_impl import data
+from hal_impl.data import hal_data
+from hal_impl import helpers
 
 class DriverStationControl:
 
@@ -25,7 +26,7 @@ class DriverStationControl:
 
     def on_joystick(self, idx, msg):
         
-        js = data.hal_data['joysticks'][idx]
+        js = hal_data['joysticks'][idx]
         buttons = js['buttons']
         axes = js['axes']
         
@@ -38,31 +39,20 @@ class DriverStationControl:
             
         for i, (b, _) in enumerate(zip(msg.buttons, buttons)):
             buttons[i] = b
+            
+        helpers.notify_new_ds_data()
 
     def on_state(self, msg):
         state = DriverStation.FromString(msg)
         
         if self.state != state.state or self.enabled != state.enabled:
             
-            autonomous = False
-            test = False
-            
             if state.state == DriverStation.TEST:
-                test = True
+                helpers.set_test_mode(state.enabled)
             elif state.state == DriverStation.AUTO:
-                autonomous = True
+                helpers.set_autonomous(state.enabled)
             elif state.state == DriverStation.TELEOP:
-                pass
-            
-            data.hal_data['control'].update({
-                'autonomous': autonomous,
-                'test': test,
-                'enabled': state.enabled,
-                'ds_attached': True
-            })
-             
-            # this notifies the driver station that new data is available
-            hal.giveMultiWait(data.hal_newdata_sem)
+                helpers.set_teleop_mode(state.enabled)
             
             self.state = state.state
             self.enabled = state.enabled

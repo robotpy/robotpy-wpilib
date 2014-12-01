@@ -2,6 +2,11 @@
 from .controller import Controller
 
 from .types.driverstation import DriverStationControl
+from .types.timer import Timer
+
+from .hal_hooks import GazeboSimHooks
+
+from hal_impl import data, functions
 
 class FrcSimMain:
     '''
@@ -28,8 +33,14 @@ class FrcSimMain:
         
             # setup the HAL hooks
             
-            # setup the driverstation control object
+            # setup various control objects
             self.ds = DriverStationControl(self.controller)
+            self.tm = Timer(self.controller)
+            
+            # HAL Hooks
+            self.hal_hooks = GazeboSimHooks(self.tm)
+            functions.hooks = self.hal_hooks
+            data.reset_hal_data(functions.hooks)
             
             robot_class.main(robot_class)
             
