@@ -6,6 +6,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import warnings
 
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
