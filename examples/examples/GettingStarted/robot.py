@@ -1,10 +1,11 @@
+"""
+    This is a good foundation to build your robot code on
+"""
+
 import wpilib
 
-
 class MyRobot(wpilib.IterativeRobot):
-
-    auto_loop_counter = 0
-
+    
     def robotInit(self):
         """
         This function is called upon program startup and
@@ -19,18 +20,17 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
-        #Check if we've completed 100 loops (approximately 2 seconds)
+        
+        # Check if we've completed 100 loops (approximately 2 seconds)
         if self.auto_loop_counter < 100:
-            #Drive forwards at half speed
-            self.robot_drive.drive(-0.5, 0)
+            self.robot_drive.drive(-0.5, 0) # Drive forwards at half speed
             self.auto_loop_counter += 1
         else:
-            #Stop robot
-            self.robot_drive.drive(0, 0)
+            self.robot_drive.drive(0, 0)    #Stop robot
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
-        self.robot_drive.drive(self.stick)
+        self.robot_drive.arcadeDrive(self.stick)
 
     def testPeriodic(self):
         """This function is called periodically during test mode."""
