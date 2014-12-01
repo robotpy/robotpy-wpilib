@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
+
 import wpilib
 
-
 class MyRobot(wpilib.IterativeRobot):
+    
     def robotInit(self):
         """
         This function is called upon program startup and

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
     This sample program shows how to control a motor using a joystick. In the
     operator control part of the program, the joystick is read and the value
