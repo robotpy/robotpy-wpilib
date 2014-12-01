@@ -15,7 +15,7 @@ hal_data = {
 hal_newdata_sem = None
 
 
-def reset_hal_data():
+def reset_hal_data(hooks):
     '''
         Intended to be used by the test runner or simulator
         
@@ -26,6 +26,8 @@ def reset_hal_data():
         
         TODO: initialization isn't consistent yet. Need to decide whether to
               use None, or an explicit initialization key
+              
+        :param hooks: A :class:`SimHooks` or similar instance
     '''
     global hal_data, hal_newdata_sem
     hal_newdata_sem = None
@@ -34,7 +36,12 @@ def reset_hal_data():
     hal_data.update({
 
         'alliance_station': constants.kHALAllianceStationID_red1,
-        'program_start': time.monotonic(),
+        
+        # Used to compute getFPGATime
+        'program_start': hooks.getTime(),
+        
+        # Used to compute getMatchTime -- set to return value of getFPGATime()
+        'match_start': None,
 
         # See driver station notes above
         'control': {
@@ -63,7 +70,7 @@ def reset_hal_data():
         
         } for _ in range(6)],
 
-        'match_time': 0.0,
+        
 
         'fpga_button': False,
         'error_data': None,
@@ -223,4 +230,3 @@ def reset_hal_data():
         }
     })
 
-reset_hal_data()

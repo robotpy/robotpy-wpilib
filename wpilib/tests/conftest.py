@@ -23,7 +23,8 @@ def hal(_module_patch):
 def hal_data(_module_patch):
     """Simulation data for HAL"""
     import hal_impl.data
-    hal_impl.data.reset_hal_data()
+    from hal_impl.functions import hooks
+    hal_impl.data.reset_hal_data(hooks)
     return hal_impl.data.hal_data
 
 @pytest.fixture(scope="function")

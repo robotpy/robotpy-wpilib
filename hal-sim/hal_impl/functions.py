@@ -2,11 +2,14 @@
 from hal import constants
 from . import types
 
-import time
 import threading
 
 from . import data
-from .data import hal_data
+from .data import hal_data, reset_hal_data
+from hal_impl.sim_hooks import SimHooks
+
+hooks = SimHooks()
+reset_hal_data(hooks)
 
 #
 # Misc constants
@@ -202,7 +205,7 @@ def getFPGARevision(status):
 
 def getFPGATime(status):
     status.value = 0
-    return int((time.monotonic() - hal_data['program_start']) * 1000000)
+    return hooks.getFPGATime()
 
 def getFPGAButton(status):
     status.value = 0
@@ -231,7 +234,17 @@ def HALGetJoystickButtons(joystickNum, buttons):
     buttons.count = len(b)-1
 
 def HALGetMatchTime():
-    return hal_data['match_time']
+    '''
+        Returns approximate match time:
+        - At beginning of autonomous, time is 0
+        - At beginning of teleop, time is set to 15
+        - If robot is disabled, time is 0
+    '''
+    match_start = hal_data['match_start']
+    if match_start is None:
+        return 0.0
+    else:
+        return (hooks.getFPGATime() - hal_data['match_start'])/1000000.0
 
 def HALGetSystemActive(status):
     status.value = 0
@@ -1114,10 +1127,10 @@ def delayTicks(ticks):
     assert False
 
 def delayMillis(ms):
-    time.sleep(1000*ms)
+    hooks.delayMillis(ms)
 
 def delaySeconds(s):
-    time.sleep(s)
+    hooks.delaySeconds(s)
 
 #############################################################################
 # CAN
