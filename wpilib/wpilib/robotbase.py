@@ -6,6 +6,9 @@
 import hal
 import warnings
 
+import logging
+logger = logging.getLogger('robotpy')
+
 __all__ = ["RobotBase"]
 
 class RobotBase:
@@ -136,21 +139,25 @@ class RobotBase:
         except:
             from .driverstation import DriverStation
             DriverStation.reportError("ERROR Could not instantiate robot", True)
-            print("WARNING: Robots don't quit!")
-            print("ERROR: Could not instantiate robot "+robot_cls.__name__+"!")
-            raise
+            logger.exception("Robots don't quit!")
+            logger.exception("Could not instantiate robot "+robot_cls.__name__+"!")
+            return False
 
         try:
             robot.startCompetition()
+        except KeyboardInterrupt:
+            logger.info("Exiting because of keyboard interrupt")
+            return True
         except:
             from .driverstation import DriverStation
             DriverStation.reportError("ERROR Unhandled exception", True)
-            print("WARNING: Robots don't quit!")
-            print("---> The startCompetition() method (or methods called by it) should have handled the exception.")
-            raise
+            logger.warn("Robots don't quit!")
+            logger.exception("---> The startCompetition() method (or methods called by it) should have handled the exception.")
+            return False
         else:
             # startCompetition never returns unless exception occurs....
             from .driverstation import DriverStation
             DriverStation.reportError("ERROR startCompetition() returned", False)
-            print("WARNING: Robots don't quit!")
-            print("---> Unexpected return from startCompetition() method.")
+            logger.warn("Robots don't quit!")
+            logger.error("---> Unexpected return from startCompetition() method.")
+            return False

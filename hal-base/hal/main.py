@@ -8,4 +8,4 @@ class Main:
         pass
     
     def run(self, options, robot_class):
-        robot_class.main(robot_class)
+        return robot_class.main(robot_class)

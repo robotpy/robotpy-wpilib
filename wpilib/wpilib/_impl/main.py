@@ -55,6 +55,10 @@ def run(robot_class):
     
     if retval is None:
         retval = 0
+    elif retval is True:
+        retval = 0
+    elif retval is False:
+        retval = 1
         
     exit(retval)
 

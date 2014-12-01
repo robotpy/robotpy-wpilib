@@ -42,7 +42,7 @@ class FrcSimMain:
             functions.hooks = self.hal_hooks
             data.reset_hal_data(functions.hooks)
             
-            robot_class.main(robot_class)
+            return robot_class.main(robot_class)
             
         finally:
             self.controller.stop()
