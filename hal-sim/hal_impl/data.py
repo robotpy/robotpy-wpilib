@@ -165,7 +165,7 @@ def reset_hal_data(hooks):
             'initialized': False,
             'config': [None]*6, # list of pins/modules
             'count': 0,
-            'period': 0,
+            'period': float('inf'),
             'max_period': 0,
             'direction': False,
             'reverse_direction': False,
@@ -177,7 +177,7 @@ def reset_hal_data(hooks):
         'counter': [{
             'initialized': False,
             'count': 0,
-            'period': 0,
+            'period': float('inf'),
             'max_period': 0,
             'direction': False,
             'reverse_direction': False,
