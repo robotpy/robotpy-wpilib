@@ -319,7 +319,7 @@ class PIDController(LiveWindowSendable):
         warnings.warn("use setPercentTolerance or setAbsoluteTolerance instead",
                       DeprecationWarning)
         with self.mutex:
-            self.onTarget = lambda self: \
+            self.onTarget = lambda: \
                     self.PercentageTolerance_onTarget(percent)
 
     def setAbsoluteTolerance(self, absvalue):
@@ -330,7 +330,7 @@ class PIDController(LiveWindowSendable):
             input object
         """
         with self.mutex:
-            self.onTarget = lambda self: \
+            self.onTarget = lambda: \
                     self.AbsoluteTolerance_onTarget(absvalue)
 
     def setPercentTolerance(self, percentage):
@@ -340,7 +340,7 @@ class PIDController(LiveWindowSendable):
         :param percentage: percent error which is tolerable
         """
         with self.mutex:
-            self.onTarget = lambda self: \
+            self.onTarget = lambda: \
                     self.PercentageTolerance_onTarget(percentage)
 
     def onTarget(self):
