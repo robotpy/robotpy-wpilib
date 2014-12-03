@@ -6,7 +6,8 @@ from . import functions as fns
 def notify_new_ds_data():
     '''Called when driver station data is modified'''
     
-    fns.giveMultiWait(data.hal_newdata_sem)
+    if data.hal_newdata_sem is not None:
+        fns.giveMultiWait(data.hal_newdata_sem)
 
 
 def set_autonomous(enabled):
