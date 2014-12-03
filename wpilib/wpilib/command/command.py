@@ -426,4 +426,4 @@ class Command(Sendable):
             table.putString("name", self.getName())
             table.putBoolean("running", self.isRunning())
             table.putBoolean("isParented", self.parent is not None)
-            table.addTableListener("running", self.valueChanged, False)
+            table.addTableListener(self.valueChanged, False, key="running")

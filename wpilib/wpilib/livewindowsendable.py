@@ -26,7 +26,7 @@ class LiveWindowSendable(Sendable):
             if table is None or table_listener is not None:
                 return
             self.table_listener = self.valueChanged
-            table.addTableListener("Value", self.valueChanged, True)
+            table.addTableListener(self.valueChanged, True, key="Value")
 
     def stopLiveWindowMode(self):
         """Stop having this sendable object automatically respond to value
