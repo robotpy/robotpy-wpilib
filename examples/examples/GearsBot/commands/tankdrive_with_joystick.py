@@ -17,7 +17,7 @@ class TankDriveWithJoystick(Command):
     
     def execute(self):
         '''Called repeatedly when this Command is scheduled to run'''
-        self.robot.drivetrain.drive(self.robot.oi.getJoystick())
+        self.robot.drivetrain.driveJoystick(self.robot.oi.getJoystick())
         
     def isFinished(self):
         '''Make this return true when this Command no longer needs to run execute()'''
@@ -25,7 +25,7 @@ class TankDriveWithJoystick(Command):
     
     def end(self):
         '''Called once after isFinished returns true'''
-        self.robot.drivetrain.drive(0, 0)
+        self.robot.drivetrain.driveManual(0, 0)
         
     def interrupted(self):
         '''Called when another command which requires one or more of the same

@@ -18,7 +18,10 @@ class Claw(Subsystem):
         # Let's show everything on the LiveWindow
         wpilib.LiveWindow.addActuator("Claw", "Motor", self.motor)
         wpilib.LiveWindow.addActuator("Claw", "Limit Switch", self.contact)
-        
+    
+    def log(self):
+        pass
+    
     def open(self):
         '''Set the claw motor to move in the open direction.'''
         self.motor.set(-1)

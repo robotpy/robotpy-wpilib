@@ -17,7 +17,7 @@ class DriveStraight(Command):
         self.requires(self.robot.drivetrain)
         self.pid = wpilib.PIDController(4, 0, 0,
                                         lambda: self.robot.drivetrain.getDistance(),
-                                        lambda d: self.robot.drivetrain.drive(d, d))
+                                        lambda d: self.robot.drivetrain.driveManual(d, d))
         self.pid.setAbsoluteTolerance(0.01)
         self.pid.setSetpoint(distance)
         
@@ -41,7 +41,7 @@ class DriveStraight(Command):
         
         # Stop PID and the wheels
         self.pid.disable()
-        self.robot.drivetrain.drive(0, 0)
+        self.robot.drivetrain.driveManual(0, 0)
         
     def interrupted(self):
         '''Called when another command which requires one or more of the same
