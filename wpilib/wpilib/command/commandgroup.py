@@ -170,7 +170,7 @@ class CommandGroup(Command):
                 self.currentCommandIndex += 1
                 self.cancelConflicts(entry.command)
                 entry.command.startRunning()
-                self.children.addElement(entry)
+                self.children.append(entry)
 
         # Run Children
         toremove = []

@@ -44,7 +44,7 @@ class LiveWindow:
             table.putString("Subsystem", c.subsystem)
             component.initTable(table)
             if c.isSensor:
-                LiveWindow.sensors.addElement(component)
+                LiveWindow.sensors.add(component)
 
     @staticmethod
     def setEnabled(enabled):
