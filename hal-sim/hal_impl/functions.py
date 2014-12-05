@@ -652,11 +652,15 @@ def setPWMOutputChannel(pwm, pin, status):
 
 def setRelayForward(digital_port, on, status):
     status.value = 0
-    hal_data['relay'][digital_port.pin]['fwd'] = on
+    relay = hal_data['relay'][digital_port.pin]
+    relay['initialized'] = True
+    relay['fwd'] = on
 
 def setRelayReverse(digital_port, on, status):
     status.value = 0
-    hal_data['relay'][digital_port.pin]['rev'] = on
+    relay = hal_data['relay'][digital_port.pin]
+    relay['initialized'] = True
+    relay['rev'] = on
 
 def getRelayForward(digital_port, status):
     return hal_data['relay'][digital_port.pin]['fwd']

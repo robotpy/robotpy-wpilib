@@ -5,6 +5,9 @@
 from hal import constants
 import time
 
+import logging
+logger = logging.getLogger('hal.data')
+
 #: Dictionary of all robot data
 hal_data = {
     # don't fill this out, fill out the version in reset_hal_data
@@ -15,12 +18,44 @@ hal_data = {
 hal_newdata_sem = None
 
 
+
+class NotifyDict(dict):
+    '''
+        Allows us to listen to changes in the dictionary -- 
+        note that we don't wrap everything, because for our
+        purposes we don't care about the rest
+        
+        We only use these for some keys in the hal_data dict, 
+        as not all keys are useful to listen to
+    '''
+    __slots__ = ['cbs']
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cbs = {}
+        
+    def register(self, k, cb):
+        self.cbs.setdefault(k, []).append(cb)
+        
+    def __setitem__(self, k, v):
+        super().__setitem__(k, v)
+        
+        # Call the callbacks
+        for cb in self.cbs.get(k, []):
+            try:
+                cb(k, v)
+            except:
+                logger.exception("BAD INTERNAL ERROR")
+        
+
 def reset_hal_data(hooks):
     '''
         Intended to be used by the test runner or simulator
         
         Subject to change until the simulator is fully developed, as the
         usefulness of some of this isn't immediately clear yet.
+        
+        Generally, non-hal components should only be modifying this 
+        dict, and shouldn't add new keys, nor delete existing keys.
         
         TODO: add comments stating which parameters are input, output, expected types
         
@@ -55,7 +90,7 @@ def reset_hal_data(hooks):
                      
         # key:   resource type
         # value: list of instance numbers
-        'reports': {},
+        'reports': NotifyDict({}),
 
         # See driver station notes above
 
@@ -96,7 +131,7 @@ def reset_hal_data(hooks):
         } for _ in range(2)],
 
         # TODO: make this easier to use
-        'analog_in': [{
+        'analog_in': [NotifyDict({
             'initialized': False,
             'avg_bits': 0,
             'oversample_bits': 0,
@@ -119,7 +154,7 @@ def reset_hal_data(hooks):
             'trig_type': None, # 'averaged' or 'filtered'
             'trig_state': False,
 
-        } for _ in range(8)],
+        }) for _ in range(8)],
 
         # compressor control is here
         'compressor': {
@@ -134,13 +169,13 @@ def reset_hal_data(hooks):
         
         # pwm contains dicts with keys: value, period_scale
         # -> value isn't sane
-        'pwm': [{
+        'pwm': [NotifyDict({
             'initialized': False,
             'value': 0,
             'period_scale': None,
             'zero_latch': False,
 
-        } for _ in range(20)],
+        }) for _ in range(20)],
 
         'pwm_loop_timing': 40, # this is the value the roboRIO returns
                
@@ -148,18 +183,20 @@ def reset_hal_data(hooks):
         'd0_pwm': [None]*6, # dict with keys: duty_cycle, pin
         'd0_pwm_rate': None,
                 
-        'relay': [{
+        'relay': [NotifyDict({
+            'initialized': False,
             'fwd': False,
             'rev': False,
 
-        } for _ in range(8)],
+        }) for _ in range(8)],
                 
-        'dio': [{
+        'dio': [NotifyDict({
             'initialized': False,
             'value': 0,
             'pulse_length': None,
             'is_input': False
-        } for _ in range(10)],
+            
+        }) for _ in range(10)],
         
         'encoder': [{
             'initialized': False,
@@ -220,7 +257,7 @@ def reset_hal_data(hooks):
             'user_faults_3v3': 0,
         },
 
-        # solenoid values are True, False  
+        # solenoid values are True, False 
         'solenoid': [None]*8,
 
         'pdp': {
