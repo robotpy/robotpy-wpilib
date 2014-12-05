@@ -222,10 +222,12 @@ def HALGetAllianceStation():
 
 def HALGetJoystickAxes(joystickNum, axes):
     # we store as -1 to 1 for ease of use, so convert to -128 to 127 here
-    return [int(a*128) if a < 0 else int(a*127) for a in hal_data['joysticks'][joystickNum]['axes']]
+    axes.axes = [int(a*128) if a < 0 else int(a*127) for a in hal_data['joysticks'][joystickNum]['axes']]
+    axes.count = len(axes.axes)
 
 def HALGetJoystickPOVs(joystickNum, povs):
-    return map(int, hal_data['joysticks'][joystickNum]['povs'][:])
+    povs.povs = map(int, hal_data['joysticks'][joystickNum]['povs'][:])
+    povs.count = len(povs.povs)
 
 def HALGetJoystickButtons(joystickNum, buttons):
     # buttons are stored as booleans for ease of use, convert to integer
