@@ -9,9 +9,28 @@ import concurrent.futures
 import logging
 logger = logging.getLogger('frcsim')
 
+
+class PublishWrapper:
+    def __init__(self, publisher, loop):
+        self.publisher = publisher
+        self.loop = loop
+        
+    def publish(self, msg):
+        self.loop.call_soon_threadsafe(lambda: self.publisher.publish(msg))
+
 class Controller:
+    '''
+        Provides access to gazebo
+    '''
+    
+    @staticmethod
+    def get():
+        return Controller.instance
     
     def __init__(self, host, port):
+        
+        if hasattr(Controller, 'instance'):
+            raise ValueError("Controller instance already created!")
         
         self._host = host
         self._port = port
@@ -20,6 +39,8 @@ class Controller:
         
         self._io_thread = threading.Thread(target=self._io_thread_fn, name='io-thread')
         self._io_thread.daemon = True
+        
+        Controller.instance = self
     
     def _io_thread_fn(self):
         try:
@@ -98,7 +119,8 @@ class Controller:
         self.loop.call_soon_threadsafe(lambda: self.loop.create_task(_advertise()))
         
         # this blocks        
-        return fut.result()
+        publisher = fut.result()
+        return PublishWrapper(publisher, self.loop)
 
     def subscribe(self, topic, msg_type, callback):
         '''

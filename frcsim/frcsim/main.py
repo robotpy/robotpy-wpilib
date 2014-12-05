@@ -2,6 +2,7 @@
 from .controller import Controller
 
 from .types.driverstation import DriverStationControl
+from .types.pwm import SimPWM
 from .types.timer import Timer
 
 from .hal_hooks import GazeboSimHooks
@@ -18,6 +19,25 @@ class FrcSimMain:
                             help='Hostname of gazebo')
         parser.add_argument('--port', default=11345,
                             help='Port to connect to')
+        
+        # cache of various devices
+        self.devices = {}
+    
+    def _create_cb(self, typename, i, d, thing_cls):
+        # typename: name of object
+        # i: channel of object
+        # d: dictionary
+        # thing_cls: class to create when initialized
+        
+        self.devices.setdefault(typename, {})
+        
+        def _cb(k, v):
+            # don't initialize the device twice
+            # -> TODO: destroy device when freed
+            if v and i not in self.devices[typename]:
+                self.devices[typename][i] = thing_cls(i, d)
+        
+        return _cb
     
     def run(self, options, robot_class):
 
@@ -41,6 +61,9 @@ class FrcSimMain:
             self.hal_hooks = GazeboSimHooks(self.tm)
             functions.hooks = self.hal_hooks
             data.reset_hal_data(functions.hooks)
+            
+            for i, d in enumerate(data.hal_data['pwm']):
+                d.register('initialized', self._create_cb('pwm', i, d, SimPWM))
             
             return robot_class.main(robot_class)
             
