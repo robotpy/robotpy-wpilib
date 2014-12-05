@@ -33,8 +33,10 @@ class NotifyDict(dict):
         super().__init__(*args, **kwargs)
         self.cbs = {}
         
-    def register(self, k, cb):
+    def register(self, k, cb, notify=False):
         self.cbs.setdefault(k, []).append(cb)
+        if notify:
+            cb(k, self[k])
         
     def __setitem__(self, k, v):
         super().__setitem__(k, v)
