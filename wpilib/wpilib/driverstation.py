@@ -136,12 +136,10 @@ class DriverStation:
             raise IndexError("Joystick axis is out of range")
 
         joystickAxes = hal.HALGetJoystickAxes(stick)
-
         if axis >= len(joystickAxes):
-            self._reportJoystickUnpluggedError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick), False)
+            self._reportJoystickUnpluggedError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick))
             return 0.0
         value = joystickAxes[axis]
-
         if value < 0:
             return value / 128.0
         else:
@@ -163,7 +161,7 @@ class DriverStation:
         joystickPOVs = hal.HALGetJoystickPOVs(stick)
 
         if pov >= len(joystickPOVs):
-            self._reportJoystickUnpluggedError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick), False)
+            self._reportJoystickUnpluggedError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick))
             return 0.0
         return joystickPOVs[pov]
 
@@ -179,7 +177,7 @@ class DriverStation:
 
         buttons = hal.HALGetJoystickButtons(stick)
         if button >= buttons.count:
-            self._reportJoystickUnpluggedError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick), False)
+            self._reportJoystickUnpluggedError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick))
             return False
         return ((0x1 << (button - 1)) & buttons.buttons) != 0
 
