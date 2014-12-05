@@ -278,7 +278,16 @@ def HALNetworkCommunicationObserveUserProgramTest():
     hal_data['user_program_state'] = 'test'
 
 def HALReport(resource, instanceNumber, context=0, feature=None):
-    # TODO: context/feature?
+    
+    # TODO: Cover all interesting devices
+    hur = constants.HALUsageReporting
+    if resource ==  hur.kResourceType_Jaguar:
+        hal_data['pwm'][instanceNumber]['type'] = 'jaguar'
+    elif resource == hur.kResourceType_Talon:
+        hal_data['pwm'][instanceNumber]['type'] = 'talon'
+    elif resource == hur.kResourceType_Victor:
+        hal_data['pwm'][instanceNumber]['type'] = 'victor'
+    
     hal_data['reports'].setdefault(resource, []).append(instanceNumber)
 
 

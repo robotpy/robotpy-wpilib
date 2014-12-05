@@ -173,6 +173,7 @@ def reset_hal_data(hooks):
         # -> value isn't sane
         'pwm': [NotifyDict({
             'initialized': False,
+            'type': None, # string value set by HALReport: jaguar, victor, talon, etc
             'value': 0,
             'period_scale': None,
             'zero_latch': False,
