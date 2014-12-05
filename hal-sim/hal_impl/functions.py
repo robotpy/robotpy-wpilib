@@ -1036,6 +1036,25 @@ def getPDPChannelCurrent(channel, status):
     status.value = 0
     return hal_data['pdp']['current'][channel]
 
+def getPDPTotalCurrent(status):
+    status.value = 0
+    return hal_data['pdp']['total_current']
+
+def getPDPTotalPower(status):
+    status.value = 0
+    return hal_data['pdp']['total_power']
+
+def getPDPTotalEnergy(status):
+    status.value = 0
+    return hal_data['pdp']['total_energy']
+
+def resetPDPTotalEnergy(status):
+    status.value = 0
+    hal_data['pdp']['total_energy'] = 0
+
+def clearPDPStickyFaults(status):
+    status.value = 0
+    # not sure what to do here?
 
 #############################################################################
 # Power

@@ -418,6 +418,11 @@ updateNotifierAlarm = _STATUSFUNC("updateNotifierAlarm", None, ("notifier", Noti
 getPDPTemperature = _STATUSFUNC("getPDPTemperature", C.c_double)
 getPDPVoltage = _STATUSFUNC("getPDPVoltage", C.c_double)
 getPDPChannelCurrent = _STATUSFUNC("getPDPChannelCurrent", C.c_double, ("channel", C.c_uint8))
+getPDPTotalCurrent = _STATUSFUNC("getPDPTotalCurrent", C.c_double)
+getPDPTotalPower = _STATUSFUNC("getPDPTotalPower", C.c_double)
+getPDPTotalEnergy = _STATUSFUNC("getPDPTotalEnergy", C.c_double)
+resetPDPTotalEnergy = _STATUSFUNC("resetPDPTotalEnergy", None)
+clearPDPStickyFaults = _STATUSFUNC("clearPDPStickyFaults", None)
 
 #############################################################################
 # Power

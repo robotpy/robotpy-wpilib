@@ -263,7 +263,10 @@ def reset_hal_data(hooks):
         'pdp': {
             'temperature': 0,
             'voltage': 0,
-            'current': [0]*16
+            'current': [0]*16,
+            'total_current': 0,
+            'total_power': 0,
+            'total_energy': 0
         }
     })
 
