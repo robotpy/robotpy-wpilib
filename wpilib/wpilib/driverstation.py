@@ -10,8 +10,11 @@ import sys
 import traceback
 
 from .motorsafety import MotorSafety
+from .timer import Timer
 
 __all__ = ["DriverStation"]
+
+JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL = 1.0
 
 class DriverStation:
     """Provide access to the network communication data to / from the Driver
@@ -48,6 +51,8 @@ class DriverStation:
         self.packetDataAvailableMutex = hal.initializeMutexNormal()
         self.packetDataAvailableSem = hal.initializeMultiWait()
         hal.HALSetNewDataSem(self.packetDataAvailableSem)
+        
+        self.nextMessageTime = 0.0
 
         self.userInDisabled = False
         self.userInAutonomous = False
@@ -108,6 +113,12 @@ class DriverStation:
 
         :returns: The battery voltage."""
         return hal.getVinVoltage()
+    
+    def _reportJoystickUnpluggedError(self, message):
+        currentTime = Timer.getFPGATimestamp()
+        if currentTime > self.nextMessageTime:
+            self.reportError(message, False)
+            self.nextMessageTime = currentTime + JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL
 
     def getStickAxis(self, stick, axis):
         """Get the value of the axis on a joystick.
@@ -127,7 +138,7 @@ class DriverStation:
         joystickAxes = hal.HALGetJoystickAxes(stick)
 
         if axis >= len(joystickAxes):
-            self.reportError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick), False)
+            self._reportJoystickUnpluggedError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick), False)
             return 0.0
         value = joystickAxes[axis]
 
@@ -152,7 +163,7 @@ class DriverStation:
         joystickPOVs = hal.HALGetJoystickPOVs(stick)
 
         if pov >= len(joystickPOVs):
-            self.reportError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick), False)
+            self._reportJoystickUnpluggedError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick), False)
             return 0.0
         return joystickPOVs[pov]
 
@@ -168,7 +179,7 @@ class DriverStation:
 
         buttons = hal.HALGetJoystickButtons(stick)
         if button >= buttons.count:
-            self.reportError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick), False)
+            self._reportJoystickUnpluggedError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick), False)
             return False
         return ((0x1 << (button - 1)) & buttons.buttons) != 0
 
