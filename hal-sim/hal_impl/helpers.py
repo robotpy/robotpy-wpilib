@@ -35,8 +35,8 @@ def set_test_mode(enabled):
     '''Only designed to be called on transition'''
     
     hal_data['control'].update({
-        'autonomous': True,
-        'test': False,
+        'autonomous': False,
+        'test': True,
         'enabled': enabled,
         'ds_attached': True
     })
