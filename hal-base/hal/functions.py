@@ -6,6 +6,7 @@ from .constants import *
 
 from hal_impl.types import *
 from hal_impl.fndef import *
+from hal_impl import __hal_simulation__
 
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                 handle_missing=False):
@@ -122,6 +123,9 @@ def HALReport(resource, instanceNumber, context = 0, feature = None):
     if feature is not None:
         feature = feature.encode('utf-8')
     return _HALReport(resource, instanceNumber, context, feature)
+
+def HALIsSimulation():
+    return __hal_simulation__
 
 #############################################################################
 # Accelerometer

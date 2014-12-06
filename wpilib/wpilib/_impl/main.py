@@ -5,6 +5,27 @@ import inspect
 from pkg_resources import iter_entry_points
 
 from .logconfig import configure_logging
+import hal_impl
+
+
+def _log_versions():
+    import wpilib
+    import hal
+    import hal_impl
+    
+    import logging
+    logger = logging.getLogger('wpilib')
+    
+    logger.info("WPILib version %s", wpilib.__version__)
+    logger.info("HAL base version %s; %s platform version %s",
+                hal.__version__,
+                hal_impl.__halplatform__,
+                hal_impl.__version__)
+    
+    # should we just die here?
+    if hal.__version__ != wpilib.__version__ and \
+       hal.__version__ != hal_impl.__version__:
+        logger.warn("Core component versions are not identical! This is not a supported configuration, and you may run into errors!")
 
 def run(robot_class):
     '''
@@ -51,6 +72,7 @@ def run(robot_class):
     
     configure_logging(options.verbose)
     
+    _log_versions()
     retval = options.cmdobj.run(options, robot_class)
     
     if retval is None:

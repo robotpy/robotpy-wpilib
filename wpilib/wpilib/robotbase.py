@@ -59,12 +59,12 @@ class RobotBase:
     @staticmethod
     def isSimulation():
         """:returns: If the robot is running in simulation."""
-        return False
+        return hal.HALIsSimulation()
 
     @staticmethod
     def isReal():
         """:returns: If the robot is running in the real world."""
-        return True
+        return not hal.HALIsSimulation()
 
     def isDisabled(self):
         """Determine if the Robot is currently disabled.
