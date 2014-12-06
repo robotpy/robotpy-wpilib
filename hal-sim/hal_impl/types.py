@@ -66,6 +66,15 @@ class HALJoystickButtons:
         self.count = count
 _HALJoystickButtons = HALJoystickButtons
 
+class HALJoystickDescriptors:
+    def __init__(self, d={}):
+        self.isXbox = d.get('enabled', False)
+        self.type = d.get('type', 0)
+        self.name = d.get('name', '')
+        self.axisCount = d.get("axisCount", 0)
+        self.buttonCount = d.get("buttonCount", 0)
+_HALJoystickDescriptors = HALJoystickDescriptors
+
 #############################################################################
 # Analog
 #############################################################################

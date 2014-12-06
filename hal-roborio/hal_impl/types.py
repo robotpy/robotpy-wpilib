@@ -63,6 +63,16 @@ class _HALJoystickButtons(C.Structure):
                 ("count", C.c_uint8)]
 HALJoystickButtons = C.POINTER(_HALJoystickButtons)
 
+class _HALJoystickDescriptor(C.Structure):
+    _fields_ = [("isXbox", C.c_uint8),
+                ("type", C.c_uint8),
+                ("name", C.c_char * 256),
+                ("axisCount", C.c_uint8),
+                ("axisTypes", C.c_uint8),
+                ("buttonCount", C.c_uint8),
+                ("povCount", C.c_uint8)]
+HALJoystickDescriptor = C.POINTER(_HALJoystickDescriptor)
+
 #############################################################################
 # Analog
 #############################################################################
