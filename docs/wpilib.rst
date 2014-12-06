@@ -403,6 +403,14 @@ wpilib.victor module
     :undoc-members:
     :show-inheritance:
 
+wpilib.victorsp module
+----------------------
+
+.. automodule:: wpilib.victorsp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------
