@@ -79,14 +79,14 @@ class IterativeRobot(RobotBase):
         didTestPeriodic = False
 
         # loop forever, calling the appropriate mode-dependent function
-        #TODO:LiveWindow.setEnabled(False)
+        LiveWindow.setEnabled(False)
         while True:
             # Call the appropriate function depending upon the current robot mode
             if self.isDisabled():
                 # call DisabledInit() if we are now just entering disabled mode from
                 # either a different mode or from power-on
                 if not self.disabledInitialized:
-                    #TODO:LiveWindow.setEnabled(False)
+                    LiveWindow.setEnabled(False)
                     self.disabledInit()
                     self.disabledInitialized = True
                     # reset the initialization flags for the other modes
@@ -101,7 +101,7 @@ class IterativeRobot(RobotBase):
                 # call TestInit() if we are now just entering test mode from either
                 # a different mode or from power-on
                 if not self.testInitialized:
-                    #TODO:LiveWindow.setEnabled(True)
+                    LiveWindow.setEnabled(True)
                     self.testInit()
                     self.testInitialized = True
                     self.autonomousInitialized = False
@@ -115,7 +115,7 @@ class IterativeRobot(RobotBase):
                 # call Autonomous_Init() if this is the first time
                 # we've entered autonomous_mode
                 if not self.autonomousInitialized:
-                    #TODO:LiveWindow.setEnabled(False)
+                    LiveWindow.setEnabled(False)
                     # KBS NOTE: old code reset all PWMs and relays to "safe values"
                     # whenever entering autonomous mode, before calling
                     # "Autonomous_Init()"
@@ -132,7 +132,7 @@ class IterativeRobot(RobotBase):
                 # call Teleop_Init() if this is the first time
                 # we've entered teleop_mode
                 if not self.teleopInitialized:
-                    #TODO:LiveWindow.setEnabled(False)
+                    LiveWindow.setEnabled(False)
                     self.teleopInit()
                     self.teleopInitialized = True
                     self.testInitialized = False

@@ -106,7 +106,7 @@ class SampleRobot(RobotBase):
             
         if hasattr(self, '_no_robot_main'):
             # first and one-time initialization
-            #TODO:LiveWindow.setEnabled(False)
+            LiveWindow.setEnabled(False)
             self.robotInit()
 
             while True:
@@ -123,13 +123,13 @@ class SampleRobot(RobotBase):
                     while self.isAutonomous() and not self.isDisabled():
                         Timer.delay(0.01)
                 elif self.isTest():
-                    #TODO:LiveWindow.setEnabled(True)
+                    LiveWindow.setEnabled(True)
                     self.ds.InTest(True)
                     self.test()
                     self.ds.InTest(False)
                     while self.isTest() and self.isEnabled():
                         Timer.delay(0.01)
-                    #TODO:LiveWindow.setEnabled(False)
+                    LiveWindow.setEnabled(False)
                 else:
                     self.ds.InOperatorControl(True)
                     self.operatorControl()
