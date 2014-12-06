@@ -16,7 +16,11 @@ def _freeAnalogTrigger(port):
     hal.cleanAnalogTrigger(port)
 
 class AnalogTrigger:
-    """Class for creating and configuring Analog Triggers"""
+    """
+        Class for creating and configuring Analog Triggers
+        
+        .. not_implemented: initTrigger
+    """
 
     AnalogTriggerType = AnalogTriggerOutput.AnalogTriggerType
 

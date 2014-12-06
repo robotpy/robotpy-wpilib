@@ -32,6 +32,8 @@ class Counter(SensorBase):
 
     All counters will immediately start counting - reset() them if you need
     them to be zeroed before use.
+    
+    .. not_implemented: initCounter
     """
 
     class Mode:

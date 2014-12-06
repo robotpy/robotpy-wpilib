@@ -20,6 +20,8 @@ class DoubleSolenoid(SolenoidBase):
 
     The DoubleSolenoid class is typically used for pneumatics solenoids that
     have two positions controlled by two separate channels.
+    
+    .. not_implemented: initSolenoid
     """
 
     class Value:

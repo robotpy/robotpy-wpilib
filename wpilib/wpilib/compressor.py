@@ -16,6 +16,8 @@ class Compressor(SensorBase):
     safety provided in using the pressure switch and closed loop control.
     You can only turn off closed loop control, thereby stopping the
     compressor from operating.
+    
+    .. not_implemented: initCompressor
     """
 
     def __init__(self, pcmId=None):

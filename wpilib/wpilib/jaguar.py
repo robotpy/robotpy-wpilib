@@ -19,6 +19,8 @@ class Jaguar(SafePWM):
         .. seealso::
         
            :class:`.CANJaguar` for CAN control of a Jaguar
+           
+        .. not_implemented: initJaguar
     """
 
     def __init__(self, channel):

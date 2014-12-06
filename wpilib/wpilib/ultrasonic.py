@@ -26,6 +26,8 @@ class Ultrasonic(SensorBase):
     becomes high as the ping is transmitted and goes low when the echo is
     received. The time that the line is high determines the round trip
     distance (time of flight).
+    
+    .. not_implemented: initialize
     """
 
     class Unit:

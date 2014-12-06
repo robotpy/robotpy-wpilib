@@ -17,6 +17,8 @@ class Servo(PWM):
 
     The range parameters default to the appropriate values for the Hitec
     HS-322HD servo provided in the FIRST Kit of Parts in 2008.
+    
+    .. not_implemented: initServo
     """
 
     kMaxServoAngle = 180.0

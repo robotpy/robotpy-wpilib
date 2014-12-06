@@ -15,6 +15,8 @@ class AnalogPotentiometer(LiveWindowSendable):
     in an analog voltage that corresponds to a position. Usually the
     position is either degrees or meters. However, if no conversion is
     given it remains volts.
+    
+    .. not_implemented: initPot
     """
 
     def __init__(self, channel, scale=1.0, offset=0.0):

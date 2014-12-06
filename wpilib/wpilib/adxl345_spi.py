@@ -14,6 +14,10 @@ from .sensorbase import SensorBase
 __all__ = ["ADXL345_SPI"]
 
 class ADXL345_SPI(SensorBase):
+    """
+        .. not_implemented: init
+    """
+    
     kPowerCtlRegister = 0x2D
     kDataFormatRegister = 0x31
     kDataRegister = 0x32

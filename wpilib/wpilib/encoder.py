@@ -42,6 +42,8 @@ class Encoder(SensorBase):
     - aSource: The A phase of the quad encoder
     - bSource: The B phase of the quad encoder
     - indexSource: The index source (available on some encoders)
+    
+    .. not_implemented: initEncoder
     """
 
     EncodingType = CounterBase.EncodingType

@@ -49,6 +49,8 @@ class PWM(LiveWindowSendable):
     - 5ms periods allows higher update rates for Luminary Micro Jaguar speed
       controllers. Due to the shipping firmware on the Jaguar, we can't run the
       update period less than 5.05 ms.
+      
+    .. not_implemented: initPWM
     """
     class PeriodMultiplier:
         """Represents the amount to multiply the minimum servo-pulse pwm

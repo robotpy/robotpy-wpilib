@@ -44,6 +44,8 @@ class Gyro(SensorBase):
 
         :param channel: The analog channel index or AnalogChannel object that
             the gyro is connected to.
+            
+        .. not_implemented: initGyro
         """
         if not hasattr(channel, "initAccumulator"):
             channel = AnalogInput(channel)

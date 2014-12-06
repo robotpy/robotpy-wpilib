@@ -29,6 +29,8 @@ class Relay(SensorBase):
     variable speed. It also allows the two channels (forward and reverse) to
     be used independently for something that does not care about voltage
     polarity (like a solenoid).
+    
+    .. not_implemented: initRelay
     """
 
     class Value:

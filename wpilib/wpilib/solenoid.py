@@ -19,6 +19,8 @@ class Solenoid(SolenoidBase):
 
     The Solenoid class is typically used for pneumatics solenoids, but could
     be used for any device within the current spec of the PCM.
+    
+    .. not_implemented: initSolenoid
     """
 
     def __init__(self, *args, **kwargs):

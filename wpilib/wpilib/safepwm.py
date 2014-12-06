@@ -11,6 +11,10 @@ from .pwm import PWM
 __all__ = ["SafePWM"]
 
 class SafePWM(PWM, MotorSafety):
+    """
+        .. not_implemented: initSafePWM
+    """
+    
     def __init__(self, channel):
         """Constructor for a SafePWM object taking a channel number.
 
