@@ -125,12 +125,12 @@ class DriverStation:
         This depends on the mapping of the joystick connected to the specified
         port.
 
-        :param stick: The joystick to read.
+        :param stick: The joystick port number
         :param axis: The analog axis value to read from the joystick.
         :returns: The value of the axis on the joystick.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
-            raise IndexError("Joystick index is out of range, should be 0-5")
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
         if axis < 0 or axis >= hal.kMaxJoystickAxes:
             raise IndexError("Joystick axis is out of range")
@@ -144,16 +144,27 @@ class DriverStation:
             return value / 128.0
         else:
             return value / 127.0
+        
+    def getStickAxisCount(self, stick):
+        """Returns the number of axis on a given joystick port
+        
+        :param stick: The joystick port number
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+        
+        return len(hal.HALGetJoystickAxes(stick))
 
     def getStickPOV(self, stick, pov):
         """Get the state of a POV on the joystick.
 
+        :param stick: The joystick port number
         :param pov: which POV
         :returns: The angle of the POV in degrees, or -1 if the POV is not
                   pressed.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
-            raise IndexError("Joystick index is out of range, should be 0-5")
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
         if pov < 0 or pov >= hal.kMaxJoystickPOVs:
             raise IndexError("Joystick POV is out of range")
