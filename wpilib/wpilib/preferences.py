@@ -76,7 +76,7 @@ class Preferences:
             reader = threading.Thread(target=self._read,
                                       name="Preferences Read")
             reader.start()
-            fileLock.wait()
+            self.fileLock.wait()
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_Preferences, 0)
 
@@ -300,7 +300,7 @@ class Preferences:
             writer = threading.Thread(target=self._write,
                                       name="Preferences Write")
             writer.start()
-            fileLock.wait()
+            self.fileLock.wait()
 
     def _write(self):
         """Internal method that actually writes the table to a file. This is
@@ -362,16 +362,16 @@ class Preferences:
                             if value and value[0] == '"':
                                 value = value[1:].partition('"')[0]
 
-                            keylist.append(name)
+                            self.keylist.append(name)
                             self.values[name] = value
                             try:
                                 from networktables import NetworkTable
-                                NetworkTable.getTable(self.TABLE_NAME).putString(name, result)
+                                NetworkTable.getTable(self.TABLE_NAME).putString(name, value)
                             except ImportError:
                                 pass
 
                             if comment:
-                                comments[name] = "".join(comment)
+                                self.comments[name] = "".join(comment)
                                 comment = []
             except FileNotFoundError:
                 pass
