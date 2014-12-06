@@ -1,4 +1,9 @@
+
 __all__ = ["LiveWindow"]
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 class _LiveWindowComponent:
     """A LiveWindow component is a device (sensor or actuator) that should be
@@ -31,12 +36,12 @@ class LiveWindow:
         replaced with the custom names from users calling addActuator and
         addSensor.
         """
-        print("Initializing the components first time")
+        logger.info("Initializing the components first time")
         if LiveWindow.livewindowTable is None:
             from networktables import NetworkTable
             LiveWindow.livewindowTable = NetworkTable.getTable("LiveWindow")
         for component, c in LiveWindow.components.items():
-            print("Initializing table for '%s' '%s'" % (c.subsystem, c.name))
+            logger.info("Initializing table for '%s' '%s'" % (c.subsystem, c.name))
             LiveWindow.livewindowTable.getSubTable(c.subsystem).putString("~TYPE~", "LW Subsystem")
             table = LiveWindow.livewindowTable.getSubTable(c.subsystem).getSubTable(c.name)
             table.putString("~TYPE~", component.getSmartDashboardType())
@@ -62,7 +67,7 @@ class LiveWindow:
         if LiveWindow.liveWindowEnabled != enabled:
             from .command import Scheduler
             if enabled:
-                print("Starting live window mode.")
+                logger.info("Starting live window mode.")
                 if LiveWindow.firstTime:
                     LiveWindow.initializeLiveWindowComponents()
                     LiveWindow.firstTime = False
@@ -71,7 +76,7 @@ class LiveWindow:
                 for component in LiveWindow.components.keys():
                     component.startLiveWindowMode()
             else:
-                print("stopping live window mode.")
+                logger.info("stopping live window mode.")
                 for component in LiveWindow.components.keys():
                     component.stopLiveWindowMode()
                 Scheduler.getInstance().enable()

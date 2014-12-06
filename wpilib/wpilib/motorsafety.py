@@ -10,6 +10,9 @@ import weakref
 from .robotstate import RobotState
 from .timer import Timer
 
+import logging
+logger = logging.getLogger(__name__)
+
 __all__ = ["MotorSafety"]
 
 class MotorSafety:
@@ -73,8 +76,8 @@ class MotorSafety:
         if not self.safetyEnabled or RobotState.isDisabled() or RobotState.isTest():
             return
         if self.safetyStopTime < Timer.getFPGATimestamp():
-            print("%s... Output not updated often enough." %
-                  self.getDescription())
+            logger.warn("%s... Output not updated often enough." %
+                        self.getDescription())
 
             self.stopMotor()
 

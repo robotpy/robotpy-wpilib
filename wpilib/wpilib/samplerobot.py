@@ -6,6 +6,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import logging
 
 from .robotbase import RobotBase
 from .timer import Timer
@@ -23,8 +24,12 @@ class SampleRobot(RobotBase):
     repeatedly) depending on the state of the competition.
 
     Alternatively you can override the robotMain() method and manage all
-    aspects of the robot yourself.
+    aspects of the robot yourself (not recommended).
     """
+    
+    #: A python logging object that you can use to send messages to the log. It
+    #: is recommended to use this instead of print statements.
+    logger = logging.getLogger("robot")
 
     def robotInit(self):
         """Robot-wide initialization code should go here.
@@ -34,7 +39,7 @@ class SampleRobot(RobotBase):
 
         Called exactly 1 time when the competition starts.
         """
-        print("Default robotInit() method running, consider providing your own")
+        self.logger.info("Default robotInit() method running, consider providing your own")
 
     def disabled(self):
         """Disabled should go here.
@@ -43,7 +48,7 @@ class SampleRobot(RobotBase):
 
         Called once each time the robot enters the disabled state.
         """
-        print("Default disabled() method running, consider providing your own")
+        self.logger.info("Default disabled() method running, consider providing your own")
 
     def autonomous(self):
         """Autonomous should go here.
@@ -52,7 +57,7 @@ class SampleRobot(RobotBase):
 
         Called once each time the robot enters the autonomous state.
         """
-        print("Default autonomous() method running, consider providing your own")
+        self.logger.info("Default autonomous() method running, consider providing your own")
 
     def operatorControl(self):
         """Operator control (tele-operated) code should go here.
@@ -61,14 +66,14 @@ class SampleRobot(RobotBase):
 
         Called once each time the robot enters the operator-controlled state.
         """
-        print("Default operatorControl() method running, consider providing your own")
+        self.logger.warn("Default operatorControl() method running, consider providing your own")
 
     def test(self):
         """Test code should go here.
         Users should add test code to this method that should run while the
         robot is in test mode.
         """
-        print("Default test() method running, consider providing your own")
+        self.logger.info("Default test() method running, consider providing your own")
 
     def robotMain(self):
         """Robot main program for free-form programs.

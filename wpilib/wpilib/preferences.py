@@ -8,6 +8,9 @@
 import hal
 import threading
 
+import logging
+logger = logging.getLogger(__name__)
+
 __all__ = ["Preferences"]
 
 class Preferences:
@@ -379,7 +382,7 @@ class Preferences:
             if comment:
                 self.endComment = "".join(comment)
 
-            print("Done Reading")
+            logger.info("Done reading preferences")
 
         try:
             from networktables import NetworkTable

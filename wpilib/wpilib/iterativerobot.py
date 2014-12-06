@@ -4,6 +4,7 @@
 # the project.
 
 import hal
+import logging
 
 from .robotbase import RobotBase
 from .timer import Timer
@@ -42,6 +43,10 @@ class IterativeRobot(RobotBase):
     - teleopPeriodic()
     - testPeriodoc()
     """
+     
+    #: A python logging object that you can use to send messages to the log. It
+    #: is recommended to use this instead of print statements.
+    logger = logging.getLogger("robot")
 
     def __init__(self):
         """Constructor for RobotIterativeBase.
@@ -155,7 +160,7 @@ class IterativeRobot(RobotBase):
         which will be called when the robot is first powered on.  It will be
         called exactly 1 time.
         """
-        print("Default IterativeRobot.robotInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.robotInit() method... Overload me!")
 
     def disabledInit(self):
         """Initialization code for disabled mode should go here.
@@ -163,7 +168,7 @@ class IterativeRobot(RobotBase):
         Users should override this method for initialization code which will be
         called each time the robot enters disabled mode.
         """
-        print("Default IterativeRobot.disabledInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.disabledInit() method... Overload me!")
 
     def autonomousInit(self):
         """Initialization code for autonomous mode should go here.
@@ -171,7 +176,7 @@ class IterativeRobot(RobotBase):
         Users should override this method for initialization code which will be
         called each time the robot enters autonomous mode.
         """
-        print("Default IterativeRobot.autonomousInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.autonomousInit() method... Overload me!")
 
     def teleopInit(self):
         """Initialization code for teleop mode should go here.
@@ -179,7 +184,7 @@ class IterativeRobot(RobotBase):
         Users should override this method for initialization code which will be
         called each time the robot enters teleop mode.
         """
-        print("Default IterativeRobot.teleopInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.teleopInit() method... Overload me!")
 
     def testInit(self):
         """Initialization code for test mode should go here.
@@ -187,7 +192,7 @@ class IterativeRobot(RobotBase):
         Users should override this method for initialization code which will be
         called each time the robot enters test mode.
         """
-        print("Default IterativeRobot.testInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.testInit() method... Overload me!")
 
     # ----------- Overridable periodic code -----------------
 
@@ -199,7 +204,7 @@ class IterativeRobot(RobotBase):
         """
         func = self.disabledPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            print("Default IterativeRobot.disabledPeriodic() method... Overload me!")
+            self.logger.info("Default IterativeRobot.disabledPeriodic() method... Overload me!")
             func.firstRun = False
         Timer.delay(0.001)
 
@@ -211,7 +216,7 @@ class IterativeRobot(RobotBase):
         """
         func = self.autonomousPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            print("Default IterativeRobot.autonomousPeriodic() method... Overload me!")
+            self.logger.info("Default IterativeRobot.autonomousPeriodic() method... Overload me!")
             func.firstRun = False
         Timer.delay(0.001)
 
@@ -223,7 +228,7 @@ class IterativeRobot(RobotBase):
         """
         func = self.teleopPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            print("Default IterativeRobot.teleopPeriodic() method... Overload me!")
+            self.logger.warn("Default IterativeRobot.teleopPeriodic() method... Overload me!")
             func.firstRun = False
         Timer.delay(0.001)
 
@@ -235,5 +240,5 @@ class IterativeRobot(RobotBase):
         """
         func = self.testPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            print("Default IterativeRobot.testPeriodic() method... Overload me!")
+            self.logger.info("Default IterativeRobot.testPeriodic() method... Overload me!")
             func.firstRun = False
