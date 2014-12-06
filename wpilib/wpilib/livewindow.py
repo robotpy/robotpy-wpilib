@@ -1,9 +1,11 @@
 
-__all__ = ["LiveWindow"]
+from networktables import NetworkTable
+from .command import Scheduler
 
 import logging
 logger = logging.getLogger(__name__)
 
+__all__ = ["LiveWindow"]
 
 class _LiveWindowComponent:
     """A LiveWindow component is a device (sensor or actuator) that should be
@@ -37,9 +39,8 @@ class LiveWindow:
         addSensor.
         """
         logger.info("Initializing the components first time")
-        if LiveWindow.livewindowTable is None:
-            from networktables import NetworkTable
-            LiveWindow.livewindowTable = NetworkTable.getTable("LiveWindow")
+        LiveWindow.livewindowTable = NetworkTable.getTable("LiveWindow")
+        LiveWindow.statusTable = LiveWindow.livewindowTable.getSubTable("~STATUS~")
         for component, c in LiveWindow.components.items():
             logger.info("Initializing table for '%s' '%s'" % (c.subsystem, c.name))
             LiveWindow.livewindowTable.getSubTable(c.subsystem).putString("~TYPE~", "LW Subsystem")
@@ -65,7 +66,6 @@ class LiveWindow:
         after a period of adjusting them in LiveWindow mode.
         """
         if LiveWindow.liveWindowEnabled != enabled:
-            from .command import Scheduler
             if enabled:
                 logger.info("Starting live window mode.")
                 if LiveWindow.firstTime:
@@ -76,16 +76,11 @@ class LiveWindow:
                 for component in LiveWindow.components.keys():
                     component.startLiveWindowMode()
             else:
-                logger.info("stopping live window mode.")
+                logger.info("Stopping live window mode.")
                 for component in LiveWindow.components.keys():
                     component.stopLiveWindowMode()
                 Scheduler.getInstance().enable()
             LiveWindow.liveWindowEnabled = enabled
-            if LiveWindow.statusTable is None:
-                if LiveWindow.livewindowTable is None:
-                    from networktables import NetworkTable
-                    LiveWindow.livewindowTable = NetworkTable.getTable("LiveWindow")
-                LiveWindow.statusTable = LiveWindow.livewindowTable.getSubTable("~STATUS~")
             LiveWindow.statusTable.putBoolean("LW Enabled", enabled)
 
     @staticmethod
