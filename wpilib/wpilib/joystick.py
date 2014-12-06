@@ -161,6 +161,10 @@ class Joystick:
             return self.getThrottle()
         else:
             return 0.0
+        
+    def getAxisCount(self):
+        """For the current joystick, return the number of axis"""
+        return self.ds.getStickAxisCount(self.port)
 
     def getTrigger(self, hand=None):
         """Read the state of the trigger on the joystick.
@@ -207,6 +211,10 @@ class Joystick:
         :returns: The state of the button.
         """
         return self.ds.getStickButton(self.port, button)
+    
+    def getButtonCount(self):
+        """For the current joystick, return the number of buttons"""
+        return self.ds.getStickButtonCount(self.port)
 
     def getPOV(self, pov=0):
         """Get the state of a POV on the joystick.
@@ -216,6 +224,10 @@ class Joystick:
                   pressed.
         """
         return self.ds.getStickPOV(self.port, pov)
+    
+    def getPOVCount(self):
+        """For the current joystick, return the number of POVs"""
+        return self.ds.getStickPOVCount(self.port)
 
     def getButton(self, button):
         """Get buttons based on an enumerated type.

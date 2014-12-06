@@ -175,22 +175,42 @@ class DriverStation:
             self._reportJoystickUnpluggedError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick))
             return 0.0
         return joystickPOVs[pov]
+    
+    def getStickPOVCount(self, stick):
+        """Returns the number of POVs on a given joystick port
+        
+        :param stick: The joystick port number
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+        
+        return len(hal.HALGetJoystickPOVs(stick))
 
     def getStickButton(self, stick, button):
         """The state of a button on the joystick.
 
-        :param stick: The joystick to read.
+        :param stick: The joystick port number
         :param button: The button number to be read.
         :returns: The state of the button.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
-            raise IndexError("Joystick index is out of range, should be 0-3")
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
         buttons = hal.HALGetJoystickButtons(stick)
         if button >= buttons.count:
             self._reportJoystickUnpluggedError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick))
             return False
         return ((0x1 << (button - 1)) & buttons.buttons) != 0
+    
+    def getStickButtonCount(self, stick):
+        """Gets the number of buttons on a joystick
+        
+        :param stick: The joystick port number
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+        
+        return hal.HALGetJoystickButtons(stick).count
 
     def isEnabled(self):
         """Gets a value indicating whether the Driver Station requires the
