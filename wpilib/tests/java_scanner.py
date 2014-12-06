@@ -26,6 +26,7 @@ def compare_folders(python_object, java_dirs):
     """
 
     output = list()
+    error_count = 0
 
     #Get all java files in java_dirs
     java_files = list()
@@ -57,8 +58,11 @@ def compare_folders(python_object, java_dirs):
             python_child = None
             if hasattr(python_object, java_child.name):
                 python_child = getattr(python_object, java_child.name)
-            output.append(compare_object(python_child, java_child, ignore_child))
-    return output
+
+            child_output, child_errors = compare_object(python_child, java_child, ignore_child)
+            output.append(child_output)
+            error_count += child_errors
+    return output, error_count
 
 
 def compare_object(python_object, java_object, ignored=False):
@@ -72,6 +76,8 @@ def compare_object(python_object, java_object, ignored=False):
     output["matches"] = output["present"]
     output["type"] = java_object.__class__.__name__
     output["ignored"] = ignored
+
+    error_count = 0
 
     #If it is a method, get it's parameters.
     if isinstance(java_object, m.MethodDeclaration) or isinstance(java_object, m.ConstructorDeclaration):
@@ -92,6 +98,7 @@ def compare_object(python_object, java_object, ignored=False):
                 args = [a for a in args if a != "self"]
                 if len(args) < len(output["parameters"]):
                     output["matches"] = False
+                    error_count += 1
 
     elif isinstance(java_object, m.ClassDeclaration):
         #Check for :jscan ignore flags in the docstring
@@ -121,20 +128,30 @@ def compare_object(python_object, java_object, ignored=False):
                 python_child = getattr(python_object, python_child_name)
 
             #Compare the child and set our matches variable from it.
-            child_output = compare_object(python_child, java_child, ignore_child)
+            child_output, child_error_count = compare_object(python_child, java_child, ignore_child)
             if not child_output["matches"] and not ignore_child:
                 output["matches"] = False
+                error_count += child_error_count
             output["children"].append(child_output)
-    return output
+    return output, error_count
 
 
 def parse_docstring(docstring):
+    '''
+        Finds RST comments that indicate some functions should be ignored. To
+        indicate such a function, use the following syntax::
+
+            .. not_implemented: fn1, fn2, fn3
+
+    '''
+    ignore_comment = ".. not_implemented:"
     ignores = list()
     if docstring is not None:
         for line in docstring.split("\n"):
-            split = line.split(":jscan ignore")
-            if len(split) > 1:
-                ignores.append(split[1].strip(" "))
+            line = line.strip()
+            if line.startswith(ignore_comment):
+                ignore_fns = line[len(ignore_comment):].strip()
+                ignores.extend(fn.strip() for fn in ignore_fns.split(","))
     return ignores
 
 
@@ -271,8 +288,10 @@ if __name__ == "__main__":
 
     wpilibj_path = join(sys.argv[1], 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj')
 
-    output = compare_folders(wpilib, [wpilibj_path])
+    output, error_count = compare_folders(wpilib, [wpilibj_path])
     text_list = list()
     for item in output:
         text_list.extend(stringize_summary(item))
     print_list(text_list)
+
+    print("\nTotal errors: ", error_count)

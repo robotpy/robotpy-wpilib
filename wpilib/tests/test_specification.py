@@ -16,7 +16,7 @@ def test_compare_file_specs(wpilib):
 
     import java_scanner
 
-    output = java_scanner.compare_folders(wpilib, [path])
+    output, errorCount = java_scanner.compare_folders(wpilib, [path])
 
     for item in output:
         if not item["matches"] and not item["ignored"]:
