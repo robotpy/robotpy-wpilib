@@ -81,7 +81,7 @@ class Servo(PWM):
         """
         if degrees < self.kMinServoAngle:
             degrees = self.kMinServoAngle
-        elif degrees > kMaxServoAngle:
+        elif degrees > self.kMaxServoAngle:
             degrees = self.kMaxServoAngle
 
         self.setPosition(((degrees - self.kMinServoAngle)) /
