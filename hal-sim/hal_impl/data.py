@@ -34,6 +34,8 @@ class NotifyDict(dict):
         self.cbs = {}
         
     def register(self, k, cb, notify=False):
+        if k not in self:
+            raise KeyError("Cannot register for non-existant key '%s'" % k)
         self.cbs.setdefault(k, []).append(cb)
         if notify:
             cb(k, self[k])
