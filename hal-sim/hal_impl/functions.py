@@ -235,6 +235,11 @@ def HALGetJoystickButtons(joystickNum, buttons):
     buttons.buttons = sum(int(v) << i for i, v in enumerate(b[1:]))
     buttons.count = len(b)-1
 
+def HALSetJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
+    hal_data['joysticks'][joystickNum]["leftRumble"] = leftRumble
+    hal_data['joysticks'][joystickNum]["rightRumble"] = rightRumble
+    hal_data['joysticks'][joystickNum]["outputs"] = [bool(val) for val in bin(outputs)]
+
 def HALGetMatchTime():
     '''
         Returns approximate match time:

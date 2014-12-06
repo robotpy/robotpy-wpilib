@@ -41,6 +41,13 @@ class Joystick:
         kTop = 1
         kNumButton = 2
 
+    class RumbleType:
+        """Represents a rumble output on the Joystick"""
+        kLeftRumble_val = 0
+        kRightRumble_val = 1
+
+
+
     def __init__(self, port, numAxisTypes=None, numButtonTypes=None):
         """Construct an instance of a joystick.
 
@@ -74,6 +81,10 @@ class Joystick:
             self.buttons[self.ButtonType.kTop] = self.kDefaultTopButton
         else:
             self.buttons = [0]*numButtonTypes
+
+        self.outputs = 0
+        self.leftRumble = 0
+        self.rightRumble = 0
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_Joystick, port)
 
@@ -283,3 +294,39 @@ class Joystick:
         :param channel: The channel to set the axis to.
         """
         self.axes[axis] = channel
+
+    def setRumble(self, type, value):
+        """
+        Set the rumble output for the joystick. The DS currently supports 2 rumble values,
+        left rumble and right rumble
+        :param type: Which rumble value to set
+        :param value: The normalized value (0 to 1) to set the rumble to
+        """
+        if type == self.RumbleType.kLeftRumble_val:
+            self.leftRumble = int(value*65535)
+        elif type == self.RumbleType.kRightRumble_val:
+            self.rightRumble = int(value*65535)
+        else:
+            raise ValueError("Invalid Rumble type: {}".format(type))
+        self.flush_outputs()
+
+    def setOutput(self, outputNumber, value):
+        """
+        Set a single HID output value for the joystick.
+        :param outputNumber: The index of the output to set (1-32)
+        :param value: The value to set the output to.
+        """
+        self.outputs = (self.outputs & ~(value << (outputNumber-1))) | (value << (outputNumber-1))
+        self.flush_outputs()
+
+    def setOutputs(self, value):
+        """
+        Set all HID output values for the joystick.
+        :param value: The 32 bit output value (1 bit for each output)
+        """
+        self.outputs = value
+        self.flush_outputs()
+
+    def flush_outputs(self):
+        """Flush all joystick output values to the HAL"""
+        hal.HALSetJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
