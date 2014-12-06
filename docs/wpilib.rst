@@ -184,6 +184,7 @@ wpilib.iterativerobot module
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 wpilib.jaguar module
 --------------------
@@ -312,6 +313,7 @@ wpilib.samplerobot module
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 wpilib.sendable module
 ----------------------
