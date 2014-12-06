@@ -197,7 +197,7 @@ class DriverStation:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
         buttons = hal.HALGetJoystickButtons(stick)
-        if button >= buttons.count:
+        if button > buttons.count:
             self._reportJoystickUnpluggedError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick))
             return False
         return ((0x1 << (button - 1)) & buttons.buttons) != 0
