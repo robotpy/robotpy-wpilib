@@ -43,7 +43,7 @@ class AnalogPotentiometer(LiveWindowSendable):
         self.offset = offset
 
     def get(self):
-        """Get the current reading of the potentiomere.
+        """Get the current reading of the potentiometer.
 
         :returns: The current position of the potentiometer.
         """
