@@ -49,6 +49,8 @@ class RobotBase:
             NetworkTable.getTable("")   # forces network tables to initialize
             NetworkTable.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", False)
 
+        self.__initialized = True
+
     def free(self):
         """Free the resources for a RobotBase class."""
         # TODO: delete?
@@ -141,6 +143,11 @@ class RobotBase:
             DriverStation.reportError("ERROR Could not instantiate robot", True)
             logger.exception("Robots don't quit!")
             logger.exception("Could not instantiate robot "+robot_cls.__name__+"!")
+            return False
+        
+        # Add a check to see if the user forgot to call super().__init__()
+        if not hasattr(robot, '_RobotBase__initialized'):
+            logger.error("If your robot class has an __init__ function, it must call super().__init__()!")
             return False
 
         try:
