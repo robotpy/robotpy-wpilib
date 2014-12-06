@@ -2,6 +2,7 @@
 from .controller import Controller
 
 from .types.driverstation import DriverStationControl
+from .types.analog_input import SimAnalogInput
 from .types.pwm import SimPWM
 from .types.timer import Timer
 
@@ -62,6 +63,15 @@ class FrcSimMain:
             functions.hooks = self.hal_hooks
             data.reset_hal_data(functions.hooks)
             
+            # Analog
+            for i, d in enumerate(data.hal_data['analog_in']):
+                d.register('initialized', self._create_cb('analog', i, d, SimAnalogInput))
+            
+            # Digital
+            
+            # Encoders
+            
+            # PWM
             for i, d in enumerate(data.hal_data['pwm']):
                 d.register('initialized', self._create_cb('pwm', i, d, SimPWM))
             
