@@ -1475,7 +1475,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
             _cj.LM_PSTAT_END,
             0, 0, 0, 0, 0]
 
-        data = _packINT16(int(self.kSendMessagePeriod / 10))
+        data = _packINT16(int(self.kSendMessagePeriod))
         self.sendMessage(_cj.LM_API_PSTAT_PER_EN_S0, data)
         self.sendMessage(_cj.LM_API_PSTAT_PER_EN_S1, data)
         self.sendMessage(_cj.LM_API_PSTAT_PER_EN_S2, data)
