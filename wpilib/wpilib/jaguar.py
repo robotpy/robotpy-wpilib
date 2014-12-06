@@ -13,7 +13,13 @@ from .safepwm import SafePWM
 __all__ = ["Jaguar"]
 
 class Jaguar(SafePWM):
-    """Texas Instruments Jaguar Speed Controller as a PWM device."""
+    """
+        Texas Instruments / Vex Robotics Jaguar Speed Controller as a PWM device.
+    
+        .. seealso::
+        
+           :class:`.CANJaguar` for CAN control of a Jaguar
+    """
 
     def __init__(self, channel):
         """Constructor.

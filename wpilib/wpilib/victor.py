@@ -13,12 +13,12 @@ from .safepwm import SafePWM
 __all__ = ["Victor"]
 
 class Victor(SafePWM):
-    """VEX Robotics Victor Speed Controller"""
-    def __init__(self, channel):
-        """Constructor.
-
-        :param channel: The PWM channel that the Victor is attached to.
-
+    """
+        VEX Robotics Victor 888 Speed Controller
+        
+        The Vex Robotics Victor 884 Speed Controller can also be used with this
+        class but may need to be calibrated per the Victor 884 user manual.
+        
         .. note ::
 
             The Victor uses the following bounds for PWM values.  These
@@ -36,6 +36,14 @@ class Victor(SafePWM):
             - 1.507ms = center of the deadband range (off)
             - 1.49ms = the "low end" of the deadband range
             - 1.026ms = full "reverse"
+        
+        .. not_implemented: initVictor
+    """
+    
+    def __init__(self, channel):
+        """Constructor.
+
+        :param channel: The PWM channel that the Victor is attached to.
         """
         super().__init__(channel)
         self.setBounds(2.027, 1.525, 1.507, 1.49, 1.026)

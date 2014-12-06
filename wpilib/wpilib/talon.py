@@ -13,7 +13,11 @@ from .safepwm import SafePWM
 __all__ = ["Talon"]
 
 class Talon(SafePWM):
-    """CTRE Talon Speed Controller"""
+    """
+        Cross the Road Electronics (CTRE) Talon and Talon SR Speed Controller
+        
+        .. not_implemented: initTalon
+    """
 
     def __init__(self, channel):
         """Constructor.
