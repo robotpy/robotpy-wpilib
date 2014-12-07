@@ -59,7 +59,21 @@ class Controller:
         
         try:
             logger.info("Connecting to gazebo...")
-            self.manager = yield from pygazebo.connect(address=(self._host, self._port))
+            
+            retries = 5
+            
+            while True:
+                try:
+                    self.manager = yield from pygazebo.connect(address=(self._host, self._port))
+                except ConnectionRefusedError:
+                    if retries == 0:
+                        raise
+                    
+                    logger.info("Error connecting to %s:%s, trying again (%s retries left)...", self._host, self._port, retries)
+                    retries -= 1    
+                    yield from asyncio.sleep(1)
+                else:
+                    break
             
         except Exception as e:
             self.start_event.set_exception(e)
