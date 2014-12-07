@@ -3,7 +3,7 @@ from ..controller import Controller
 from ..msgs.float64_pb2 import Float64
 
 import logging
-logger = logging.getLogger('gazebo.pwm')
+logger = logging.getLogger('gazebo.aio')
 
 class SimAnalogInput:
 
@@ -13,7 +13,7 @@ class SimAnalogInput:
                                    'gazebo.msgs.Float64',
                                    self.on_message)
         
-        logger.info("Registered analog input device on channel %s" % channel)
+        logger.info("Registered analog input device on channel %s", channel)
 
     def on_message(self, msg):
         value = Float64.FromString(msg).data
