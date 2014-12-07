@@ -10,8 +10,9 @@ import warnings
 
 import hal
 
-from .timer import Timer
 from .livewindowsendable import LiveWindowSendable
+from ._impl.timertask import TimerTask
+
 
 __all__ = ["PIDController"]
 
@@ -37,11 +38,6 @@ class PIDController(LiveWindowSendable):
     def AbsoluteTolerance_onTarget(self, value):
         with self.mutex:
             return abs(self.getError()) < value
-
-    def task(self):
-        while not self.freed:
-            self.calculate()
-            Timer.delay(self.period)
 
     def __init__(self, Kp, Ki, Kd, source, output, period=None, Kf=0.0):
         """Allocate a PID object with the given constants for P, I, D, and F
@@ -92,15 +88,11 @@ class PIDController(LiveWindowSendable):
         self.setpoint = 0.0
         self.error = 0.0
         self.result = 0.0
-        self.freed = False
 
         self.mutex = threading.RLock()
 
-        self.thread = threading.Thread(
-                target=self.task,
-                name="PIDTask%d" % PIDController.instances)
-        self.thread.daemon = True
-        self.thread.start()
+        self.pid_task = TimerTask('PIDTask%d' % PIDController.instances, self.period, self.calculate)
+        self.pid_task.start()
 
         PIDController.instances += 1
         hal.HALReport(hal.HALUsageReporting.kResourceType_PIDController,
@@ -110,7 +102,7 @@ class PIDController(LiveWindowSendable):
         """Free the PID object"""
         # TODO: is this useful in Python?  Should make TableListener weakref.
         with self.mutex:
-            self.freed = True
+            self.pid_task.cancel()
             self.pidInput = None
             self.pidOutput = None
 
