@@ -9,6 +9,7 @@ __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
            "_HALJoystickAxes", "HALJoystickAxes",
            "_HALJoystickPOVs", "HALJoystickPOVs",
            "_HALJoystickButtons", "HALJoystickButtons",
+           "_HALJoystickDescriptor", "HALJoystickDescriptor",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
            "Counter", "Encoder", "Interrupt", "Notifier",
            "_SolenoidPort", "SolenoidPort"]
@@ -66,14 +67,14 @@ class HALJoystickButtons:
         self.count = count
 _HALJoystickButtons = HALJoystickButtons
 
-class HALJoystickDescriptors:
+class HALJoystickDescriptor:
     def __init__(self, d={}):
         self.isXbox = d.get('isXbox', False)
         self.type = d.get('type', 0)
         self.name = d.get('name', '')
         self.axisCount = d.get("axisCount", 0)
         self.buttonCount = d.get("buttonCount", 0)
-_HALJoystickDescriptors = HALJoystickDescriptors
+_HALJoystickDescriptor = HALJoystickDescriptor
 
 #############################################################################
 # Analog

@@ -6,6 +6,7 @@ __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
            "_HALJoystickAxes", "HALJoystickAxes",
            "_HALJoystickPOVs", "HALJoystickPOVs",
            "_HALJoystickButtons", "HALJoystickButtons",
+           "_HALJoystickDescriptor", "HALJoystickDescriptor",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
            "Counter", "Encoder", "Interrupt", "Notifier",
            "_SolenoidPort", "SolenoidPort"]

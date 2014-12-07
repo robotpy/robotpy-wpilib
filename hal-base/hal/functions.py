@@ -99,9 +99,9 @@ def HALGetJoystickButtons(joystickNum):
     _HALGetJoystickButtons(joystickNum, buttons)
     return buttons
 
-_HALGetJoystickDescriptor = _RETFUNC("HALGetJoystickDescriptor", C.c_int, ("joystickNum", C.c_uint8), ("HALJoystickDescriptor", HALJoystickDescriptor))
+_HALGetJoystickDescriptor = _RETFUNC("HALGetJoystickDescriptor", C.c_int, ("joystickNum", C.c_uint8), ("descriptor", HALJoystickDescriptor))
 def HALGetJoystickDescriptor(joystickNum):
-    descriptor = HALJoystickDescriptor()
+    descriptor = _HALJoystickDescriptor()
     _HALGetJoystickDescriptor(joystickNum, descriptor)
     return descriptor
 
