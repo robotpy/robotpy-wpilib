@@ -13,11 +13,10 @@ def test_compare_file_specs(wpilib):
     path = join(path, 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj')
     assert exists(path), "WPILIB_JAVA_DIR does not point to wpilibj root dir"
 
+    from spec_scanners import java_scanner
 
-    import java_scanner
+    output = java_scanner.compare_folders(wpilib, [path])
 
-    output, errorCount = java_scanner.compare_folders(wpilib, [path])
-
-    for item in output:
-        if not item["matches"] and not item["ignored"]:
+    for item in output["children"]:
+        if item["errors"] > 0:
             assert False, "Error: item {} doesn't match java spec, and is not ignored.".format(item["name"])
