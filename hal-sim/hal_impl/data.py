@@ -197,7 +197,7 @@ def reset_hal_data(hooks):
                 
         'dio': [NotifyDict({
             'initialized': False,
-            'value': 0,
+            'value': False,
             'pulse_length': None,
             'is_input': False
             

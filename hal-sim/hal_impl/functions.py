@@ -703,11 +703,11 @@ def freeDIO(digital_port, status):
 
 def setDIO(digital_port, value, status):
     status.value = 0
-    hal_data['dio'][digital_port.pin]['value'] = 1 if value else 0
+    hal_data['dio'][digital_port.pin]['value'] = True if value else False
 
 def getDIO(digital_port, status):
     status.value = 0
-    return hal_data['dio'][digital_port.pin]['value']
+    return 1 if hal_data['dio'][digital_port.pin]['value'] else 0
 
 def getDIODirection(digital_port, status):
     status.value = 0
