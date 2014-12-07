@@ -235,6 +235,14 @@ def HALGetJoystickButtons(joystickNum, buttons):
     buttons.buttons = sum(int(v) << i for i, v in enumerate(b[1:]))
     buttons.count = len(b)-1
 
+def HALGetJoystickDescriptor(joystickNum, descriptor):
+    stick = hal_data["joysticks"][joystickNum]
+    descriptor.isXbox = stick["isXbox"]
+    descriptor.type = stick["type"]
+    descriptor.name = stick["name"]
+    descriptor.axisCount = stick["axisCount"]
+    descriptor.buttonCount = stick["buttonCount"]
+
 def HALSetJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
     hal_data['joysticks'][joystickNum]["leftRumble"] = leftRumble
     hal_data['joysticks'][joystickNum]["rightRumble"] = rightRumble

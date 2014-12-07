@@ -6,6 +6,7 @@ __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
            "_HALJoystickAxes", "HALJoystickAxes",
            "_HALJoystickPOVs", "HALJoystickPOVs",
            "_HALJoystickButtons", "HALJoystickButtons",
+           "_HALJoystickDescriptor", "HALJoystickDescriptor",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
            "Counter", "Encoder", "Interrupt", "Notifier",
            "_SolenoidPort", "SolenoidPort"]
@@ -62,6 +63,16 @@ class _HALJoystickButtons(C.Structure):
     _fields_ = [("buttons", C.c_uint32),
                 ("count", C.c_uint8)]
 HALJoystickButtons = C.POINTER(_HALJoystickButtons)
+
+class _HALJoystickDescriptor(C.Structure):
+    _fields_ = [("isXbox", C.c_uint8),
+                ("type", C.c_uint8),
+                ("name", C.c_char * 256),
+                ("axisCount", C.c_uint8),
+                ("axisTypes", C.c_uint8),
+                ("buttonCount", C.c_uint8),
+                ("povCount", C.c_uint8)]
+HALJoystickDescriptor = C.POINTER(_HALJoystickDescriptor)
 
 #############################################################################
 # Analog
