@@ -3,6 +3,7 @@ from .controller import Controller
 
 from .types.driverstation import DriverStationControl
 from .types.analog_input import SimAnalogInput
+from .types.digital_input import SimDigitalInput
 from .types.pwm import SimPWM
 from .types.timer import Timer
 
@@ -68,6 +69,8 @@ class FrcSimMain:
                 d.register('initialized', self._create_cb('analog', i, d, SimAnalogInput))
             
             # Digital
+            for i, d in enumerate(data.hal_data['dio']):
+                d.register('initialized', self._create_cb('analog', i, d, SimDigitalInput))
             
             # Encoders
             
