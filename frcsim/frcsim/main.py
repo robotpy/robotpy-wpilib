@@ -70,7 +70,7 @@ class FrcSimMain:
             
             # Digital
             for i, d in enumerate(data.hal_data['dio']):
-                d.register('initialized', self._create_cb('analog', i, d, SimDigitalInput))
+                d.register('initialized', self._create_cb('dio', i, d, SimDigitalInput))
             
             # Encoders
             
