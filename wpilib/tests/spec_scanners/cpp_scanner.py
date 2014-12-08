@@ -2,8 +2,6 @@ import os
 from os.path import dirname, join
 import sys
 import CppHeaderParser
-import plyj.parser
-import plyj.model as m
 import inspect
 
 green_head = "\033[92m"
@@ -310,7 +308,7 @@ def stringize_class_summary(summary):
 
             #If we can hide the subclasses, just print out a summary. Otherwise extend output with subclass_buffer.
             if subclasses_match:
-                output.append({"text": "All sub-classes are either correct or ignored, hiding {} sub-classes".format(len(subclasses)), "color": "green"})
+                output.append({"text": "All sub-classes are either correct or ignored, hiding {} sub-classes".format(len(summary["subclasses"])), "color": "green"})
             else:
                 output.extend(subclass_buffer)
     return output
