@@ -130,7 +130,7 @@ class Controller:
             except Exception as e:
                 fut.set_exception(e)
         
-        self.loop.call_soon_threadsafe(lambda: self.loop.create_task(_advertise()))
+        self.loop.call_soon_threadsafe(lambda: asyncio.async(_advertise()))
         
         # this blocks        
         publisher = fut.result()
