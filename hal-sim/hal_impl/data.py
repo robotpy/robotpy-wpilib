@@ -33,40 +33,14 @@ class NotifyDict(dict):
         super().__init__(*args, **kwargs)
         self.cbs = {}
         
-    '''
-        register a function to be called when an item is set 
-        with in this dictionary. We raise a key error if the 
-        key passed is not a key that the dictionary contains.
-
-        parameters:
-            k      -     key to be registered for call back. The key must be a
-                         valid key with in the dictionary
-            cb     -     function to be called if k is set. This function needs 
-                         to take at least 2 parameters
-            notify -     Calls the function cb after registering k
-            
-    '''
     def register(self, k, cb, notify=False):
         if k not in self:
-            raise KeyError("Cannot register for non-existent key '%s'" % k)
-        
-        #if this is the first key being added to cbs, override __setitem__ 
-        #this keeps us from calling __override_setitem__ when we don't need to
-        if is_empty(cbs):
-            self.__setitem__ = self.__override_setitem__
-            
+            raise KeyError("Cannot register for non-existant key '%s'" % k)
         self.cbs.setdefault(k, []).append(cb)
-        
         if notify:
             cb(k, self[k])
-            
-    '''
-        A function that will override __setitem__ once a key is registered to
-        be used to callback to a function. Upon a call to __setitem__ the 
-        notify dict sets the item and then checks if the key has a registered
-        callback. If it does it calls the registed callback function
-    ''' 
-    def __override_setitem__(self, k, v):
+        
+    def __setitem__(self, k, v):
         super().__setitem__(k, v)
         
         # Call the callbacks
@@ -154,11 +128,11 @@ def reset_hal_data(hooks):
 
         # 8 analog channels, each is a dictionary.
 
-        'analog_out': [NotifyDict({
+        'analog_out': [{
             'initialized': False,
             'voltage': 0.0
 
-        }) for _ in range(2)],
+        } for _ in range(2)],
 
         # TODO: make this easier to use
         'analog_in': [NotifyDict({
@@ -187,13 +161,13 @@ def reset_hal_data(hooks):
         }) for _ in range(8)],
 
         # compressor control is here
-        'compressor': [NotifyDict({
+        'compressor': {
             'initialized': False,
             'on': False,
             'closed_loop_enabled': False,
             'pressure_switch': False,
             'current': 0.0
-        })],
+        },
                 
         # digital stuff here
         
@@ -300,4 +274,4 @@ def reset_hal_data(hooks):
             'total_energy': 0
         }
     })
-    
+
