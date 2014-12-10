@@ -47,6 +47,7 @@ from .solenoidbase import *
 from .solenoid import *
 from .spi import *
 from .talon import *
+from .talonsrx import *
 from .timer import *
 from .ultrasonic import *
 from .utility import *
