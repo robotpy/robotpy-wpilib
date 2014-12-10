@@ -293,6 +293,14 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
             # Not all Jaguar firmware reports a hardware version.
             self.hardwareVersion = 0
 
+        # 3330 was the first shipping RDK firmware version for the Jaguar
+        if self.firmwareVersion >= 3330 or self.firmwareVersion < 108:
+            from .driverstation import DriverStation
+            if self.firmwareVersion < 3330:
+                DriverStation.reportError("Jag %d firmware %d is too old (must be at least version 108 of the FIRST approved firmware)" % (self.deviceNumber, self.firmwareVersion), False)
+            else:
+                DriverStation.reportError("Jag %d firmware %d is not FIRST approved (must be at least version 108 of the FIRST approved firmware)" % (self.deviceNumber, self.firmwareVersion), False)
+
     def getDeviceNumber(self):
         """:returns: The CAN ID passed in the constructor
         """
