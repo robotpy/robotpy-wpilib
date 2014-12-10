@@ -107,7 +107,11 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
     exec(fn_body, locals)
 
     # return the created func
-    return locals[name]
+    retfunc = locals[name]
+    
+    # Store function definition data for API validation
+    retfunc.fndata = (restype, params, out)
+    return retfunc
 
 
 def _VAR(name, type, library=_dll):
