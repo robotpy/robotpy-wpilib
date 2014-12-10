@@ -411,7 +411,7 @@ def initializeNotifier(processQueue):
     cb_func = _NotifierProcessQueueFunction(lambda mask, param: processQueue(mask))
 
     # initialize notifier
-    notifier = _attachInterruptHandler(interrupt, cb_func, None)
+    notifier = _attachInterruptHandler(processQueue, cb_func, None)
 
     # keep reference to bounce function
     handlers = _notifierProcessQueueFunctions[notifier] = cb_func
