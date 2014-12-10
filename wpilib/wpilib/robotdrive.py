@@ -628,6 +628,7 @@ class RobotDrive(MotorSafety):
             self.rearLeftMotor.set(0.0)
         if self.rearRightMotor is not None:
             self.rearRightMotor.set(0.0)
+        self.feed()
 
     def getNumMotors(self):
         motors = 0
