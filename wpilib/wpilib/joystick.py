@@ -302,6 +302,10 @@ class Joystick:
         :param type: Which rumble value to set
         :param value: The normalized value (0 to 1) to set the rumble to
         """
+        if value < 0:
+            value = 0
+        elif value > 1:
+            value = 1
         if type == self.RumbleType.kLeftRumble_val:
             self.leftRumble = int(value*65535)
         elif type == self.RumbleType.kRightRumble_val:
