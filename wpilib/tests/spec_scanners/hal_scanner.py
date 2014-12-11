@@ -3,21 +3,23 @@ from os.path import dirname, join
 import sys
 import CppHeaderParser
 import inspect
+import ctypes
 
 green_head = "\033[92m"
 red_head = "\033[91m"
 orange_head = "\033[93m"
 end_head = "\033[0m"
 dash_bar = "-----------------------"
+equals_bar = "======================="
 class_start = dash_bar + "{}" + dash_bar
 class_end = dash_bar + "End Class {}" + dash_bar
 tab = "    "
 arrowtab = "--> "
 
 
-def compare_folders(python_object, header_dirs):
+def compare_header_dirs(python_object, header_dirs):
     """
-    Parses through cpp_dirs and matches c++ header objects to objects in
+    Parses through cpp_dirs and matches c++ header objects to front-end objects in
     python_object and returns a summary of it's findings.
     """
 
@@ -167,12 +169,13 @@ def compare_class(python_object, c_object):
         output["methods"].append(method_output)
     return output
 
+
 def compare_function(python_object, c_object):
     """
     Compares python_object and c_object, and returns a summary of the differences.
     """
 
-    #Put together dictionary of info
+    #Put together dictionary of front output info
     output = {}
     output["name"] = c_object["name"]
     output["present"] = python_object is not None
@@ -183,7 +186,7 @@ def compare_function(python_object, c_object):
     output["ignored"] = False
 
     #Get all parameters
-    output["parameters"] = [p for p in c_object["parameters"]]
+    output["parameters"] = c_object["parameters"][:]
 
     #Check if the corresponding python object has enough arguments to match
     if output["present"]:
@@ -193,8 +196,166 @@ def compare_function(python_object, c_object):
             if len(args) < len(output["parameters"]):
                 output["errors"] += 1
 
+
     return output
 
+
+
+def scan_c_end(python_object, summary):
+    """
+    Scans python_object for c function calls and compares them to the specifications in summary
+    :param python_object: The python object to scan for c function calls
+    :param summary: The output of compare_header_dirs for python_object
+    """
+
+    output = dict()
+    output["errors"] = 0
+    output["ignored_errors"] = 0
+    output["name"] = python_object.__name__
+    output["present"] = summary is not None
+    output["methods"] = list()
+    output["contains_methods"] = False
+    output["classes"] = list()
+
+    if not output["present"]:
+        output["errors"] += 1
+        return output
+
+    #Get the module class
+    for name, obj in inspect.getmembers(python_object):
+        if hasattr(obj, "fndata"):
+
+            #Get fndata
+            name, restype, params, out = obj.fndata
+
+
+            #Find c object
+            c_object = None
+            for m in summary["methods"]:
+                if m["name"] == name:
+                    c_object = m
+                    break
+
+            #Put together dictionary of info
+            method_summary = dict()
+            method_summary["name"] = c_object["name"]
+            method_summary["present"] = c_object is not None
+            method_summary["errors"] = 0
+            method_summary["ignored_errors"] = 0
+            if not method_summary["present"]:
+                method_summary["errors"] += 1
+            method_summary["ignored"] = False
+
+            if method_summary["present"]:
+
+                method_summary["parameters"] = c_object["parameters"]
+
+                if len(params) != len(c_object["parameters"]):
+                    method_summary["errors"] += abs(len(params) - len(c_object["parameters"]))
+
+                for i in range(min(len(params), len(c_object["parameters"]))):
+
+                    c_param = c_object["parameters"][i]
+                    py_param = params[i][1]
+                    c_pointer = False
+                    py_pointer = False
+                    c_type_obj = None
+                    py_type_obj = None
+                    c_type_name = ""
+                    py_type_name = ""
+
+                    #Check for pointers
+                    if c_param["pointer"] != 0:
+                        c_pointer = True
+                    else:
+                        c_pointer = False
+
+                    if "raw_type" in c_param:
+                        c_type_obj = c_param["raw_type"]
+                    else:
+                        c_type_obj = c_param["type"]
+
+                    c_type_name = translate_obj(c_type_obj)
+
+                    #Check for pointers
+                    if c_pointer:
+                        if c_type_name.startswith("::"):
+                            c_type_name = c_type_name[2:]
+
+                    #Check py param pointer
+                    if py_param.__class__.__name__ == "PyCPointerType":
+                        py_pointer = True
+                        py_type_obj = py_param._type_
+                    else:
+                        py_pointer = False
+                        py_type_obj = py_param
+
+                    if hasattr(py_type_obj, "_type_"):
+                        py_type_name = translate_obj(py_type_obj._type_)
+                    else:
+                        py_type_name = type(py_type_obj).__name__
+                        if py_type_name == "type":
+                            py_type_name = py_type_obj.__name__
+
+
+                    #if py_pointer != c_pointer:
+                    #    method_summary["errors"] += 1
+                    #    continue
+
+                    if py_type_name != c_type_name and c_type_name != "void":
+                        method_summary["errors"] += 1
+                        continue
+
+            #Collect errors from the comparison
+            output["errors"] += method_summary["errors"]
+
+            output["methods"].append(method_summary)
+
+        if inspect.isclass(obj):
+            #Find c object
+            c_object = None
+            for m in summary["classes"]:
+                if m["name"] == name:
+                    c_object = m
+                    break
+
+            class_summary = scan_c_end(obj, c_object)
+
+            if not class_summary["contains_methods"]:
+                continue
+
+            output["containes_methods"] = True
+
+            #Collect errors from the comparison
+            output["ignored_errors"] += class_summary["ignored_errors"]
+            if class_summary["present"]:
+                output["ignored_errors"] += class_summary["errors"]
+                class_summary["ignored"] = True
+            else:
+                output["errors"] += class_summary["errors"]
+
+            output["classes"].append(class_summary)
+
+    return output
+
+def translate_obj(obj):
+    """
+    Find the standard term for obj
+    :param obj: A string name of a c type
+    :returns The standard term for obj
+    """
+    aliases = [["int32", "int", "i", "int32_t", "c_int"],
+               ["double", "d", "c_double"],
+               ["float", "f", "c_float"],
+               ["uint8", "uint8_t", "c_uint8", "B"],
+               ["uint16", "uint16_t", "c_uint16", "H", "h", "c_ushort", "c_ushort_t", "short", "unsigned short"],
+               ["uint32", "uint", "u", "c_uint", "I", "uint32_t"],
+               ["uint64", "uint64_t", "c_uint64", "int64", "int64_t", "c_int64", "long", "l", "longlong", "c_long", "long_t"],
+               ["bool", "?"]]
+    for alias in aliases:
+        if obj in alias:
+            return alias[0]
+    return obj
 
 def parse_docstring(docstring):
     '''
@@ -308,7 +469,7 @@ def stringize_class_summary(summary):
 
             #If we can hide the subclasses, just print out a summary. Otherwise extend output with subclass_buffer.
             if subclasses_match:
-                output.append({"text": "All sub-classes are either correct or ignored, hiding {} sub-classes".format(len(summary["subclasses"])), "color": "green"})
+                output.append({"text": "All sub-classes are either correct or ignored, hiding {} sub-classes".format(len(summary["classes"])), "color": "green"})
             else:
                 output.extend(subclass_buffer)
     return output
@@ -342,21 +503,44 @@ def print_list(inp):
 if __name__ == "__main__":
 
     # Guarantee that this is being ran on the current source tree
-    sys.path.insert(0, join(dirname(__file__), '..'))
+    sys.path.insert(0, join(dirname(__file__), '..', '..', '..', 'hal-base'))
     import hal
 
     if len(sys.argv) == 1:
-        print("Usage: python cpp_scanner.py hal_path")
+        print("Usage: python hal_scanner.py hal_path")
         exit(1)
 
     HAL_path = join(sys.argv[1], 'include', 'HAL')
 
-    output = compare_folders(hal, [HAL_path])
+    print("\n\n\n")
+    print(equals_bar + "=============" + equals_bar)
+    print(equals_bar + "Py-End CHECKS" + equals_bar)
+    print(equals_bar + "=============" + equals_bar)
+
+    py_end_output = compare_header_dirs(hal, [HAL_path])
+
+    print("\n{} Errors, {} Ignored errors \n\n".format(py_end_output["errors"], py_end_output["ignored_errors"]))
+
     text_list = list()
-    for method in output["methods"]:
+    for method in py_end_output["methods"]:
         text_list.extend(stringize_method_summary(method))
-    for cls in output["classes"]:
+    for cls in py_end_output["classes"]:
         text_list.extend(stringize_class_summary(cls))
     print_list(text_list)
 
-    print("\n{} Errors, {} Ignored errors ".format(output["errors"], output["ignored_errors"]))
+    print("\n\n\n")
+    print(equals_bar + "============" + equals_bar)
+    print(equals_bar + "C-End CHECKS" + equals_bar)
+    print(equals_bar + "============" + equals_bar)
+
+    c_end_output = scan_c_end(hal, py_end_output)
+
+    print("\n{} Errors, {} Ignored errors \n\n".format(c_end_output["errors"], c_end_output["ignored_errors"]))
+
+
+    text_list = list()
+    for method in c_end_output["methods"]:
+        text_list.extend(stringize_method_summary(method))
+    for cls in c_end_output["classes"]:
+        text_list.extend(stringize_class_summary(cls))
+    print_list(text_list)

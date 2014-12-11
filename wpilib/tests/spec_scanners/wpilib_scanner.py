@@ -300,11 +300,11 @@ def print_list(inp):
 if __name__ == "__main__":
 
     # Guarantee that this is being ran on the current source tree
-    sys.path.insert(0, join(dirname(__file__), '..'))
+    sys.path.insert(0, join(dirname(__file__), '..', ".."))
     import wpilib
 
     if len(sys.argv) == 1:
-        print("Usage: python java_scanner.py wpilibj_path")
+        print("Usage: python wpilib_scanner.py wpilibj_path")
         exit(1)
 
     wpilibj_path = join(sys.argv[1], 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj')
