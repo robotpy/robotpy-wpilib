@@ -19,6 +19,8 @@ CTR_RxTimeout = 1
 CTR_TxTimeout = 2
 CTR_InvalidParamValue = 3
 CTR_UnexpectedArbId = 4
+CTR_TxFailed = 5
+CTR_SigNotUpdated = 6
 
 NiFpga_Status_FifoTimeout = -50400
 NiFpga_Status_TransferAborted = -50405
@@ -137,6 +139,10 @@ def getHALErrorMessage(code):
         return "CTRE CAN Invalid Parameter"
     elif code == CTR_UnexpectedArbId:
         return "CTRE Unexpected Arbitration ID (CAN Node ID)"
+    elif code == CTR_TxFailed:
+        return "CTRE CAN Transmit Error"
+    elif code == CTR_SigNotUpdated:
+        return "CTRE CAN Signal Not Updated"
     elif code == NiFpga_Status_FifoTimeout:
         return "NIFPGA: FIFO timeout error"
     elif code == NiFpga_Status_TransferAborted:
@@ -1161,6 +1167,209 @@ def setSolenoid(solenoid_port, value, status):
     status.value = 0
     hal_data['solenoid'][solenoid_port.pin] = value
 
+#############################################################################
+# TalonSRX
+#############################################################################
+def c_TalonSRX_Create(deviceNumber, controlPeriodMs):
+    assert False # TODO
+
+def c_TalonSRX_Destroy(handle):
+    assert False # TODO
+
+def c_TalonSRX_SetParam(handle, paramEnum, value):
+    assert False # TODO
+
+def c_TalonSRX_RequestParam(handle, paramEnum):
+    assert False # TODO
+
+def c_TalonSRX_GetParamResponse(handle, paramEnum):
+    assert False # TODO
+    return value
+
+def c_TalonSRX_GetParamResponseInt32(handle, paramEnum):
+    assert False # TODO
+    return value
+
+def c_TalonSRX_SetStatusFrameRate(handle, frameEnum, periodMs):
+    assert False # TODO
+
+def c_TalonSRX_ClearStickyFaults(handle):
+    assert False # TODO
+
+def c_TalonSRX_GetFault_OverTemp(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetFault_UnderVoltage(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetFault_ForLim(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetFault_RevLim(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetFault_HardwareFailure(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetFault_ForSoftLim(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetFault_RevSoftLim(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetStckyFault_OverTemp(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetStckyFault_UnderVoltage(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetStckyFault_ForLim(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetStckyFault_RevLim(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetStckyFault_ForSoftLim(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetStckyFault_RevSoftLim(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetAppliedThrottle(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetCloseLoopErr(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetFeedbackDeviceSelect(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetModeSelect(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetLimitSwitchEn(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetLimitSwitchClosedFor(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetLimitSwitchClosedRev(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetSensorPosition(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetSensorVelocity(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetCurrent(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetBrakeIsEnabled(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetEncPosition(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetEncVel(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetEncIndexRiseEvents(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetQuadApin(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetQuadBpin(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetQuadIdxpin(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetAnalogInWithOv(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetAnalogInVel(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetTemp(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetBatteryV(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetResetCount(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetResetFlags(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_GetFirmVers(handle):
+    assert False # TODO
+    return param
+
+def c_TalonSRX_SetDemand(handle, param):
+    assert False # TODO
+
+def c_TalonSRX_SetOverrideLimitSwitchEn(handle, param):
+    assert False # TODO
+
+def c_TalonSRX_SetFeedbackDeviceSelect(handle, param):
+    assert False # TODO
+
+def c_TalonSRX_SetRevMotDuringCloseLoopEn(handle, param):
+    assert False # TODO
+
+def c_TalonSRX_SetOverrideBrakeType(handle, param):
+    assert False # TODO
+
+def c_TalonSRX_SetModeSelect(handle, param):
+    assert False # TODO
+
+def c_TalonSRX_SetProfileSlotSelect(handle, param):
+    assert False # TODO
+
+def c_TalonSRX_SetRampThrottle(handle, param):
+    assert False # TODO
+
+def c_TalonSRX_SetRevFeedbackSensor(handle, param):
+    assert False # TODO
 
 #############################################################################
 # Utilities

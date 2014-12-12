@@ -22,6 +22,15 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
         return rv
     return outer
 
+def _CTRFUNC_errcheck(result, func, args):
+    if result.value != 0:
+        raise HALError(getHALErrorMessage(result.value))
+    return args
+
+def _CTRFUNC(name, *params, out=None, library=_dll, handle_missing=False):
+    return _RETFUNC(name, C.c_int, *params, out=out, library=library,
+                    handle_missing=handle_missing, errcheck=_CTRFUNC_errcheck)
+
 #############################################################################
 # Semaphore
 #############################################################################
@@ -464,6 +473,64 @@ checkSolenoidModule = _RETFUNC("checkSolenoidModule", C.c_bool, ("module", C.c_u
 
 getSolenoid = _STATUSFUNC("getSolenoid", C.c_bool, ("solenoid_port", SolenoidPort))
 setSolenoid = _STATUSFUNC("setSolenoid", None, ("solenoid_port", SolenoidPort), ("value", C.c_bool))
+
+#############################################################################
+# TalonSRX
+#############################################################################
+TalonSRX_Create = _RETFUNC("c_TalonSRX_Create", TalonSRX, ("deviceNumber", C.c_int), ("controlPeriodMs", C.c_int))
+TalonSRX_Destroy = _RETFUNC("c_TalonSRX_Destroy", None, ("handle", TalonSRX))
+TalonSRX_SetParam = _CTRFUNC("c_TalonSRX_SetParam", ("handle", TalonSRX), ("paramEnum", C.c_int), ("value", C.c_double))
+TalonSRX_RequestParam = _CTRFUNC("c_TalonSRX_RequestParam", ("handle", TalonSRX), ("paramEnum", C.c_int))
+TalonSRX_GetParamResponse = _CTRFUNC("c_TalonSRX_GetParamResponse", ("handle", TalonSRX), ("paramEnum", C.c_int), ("value", C.POINTER(C.c_double)), out=["value"])
+TalonSRX_GetParamResponseInt32 = _CTRFUNC("c_TalonSRX_GetParamResponseInt32", ("handle", TalonSRX), ("paramEnum", C.c_int), ("value", C.POINTER(C.c_int)), out=["value"])
+TalonSRX_SetStatusFrameRate = _CTRFUNC("c_TalonSRX_SetStatusFrameRate", ("handle", TalonSRX), ("frameEnum", C.c_uint), ("periodMs", C.c_uint))
+TalonSRX_ClearStickyFaults = _CTRFUNC("c_TalonSRX_ClearStickyFaults", ("handle", TalonSRX))
+TalonSRX_GetFault_OverTemp = _CTRFUNC("c_TalonSRX_GetFault_OverTemp", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetFault_UnderVoltage = _CTRFUNC("c_TalonSRX_GetFault_UnderVoltage", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetFault_ForLim = _CTRFUNC("c_TalonSRX_GetFault_ForLim", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetFault_RevLim = _CTRFUNC("c_TalonSRX_GetFault_RevLim", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetFault_HardwareFailure = _CTRFUNC("c_TalonSRX_GetFault_HardwareFailure", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetFault_ForSoftLim = _CTRFUNC("c_TalonSRX_GetFault_ForSoftLim", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetFault_RevSoftLim = _CTRFUNC("c_TalonSRX_GetFault_RevSoftLim", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetStckyFault_OverTemp = _CTRFUNC("c_TalonSRX_GetStckyFault_OverTemp", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetStckyFault_UnderVoltage = _CTRFUNC("c_TalonSRX_GetStckyFault_UnderVoltage", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetStckyFault_ForLim = _CTRFUNC("c_TalonSRX_GetStckyFault_ForLim", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetStckyFault_RevLim = _CTRFUNC("c_TalonSRX_GetStckyFault_RevLim", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetStckyFault_ForSoftLim = _CTRFUNC("c_TalonSRX_GetStckyFault_ForSoftLim", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetStckyFault_RevSoftLim = _CTRFUNC("c_TalonSRX_GetStckyFault_RevSoftLim", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetAppliedThrottle = _CTRFUNC("c_TalonSRX_GetAppliedThrottle", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetCloseLoopErr = _CTRFUNC("c_TalonSRX_GetCloseLoopErr", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetFeedbackDeviceSelect = _CTRFUNC("c_TalonSRX_GetFeedbackDeviceSelect", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetModeSelect = _CTRFUNC("c_TalonSRX_GetModeSelect", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetLimitSwitchEn = _CTRFUNC("c_TalonSRX_GetLimitSwitchEn", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetLimitSwitchClosedFor = _CTRFUNC("c_TalonSRX_GetLimitSwitchClosedFor", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetLimitSwitchClosedRev = _CTRFUNC("c_TalonSRX_GetLimitSwitchClosedRev", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetSensorPosition = _CTRFUNC("c_TalonSRX_GetSensorPosition", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetSensorVelocity = _CTRFUNC("c_TalonSRX_GetSensorVelocity", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetCurrent = _CTRFUNC("c_TalonSRX_GetCurrent", ("handle", TalonSRX), ("param", C.POINTER(C.c_double)), out=["param"])
+TalonSRX_GetBrakeIsEnabled = _CTRFUNC("c_TalonSRX_GetBrakeIsEnabled", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetEncPosition = _CTRFUNC("c_TalonSRX_GetEncPosition", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetEncVel = _CTRFUNC("c_TalonSRX_GetEncVel", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetEncIndexRiseEvents = _CTRFUNC("c_TalonSRX_GetEncIndexRiseEvents", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetQuadApin = _CTRFUNC("c_TalonSRX_GetQuadApin", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetQuadBpin = _CTRFUNC("c_TalonSRX_GetQuadBpin", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetQuadIdxpin = _CTRFUNC("c_TalonSRX_GetQuadIdxpin", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetAnalogInWithOv = _CTRFUNC("c_TalonSRX_GetAnalogInWithOv", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetAnalogInVel = _CTRFUNC("c_TalonSRX_GetAnalogInVel", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetTemp = _CTRFUNC("c_TalonSRX_GetTemp", ("handle", TalonSRX), ("param", C.POINTER(C.c_double)), out=["param"])
+TalonSRX_GetBatteryV = _CTRFUNC("c_TalonSRX_GetBatteryV", ("handle", TalonSRX), ("param", C.POINTER(C.c_double)), out=["param"])
+TalonSRX_GetResetCount = _CTRFUNC("c_TalonSRX_GetResetCount", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetResetFlags = _CTRFUNC("c_TalonSRX_GetResetFlags", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_GetFirmVers = _CTRFUNC("c_TalonSRX_GetFirmVers", ("handle", TalonSRX), ("param", C.POINTER(C.c_int)), out=["param"])
+TalonSRX_SetDemand = _CTRFUNC("c_TalonSRX_SetDemand", ("handle", TalonSRX), ("param", C.c_int))
+TalonSRX_SetOverrideLimitSwitchEn = _CTRFUNC("c_TalonSRX_SetOverrideLimitSwitchEn", ("handle", TalonSRX), ("param", C.c_int))
+TalonSRX_SetFeedbackDeviceSelect = _CTRFUNC("c_TalonSRX_SetFeedbackDeviceSelect", ("handle", TalonSRX), ("param", C.c_int))
+TalonSRX_SetRevMotDuringCloseLoopEn = _CTRFUNC("c_TalonSRX_SetRevMotDuringCloseLoopEn", ("handle", TalonSRX), ("param", C.c_int))
+TalonSRX_SetOverrideBrakeType = _CTRFUNC("c_TalonSRX_SetOverrideBrakeType", ("handle", TalonSRX), ("param", C.c_int))
+TalonSRX_SetModeSelect = _CTRFUNC("c_TalonSRX_SetModeSelect", ("handle", TalonSRX), ("param", C.c_int))
+TalonSRX_SetProfileSlotSelect = _CTRFUNC("c_TalonSRX_SetProfileSlotSelect", ("handle", TalonSRX), ("param", C.c_int))
+TalonSRX_SetRampThrottle = _CTRFUNC("c_TalonSRX_SetRampThrottle", ("handle", TalonSRX), ("param", C.c_int))
+TalonSRX_SetRevFeedbackSensor = _CTRFUNC("c_TalonSRX_SetRevFeedbackSensor", ("handle", TalonSRX), ("param", C.c_int))
 
 #############################################################################
 # Utilities

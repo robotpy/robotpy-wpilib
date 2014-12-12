@@ -12,7 +12,7 @@ __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
            "_HALJoystickDescriptor", "HALJoystickDescriptor",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
            "Counter", "Encoder", "Interrupt", "Notifier",
-           "_SolenoidPort", "SolenoidPort"]
+           "_SolenoidPort", "SolenoidPort", "TalonSRX"]
 
 #############################################################################
 # Semaphore
@@ -150,3 +150,10 @@ class SolenoidPort:
         self.pin = port.pin
 _SolenoidPort = SolenoidPort
 
+#############################################################################
+# TalonSRX
+#############################################################################
+
+# opaque TalonSRX
+class TalonSRX:
+    pass

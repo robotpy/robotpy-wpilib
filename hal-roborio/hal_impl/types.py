@@ -9,7 +9,7 @@ __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
            "_HALJoystickDescriptor", "HALJoystickDescriptor",
            "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
            "Counter", "Encoder", "Interrupt", "Notifier",
-           "_SolenoidPort", "SolenoidPort"]
+           "_SolenoidPort", "SolenoidPort", "TalonSRX"]
 
 #############################################################################
 # Semaphore
@@ -149,3 +149,12 @@ class _SolenoidPort(C.Structure):
     _fields_ = [('pin', C.c_uint8),
                 ('module', C.c_uint8)]
 SolenoidPort = C.POINTER(_SolenoidPort)
+
+#############################################################################
+# TalonSRX
+#############################################################################
+
+# opaque TalonSRX
+class _TalonSRX(C.Structure):
+    pass
+TalonSRX = C.POINTER(_TalonSRX)
