@@ -513,9 +513,13 @@ if __name__ == "__main__":
     HAL_path = join(sys.argv[1], 'include', 'HAL')
 
     print("\n\n\n")
-    print(equals_bar + "=============" + equals_bar)
-    print(equals_bar + "Py-End CHECKS" + equals_bar)
-    print(equals_bar + "=============" + equals_bar)
+    print(equals_bar + "==============" + equals_bar)
+    print(equals_bar + "Python HAL API" + equals_bar)
+    print(equals_bar + "==============" + equals_bar)
+    print()
+    print("This compares the HAL API, what is directly used by the python wpilib,\n"
+          "to the c++ API and reports errors for inconsistencies. These differences \n"
+          "are often intentional, and errors shown here usually won't cause issues.")
 
     py_end_output = compare_header_dirs(hal, [HAL_path])
 
@@ -529,9 +533,13 @@ if __name__ == "__main__":
     print_list(text_list)
 
     print("\n\n\n")
-    print(equals_bar + "============" + equals_bar)
-    print(equals_bar + "C-End CHECKS" + equals_bar)
-    print(equals_bar + "============" + equals_bar)
+    print(equals_bar + "=============" + equals_bar)
+    print(equals_bar + "C++ HAL Usage" + equals_bar)
+    print(equals_bar + "=============" + equals_bar)
+    print()
+    print("This checks the Python HAL's Usage of the C++ API, and reports errors for\n"
+          "incorrect C++ API Calls, which would cause segmentation faults. This should\n"
+          "be 100% correct, without errors.")
 
     c_end_output = scan_c_end(hal, py_end_output)
 
