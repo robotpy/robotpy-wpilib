@@ -51,8 +51,16 @@ class DriverStation:
         self.packetDataAvailableMutex = hal.initializeMutexNormal()
         self.packetDataAvailableSem = hal.initializeMultiWait()
         hal.HALSetNewDataSem(self.packetDataAvailableSem)
-        
+
         self.nextMessageTime = 0.0
+
+        self.joystickAxes = []
+        self.joystickPOVs = []
+        self.joystickButtons = []
+        for i in range(self.kJoystickPorts):
+            self.joystickAxes.append([0]*hal.kMaxJoystickAxes)
+            self.joystickPOVs.append([0]*hal.kMaxJoystickPOVs)
+            self.joystickButtons.append(hal._HALJoystickButtons())
 
         self.userInDisabled = False
         self.userInAutonomous = False
@@ -80,14 +88,11 @@ class DriverStation:
         while self.thread_keepalive:
             hal.takeMultiWait(self.packetDataAvailableSem,
                               self.packetDataAvailableMutex, 0)
+            self.getData()
             with self.dataSem:
                 self.dataSem.notify_all()
-            # need to get the control word to keep the motors enabled
-            hal.HALGetControlWord()
-            with self.mutex:
-                self.newControlData = True
             safetyCounter += 1
-            if safetyCounter >= 5:
+            if safetyCounter >= 4:
                 MotorSafety.checkMotors()
                 safetyCounter = 0
             if self.userInDisabled:
@@ -108,12 +113,25 @@ class DriverStation:
         with self.dataSem:
             self.dataSem.wait(timeout)
 
+    def getData(self):
+        """Copy data from the DS task for the user.
+        If no new data exists, it will just be returned, otherwise
+        the data will be copied from the DS polling loop.
+        """
+        with self.mutex:
+            # Get the status of all of the joysticks
+            for stick in range(self.kJoystickPorts):
+                self.joystickAxes[stick] = hal.HALGetJoystickAxes(stick)
+                self.joystickPOVs[stick] = hal.HALGetJoystickPOVs(stick)
+                self.joystickButtons[stick] = hal.HALGetJoystickButtons(stick)
+            self.newControlData = True
+
     def getBatteryVoltage(self):
         """Read the battery voltage.
 
         :returns: The battery voltage."""
         return hal.getVinVoltage()
-    
+
     def _reportJoystickUnpluggedError(self, message):
         currentTime = Timer.getFPGATimestamp()
         if currentTime > self.nextMessageTime:
@@ -135,25 +153,28 @@ class DriverStation:
         if axis < 0 or axis >= hal.kMaxJoystickAxes:
             raise IndexError("Joystick axis is out of range")
 
-        joystickAxes = hal.HALGetJoystickAxes(stick)
-        if axis >= len(joystickAxes):
-            self._reportJoystickUnpluggedError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick))
-            return 0.0
-        value = joystickAxes[axis]
+        with self.mutex:
+            joystickAxes = self.joystickAxes[stick]
+
+            if axis >= len(joystickAxes):
+                self._reportJoystickUnpluggedError("WARNING: Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick))
+                return 0.0
+            value = joystickAxes[axis]
         if value < 0:
             return value / 128.0
         else:
             return value / 127.0
-        
+
     def getStickAxisCount(self, stick):
         """Returns the number of axis on a given joystick port
-        
+
         :param stick: The joystick port number
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
-        
-        return len(hal.HALGetJoystickAxes(stick))
+
+        with self.mutex:
+            return len(self.joystickAxes[stick])
 
     def getStickPOV(self, stick, pov):
         """Get the state of a POV on the joystick.
@@ -169,22 +190,24 @@ class DriverStation:
         if pov < 0 or pov >= hal.kMaxJoystickPOVs:
             raise IndexError("Joystick POV is out of range")
 
-        joystickPOVs = hal.HALGetJoystickPOVs(stick)
+        with self.mutex:
+            joystickPOVs = self.joystickPOVs[stick]
 
-        if pov >= len(joystickPOVs):
-            self._reportJoystickUnpluggedError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick))
-            return 0.0
-        return joystickPOVs[pov]
-    
+            if pov >= len(joystickPOVs):
+                self._reportJoystickUnpluggedError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick))
+                return 0.0
+            return joystickPOVs[pov]
+
     def getStickPOVCount(self, stick):
         """Returns the number of POVs on a given joystick port
-        
+
         :param stick: The joystick port number
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
-        
-        return len(hal.HALGetJoystickPOVs(stick))
+
+        with self.mutex:
+            return len(self.joystickPOVs[stick])
 
     def getStickButton(self, stick, button):
         """The state of a button on the joystick.
@@ -196,21 +219,23 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        buttons = hal.HALGetJoystickButtons(stick)
-        if button > buttons.count:
-            self._reportJoystickUnpluggedError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick))
-            return False
-        return ((0x1 << (button - 1)) & buttons.buttons) != 0
-    
+        with self.mutex:
+            buttons = self.joystickButtons[stick]
+            if button > buttons.count:
+                self._reportJoystickUnpluggedError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick))
+                return False
+            return ((0x1 << (button - 1)) & buttons.buttons) != 0
+
     def getStickButtonCount(self, stick):
         """Gets the number of buttons on a joystick
-        
+
         :param stick: The joystick port number
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
-        
-        return hal.HALGetJoystickButtons(stick).count
+
+        with self.mutex:
+            return self.joystickButtons[stick].count
 
     def isEnabled(self):
         """Gets a value indicating whether the Driver Station requires the
@@ -334,7 +359,7 @@ class DriverStation:
         The FMS does not currently send the official match time to the robots.
         This returns the time since the enable signal sent from the Driver
         Station.
-        
+
         * At the beginning of autonomous, the time is reset to 0.0 seconds.
         * At the beginning of teleop, the time is reset to +15.0 seconds.
         * If the robot is disabled, this returns 0.0 seconds.
@@ -350,9 +375,9 @@ class DriverStation:
 
     @staticmethod
     def reportError(error, printTrace):
-        """Report error to Driver Station, and also prints error to `sys.stderr`. 
+        """Report error to Driver Station, and also prints error to `sys.stderr`.
         Optionally appends stack trace to error message.
-        
+
         :param printTrace: If True, append stack trace to error string
         """
         errorString = error
