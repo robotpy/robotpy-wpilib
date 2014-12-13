@@ -224,6 +224,9 @@ class DriverStation:
             if button > buttons.count:
                 self._reportJoystickUnpluggedError("WARNING: Joystick Button %d on port %d not available, check if controller is plugged in\n" % (button, stick))
                 return False
+            if button <= 0:
+                self._reportJoystickUnpluggedError("ERROR: Button indexes begin at 1 for WPILib\n")
+                return False
             return ((0x1 << (button - 1)) & buttons.buttons) != 0
 
     def getStickButtonCount(self, stick):
