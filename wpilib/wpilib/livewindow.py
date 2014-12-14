@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 try:
     from networktables import NetworkTable
 except ImportError as e:
-    logger.warning("NetworkTables Import Error: %", e)
+    logger.warning("NetworkTables Import Error: {}".format(str(e)))
 
 from .command import Scheduler
 
