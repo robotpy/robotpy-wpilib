@@ -42,6 +42,7 @@ setup(
     url='https://github.com/robotpy',
     keywords='frc first robotics wpilib',
     packages=[base_package,
+              base_package + '._impl',
               base_package + '.buttons',
               base_package + '.command',
               base_package + '.interfaces'],
