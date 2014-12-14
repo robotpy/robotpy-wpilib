@@ -46,5 +46,5 @@ setup(
               base_package + '.buttons',
               base_package + '.command',
               base_package + '.interfaces'],
-    install_requires=['robotpy-hal-roborio','pynetworktables']
+    install_requires=['pynetworktables']
     )
