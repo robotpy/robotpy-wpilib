@@ -2,7 +2,7 @@ import ctypes as C
 
 __all__ = ["_dll", "_RETFUNC", "_VAR"]
 
-_dll = C.CDLL("./libHALAthena_shared.so", use_errno=True)
+_dll = C.CDLL("/usr/local/frc/lib/libHALAthena_shared.so", use_errno=True)
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
              errcheck=None, handle_missing=False):
