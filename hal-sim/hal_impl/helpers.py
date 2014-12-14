@@ -107,6 +107,18 @@ def reverseTalonPWM(value):
     
     return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
 
+def reverseTalonSRXPWM(value):
+    ''' :returns: value between -1 and 1'''
+    
+    max_pos_pwm = 1503
+    min_pos_pwm = 1000
+    pos_scale = 503
+    max_neg_pwm = 998
+    min_neg_pwm = 496
+    neg_scale = 502
+    
+    return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
+
 def reverseVictorPWM(value):
     ''' :returns: value between -1 and 1'''
     
@@ -119,7 +131,17 @@ def reverseVictorPWM(value):
     
     return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
 
-
+def reverseVictorSPPWM(value):
+    ''' :returns: value between -1 and 1'''
+    
+    max_pos_pwm = 1503
+    min_pos_pwm = 1000
+    pos_scale = 503
+    max_neg_pwm = 998
+    min_neg_pwm = 496
+    neg_scale = 502
+    
+    return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
 
 def rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale):
     # basically the PWM.getSpeed function

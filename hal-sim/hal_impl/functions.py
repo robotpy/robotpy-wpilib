@@ -304,8 +304,12 @@ def HALReport(resource, instanceNumber, context=0, feature=None):
         hal_data['pwm'][instanceNumber]['type'] = 'jaguar'
     elif resource == hur.kResourceType_Talon:
         hal_data['pwm'][instanceNumber]['type'] = 'talon'
+    elif resource == hur.kResourceType_TalonSRX:
+        hal_data['pwm'][instanceNumber]['type'] = 'talonsrx'
     elif resource == hur.kResourceType_Victor:
         hal_data['pwm'][instanceNumber]['type'] = 'victor'
+    elif resource == hur.kResourceType_VictorSP:
+        hal_data['pwm'][instanceNumber]['type'] = 'victorsp'
     
     hal_data['reports'].setdefault(resource, []).append(instanceNumber)
 

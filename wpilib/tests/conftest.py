@@ -20,6 +20,12 @@ def hal(_module_patch):
     return hal
 
 @pytest.fixture(scope="function")
+def hal_impl_helpers(_module_patch):
+    """Simulated hal module"""
+    from hal_impl import helpers
+    return helpers
+
+@pytest.fixture(scope="function")
 def hal_data(_module_patch):
     """Simulation data for HAL"""
     import hal_impl.data
