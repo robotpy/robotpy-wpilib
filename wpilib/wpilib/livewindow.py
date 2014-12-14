@@ -1,9 +1,14 @@
-
-from networktables import NetworkTable
-from .command import Scheduler
-
 import logging
 logger = logging.getLogger(__name__)
+
+try:
+    from networktables import NetworkTable
+except ImportError as e:
+    logger.warning("NetworkTables Import Error: %", e)
+
+from .command import Scheduler
+
+
 
 __all__ = ["LiveWindow"]
 
