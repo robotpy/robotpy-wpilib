@@ -2,6 +2,10 @@ import ctypes as C
 
 __all__ = ["_dll", "_RETFUNC", "_VAR"]
 
+# XXX: load libstdc++.so.6 to work around crash loading libHALAthena.
+# This should really be fixed upstream, but figuring out the root cause
+# of the crash is difficult.
+_cpp_dll = C.CDLL("/lib/libstdc++.so.6", mode=C.RTLD_GLOBAL, use_errno=True)
 _dll = C.CDLL("/usr/local/frc/lib/libHALAthena_shared.so", use_errno=True)
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
