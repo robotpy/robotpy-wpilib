@@ -20,6 +20,10 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
         if status.value != 0:
             raise HALError(getHALErrorMessage(status))
         return rv
+    
+    # Support introspection for API validation
+    if hasattr(_inner, 'fndata'):
+        outer.fndata = _inner.fndata
     return outer
 
 def _CTRFUNC_errcheck(result, func, args):

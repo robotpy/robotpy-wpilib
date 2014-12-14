@@ -25,8 +25,10 @@ def compare_folders(python_object, java_dirs):
     python_object and returns a summary of it's findings.
     """
 
-    output = list()
-    error_count = 0
+    output = dict()
+    output["errors"] = 0
+    output["ignored_errors"] = 0
+    output["children"] = list()
 
     #Get all java files in java_dirs
     java_files = list()
@@ -59,13 +61,21 @@ def compare_folders(python_object, java_dirs):
             if hasattr(python_object, java_child.name):
                 python_child = getattr(python_object, java_child.name)
 
-            child_output, child_errors = compare_object(python_child, java_child, ignore_child)
-            output.append(child_output)
-            error_count += child_errors
-    return output, error_count
+            child_output = compare_object(python_child, java_child)
+
+            #Collect errors
+            output["ignored_errors"] += child_output["ignored_errors"]
+            if ignore_child:
+                output["ignored_errors"] += child_output["errors"]
+                child_output["ignored"] = True
+            else:
+                output["errors"] += child_output["errors"]
+            output["children"].append(child_output)
+
+    return output
 
 
-def compare_object(python_object, java_object, ignored=False):
+def compare_object(python_object, java_object):
     """
     Compares python_object and java_object recursively, and returns a summary of the differences.
     """
@@ -73,11 +83,12 @@ def compare_object(python_object, java_object, ignored=False):
     output = {}
     output["name"] = java_object.name
     output["present"] = python_object is not None
-    output["matches"] = output["present"]
+    output["errors"] = 0
+    output["ignored_errors"] = 0
+    if not output["present"]:
+        output["errors"] += 1
     output["type"] = java_object.__class__.__name__
-    output["ignored"] = ignored
-
-    error_count = 0
+    output["ignored"] = False
 
     #If it is a method, get it's parameters.
     if isinstance(java_object, m.MethodDeclaration) or isinstance(java_object, m.ConstructorDeclaration):
@@ -97,11 +108,10 @@ def compare_object(python_object, java_object, ignored=False):
             if varargs is None and keywords is None:
                 args = [a for a in args if a != "self"]
                 if len(args) < len(output["parameters"]):
-                    output["matches"] = False
-                    error_count += 1
+                    output["errors"] += 1
 
     elif isinstance(java_object, m.ClassDeclaration):
-        #Check for :jscan ignore flags in the docstring
+        #Check for not_implemented flags in the docstring
         children_to_ignore = parse_docstring(python_object.__doc__)
         #Get all children
         output["children"] = list()
@@ -128,12 +138,18 @@ def compare_object(python_object, java_object, ignored=False):
                 python_child = getattr(python_object, python_child_name)
 
             #Compare the child and set our matches variable from it.
-            child_output, child_error_count = compare_object(python_child, java_child, ignore_child)
-            if not child_output["matches"] and not ignore_child:
-                output["matches"] = False
-                error_count += child_error_count
+            child_output = compare_object(python_child, java_child)
+
+            #Collect errors from children
+            output["ignored_errors"] += child_output["ignored_errors"]
+            if ignore_child:
+                output["ignored_errors"] += child_output["errors"]
+                child_output["ignored"] = True
+            else:
+                output["errors"] += child_output["errors"]
+
             output["children"].append(child_output)
-    return output, error_count
+    return output
 
 
 def parse_docstring(docstring):
@@ -163,18 +179,23 @@ def stringize_summary(summary):
     output = list()
 
     #Figure out what the status message and color should be for the
-    if not summary["present"]:
-        status_message = "Not Present"
-        status_color = "red"
-    elif not summary["matches"]:
-        status_message = "Present, but incorrect"
-        status_color = "red"
-    else:
-        status_message = "Present and Correct"
+    status_message = list()
+    if summary["present"]:
+        status_message.append("Present")
         status_color = "green"
+    else:
+        status_message.append("Not Present")
+        status_color = "red"
+
+    if summary["errors"] > 0:
+        status_message.append("{} Error(s)".format(summary["errors"]))
+        status_color = "red"
+
+    if summary["ignored_errors"] > 0:
+        status_message.append("{} Ignored Error(s)".format(summary["ignored_errors"]))
 
     if summary["ignored"]:
-        status_message += " - Ignored"
+        status_message.append("All Errors Ignored")
         if status_color == "red":
             status_color = "orange"
 
@@ -184,7 +205,7 @@ def stringize_summary(summary):
         #Print out title bar and status message
         output.append({"text": "", "color": ""})
         output.append({"text": class_start.format(summary["name"]), "color": ""})
-        output.append({"text": status_message, "color": status_color})
+        output.append({"text": ", ".join(status_message), "color": status_color})
 
         #If the element is present, handle the children
         if summary["present"]:
@@ -253,7 +274,7 @@ def stringize_summary(summary):
     #For methods, just print it out in name(argument, argument, ...) syntax.
     elif summary["type"] == "MethodDeclaration" or summary["type"] == "ConstructorDeclaration":
         arguments = "(" + ", ".join(arg["type"] + " " + arg["name"] for arg in summary["parameters"]) + ")"
-        text = summary["name"] + arguments + " " + status_message
+        text = summary["name"] + arguments + " " + ", ".join(status_message)
         output.append({"text": text, "color": status_color})
 
     return output
@@ -279,19 +300,19 @@ def print_list(inp):
 if __name__ == "__main__":
 
     # Guarantee that this is being ran on the current source tree
-    sys.path.insert(0, join(dirname(__file__), '..'))
+    sys.path.insert(0, join(dirname(__file__), '..', ".."))
     import wpilib
 
     if len(sys.argv) == 1:
-        print("Usage: python java_scanner.py wpilibj_path")
+        print("Usage: python wpilib_scanner.py wpilibj_path")
         exit(1)
 
     wpilibj_path = join(sys.argv[1], 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj')
 
-    output, error_count = compare_folders(wpilib, [wpilibj_path])
+    output = compare_folders(wpilib, [wpilibj_path])
     text_list = list()
-    for item in output:
+    for item in output["children"]:
         text_list.extend(stringize_summary(item))
     print_list(text_list)
 
-    print("\nTotal errors: ", error_count)
+    print("\n{} Errors, {} Ignored errors ".format(output["errors"], output["ignored_errors"]))
