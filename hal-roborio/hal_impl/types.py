@@ -2,14 +2,14 @@ import ctypes as C
 from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
 
 __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
-           "HALControlWord", "HALControlWordPtr", "Port",
-           "_HALJoystickAxes", "HALJoystickAxes",
-           "_HALJoystickPOVs", "HALJoystickPOVs",
-           "_HALJoystickButtons", "HALJoystickButtons",
-           "_HALJoystickDescriptor", "HALJoystickDescriptor",
-           "AnalogPort", "AnalogTrigger", "PCM", "DigitalPort", "PWM",
-           "Counter", "Encoder", "Interrupt", "Notifier",
-           "_SolenoidPort", "SolenoidPort", "TalonSRX"]
+           "HALControlWord", "HALControlWord_ptr", "Port_ptr",
+           "HALJoystickAxes", "HALJoystickAxes_ptr",
+           "HALJoystickPOVs", "HALJoystickPOVs_ptr",
+           "HALJoystickButtons", "HALJoystickButtons_ptr",
+           "HALJoystickDescriptor", "HALJoystickDescriptor_ptr",
+           "AnalogPort_ptr", "AnalogTrigger_ptr", "PCM_ptr", "DigitalPort_ptr", "PWM_ptr",
+           "Counter_ptr", "Encoder_ptr", "Interrupt_ptr", "Notifier_ptr",
+           "SolenoidPort", "SolenoidPort_ptr", "TalonSRX_ptr"]
 
 #############################################################################
 # Semaphore
@@ -42,29 +42,29 @@ class HALControlWord(C.Structure):
                 ("fmsAttached", C.c_uint32, 1),
                 ("dsAttached", C.c_uint32, 1),
                 ("control_reserved", C.c_uint32, 26)]
-HALControlWordPtr = C.POINTER(HALControlWord)
+HALControlWord_ptr = C.POINTER(HALControlWord)
 
 # opaque port structure
-class _Port(C.Structure):
+class Port(C.Structure):
     pass
-Port = C.POINTER(_Port)
+Port_ptr = C.POINTER(Port)
 
-class _HALJoystickAxes(C.Structure):
+class HALJoystickAxes(C.Structure):
     _fields_ = [("count", C.c_uint16),
                 ("axes", C.c_int16 * kMaxJoystickAxes)]
-HALJoystickAxes = C.POINTER(_HALJoystickAxes)
+HALJoystickAxes_ptr = C.POINTER(HALJoystickAxes)
 
-class _HALJoystickPOVs(C.Structure):
+class HALJoystickPOVs(C.Structure):
     _fields_ = [("count", C.c_uint16),
                 ("povs", C.c_int16 * kMaxJoystickPOVs)]
-HALJoystickPOVs = C.POINTER(_HALJoystickPOVs)
+HALJoystickPOVs_ptr = C.POINTER(HALJoystickPOVs)
 
-class _HALJoystickButtons(C.Structure):
+class HALJoystickButtons(C.Structure):
     _fields_ = [("buttons", C.c_uint32),
                 ("count", C.c_uint8)]
-HALJoystickButtons = C.POINTER(_HALJoystickButtons)
+HALJoystickButtons_ptr = C.POINTER(HALJoystickButtons)
 
-class _HALJoystickDescriptor(C.Structure):
+class HALJoystickDescriptor(C.Structure):
     _fields_ = [("isXbox", C.c_uint8),
                 ("type", C.c_uint8),
                 ("name", C.c_char * 256),
@@ -72,30 +72,30 @@ class _HALJoystickDescriptor(C.Structure):
                 ("axisTypes", C.c_uint8),
                 ("buttonCount", C.c_uint8),
                 ("povCount", C.c_uint8)]
-HALJoystickDescriptor = C.POINTER(_HALJoystickDescriptor)
+HALJoystickDescriptor_ptr = C.POINTER(HALJoystickDescriptor)
 
 #############################################################################
 # Analog
 #############################################################################
 
 # opaque analog port
-class _AnalogPort(C.Structure):
+class AnalogPort(C.Structure):
     pass
-AnalogPort = C.POINTER(_AnalogPort)
+AnalogPort_ptr = C.POINTER(AnalogPort)
 
 # opaque analog trigger
-class _AnalogTrigger(C.Structure):
+class AnalogTrigger(C.Structure):
     pass
-AnalogTrigger = C.POINTER(_AnalogTrigger)
+AnalogTrigger_ptr = C.POINTER(AnalogTrigger)
 
 #############################################################################
 # Compressor
 #############################################################################
 
 # opaque pcm
-class _PCM(C.Structure):
+class PCM(C.Structure):
     pass
-PCM = C.POINTER(_PCM)
+PCM_ptr = C.POINTER(PCM)
 
 
 #############################################################################
@@ -103,58 +103,58 @@ PCM = C.POINTER(_PCM)
 #############################################################################
 
 # opaque digital port
-class _DigitalPort(C.Structure):
+class DigitalPort(C.Structure):
     pass
-DigitalPort = C.POINTER(_DigitalPort)
+DigitalPort_ptr = C.POINTER(DigitalPort)
 
 # opaque PWM
-class _PWM(C.Structure):
+class PWM(C.Structure):
     pass
-PWM = C.POINTER(_PWM)
+PWM_ptr = C.POINTER(PWM)
 
 # opaque counter
-class _Counter(C.Structure):
+class Counter(C.Structure):
     pass
-Counter = C.POINTER(_Counter)
+Counter_ptr = C.POINTER(Counter)
 
 # opaque encoder
-class _Encoder(C.Structure):
+class Encoder(C.Structure):
     pass
-Encoder = C.POINTER(_Encoder)
+Encoder_ptr = C.POINTER(Encoder)
 
 #############################################################################
 # Interrupts
 #############################################################################
 
 # opaque interrupt
-class _Interrupt(C.Structure):
+class Interrupt(C.Structure):
     pass
-Interrupt = C.POINTER(_Interrupt)
+Interrupt_ptr = C.POINTER(Interrupt)
 
 #############################################################################
 # Notifier
 #############################################################################
 
 # opaque Notifier
-class _Notifier(C.Structure):
+class Notifier(C.Structure):
     pass
-Notifier = C.POINTER(_Notifier)
+Notifier_ptr = C.POINTER(Notifier)
 
 #############################################################################
 # Solenoid
 #############################################################################
 
 # opaque SolenoidPort
-class _SolenoidPort(C.Structure):
+class SolenoidPort(C.Structure):
     _fields_ = [('pin', C.c_uint8),
                 ('module', C.c_uint8)]
-SolenoidPort = C.POINTER(_SolenoidPort)
+SolenoidPort_ptr = C.POINTER(SolenoidPort)
 
 #############################################################################
 # TalonSRX
 #############################################################################
 
 # opaque TalonSRX
-class _TalonSRX(C.Structure):
+class TalonSRX(C.Structure):
     pass
-TalonSRX = C.POINTER(_TalonSRX)
+TalonSRX_ptr = C.POINTER(TalonSRX)

@@ -238,13 +238,14 @@ def scan_c_end(python_object, summary):
 
             #Put together dictionary of info
             method_summary = dict()
-            method_summary["name"] = c_object["name"]
             method_summary["present"] = c_object is not None
+            method_summary["name"] = name
             method_summary["errors"] = 0
             method_summary["ignored_errors"] = 0
             if not method_summary["present"]:
                 method_summary["errors"] += 1
             method_summary["ignored"] = False
+            method_summary["parameters"] = list()
 
             if method_summary["present"]:
 
@@ -277,6 +278,10 @@ def scan_c_end(python_object, summary):
 
                     c_type_name = translate_obj(c_type_obj)
 
+                    #Workaround for typedefed pointers
+                    if c_type_name in ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID"]:
+                        c_pointer = True
+
                     #Check for pointers
                     if c_pointer:
                         if c_type_name.startswith("::"):
@@ -286,6 +291,9 @@ def scan_c_end(python_object, summary):
                     if py_param.__class__.__name__ == "PyCPointerType":
                         py_pointer = True
                         py_type_obj = py_param._type_
+                    elif hasattr(py_param, "fake_pointer"):
+                        py_pointer = True
+                        py_type_obj = py_param
                     else:
                         py_pointer = False
                         py_type_obj = py_param
@@ -298,9 +306,9 @@ def scan_c_end(python_object, summary):
                             py_type_name = py_type_obj.__name__
 
 
-                    #if py_pointer != c_pointer:
-                    #    method_summary["errors"] += 1
-                    #    continue
+                    if py_pointer != c_pointer:
+                        method_summary["errors"] += 1
+                        continue
 
                     if py_type_name != c_type_name and c_type_name != "void":
                         method_summary["errors"] += 1
