@@ -74,8 +74,8 @@ giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID))
 # HAL
 #############################################################################
 
-getPort = _RETFUNC("getPort", Port, ("pin", C.c_uint8))
-getPortWithModule = _RETFUNC("getPortWithModule", Port, ("module", C.c_uint8), ("pin", C.c_uint8))
+getPort = _RETFUNC("getPort", Port_ptr, ("pin", C.c_uint8))
+getPortWithModule = _RETFUNC("getPortWithModule", Port_ptr, ("module", C.c_uint8), ("pin", C.c_uint8))
 _getHALErrorMessage = _RETFUNC("getHALErrorMessage", C.c_char_p, ("code", C.c_int32))
 def getHALErrorMessage(code):
     return _getHALErrorMessage(code).decode('utf_8')
@@ -377,8 +377,8 @@ i2CClose = _RETFUNC("i2CClose", None, ("port", C.c_uint8))
 _InterruptHandlerFunction = C.CFUNCTYPE(None, C.c_uint32, C.c_void_p)
 _interruptHandlers = {}
 
-initializeInterrupts = _STATUSFUNC("initializeInterrupts", Interrupt, ("interrupt_index", C.c_uint32), ("watcher", C.c_bool))
-_cleanInterrupts = _STATUSFUNC("cleanInterrupts", None, ("interrupt", Interrupt))
+initializeInterrupts = _STATUSFUNC("initializeInterrupts", Interrupt_ptr, ("interrupt_index", C.c_uint32), ("watcher", C.c_bool))
+_cleanInterrupts = _STATUSFUNC("cleanInterrupts", None, ("interrupt", Interrupt_ptr))
 def cleanInterrupts(interrupt):
     _cleanInterrupts(interrupt)
 
