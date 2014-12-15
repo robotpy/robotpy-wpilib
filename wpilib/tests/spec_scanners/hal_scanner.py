@@ -3,7 +3,6 @@ from os.path import dirname, join
 import sys
 import CppHeaderParser
 import inspect
-import ctypes
 
 green_head = "\033[92m"
 red_head = "\033[91m"
@@ -174,7 +173,7 @@ def compare_function(python_object, c_object):
     """
     Compares python_object and c_object, and returns a summary of the differences.
     """
-
+    
     #Put together dictionary of front output info
     output = {}
     output["name"] = c_object["name"]
@@ -187,6 +186,10 @@ def compare_function(python_object, c_object):
 
     #Get all parameters
     output["parameters"] = c_object["parameters"][:]
+    
+    #And the return value
+    output['returns'] = c_object['returns']
+    output['returns_pointer'] = True if c_object['returns_pointer'] else False
 
     #Check if the corresponding python object has enough arguments to match
     if output["present"]:
@@ -195,11 +198,46 @@ def compare_function(python_object, c_object):
             args = [a for a in args if a != "self"]
             if len(args) < len(output["parameters"]):
                 output["errors"] += 1
-
-
+    
     return output
 
+def _get_c_typeinfo(typename, c_pointer):
+    
+    c_type_name = translate_obj(typename)
 
+    #Workaround for typedefed pointers
+    if c_type_name in ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID"]:
+        c_pointer = True
+
+    #Check for pointers
+    if c_pointer:
+        if c_type_name.startswith("::"):
+            c_type_name = c_type_name[2:]
+            
+    return c_type_name, c_pointer
+    
+
+def _get_py_typeinfo(py_param):
+    
+    #Check py param pointer
+    if py_param.__class__.__name__ == "PyCPointerType":
+        py_pointer = True
+        py_type_obj = py_param._type_
+    elif hasattr(py_param, "fake_pointer"):
+        py_pointer = True
+        py_type_obj = py_param
+    else:
+        py_pointer = False
+        py_type_obj = py_param
+
+    if hasattr(py_type_obj, "_type_"):
+        py_type_name = translate_obj(py_type_obj._type_)
+    else:
+        py_type_name = type(py_type_obj).__name__
+        if py_type_name == "type":
+            py_type_name = py_type_obj.__name__
+            
+    return py_type_name, py_pointer
 
 def scan_c_end(python_object, summary):
     """
@@ -246,9 +284,35 @@ def scan_c_end(python_object, summary):
                 method_summary["errors"] += 1
             method_summary["ignored"] = False
             method_summary["parameters"] = list()
-
+            
             if method_summary["present"]:
-
+                
+                # check the return type to see if it matches
+                if restype is None:
+                    py_rettype_name = 'void'
+                    py_retpointer = False
+                else:
+                    py_rettype_name, py_retpointer = _get_py_typeinfo(restype)
+                    
+                c_rettype_name, c_retpointer = _get_c_typeinfo(c_object['returns'],
+                                                               c_object['returns_pointer'])
+                    
+                if py_retpointer != c_retpointer:
+                    method_summary['errors'] += 1
+                    
+                if py_rettype_name != c_rettype_name and c_rettype_name != "void":
+                    method_summary["errors"] += 1
+                    
+                if method_summary['errors'] != 0:
+                    print(method_summary['name'])
+                    print(py_rettype_name, py_retpointer)
+                    print(c_rettype_name, c_retpointer)
+                    exit(1)
+                
+                method_summary['returns'] = c_object['returns']
+                if c_object['returns_pointer']:
+                    method_summary['returns'] += ' *'
+                
                 method_summary["parameters"] = c_object["parameters"]
 
                 if len(params) != len(c_object["parameters"]):
@@ -261,7 +325,6 @@ def scan_c_end(python_object, summary):
                     c_pointer = False
                     py_pointer = False
                     c_type_obj = None
-                    py_type_obj = None
                     c_type_name = ""
                     py_type_name = ""
 
@@ -276,35 +339,8 @@ def scan_c_end(python_object, summary):
                     else:
                         c_type_obj = c_param["type"]
 
-                    c_type_name = translate_obj(c_type_obj)
-
-                    #Workaround for typedefed pointers
-                    if c_type_name in ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID"]:
-                        c_pointer = True
-
-                    #Check for pointers
-                    if c_pointer:
-                        if c_type_name.startswith("::"):
-                            c_type_name = c_type_name[2:]
-
-                    #Check py param pointer
-                    if py_param.__class__.__name__ == "PyCPointerType":
-                        py_pointer = True
-                        py_type_obj = py_param._type_
-                    elif hasattr(py_param, "fake_pointer"):
-                        py_pointer = True
-                        py_type_obj = py_param
-                    else:
-                        py_pointer = False
-                        py_type_obj = py_param
-
-                    if hasattr(py_type_obj, "_type_"):
-                        py_type_name = translate_obj(py_type_obj._type_)
-                    else:
-                        py_type_name = type(py_type_obj).__name__
-                        if py_type_name == "type":
-                            py_type_name = py_type_obj.__name__
-
+                    c_type_name, c_pointer = _get_c_typeinfo(c_type_obj, c_pointer)
+                    py_type_name, py_pointer = _get_py_typeinfo(py_param)
 
                     if py_pointer != c_pointer:
                         method_summary["errors"] += 1
@@ -355,8 +391,10 @@ def translate_obj(obj):
     aliases = [["int32", "int", "i", "int32_t", "c_int"],
                ["double", "d", "c_double"],
                ["float", "f", "c_float"],
+               ["int8", "int8_t", "c_int8", "b"],
                ["uint8", "uint8_t", "c_uint8", "B"],
-               ["uint16", "uint16_t", "c_uint16", "H", "h", "c_ushort", "c_ushort_t", "short", "unsigned short"],
+               ["int16", "int16_t", "c_int16", "h", "c_short", "c_short_t", "short"],
+               ["uint16", "uint16_t", "c_uint16", "H", "c_ushort", "c_ushort_t", "unsigned short"],
                ["uint32", "uint", "u", "c_uint", "I", "uint32_t"],
                ["uint64", "uint64_t", "c_uint64", "int64", "int64_t", "c_int64", "long", "l", "longlong", "c_long", "long_t"],
                ["bool", "?"]]
@@ -488,7 +526,10 @@ def stringize_method_summary(summary):
     status_message, status_color = get_status_msg(summary)
 
     arguments = "(" + ", ".join(arg["type"] + " " + arg["name"] for arg in summary["parameters"]) + ")"
-    text = summary["name"] + arguments + " " + status_message
+    text = ''
+    if 'returns' in summary:
+        text = summary['returns'] + ' '
+    text += summary["name"] + arguments + " " + status_message
     return [{"text": text, "color": status_color}, ]
 
 def print_list(inp):
