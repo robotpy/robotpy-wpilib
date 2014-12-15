@@ -66,10 +66,10 @@ SEMAPHORE_EMPTY = 0
 SEMAPHORE_FULL = 1
 
 def initializeMutexRecursive():
-    return types.MUTEX_ID(threading.RLock())
+    return types.MUTEX_ID_ptr(threading.RLock())
 
 def initializeMutexNormal():
-    return types.MUTEX_ID(threading.Lock())
+    return types.MUTEX_ID_ptr(threading.Lock())
 
 def deleteMutex(sem):
     sem.lock = None
@@ -88,7 +88,7 @@ def giveMutex(sem):
     return 0
 
 def initializeSemaphore(initial_value):
-    return types.SEMAPHORE_ID(threading.Semaphore(initial_value))
+    return types.SEMAPHORE_ID_ptr(threading.Semaphore(initial_value))
 
 def deleteSemaphore(sem):
     sem.sem = None
@@ -105,7 +105,7 @@ def giveSemaphore(sem):
     sem.sem.release()
 
 def initializeMultiWait():
-    return types.MULTIWAIT_ID(threading.Condition())
+    return types.MULTIWAIT_ID_ptr(threading.Condition())
 
 def deleteMultiWait(sem):
     sem.cond = None

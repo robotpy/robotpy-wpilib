@@ -50,25 +50,25 @@ SEMAPHORE_WAIT_FOREVER = _VAR("SEMAPHORE_WAIT_FOREVER", C.c_int32)
 SEMAPHORE_EMPTY = _VAR("SEMAPHORE_EMPTY", C.c_uint32)
 SEMAPHORE_FULL = _VAR("SEMAPHORE_FULL", C.c_uint32)
 
-initializeMutexRecursive = _RETFUNC("initializeMutexRecursive", MUTEX_ID)
-initializeMutexNormal = _RETFUNC("initializeMutexNormal", MUTEX_ID)
-deleteMutex = _RETFUNC("deleteMutex", None, ("sem", MUTEX_ID))
-takeMutex = _RETFUNC("takeMutex", C.c_int8, ("sem", MUTEX_ID))
-tryTakeMutex = _RETFUNC("tryTakeMutex", C.c_int8, ("sem", MUTEX_ID))
-giveMutex = _RETFUNC("giveMutex", C.c_int8, ("sem", MUTEX_ID))
+initializeMutexRecursive = _RETFUNC("initializeMutexRecursive", MUTEX_ID_ptr)
+initializeMutexNormal = _RETFUNC("initializeMutexNormal", MUTEX_ID_ptr)
+deleteMutex = _RETFUNC("deleteMutex", None, ("sem", MUTEX_ID_ptr))
+takeMutex = _RETFUNC("takeMutex", C.c_int8, ("sem", MUTEX_ID_ptr))
+tryTakeMutex = _RETFUNC("tryTakeMutex", C.c_int8, ("sem", MUTEX_ID_ptr))
+giveMutex = _RETFUNC("giveMutex", C.c_int8, ("sem", MUTEX_ID_ptr))
 
-initializeSemaphore = _RETFUNC("initializeSemaphore", SEMAPHORE_ID,
+initializeSemaphore = _RETFUNC("initializeSemaphore", SEMAPHORE_ID_ptr,
                                ("initial_value", C.c_uint32))
-deleteSemaphore = _RETFUNC("deleteSemaphore", None, ("sem", SEMAPHORE_ID))
-takeSemaphore = _RETFUNC("takeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
-tryTakeSemaphore = _RETFUNC("tryTakeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
-giveSemaphore = _RETFUNC("giveSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
+deleteSemaphore = _RETFUNC("deleteSemaphore", None, ("sem", SEMAPHORE_ID_ptr))
+takeSemaphore = _RETFUNC("takeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID_ptr))
+tryTakeSemaphore = _RETFUNC("tryTakeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID_ptr))
+giveSemaphore = _RETFUNC("giveSemaphore", C.c_int8, ("sem", SEMAPHORE_ID_ptr))
 
-initializeMultiWait = _RETFUNC("initializeMultiWait", MULTIWAIT_ID)
-deleteMultiWait = _RETFUNC("deleteMultiWait", None, ("sem", MULTIWAIT_ID))
-takeMultiWait = _RETFUNC("takeMultiWait", C.c_int8, ("sem", MULTIWAIT_ID),
-                         ("mutex", MUTEX_ID), ("timeout", C.c_int32))
-giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID))
+initializeMultiWait = _RETFUNC("initializeMultiWait", MULTIWAIT_ID_ptr)
+deleteMultiWait = _RETFUNC("deleteMultiWait", None, ("sem", MULTIWAIT_ID_ptr))
+takeMultiWait = _RETFUNC("takeMultiWait", C.c_int8, ("sem", MULTIWAIT_ID_ptr),
+                         ("mutex", MUTEX_ID_ptr), ("timeout", C.c_int32))
+giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID_ptr))
 
 #############################################################################
 # HAL
@@ -123,7 +123,7 @@ HALSetJoystickOutputs = _RETFUNC("HALSetJoystickOutputs", C.c_int, ("joystickNum
 
 HALGetMatchTime = _RETFUNC("HALGetMatchTime", C.c_int, ("matchTime", C.POINTER(C.c_float)), out=["matchTime"])
 
-HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MULTIWAIT_ID))
+HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MULTIWAIT_ID_ptr))
 
 HALGetSystemActive = _STATUSFUNC("HALGetSystemActive", C.c_bool)
 HALGetBrownedOut = _STATUSFUNC("HALGetBrownedOut", C.c_bool)
@@ -335,8 +335,8 @@ spiSetChipSelectActiveHigh = _STATUSFUNC("spiSetChipSelectActiveHigh", None, ("p
 spiSetChipSelectActiveLow = _STATUSFUNC("spiSetChipSelectActiveLow", None, ("port", C.c_uint8))
 spiGetHandle = _RETFUNC("spiGetHandle", C.c_int32, ("port", C.c_uint8));
 spiSetHandle = _RETFUNC("spiSetHandle", None, ("port", C.c_uint8), ("handle", C.c_int32))
-spiGetSemaphore = _RETFUNC("spiGetSemaphore", MUTEX_ID, ("port", C.c_uint8))
-spiSetSemaphore = _RETFUNC("spiSetSemaphore", None, ("port", C.c_uint8), ("semaphore", MUTEX_ID))
+spiGetSemaphore = _RETFUNC("spiGetSemaphore", MUTEX_ID_ptr, ("port", C.c_uint8))
+spiSetSemaphore = _RETFUNC("spiSetSemaphore", None, ("port", C.c_uint8), ("semaphore", MUTEX_ID_ptr))
 
 i2CInitialize = _STATUSFUNC("i2CInitialize", None, ("port", C.c_uint8))
 
