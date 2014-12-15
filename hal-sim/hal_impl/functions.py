@@ -232,7 +232,7 @@ def HALGetJoystickAxes(joystickNum, axes):
     axes.count = len(axes.axes)
 
 def HALGetJoystickPOVs(joystickNum, povs):
-    povs.povs = map(int, hal_data['joysticks'][joystickNum]['povs'][:])
+    povs.povs = [int(pov) for pov in hal_data['joysticks'][joystickNum]['povs']]
     povs.count = len(povs.povs)
 
 def HALGetJoystickButtons(joystickNum, buttons):
