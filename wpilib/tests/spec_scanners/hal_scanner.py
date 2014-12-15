@@ -278,6 +278,10 @@ def scan_c_end(python_object, summary):
 
                     c_type_name = translate_obj(c_type_obj)
 
+                    #Workaround for typedefed pointers
+                    if c_type_name in ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID"]:
+                        c_pointer = True
+
                     #Check for pointers
                     if c_pointer:
                         if c_type_name.startswith("::"):
@@ -300,6 +304,7 @@ def scan_c_end(python_object, summary):
                         py_type_name = type(py_type_obj).__name__
                         if py_type_name == "type":
                             py_type_name = py_type_obj.__name__
+
 
                     if py_pointer != c_pointer:
                         method_summary["errors"] += 1

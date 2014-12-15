@@ -50,25 +50,25 @@ SEMAPHORE_WAIT_FOREVER = _VAR("SEMAPHORE_WAIT_FOREVER", C.c_int32)
 SEMAPHORE_EMPTY = _VAR("SEMAPHORE_EMPTY", C.c_uint32)
 SEMAPHORE_FULL = _VAR("SEMAPHORE_FULL", C.c_uint32)
 
-initializeMutexRecursive = _RETFUNC("initializeMutexRecursive", MUTEX_ID_ptr)
-initializeMutexNormal = _RETFUNC("initializeMutexNormal", MUTEX_ID_ptr)
-deleteMutex = _RETFUNC("deleteMutex", None, ("sem", MUTEX_ID_ptr))
-takeMutex = _RETFUNC("takeMutex", C.c_int8, ("sem", MUTEX_ID_ptr))
-tryTakeMutex = _RETFUNC("tryTakeMutex", C.c_int8, ("sem", MUTEX_ID_ptr))
-giveMutex = _RETFUNC("giveMutex", C.c_int8, ("sem", MUTEX_ID_ptr))
+initializeMutexRecursive = _RETFUNC("initializeMutexRecursive", MUTEX_ID)
+initializeMutexNormal = _RETFUNC("initializeMutexNormal", MUTEX_ID)
+deleteMutex = _RETFUNC("deleteMutex", None, ("sem", MUTEX_ID))
+takeMutex = _RETFUNC("takeMutex", C.c_int8, ("sem", MUTEX_ID))
+tryTakeMutex = _RETFUNC("tryTakeMutex", C.c_int8, ("sem", MUTEX_ID))
+giveMutex = _RETFUNC("giveMutex", C.c_int8, ("sem", MUTEX_ID))
 
-initializeSemaphore = _RETFUNC("initializeSemaphore", SEMAPHORE_ID_ptr,
+initializeSemaphore = _RETFUNC("initializeSemaphore", SEMAPHORE_ID,
                                ("initial_value", C.c_uint32))
-deleteSemaphore = _RETFUNC("deleteSemaphore", None, ("sem", SEMAPHORE_ID_ptr))
-takeSemaphore = _RETFUNC("takeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID_ptr))
-tryTakeSemaphore = _RETFUNC("tryTakeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID_ptr))
-giveSemaphore = _RETFUNC("giveSemaphore", C.c_int8, ("sem", SEMAPHORE_ID_ptr))
+deleteSemaphore = _RETFUNC("deleteSemaphore", None, ("sem", SEMAPHORE_ID))
+takeSemaphore = _RETFUNC("takeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
+tryTakeSemaphore = _RETFUNC("tryTakeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
+giveSemaphore = _RETFUNC("giveSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
 
-initializeMultiWait = _RETFUNC("initializeMultiWait", MULTIWAIT_ID_ptr)
-deleteMultiWait = _RETFUNC("deleteMultiWait", None, ("sem", MULTIWAIT_ID_ptr))
-takeMultiWait = _RETFUNC("takeMultiWait", C.c_int8, ("sem", MULTIWAIT_ID_ptr),
-                         ("mutex", MUTEX_ID_ptr), ("timeout", C.c_int32))
-giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID_ptr))
+initializeMultiWait = _RETFUNC("initializeMultiWait", MULTIWAIT_ID)
+deleteMultiWait = _RETFUNC("deleteMultiWait", None, ("sem", MULTIWAIT_ID))
+takeMultiWait = _RETFUNC("takeMultiWait", C.c_int8, ("sem", MULTIWAIT_ID),
+                         ("mutex", MUTEX_ID), ("timeout", C.c_int32))
+giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID))
 
 #############################################################################
 # HAL
@@ -123,7 +123,7 @@ HALSetJoystickOutputs = _RETFUNC("HALSetJoystickOutputs", C.c_int, ("joystickNum
 
 HALGetMatchTime = _RETFUNC("HALGetMatchTime", C.c_int, ("matchTime", C.POINTER(C.c_float)), out=["matchTime"])
 
-HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MULTIWAIT_ID_ptr))
+HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MULTIWAIT_ID))
 
 HALGetSystemActive = _STATUSFUNC("HALGetSystemActive", C.c_bool)
 HALGetBrownedOut = _STATUSFUNC("HALGetBrownedOut", C.c_bool)
@@ -164,13 +164,13 @@ getAccelerometerZ = _RETFUNC("getAccelerometerZ", C.c_double)
 #############################################################################
 
 # Analog output functions
-initializeAnalogOutputPort = _STATUSFUNC("initializeAnalogOutputPort", AnalogPort_ptr, ("port", Port))
+initializeAnalogOutputPort = _STATUSFUNC("initializeAnalogOutputPort", AnalogPort_ptr, ("port", Port_ptr))
 setAnalogOutput = _STATUSFUNC("setAnalogOutput", None, ("analog_port", AnalogPort_ptr), ("voltage", C.c_double))
 getAnalogOutput = _STATUSFUNC("getAnalogOutput", C.c_double, ("analog_port", AnalogPort_ptr))
 checkAnalogOutputChannel = _RETFUNC("checkAnalogOutputChannel", C.c_bool, ("pin", C.c_uint32))
 
 # Analog input functions
-initializeAnalogInputPort = _STATUSFUNC("initializeAnalogInputPort", AnalogPort_ptr, ("port", Port))
+initializeAnalogInputPort = _STATUSFUNC("initializeAnalogInputPort", AnalogPort_ptr, ("port", Port_ptr))
 checkAnalogModule = _RETFUNC("checkAnalogModule", C.c_bool, ("module", C.c_uint8))
 checkAnalogInputChannel = _RETFUNC("checkAnalogInputChannel", C.c_bool, ("pin", C.c_uint32))
 
@@ -197,7 +197,7 @@ getAccumulatorValue = _STATUSFUNC("getAccumulatorValue", C.c_int64, ("analog_por
 getAccumulatorCount = _STATUSFUNC("getAccumulatorCount", C.c_uint32, ("analog_port", AnalogPort_ptr))
 getAccumulatorOutput = _STATUSFUNC("getAccumulatorOutput", None, ("analog_port", AnalogPort_ptr), ("value", C.POINTER(C.c_int64)), ("count", C.POINTER(C.c_uint32)), out=["value", "count"])
 
-initializeAnalogTrigger = _STATUSFUNC("initializeAnalogTrigger", AnalogTrigger_ptr, ("port", Port), ("index", C.POINTER(C.c_uint32)), out=["index"])
+initializeAnalogTrigger = _STATUSFUNC("initializeAnalogTrigger", AnalogTrigger_ptr, ("port", Port_ptr), ("index", C.POINTER(C.c_uint32)), out=["index"])
 cleanAnalogTrigger = _STATUSFUNC("cleanAnalogTrigger", None, ("analog_trigger", AnalogTrigger_ptr))
 setAnalogTriggerLimitsRaw = _STATUSFUNC("setAnalogTriggerLimitsRaw", None, ("analog_trigger", AnalogTrigger_ptr), ("lower", C.c_int32), ("upper", C.c_int32))
 setAnalogTriggerLimitsVoltage = _STATUSFUNC("setAnalogTriggerLimitsVoltage", None, ("analog_trigger", AnalogTrigger_ptr), ("lower", C.c_double), ("upper", C.c_double))
@@ -335,8 +335,8 @@ spiSetChipSelectActiveHigh = _STATUSFUNC("spiSetChipSelectActiveHigh", None, ("p
 spiSetChipSelectActiveLow = _STATUSFUNC("spiSetChipSelectActiveLow", None, ("port", C.c_uint8))
 spiGetHandle = _RETFUNC("spiGetHandle", C.c_int32, ("port", C.c_uint8));
 spiSetHandle = _RETFUNC("spiSetHandle", None, ("port", C.c_uint8), ("handle", C.c_int32))
-spiGetSemaphore = _RETFUNC("spiGetSemaphore", MUTEX_ID_ptr, ("port", C.c_uint8))
-spiSetSemaphore = _RETFUNC("spiSetSemaphore", None, ("port", C.c_uint8), ("semaphore", MUTEX_ID_ptr))
+spiGetSemaphore = _RETFUNC("spiGetSemaphore", MUTEX_ID, ("port", C.c_uint8))
+spiSetSemaphore = _RETFUNC("spiSetSemaphore", None, ("port", C.c_uint8), ("semaphore", MUTEX_ID))
 
 i2CInitialize = _STATUSFUNC("i2CInitialize", None, ("port", C.c_uint8))
 
@@ -472,7 +472,7 @@ getUserCurrentFaults3V3 = _STATUSFUNC("getUserCurrentFaults3V3", C.c_int)
 # Solenoid
 #############################################################################
 
-initializeSolenoidPort = _STATUSFUNC("initializeSolenoidPort", SolenoidPort_ptr, ("port", Port))
+initializeSolenoidPort = _STATUSFUNC("initializeSolenoidPort", SolenoidPort_ptr, ("port", Port_ptr))
 checkSolenoidModule = _RETFUNC("checkSolenoidModule", C.c_bool, ("module", C.c_uint8))
 
 getSolenoid = _STATUSFUNC("getSolenoid", C.c_bool, ("solenoid_port", SolenoidPort_ptr))

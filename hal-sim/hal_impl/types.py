@@ -4,7 +4,7 @@
 
 import copy
 
-__all__ = ["MUTEX_ID_ptr", "SEMAPHORE_ID_ptr", "MULTIWAIT_ID_ptr",
+__all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
            "HALControlWord_ptr", "HALControlWord",
            "Port_ptr", "Port",
            "HALJoystickAxes_ptr", "HALJoystickAxes",
@@ -23,10 +23,14 @@ __all__ = ["MUTEX_ID_ptr", "SEMAPHORE_ID_ptr", "MULTIWAIT_ID_ptr",
            "SolenoidPort_ptr", "SolenoidPort",
            "TalonSRX_ptr", "TalonSRX"]
 
+class _fakeptr(object):
+    fake_pointer = True
+
 #Fake pointer emulating a c.POINTER()
-def fake_pointer(orig_obj):
-    obj = copy.copy(orig_obj)
-    obj.fake_pointer = True
+def fake_pointer(orig_obj, name=None):
+    if name is None:
+        name = orig_obj.__name__
+    obj = type(name, (orig_obj, ), _fakeptr.__dict__.copy())
     return obj
 
 
@@ -34,20 +38,20 @@ def fake_pointer(orig_obj):
 # Semaphore
 #############################################################################
 
-class MUTEX_ID:
+class _MUTEX_ID:
     def __init__(self, lock):
         self.lock = lock
-MUTEX_ID_ptr = fake_pointer(MUTEX_ID)
+MUTEX_ID = fake_pointer(_MUTEX_ID, "MUTEX_ID")
 
-class SEMAPHORE_ID:
+class _SEMAPHORE_ID:
     def __init__(self, sem):
         self.sem = sem
-SEMAPHORE_ID_ptr = fake_pointer(SEMAPHORE_ID)
+SEMAPHORE_ID = fake_pointer(_SEMAPHORE_ID, "SEMAPHORE_ID")
 
-class MULTIWAIT_ID:
+class _MULTIWAIT_ID:
     def __init__(self, cond):
         self.cond = cond
-MULTIWAIT_ID_ptr = fake_pointer(MULTIWAIT_ID)
+MULTIWAIT_ID = fake_pointer(_MULTIWAIT_ID, "MULTIWAIT_ID")
 
 #############################################################################
 # HAL
