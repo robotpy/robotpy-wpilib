@@ -34,6 +34,17 @@ class NotifyDict(dict):
         self.cbs = {}
         
     def register(self, k, cb, notify=False):
+        '''
+            register a function to be called when an item is set 
+            with in this dictionary. We raise a key error if the 
+            key passed is not a key that the dictionary contains.
+
+            :param k:        Key to be registered for call back. The key must be a
+                             valid key with in the dictionary
+            :param cb:       Function to be called if k is set. This function needs 
+                             to take at least 2 parameters
+            :param notify:   Calls the function cb after registering k                
+        '''
         if k not in self:
             raise KeyError("Cannot register for non-existant key '%s'" % k)
         self.cbs.setdefault(k, []).append(cb)
@@ -41,6 +52,13 @@ class NotifyDict(dict):
             cb(k, self[k])
         
     def __setitem__(self, k, v):
+        '''
+           Overrides __setitem__. If k has any callback functions defined they are
+           called from here
+           
+           :param k: key to be set
+           :param v: value to be set
+        '''     
         super().__setitem__(k, v)
         
         # Call the callbacks
@@ -128,11 +146,11 @@ def reset_hal_data(hooks):
 
         # 8 analog channels, each is a dictionary.
 
-        'analog_out': [{
+        'analog_out': [NotifyDict({
             'initialized': False,
             'voltage': 0.0
 
-        } for _ in range(2)],
+        }) for _ in range(2)],
 
         # TODO: make this easier to use
         'analog_in': [NotifyDict({
@@ -161,13 +179,13 @@ def reset_hal_data(hooks):
         }) for _ in range(8)],
 
         # compressor control is here
-        'compressor': {
+        'compressor': NotifyDict({
             'initialized': False,
             'on': False,
             'closed_loop_enabled': False,
             'pressure_switch': False,
             'current': 0.0
-        },
+        }),
                 
         # digital stuff here
         

@@ -17,7 +17,7 @@ class GazeboSimHooks:
         return int((self.tm.simTime - hal_data['program_start']) * 1000000)
     
     def delayMillis(self, ms):
-        self.tm.wait(1000*ms)
+        self.tm.wait(.001*ms)
     
     def delaySeconds(self, s):
         self.tm.wait(s)
