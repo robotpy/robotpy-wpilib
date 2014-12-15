@@ -8,6 +8,15 @@ from hal_impl.types import *
 from hal_impl.fndef import *
 from hal_impl import __hal_simulation__
 
+def hal_wrapper(f):
+    '''Decorator to support introspection. The wrapped function must be
+       the same name as the wrapper function, but start with an underscore
+    '''
+    
+    wrapped = globals()['_' + f.__name__]
+    f.fndata = wrapped.fndata
+    return f
+
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                 handle_missing=False):
     realparams = list(params)
@@ -76,9 +85,12 @@ giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID))
 
 getPort = _RETFUNC("getPort", Port_ptr, ("pin", C.c_uint8))
 getPortWithModule = _RETFUNC("getPortWithModule", Port_ptr, ("module", C.c_uint8), ("pin", C.c_uint8))
+
 _getHALErrorMessage = _RETFUNC("getHALErrorMessage", C.c_char_p, ("code", C.c_int32))
+@hal_wrapper
 def getHALErrorMessage(code):
     return _getHALErrorMessage(code).decode('utf_8')
+
 getFPGAVersion = _STATUSFUNC("getFPGAVersion", C.c_uint16)
 getFPGARevision = _STATUSFUNC("getFPGARevision", C.c_uint32)
 getFPGATime = _STATUSFUNC("getFPGATime", C.c_uint32)
@@ -86,6 +98,7 @@ getFPGATime = _STATUSFUNC("getFPGATime", C.c_uint32)
 getFPGAButton = _STATUSFUNC("getFPGAButton", C.c_bool)
 
 _HALSetErrorData = _RETFUNC("HALSetErrorData", C.c_int, ("errors", C.c_char_p), ("errorsLength", C.c_int), ("wait_ms", C.c_int))
+@hal_wrapper
 def HALSetErrorData(errors, wait_ms):
     errors = errors.encode('utf-8')
     return _HALSetErrorData(errors, len(errors), wait_ms)
@@ -95,24 +108,28 @@ HALGetControlWord = _RETFUNC("HALGetControlWord", C.c_int, ("data", HALControlWo
 HALGetAllianceStation = _RETFUNC("HALGetAllianceStation", C.c_int, ("allianceStation", C.POINTER(C.c_int)), out=["allianceStation"])
 
 _HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", HALJoystickAxes_ptr))
+@hal_wrapper
 def HALGetJoystickAxes(joystickNum):
     axes = HALJoystickAxes_ptr()
     _HALGetJoystickAxes(joystickNum, axes)
     return [x for x in axes.axes[0:axes.count]]
 
 _HALGetJoystickPOVs = _RETFUNC("HALGetJoystickPOVs", C.c_int, ("joystickNum", C.c_uint8), ("povs", HALJoystickPOVs_ptr))
+@hal_wrapper
 def HALGetJoystickPOVs(joystickNum):
     povs = HALJoystickPOVs_ptr()
     _HALGetJoystickPOVs(joystickNum, povs)
     return [x for x in povs.povs[0:povs.count]]
 
 _HALGetJoystickButtons = _RETFUNC("HALGetJoystickButtons", C.c_int, ("joystickNum", C.c_uint8), ("buttons", HALJoystickButtons_ptr))
+@hal_wrapper
 def HALGetJoystickButtons(joystickNum):
     buttons = HALJoystickButtons_ptr()
     _HALGetJoystickButtons(joystickNum, buttons)
     return buttons
 
 _HALGetJoystickDescriptor = _RETFUNC("HALGetJoystickDescriptor", C.c_int, ("joystickNum", C.c_uint8), ("descriptor", HALJoystickDescriptor_ptr))
+@hal_wrapper
 def HALGetJoystickDescriptor(joystickNum):
     descriptor = HALJoystickDescriptor_ptr()
     _HALGetJoystickDescriptor(joystickNum, descriptor)
@@ -129,6 +146,7 @@ HALGetSystemActive = _STATUSFUNC("HALGetSystemActive", C.c_bool)
 HALGetBrownedOut = _STATUSFUNC("HALGetBrownedOut", C.c_bool)
 
 _HALInitialize = _RETFUNC("HALInitialize", C.c_int, ("mode", C.c_int, 0))
+@hal_wrapper
 def HALInitialize(mode = 0):
     rv = _HALInitialize(mode)
     if not rv:
@@ -141,6 +159,7 @@ HALNetworkCommunicationObserveUserProgramTeleop = _RETFUNC("HALNetworkCommunicat
 HALNetworkCommunicationObserveUserProgramTest = _RETFUNC("HALNetworkCommunicationObserveUserProgramTest", None)
 
 _HALReport = _RETFUNC("HALReport", C.c_uint32, ("resource", C.c_uint8), ("instanceNumber", C.c_uint8), ("context", C.c_uint8, 0), ("feature", C.c_char_p, None))
+@hal_wrapper
 def HALReport(resource, instanceNumber, context = 0, feature = None):
     if feature is not None:
         feature = feature.encode('utf-8')
@@ -302,6 +321,7 @@ spiInitialize = _STATUSFUNC("spiInitialize", None, ("port", C.c_uint8))
 
 _spiTransaction = _RETFUNC("spiTransaction", C.c_int32, ("port", C.c_uint8),
                            ("data_to_send", C.POINTER(C.c_uint8)), ("data_received", C.POINTER(C.c_uint8)), ("size", C.c_uint8))
+@hal_wrapper
 def spiTransaction(port, data_to_send):
     size = len(data_to_send)
     send_buffer = (C.c_uint8 * size)(*data_to_send)
@@ -312,6 +332,7 @@ def spiTransaction(port, data_to_send):
     return [x for x in recv_buffer]
 
 _spiWrite = _RETFUNC("spiWrite", C.c_int32, ("port", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
+@hal_wrapper
 def spiWrite(port, data_to_send):
     send_size = len(data_to_send)
     buffer = (C.c_uint8 * send_size)(*data_to_send)
@@ -320,6 +341,7 @@ def spiWrite(port, data_to_send):
         raise IOError(_os.strerror(C.get_errno()))
 
 _spiRead = _RETFUNC("spiRead", C.c_int32, ("port", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
+@hal_wrapper
 def spiRead(port, count):
     buffer = C.c_uint8 * count
     rv = _spiRead(port, buffer, count)
@@ -343,6 +365,7 @@ i2CInitialize = _STATUSFUNC("i2CInitialize", None, ("port", C.c_uint8))
 _i2CTransaction = _RETFUNC("i2CTransaction", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8),
                            ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8),
                            ("data_received", C.POINTER(C.c_uint8)), ("receive_size", C.c_uint8))
+@hal_wrapper
 def i2CTransaction(port, device_address, data_to_send, receive_size):
     send_size = len(data_to_send)
     send_buffer = (C.c_uint8 * send_size)(*data_to_send)
@@ -353,6 +376,7 @@ def i2CTransaction(port, device_address, data_to_send, receive_size):
     return [x for x in recv_buffer]
 
 _i2CWrite = _RETFUNC("i2CWrite", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
+@hal_wrapper
 def i2CWrite(port, device_address, data_to_send):
     send_size = len(data_to_send)
     buffer = (C.c_uint8 * send_size)(*data_to_send)
@@ -361,6 +385,7 @@ def i2CWrite(port, device_address, data_to_send):
         raise IOError(_os.strerror(C.get_errno()))
 
 _i2CRead = _RETFUNC("i2CRead", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
+@hal_wrapper
 def i2CRead(port, device_address, count):
     buffer = C.c_uint8 * count
     rv = _i2CRead(port, device_address, buffer, count)
@@ -379,6 +404,7 @@ _interruptHandlers = {}
 
 initializeInterrupts = _STATUSFUNC("initializeInterrupts", Interrupt_ptr, ("interrupt_index", C.c_uint32), ("watcher", C.c_bool))
 _cleanInterrupts = _STATUSFUNC("cleanInterrupts", None, ("interrupt", Interrupt_ptr))
+@hal_wrapper
 def cleanInterrupts(interrupt):
     _cleanInterrupts(interrupt)
 
@@ -391,7 +417,9 @@ disableInterrupts = _STATUSFUNC("disableInterrupts", None, ("interrupt", Interru
 readRisingTimestamp = _STATUSFUNC("readRisingTimestamp", C.c_double, ("interrupt", Interrupt_ptr))
 readFallingTimestamp = _STATUSFUNC("readFallingTimestamp", C.c_double, ("interrupt", Interrupt_ptr))
 requestInterrupts = _STATUSFUNC("requestInterrupts", None, ("interrupt", Interrupt_ptr), ("routing_module", C.c_uint8), ("routing_pin", C.c_uint32), ("routing_analog_trigger", C.c_bool))
+
 _attachInterruptHandler = _STATUSFUNC("attachInterruptHandler", None, ("interrupt", Interrupt_ptr), ("handler", _InterruptHandlerFunction), ("param", C.c_void_p))
+@hal_wrapper
 def attachInterruptHandler(interrupt, handler):
     # While attachInterruptHandler provides a param parameter, we use ctypes
     # magic instead to uniquify the callback handler
@@ -416,6 +444,7 @@ _NotifierProcessQueueFunction = C.CFUNCTYPE(None, C.c_uint32, C.c_void_p)
 _notifierProcessQueueFunctions = {}
 
 _initializeNotifier = _STATUSFUNC("initializeNotifier", Notifier_ptr, ("processQueue", _NotifierProcessQueueFunction))
+@hal_wrapper
 def initializeNotifier(processQueue):
     # While initializeNotifier provides a param parameter, we use ctypes
     # magic instead to uniquify the callback handler
@@ -430,6 +459,7 @@ def initializeNotifier(processQueue):
     handlers = _notifierProcessQueueFunctions[notifier] = cb_func
 
 _cleanNotifier = _STATUSFUNC("cleanNotifier", None, ("notifier", Notifier_ptr))
+@hal_wrapper
 def cleanNotifier(notifier):
     _cleanNotifier(notifier)
 
