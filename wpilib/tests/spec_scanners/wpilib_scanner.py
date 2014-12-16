@@ -18,6 +18,11 @@ class_end = dash_bar + "End Class {}" + dash_bar
 tab = "    "
 arrowtab = "--> "
 
+def get_wpilib_dirs(wpilib_dir):
+    paths = list()
+    paths.append(join(wpilib_dir, 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj'))
+    paths.append(join(wpilib_dir, 'wpilibJava', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj'))
+    return paths
 
 def compare_folders(python_object, java_dirs):
     """
@@ -307,9 +312,7 @@ if __name__ == "__main__":
         print("Usage: python wpilib_scanner.py wpilibj_path")
         exit(1)
 
-    wpilibj_path = join(sys.argv[1], 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj')
-
-    output = compare_folders(wpilib, [wpilibj_path])
+    output = compare_folders(wpilib, get_wpilib_dirs(sys.argv[1]))
     text_list = list()
     for item in output["children"]:
         text_list.extend(stringize_summary(item))
