@@ -62,19 +62,19 @@ class PIDController(LiveWindowSendable):
         """
         number_type = [float, int]
 
-        templates = [[("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite"), ("period", number_type)],
-                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite"), ("period", number_type)],
-                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite")],
-                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite")]]
+        templates = [[("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("source", "pidGet"), ("output", "pidWrite"), ("period", number_type)],
+                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("source", "pidGet"), ("output", "pidWrite"), ("period", number_type)],
+                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("source", "pidGet"), ("output", "pidWrite")],
+                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("source", "pidGet"), ("output", "pidWrite")]]
 
         index, results = match_arglist(args, kwargs, templates)
 
-        self.P = results.pop("kP", None)     # factor for "proportional" control
-        self.I = results.pop("ki", None)     # factor for "integral" control
-        self.D = results.pop("kd", None)     # factor for "derivative" control
-        self.F = results.pop("kf", None)     # factor for feedforward term
-        self.pidOutput = results.pop("PIDOutput", None)
-        self.pidInput = results.pop("PIDInput", None)
+        self.P = results.pop("kP")     # factor for "proportional" control
+        self.I = results.pop("kI")     # factor for "integral" control
+        self.D = results.pop("kD")     # factor for "derivative" control
+        self.F = results.pop("kF", None)     # factor for feedforward term
+        self.pidOutput = results.pop("output")
+        self.pidInput = results.pop("input")
         self.period = results.pop("period", PIDController.kDefaultPeriod)
 
         self.maximumOutput = 1.0    # |maximum output|
