@@ -28,7 +28,7 @@ def match_arglist(args, kwargs, templates):
             elif len(arglist) > 0:
                 value = arglist.pop()
             else:
-                break
+                value = None
 
             results[arg_name] = value
 
@@ -40,18 +40,18 @@ def match_arglist(args, kwargs, templates):
                     if not hasattr(value, arg_identity):
                         break
                 elif isinstance(arg_identity, list) and len(arg_identity) != 0:
-                    correct = True
-                    for arg in arg_identity:
-                        if isinstance(arg, str):
-                            if not hasattr(value, arg):
-                                correct = False
-                                break
-                        else:
+                    if isinstance(arg_identity[0], str):
+                        for arg in arg_identity:
+                            if isinstance(arg, str):
+                                if not hasattr(value, arg):
+                                    break
+                    else:
+                        correct = False
+                        for arg in arg_identity:
                             if isinstance(value, arg):
                                 correct = True
-
-                    if not correct:
-                        break
+                        if not correct:
+                            break
 
                 elif not isinstance(value, arg_identity):
                         break
