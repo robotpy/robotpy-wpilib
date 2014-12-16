@@ -51,6 +51,15 @@ class RobotBase:
 
         self.__initialized = True
 
+    def prestart(self):
+        """
+        This hook is called right before startCompetition() By default, tell
+        the DS that the robot is now ready to be enabled. If you don't want for the
+        robot to be enabled yet, you cant override this method to do nothing.
+        """
+        hal.HALNetworkCommunicationObserveUserProgramStarting()
+
+
     def free(self):
         """Free the resources for a RobotBase class."""
         # TODO: delete?
@@ -122,7 +131,6 @@ class RobotBase:
     def initializeHardwareConfiguration():
         """Common initialization for all robot programs."""
         hal.HALInitialize()
-        hal.HALNetworkCommunicationObserveUserProgramStarting()
 
         from .driverstation import DriverStation
         from .robotstate import RobotState
@@ -138,6 +146,7 @@ class RobotBase:
 
         try:
             robot = robot_cls()
+            robot.prestart()
         except:
             from .driverstation import DriverStation
             DriverStation.reportError("ERROR Could not instantiate robot", True)
