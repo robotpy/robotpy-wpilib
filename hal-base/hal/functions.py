@@ -111,28 +111,28 @@ HALGetAllianceStation = _RETFUNC("HALGetAllianceStation", C.c_int, ("allianceSta
 _HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.c_uint8), ("axes", HALJoystickAxes_ptr))
 @hal_wrapper
 def HALGetJoystickAxes(joystickNum):
-    axes = HALJoystickAxes_ptr()
+    axes = HALJoystickAxes()
     _HALGetJoystickAxes(joystickNum, axes)
     return [x for x in axes.axes[0:axes.count]]
 
 _HALGetJoystickPOVs = _RETFUNC("HALGetJoystickPOVs", C.c_int, ("joystickNum", C.c_uint8), ("povs", HALJoystickPOVs_ptr))
 @hal_wrapper
 def HALGetJoystickPOVs(joystickNum):
-    povs = HALJoystickPOVs_ptr()
+    povs = HALJoystickPOVs()
     _HALGetJoystickPOVs(joystickNum, povs)
     return [x for x in povs.povs[0:povs.count]]
 
 _HALGetJoystickButtons = _RETFUNC("HALGetJoystickButtons", C.c_int, ("joystickNum", C.c_uint8), ("buttons", HALJoystickButtons_ptr))
 @hal_wrapper
 def HALGetJoystickButtons(joystickNum):
-    buttons = HALJoystickButtons_ptr()
+    buttons = HALJoystickButtons()
     _HALGetJoystickButtons(joystickNum, buttons)
     return buttons
 
 _HALGetJoystickDescriptor = _RETFUNC("HALGetJoystickDescriptor", C.c_int, ("joystickNum", C.c_uint8), ("descriptor", HALJoystickDescriptor_ptr))
 @hal_wrapper
 def HALGetJoystickDescriptor(joystickNum):
-    descriptor = HALJoystickDescriptor_ptr()
+    descriptor = HALJoystickDescriptor()
     _HALGetJoystickDescriptor(joystickNum, descriptor)
     return descriptor
 
