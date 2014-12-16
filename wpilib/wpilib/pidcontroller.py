@@ -12,7 +12,7 @@ import hal
 
 from .livewindowsendable import LiveWindowSendable
 from ._impl.timertask import TimerTask
-
+from ._impl.utils import match_arglist
 
 __all__ = ["PIDController"]
 
@@ -39,43 +39,43 @@ class PIDController(LiveWindowSendable):
         with self.mutex:
             return abs(self.getError()) < value
 
-    def __init__(self, Kp, Ki, Kd, source, output, period=None, Kf=0.0):
+    def __init__(self, *args, **kwargs):
         """Allocate a PID object with the given constants for P, I, D, and F
-        
+
+        Arguments can be structured as follows:
+
+        - kP, kI, kD, kF, PIDSource, PIDOutput, period
+        - kP, kI, kD, PIDSource, PIDOutput, period
+        - kP, kI, kD, PIDSource, PIDOutput
+        - kP, kI, kD, kF, PIDSource, PIDOutput
+
         :param Kp: the proportional coefficient
         :param Ki: the integral coefficient
         :param Kd: the derivative coefficient
+        :param Kf: the feed forward term
         :param source: The :class:`.PIDSource` that is used to get values
         :param output: The :class:`.PIDOutput` object that is set to the output
             percentage
         :param period: the loop time for doing calculations. This particularly
             effects calculations of the integral and differential terms.
             The default is 50ms.
-        :param Kf: the feed forward term
         """
-        self.P = Kp     # factor for "proportional" control
-        self.I = Ki     # factor for "integral" control
-        self.D = Kd     # factor for "derivative" control
-        self.F = Kf     # factor for feedforward term
+        number_type = [float, int]
 
-        if hasattr(source, "pidGet"):
-            self.pidInput = source.pidGet
-        elif callable(source):
-            self.pidInput = source
-        else:
-            raise ValueError("source is not a valid PID input")
+        templates = [[("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite"), ("period", number_type)],
+                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite"), ("period", number_type)],
+                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite")],
+                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite")]]
 
-        if hasattr(output, "pidWrite"):
-            self.pidOutput = output.pidWrite
-        elif callable(output):
-            self.pidOutput = output
-        else:
-            raise ValueError("output is not a valid PID output")
+        res_args = match_arglist(args, kwargs, templates)
 
-        if period is None:
-            self.period = PIDController.kDefaultPeriod
-        else:
-            self.period = period
+        self.P = res_args.pop("kP", None)     # factor for "proportional" control
+        self.I = res_args.pop("ki", None)     # factor for "integral" control
+        self.D = res_args.pop("kd", None)     # factor for "derivative" control
+        self.F = res_args.pop("kf", None)     # factor for feedforward term
+        self.pidOutput = res_args.pop("PIDOutput", None)
+        self.pidInput = res_args.pop("PIDInput", None)
+        self.period = res_args.pop("period", PIDController.kDefaultPeriod)
 
         self.maximumOutput = 1.0    # |maximum output|
         self.minimumOutput = -1.0   # |minimum output|
