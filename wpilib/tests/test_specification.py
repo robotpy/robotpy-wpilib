@@ -8,14 +8,13 @@ import pytest
                     reason="Must specify WPILIB_JAVA_DIR environment variable to run this test")
 def test_check_wpilib_api(wpilib):
 
-
-    path = os.environ['WPILIB_JAVA_DIR']
-    path = join(path, 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj')
-    assert exists(path), "WPILIB_JAVA_DIR does not point to wpilibj root dir"
-
     from spec_scanners import wpilib_scanner
 
-    output = wpilib_scanner.compare_folders(wpilib, [path])
+    wpilibj_dirs = wpilib_scanner.get_wpilib_dirs(os.environ['WPILIB_JAVA_DIR'])
+    for tree in wpilibj_dirs:
+        assert exists(tree), "WPILIB_JAVA_DIR does not point to wpilib tree dir"
+
+    output = wpilib_scanner.compare_folders(wpilib, wpilibj_dirs)
 
     for item in output["children"]:
         if item["errors"] > 0:
@@ -26,14 +25,13 @@ def test_check_wpilib_api(wpilib):
                     reason="Must specify HAL_DIR environment variable to run this test")
 def test_check_hal_api(hal):
 
-
-    path = os.environ['HAL_DIR']
-    path = join(path, 'include', 'HAL')
-    assert exists(path), "HAL_DIR does not point to HAL root dir"
-
     from spec_scanners import hal_scanner
 
-    frontend_output = hal_scanner.compare_header_dirs(hal, [path])
+    hal_dirs = hal_scanner.get_hal_dirs(os.environ['HAL_DIR'])
+    for tree in hal_dirs:
+        assert exists(tree), "HAL_DIR does not point to hal tree dir"
+
+    frontend_output = hal_scanner.compare_header_dirs(hal, hal_dirs)
     backend_output = hal_scanner.scan_c_end(hal, frontend_output)
     for item in backend_output["methods"]:
         if item["errors"] > 0:

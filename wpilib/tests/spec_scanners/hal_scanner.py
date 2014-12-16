@@ -15,6 +15,10 @@ class_end = dash_bar + "End Class {}" + dash_bar
 tab = "    "
 arrowtab = "--> "
 
+def get_hal_dirs(hal_dir):
+    paths = list()
+    paths.append(join(hal_dir, 'include', 'HAL'))
+    return paths
 
 def compare_header_dirs(python_object, header_dirs):
     """
@@ -561,10 +565,9 @@ if __name__ == "__main__":
     import hal
 
     if len(sys.argv) == 1:
-        print("Usage: python hal_scanner.py hal_path")
+        print("Usage: python hal_scanner.py wpilib_path")
         exit(1)
 
-    HAL_path = join(sys.argv[1], 'include', 'HAL')
 
     print("\n\n\n")
     print(equals_bar + "==============" + equals_bar)
@@ -574,7 +577,7 @@ if __name__ == "__main__":
     print("This compares the HAL API, what is directly used by the python wpilib,\n"
           "to the c++ API and reports errors and inconsistencies.")
     print()
-    py_end_output = compare_header_dirs(hal, [HAL_path])
+    py_end_output = compare_header_dirs(hal, get_hal_dirs(sys.argv[1]))
 
     text_list = list()
     for method in py_end_output["methods"]:
