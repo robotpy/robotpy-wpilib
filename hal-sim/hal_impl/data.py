@@ -3,7 +3,7 @@
 #
 
 from hal import constants
-import time
+import sys
 
 import logging
 logger = logging.getLogger('hal.data')
@@ -85,6 +85,9 @@ def reset_hal_data(hooks):
               use None, or an explicit initialization key
               
         :param hooks: A :class:`SimHooks` or similar instance
+        
+        .. warning:: Don't put invalid floats in here, or this structure
+                     is no longer JSON serializable!
     '''
     global hal_data, hal_newdata_sem
     hal_newdata_sem = None
@@ -225,7 +228,7 @@ def reset_hal_data(hooks):
             'initialized': False,
             'config': [None]*6, # list of pins/modules
             'count': 0,
-            'period': float('inf'),
+            'period': sys.float_info.max,
             'max_period': 0,
             'direction': False,
             'reverse_direction': False,
@@ -237,7 +240,7 @@ def reset_hal_data(hooks):
         'counter': [{
             'initialized': False,
             'count': 0,
-            'period': float('inf'),
+            'period': sys.float_info.max,
             'max_period': 0,
             'direction': False,
             'reverse_direction': False,
