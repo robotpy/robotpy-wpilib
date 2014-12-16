@@ -14,7 +14,8 @@ def hal_wrapper(f):
     '''
     
     wrapped = globals()['_' + f.__name__]
-    f.fndata = wrapped.fndata
+    if hasattr(f, 'fndata'):
+        f.fndata = wrapped.fndata
     return f
 
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
