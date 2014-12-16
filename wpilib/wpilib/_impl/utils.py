@@ -40,8 +40,19 @@ def match_arglist(args, kwargs, templates):
                     if not hasattr(value, arg_identity):
                         break
                 elif isinstance(arg_identity, list) and len(arg_identity) != 0:
-                    if len([not hasattr(value, arg) for arg in arg_identity]) == True:
+                    correct = True
+                    for arg in arg_identity:
+                        if isinstance(arg, str):
+                            if not hasattr(value, arg):
+                                correct = False
+                                break
+                        else:
+                            if isinstance(value, arg):
+                                correct = True
+
+                    if not correct:
                         break
+
                 elif not isinstance(value, arg_identity):
                         break
         else:
