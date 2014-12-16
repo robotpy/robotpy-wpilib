@@ -67,15 +67,15 @@ class PIDController(LiveWindowSendable):
                      [("kP", number_type), ("kI", number_type), ("kD", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite")],
                      [("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("PIDSource", "pidGet"), ("PIDOutput", "pidWrite")]]
 
-        res_args = match_arglist(args, kwargs, templates)
+        index, results = match_arglist(args, kwargs, templates)
 
-        self.P = res_args.pop("kP", None)     # factor for "proportional" control
-        self.I = res_args.pop("ki", None)     # factor for "integral" control
-        self.D = res_args.pop("kd", None)     # factor for "derivative" control
-        self.F = res_args.pop("kf", None)     # factor for feedforward term
-        self.pidOutput = res_args.pop("PIDOutput", None)
-        self.pidInput = res_args.pop("PIDInput", None)
-        self.period = res_args.pop("period", PIDController.kDefaultPeriod)
+        self.P = results.pop("kP", None)     # factor for "proportional" control
+        self.I = results.pop("ki", None)     # factor for "integral" control
+        self.D = results.pop("kd", None)     # factor for "derivative" control
+        self.F = results.pop("kf", None)     # factor for feedforward term
+        self.pidOutput = results.pop("PIDOutput", None)
+        self.pidInput = results.pop("PIDInput", None)
+        self.period = results.pop("period", PIDController.kDefaultPeriod)
 
         self.maximumOutput = 1.0    # |maximum output|
         self.minimumOutput = -1.0   # |minimum output|

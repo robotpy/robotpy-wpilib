@@ -28,7 +28,7 @@ def match_arglist(args, kwargs, templates):
             elif len(arglist) > 0:
                 value = arglist.pop()
             else:
-                value = None
+                break
 
             results[arg_name] = value
 
