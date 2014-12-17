@@ -16,7 +16,7 @@ from .digitalinput import DigitalInput
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 
-from ._impl.utils import match_arglist 
+from ._impl.utils import match_arglist, AttributeCondition
 
 __all__ = ["Encoder"]
 
@@ -105,18 +105,23 @@ class Encoder(SensorBase):
             either exactly match the spec'd count or be double (2x) the
             spec'd count.  Defaults to k4X if unspecified.
         """
+        a_source_arg = ("aSource", AttributeCondition("getChannelForRouting"))
+        b_source_arg = ("bSource", AttributeCondition("getChannelForRouting"))
+        index_source_arg = ("indexSource", AttributeCondition("getChannelForRouting"))
+        a_channel_arg = ("aChannel", int)
+        b_channel_arg = ("bChannel", int)
+        index_channel_arg = ("indexChannel", int)
 
-
-        argument_templates = [[("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting")],
-                              [("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting"), ("reverseDirection", bool)],
-                              [("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting"), ("reverseDirection", bool), ("encodingType", int)],
-                              [("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting"), ("indexSource", "getChannelForRouting")],
-                              [("aSource", "getChannelForRouting"), ("bSource", "getChannelForRouting"), ("indexSource", "getChannelForRouting"), ("reverseDirection", bool)],
-                              [("aChannel", int), ("bChannel", int)],
-                              [("aChannel", int), ("bChannel", int), ("reverseDirection", bool)],
-                              [("aChannel", int), ("bChannel", int), ("reverseDirection", bool), ("encodingType", int)],
-                              [("aChannel", int), ("bChannel", int), ("indexChannel", int)],
-                              [("aChannel", int), ("bChannel", int), ("indexChannel", int), ("reverseDirection", bool)]]
+        argument_templates = [[a_source_arg, b_source_arg],
+                              [a_source_arg, b_source_arg, ("reverseDirection", bool)],
+                              [a_source_arg, b_source_arg, ("reverseDirection", bool), ("encodingType", int)],
+                              [a_source_arg, b_source_arg, index_source_arg],
+                              [a_source_arg, b_source_arg, index_source_arg, ("reverseDirection", bool)],
+                              [a_channel_arg, b_channel_arg],
+                              [a_channel_arg, b_channel_arg, ("reverseDirection", bool)],
+                              [a_channel_arg, b_channel_arg, ("reverseDirection", bool), ("encodingType", int)],
+                              [a_channel_arg, b_channel_arg, index_channel_arg],
+                              [a_channel_arg, b_channel_arg, index_channel_arg, ("reverseDirection", bool)]]
 
         index, results = match_arglist(args, kwargs, argument_templates)
 

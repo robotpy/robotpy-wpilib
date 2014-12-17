@@ -12,7 +12,7 @@ import hal
 
 from .livewindowsendable import LiveWindowSendable
 from ._impl.timertask import TimerTask
-from ._impl.utils import match_arglist
+from ._impl.utils import match_arglist, AttributeCondition
 
 __all__ = ["PIDController"]
 
@@ -60,12 +60,19 @@ class PIDController(LiveWindowSendable):
             effects calculations of the integral and differential terms.
             The default is 50ms.
         """
-        number_type = [float, int]
 
-        templates = [[("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("source", "pidGet"), ("output", "pidWrite"), ("period", number_type)],
-                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("source", "pidGet"), ("output", "pidWrite"), ("period", number_type)],
-                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("source", "pidGet"), ("output", "pidWrite")],
-                     [("kP", number_type), ("kI", number_type), ("kD", number_type), ("kf", number_type), ("source", "pidGet"), ("output", "pidWrite")]]
+        p_arg = ("kP", [float, int])
+        i_arg = ("kI", [float, int])
+        d_arg = ("kD", [float, int])
+        f_arg = ("kf", [float, int])
+        source_arg = ("source", [AttributeCondition("pidGet"), AttributeCondition("__callable__")])
+        output_arg = ("output", [AttributeCondition("pidWrite"), AttributeCondition("__callable__")])
+        period_arg = ("period", [float, int])
+
+        templates = [[p_arg, i_arg, d_arg, f_arg, source_arg, output_arg, period_arg],
+                     [p_arg, i_arg, d_arg, source_arg, output_arg, period_arg],
+                     [p_arg, i_arg, d_arg, source_arg, output_arg],
+                     [p_arg, i_arg, d_arg, f_arg, source_arg, output_arg]]
 
         index, results = match_arglist(args, kwargs, templates)
 
@@ -74,7 +81,7 @@ class PIDController(LiveWindowSendable):
         self.D = results.pop("kD")     # factor for "derivative" control
         self.F = results.pop("kF", None)     # factor for feedforward term
         self.pidOutput = results.pop("output")
-        self.pidInput = results.pop("input")
+        self.pidInput = results.pop("source")
         self.period = results.pop("period", PIDController.kDefaultPeriod)
 
         self.maximumOutput = 1.0    # |maximum output|
