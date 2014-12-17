@@ -80,15 +80,6 @@ class IterativeRobot(RobotBase):
         #the code is ready.
         hal.HALNetworkCommunicationObserveUserProgramStarting()
 
-        # tracing support:
-        TRACE_LOOP_MAX = 100
-        loopCount = TRACE_LOOP_MAX
-        marker = None
-        didDisabledPeriodic = False
-        didAutonomousPeriodic = False
-        didTeleopPeriodic = False
-        didTestPeriodic = False
-
         # loop forever, calling the appropriate mode-dependent function
         LiveWindow.setEnabled(False)
         while True:
