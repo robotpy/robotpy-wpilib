@@ -36,8 +36,8 @@ class PIDSubsystem(Subsystem):
         :param name: the name (optional)
         """
         super().__init__(name)
-        self.controller = PIDController(p, i, d, self.returnPIDInput,
-                                        self.usePIDOutput, period, f)
+        self.controller = PIDController(p, i, d, f, self.returnPIDInput,
+                                        self.usePIDOutput, period)
 
     def getPIDController(self):
         """Returns the PIDController used by this PIDSubsystem.
