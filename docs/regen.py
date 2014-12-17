@@ -42,15 +42,6 @@ cls_doc = '''
     :show-inheritance:
 '''
 
-xcls_doc = '''
-%(header)s
-
-.. autoclass:: %(modname)s.%(clsname)s
-    :members:
-    :undoc-members:
-    :show-inheritance:
-'''
-
 def heading(name, c):
     return '%s\n%s' % (name, c*len(name))
 
