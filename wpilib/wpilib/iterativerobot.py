@@ -62,12 +62,22 @@ class IterativeRobot(RobotBase):
         self.teleopInitialized = False
         self.testInitialized = False
 
+    def prestart(self):
+        """Don't immediately say that the robot's ready to be enabled, see below"""
+        pass
+
     def startCompetition(self):
         """Provide an alternate "main loop" via startCompetition()."""
         hal.HALReport(hal.HALUsageReporting.kResourceType_Framework,
                       hal.HALUsageReporting.kFramework_Iterative)
 
         self.robotInit()
+
+        #We call this now (not in prestart like default) so that the robot
+        #won't enable until the initialization has finished. This is useful
+        #because otherwise it's sometimes possible to enable the robot before
+        #the code is ready.
+        hal.HALNetworkCommunicationObserveUserProgramStarting()
 
         # tracing support:
         TRACE_LOOP_MAX = 100
@@ -96,7 +106,6 @@ class IterativeRobot(RobotBase):
                 if self.nextPeriodReady():
                     hal.HALNetworkCommunicationObserveUserProgramDisabled()
                     self.disabledPeriodic()
-                    didDisabledPeriodic = True
             elif self.isTest():
                 # call TestInit() if we are now just entering test mode from either
                 # a different mode or from power-on
@@ -110,7 +119,6 @@ class IterativeRobot(RobotBase):
                 if self.nextPeriodReady():
                     hal.HALNetworkCommunicationObserveUserProgramTest()
                     self.testPeriodic()
-                    didTestPeriodic = True
             elif self.isAutonomous():
                 # call Autonomous_Init() if this is the first time
                 # we've entered autonomous_mode
@@ -127,7 +135,6 @@ class IterativeRobot(RobotBase):
                 if self.nextPeriodReady():
                     hal.HALNetworkCommunicationObserveUserProgramAutonomous()
                     self.autonomousPeriodic()
-                    didAutonomousPeriodic = True
             else:
                 # call Teleop_Init() if this is the first time
                 # we've entered teleop_mode
@@ -141,7 +148,6 @@ class IterativeRobot(RobotBase):
                 if self.nextPeriodReady():
                     hal.HALNetworkCommunicationObserveUserProgramTeleop()
                     self.teleopPeriodic()
-                    didTeleopPeriodic = True
             self.ds.waitForData()
 
     def nextPeriodReady(self):
