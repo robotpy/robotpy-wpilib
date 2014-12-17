@@ -13,6 +13,17 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+#
+# Autogenerate the documentation
+#
+
+import regen
+regen.main()
+
+#
+# Imports
+#
+
 import sys
 import os
 
@@ -34,6 +45,7 @@ import wpilib
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
 ]
 
@@ -345,4 +357,42 @@ epub_exclude_files = ['search.html']
 #epub_show_urls = 'inline'
 
 # If false, no index is generated.
-#epub_use_index = True
+#epub_use_index = True 
+
+import sphinx.addnodes
+import docutils.nodes
+
+def process_child(node):
+    '''This function changes class references to not have the
+       intermediate module name by hacking at the doctree'''
+    
+    # Edit descriptions to be nicer
+    if isinstance(node, sphinx.addnodes.desc_addname):
+        if len(node.children) == 1:
+            child = node.children[0]
+            text = child.astext()
+            if text.startswith('wpilib.') and text.endswith('.'):
+                # remove the last element
+                text = '.'.join(text.split('.')[:-2]) + '.'
+                node.children[0] = docutils.nodes.Text(text)
+                
+    # Edit literals to be nicer
+    elif isinstance(node, docutils.nodes.literal):
+        child = node.children[0]
+        text = child.astext()
+        
+        # Remove the imported module name
+        if text.startswith('wpilib.'):
+            stext = text.split('.')
+            text = '.'.join(stext[:-2] + [stext[-1]])
+            node.children[0] = docutils.nodes.Text(text)
+    
+    for child in node.children:
+        process_child(child)
+
+def doctree_read(app, doctree):
+    for child in doctree.children:
+        process_child(child)
+
+def setup(app):
+    app.connect('doctree-read', doctree_read)

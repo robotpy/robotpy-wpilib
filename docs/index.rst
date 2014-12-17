@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to RobotPy WPILib's documentation!
-==========================================
+RobotPy Documentation
+=====================
 
 Contents:
 
@@ -13,12 +13,12 @@ Contents:
    
    installer
 
-   internal
-
    wpilib
    wpilib.buttons
    wpilib.command
    wpilib.interfaces
+   
+   internal
 
 
 Indices and tables

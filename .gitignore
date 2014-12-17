@@ -10,7 +10,16 @@ build
 dist
 MANIFEST
 
+# Doc-related stuffs
 docs/_build
+docs/wpilib.rst
+docs/wpilib
+docs/wpilib.buttons.rst
+docs/wpilib.buttons
+docs/wpilib.command.rst
+docs/wpilib.command
+docs/wpilib.interfaces
+docs/wpilib.interfaces.rst
 
 version.py
 
