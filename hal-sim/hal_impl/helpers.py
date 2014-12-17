@@ -24,9 +24,9 @@ def set_autonomous(enabled):
     })
     
     if enabled:
-        hal_data['match_start'] = fns.hooks.getFPGATime()
+        hal_data['time']['match_start'] = fns.hooks.getFPGATime()
     else:
-        hal_data['match_start'] = None
+        hal_data['time']['match_start'] = None
     
     notify_new_ds_data()
     
@@ -41,7 +41,7 @@ def set_test_mode(enabled):
         'ds_attached': True
     })
     
-    hal_data['match_start'] = None
+    hal_data['time']['match_start'] = None
     notify_new_ds_data()
     
 
@@ -56,9 +56,9 @@ def set_teleop_mode(enabled):
     })
     
     if enabled:
-        hal_data['match_start'] = fns.hooks.getFPGATime() - 15000000
+        hal_data['time']['match_start'] = fns.hooks.getFPGATime() - 15000000
     else:
-        hal_data['match_start'] = None
+        hal_data['time']['match_start'] = None
     
     notify_new_ds_data()
 
@@ -73,7 +73,7 @@ def set_disabled():
         'ds_attached': True
     })
     
-    hal_data['match_start'] = None
+    hal_data['time']['match_start'] = None
     
     notify_new_ds_data()
         

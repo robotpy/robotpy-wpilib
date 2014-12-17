@@ -13,7 +13,7 @@ def test_utility_getFPGARevision(util):
 def test_utility_getFPGATime(util, hal_data, monkeypatch):
     import time
     monkeypatch.setattr(time, 'monotonic', lambda: 3.14)
-    hal_data['program_start'] = 1
+    hal_data['time']['program_start'] = 1
     assert util.getFPGATime() == 2.14 * 1000000
 
 def test_utility_getUserButton(util, hal_data):

@@ -261,11 +261,11 @@ def HALGetMatchTime():
         - At beginning of teleop, time is set to 15
         - If robot is disabled, time is 0
     '''
-    match_start = hal_data['match_start']
+    match_start = hal_data['time']['match_start']
     if match_start is None:
         return 0.0
     else:
-        return (hooks.getFPGATime() - hal_data['match_start'])/1000000.0
+        return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
 
 def HALGetSystemActive(status):
     status.value = 0

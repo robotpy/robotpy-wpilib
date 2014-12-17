@@ -5,6 +5,7 @@ class GazeboSimHooks:
 
     def __init__(self, timer):
         self.tm = timer
+        hal_data['time']['has_source'] = True
 
     #
     # Hook functions
@@ -14,7 +15,7 @@ class GazeboSimHooks:
         return self.tm.simTime
     
     def getFPGATime(self):
-        return int((self.tm.simTime - hal_data['program_start']) * 1000000)
+        return int((self.tm.simTime - hal_data['time']['program_start']) * 1000000)
     
     def delayMillis(self, ms):
         self.tm.wait(.001*ms)

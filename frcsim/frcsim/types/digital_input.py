@@ -12,7 +12,7 @@ class SimDigitalInput:
         Controller.get().subscribe('simulator/dio/%s' % channel,
                                    'gazebo.msgs.Bool',
                                    self.on_message)
-        
+        digital_dict["has_source"] = True
         logger.info("Registered digital input device on channel %s", channel)
 
     def on_message(self, msg):
