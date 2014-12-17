@@ -53,9 +53,9 @@ class RobotBase:
 
     def prestart(self):
         """
-        This hook is called right before startCompetition() By default, tell
-        the DS that the robot is now ready to be enabled. If you don't want for the
-        robot to be enabled yet, you cant override this method to do nothing.
+        This hook is called right before :meth:`startCompetition`. By default, tell
+        the DS that the robot is now ready to be enabled. If you don't want the
+        robot to be enabled yet, you can override this method to do nothing.
         """
         hal.HALNetworkCommunicationObserveUserProgramStarting()
 
