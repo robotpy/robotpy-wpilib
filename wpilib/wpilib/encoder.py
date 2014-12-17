@@ -16,7 +16,7 @@ from .digitalinput import DigitalInput
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 
-from ._impl.utils import match_arglist, AttributeCondition
+from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Encoder"]
 
@@ -105,9 +105,9 @@ class Encoder(SensorBase):
             either exactly match the spec'd count or be double (2x) the
             spec'd count.  Defaults to k4X if unspecified.
         """
-        a_source_arg = ("aSource", AttributeCondition("getChannelForRouting"))
-        b_source_arg = ("bSource", AttributeCondition("getChannelForRouting"))
-        index_source_arg = ("indexSource", AttributeCondition("getChannelForRouting"))
+        a_source_arg = ("aSource", HasAttribute("getChannelForRouting"))
+        b_source_arg = ("bSource", HasAttribute("getChannelForRouting"))
+        index_source_arg = ("indexSource", HasAttribute("getChannelForRouting"))
         a_channel_arg = ("aChannel", int)
         b_channel_arg = ("bChannel", int)
         index_channel_arg = ("indexChannel", int)

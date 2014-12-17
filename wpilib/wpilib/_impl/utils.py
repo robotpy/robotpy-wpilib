@@ -55,12 +55,12 @@ def types_match(object, type_structure):
     representing conditions that object must meet.
 
     Here are the possibilities for type_structure:
-    - AttributeCondition
+    - HasAttribute
     - type_condition
     - list of type_structures
     - None
 
-    If type_structure is an AttributeCondition, this will return False if
+    If type_structure is an HasAttribute, this will return False if
     any contained attribute is not present in object
 
     If type_structure is a type_condition, then object must be of the same type
@@ -75,7 +75,7 @@ def types_match(object, type_structure):
         return True
 
     #Is it an attribute list?
-    elif isinstance(type_structure, AttributeCondition):
+    elif isinstance(type_structure, HasAttribute):
         return type_structure.matches(object)
 
     elif isinstance(type_structure, list) and len(type_structure) != 0:
@@ -87,7 +87,7 @@ def types_match(object, type_structure):
     else:
         return isinstance(object, type_structure)
 
-class AttributeCondition:
+class HasAttribute:
     def __init__(self, *args):
         self.conditions = [arg for arg in args]
 
