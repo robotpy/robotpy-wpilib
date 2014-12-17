@@ -25,6 +25,7 @@ class DigitalInput(DigitalSource):
         input given a channel.
 
         :param channel: the port for the digital input
+        :type  channel: int
         """
         super().__init__(channel, True)
 
@@ -37,6 +38,7 @@ class DigitalInput(DigitalSource):
         a single digital input channel from the FPGA.
 
         :returns: the state of the digital input
+        :rtype: bool
         """
         if self.port is None:
             raise ValueError("operation on freed port")
@@ -46,6 +48,7 @@ class DigitalInput(DigitalSource):
         """Get the channel of the digital input
 
         :returns: The GPIO channel number that this object represents.
+        :rtype: int
         """
         return self.channel
 

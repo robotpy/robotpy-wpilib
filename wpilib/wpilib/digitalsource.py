@@ -26,6 +26,12 @@ class DigitalSource(InterruptableSensorBase):
     channels = Resource(SensorBase.kDigitalChannels)
 
     def __init__(self, channel, input):
+        """
+            :param channel: Port for the digital input
+            :type  channel: int
+            :param input: True if input, False otherwise
+            :type  input: int
+        """
         super().__init__()
 
         self.channel = channel

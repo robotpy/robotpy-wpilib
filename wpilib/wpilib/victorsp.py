@@ -23,6 +23,7 @@ class VictorSP(SafePWM):
         """Constructor.
 
         :param channel: The PWM channel that the VictorSP is attached to.
+        :type  channel: int
 
         .. note ::
 
@@ -56,6 +57,7 @@ class VictorSP(SafePWM):
         scaling the value for the FPGA.
 
         :param speed: The speed to set.  Value should be between -1.0 and 1.0.
+        :type  speed: float
         :param syncGroup: The update group to add this set() to, pending
             updateSyncGroup().  If 0, update immediately.
         """
@@ -66,6 +68,7 @@ class VictorSP(SafePWM):
         """Get the recently set value of the PWM.
 
         :returns: The most recently set value for the PWM between -1.0 and 1.0.
+        :rtype: float
         """
         return self.getSpeed()
 
@@ -74,5 +77,6 @@ class VictorSP(SafePWM):
 
         :param output: Write out the PWM value as was found in the
             :class:`PIDController`.
+        :type  output: float
         """
         self.set(output)

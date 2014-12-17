@@ -24,6 +24,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
         
         :param range: The range the accelerometer will measure.  Defaults to
             +/-8g if unspecified.
+        :type  range: :class:`.Accelerometer.Range`
         """
         self.setRange(range)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Accelerometer, 0, 0,
@@ -47,6 +48,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
         """
            :returns: The acceleration of the RoboRIO along the X axis in
                      g-forces
+           :rtype: float
         """
         return hal.getAccelerometerX()
 
@@ -54,6 +56,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
         """
            :returns: The acceleration of the RoboRIO along the Y axis in
                      g-forces
+           :rtype: float
         """
         return hal.getAccelerometerY()
 
@@ -61,6 +64,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
         """
            :returns: The acceleration of the RoboRIO along the Z axis in
                      g-forces
+           :rtype: float
         """
         return hal.getAccelerometerZ()
 

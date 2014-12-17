@@ -53,6 +53,7 @@ class Compressor(SensorBase):
         """Get the enabled status of the compressor.
         
         :returns: True if the compressor is on
+        :rtype: bool
         """
         return hal.getCompressor(self.pcm)
 
@@ -61,6 +62,7 @@ class Compressor(SensorBase):
         
         :returns: True if the pressure is low by reading the pressure switch
             that is plugged into the PCM
+        :rtype: bool
         """
         return hal.getPressureSwitch(self.pcm)
 
@@ -68,6 +70,7 @@ class Compressor(SensorBase):
         """Get the current being used by the compressor.
         
         :returns: Current consumed in amps for the compressor motor
+        :rtype: float
         """
         return hal.getCompressorCurrent(self.pcm)
 
@@ -76,6 +79,7 @@ class Compressor(SensorBase):
         
         :param on: If True sets the compressor to be in closed loop control
                    mode otherwise normal operation of the compressor is disabled.
+        :type  on: bool
         """
         hal.setClosedLoopControl(self.pcm, on)
 
@@ -84,6 +88,7 @@ class Compressor(SensorBase):
         
         :returns: True if compressor is operating on closed-loop mode,
                   otherwise return False.
+        :rtype: bool
         """
         return hal.getClosedLoopControl(self.pcm)
 

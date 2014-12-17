@@ -20,6 +20,7 @@ class SafePWM(PWM, MotorSafety):
 
         :param channel: The channel number to be used for the underlying PWM
             object
+        :type  channel: int
         """
         MotorSafety.__init__(self)
         PWM.__init__(self, channel)

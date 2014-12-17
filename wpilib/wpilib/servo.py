@@ -34,6 +34,7 @@ class Servo(PWM):
         * By default `kDefaultMinServoPWM` ms is used as the minPWM value
 
         :param channel: The PWM channel to which the servo is attached.
+        :type  channel: int
         """
         super().__init__(channel)
         self.setBounds(self.kDefaultMaxServoPWM, 0, 0, 0,
@@ -51,7 +52,8 @@ class Servo(PWM):
         Servo values range from 0.0 to 1.0 corresponding to the range of
         full left to full right.
 
-        @param value Position from 0.0 to 1.0.
+        :param value: Position from 0.0 to 1.0.
+        :type  value: float
         """
         self.setPosition(value)
 
@@ -62,13 +64,14 @@ class Servo(PWM):
         full left to full right.
 
         :returns: Position from 0.0 to 1.0.
+        :rtype: float
         """
         return self.getPosition()
 
     def setAngle(self, degrees):
         """Set the servo angle.
 
-        Assume that the servo angle is linear with respect to the PWM value
+        Assumes that the servo angle is linear with respect to the PWM value
         (big assumption, need to test).
 
         Servo angles that are out of the supported range of the servo simply
@@ -78,6 +81,7 @@ class Servo(PWM):
         angle of Y being set.
 
         :param degrees: The angle in degrees to set the servo.
+        :type  degrees: float
         """
         if degrees < self.kMinServoAngle:
             degrees = self.kMinServoAngle
@@ -94,6 +98,7 @@ class Servo(PWM):
         (big assumption, need to test).
 
         :returns: The angle in degrees to which the servo is set.
+        :rtype: float
         """
         return self.getPosition() * self.getServoAngleRange() + self.kMinServoAngle
 

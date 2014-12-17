@@ -110,6 +110,7 @@ class Gyro(SensorBase):
 
         :returns: The current heading of the robot in degrees. This heading is
                 based on integration of the returned rate from the gyro.
+        :rtype: float
         """
         if self.analog is None:
             return 0.0
@@ -129,6 +130,7 @@ class Gyro(SensorBase):
         The rate is based on the most recent reading of the gyro analog value
 
         :returns: the current rate in degrees per second
+        :rtype: float
         """
         if self.analog is None:
             return 0.0
@@ -146,6 +148,7 @@ class Gyro(SensorBase):
         :param voltsPerDegreePerSecond:
             The type of gyro specified as the voltage that represents one
             degree/second.
+        :type  voltsPerDegreePerSecond: float
         """
         self.voltsPerDegreePerSecond = voltsPerDegreePerSecond
 
@@ -156,6 +159,7 @@ class Gyro(SensorBase):
         rotating, but will make it less accurate.
 
         :param volts: The size of the deadband in volts
+        :type  volts: float
         """
         if self.analog is None:
             return
@@ -169,8 +173,10 @@ class Gyro(SensorBase):
         parameters.
 
         :param pidSource: An enum to select the parameter.
+        :type  pidSource: :class:`.PIDSource.PIDSourceParameter`
         """
-        if pidSource not in (1, 2):
+        if pidSource not in (PIDSource.PIDSourceParameter.kRate,
+                             PIDSource.PIDSourceParameter.kAngle):
             raise ValueError("Must be kRate or kAngle")
         self.pidSource = pidSource
 
@@ -178,6 +184,7 @@ class Gyro(SensorBase):
         """Get the angle of the gyro for use with PIDControllers
 
         :returns: the current angle according to the gyro
+        :rtype: float
         """
         if self.pidSource == PIDSource.PIDSourceParameter.kRate:
             return self.getRate()

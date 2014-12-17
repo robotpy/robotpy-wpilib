@@ -31,11 +31,13 @@ class AnalogPotentiometer(LiveWindowSendable):
         -135.0 since the halfway point after scaling is 135 degrees.
 
         :param channel: The analog channel this potentiometer is plugged into.
-            May be either a channel index or an AnalogInput instance.
+        :type  channel: int or :class:`.AnalogInput`
         :param fullRange: The scaling to multiply the fraction by to get a
             meaningful unit.  Defaults to 1.0 if unspecified.
+        :type  fullRange: float
         :param offset: The offset to add to the scaled value for controlling
             the zero value.  Defaults to 0.0 if unspecified.
+        :type  offset: float
         """
         if not hasattr(channel, "getVoltage"):
             channel = AnalogInput(channel)
@@ -47,6 +49,7 @@ class AnalogPotentiometer(LiveWindowSendable):
         """Get the current reading of the potentiometer.
 
         :returns: The current position of the potentiometer.
+        :rtype: float
         """
         return (self.analog_input.getVoltage() / hal.getUserVoltage5V()) * self.fullRange + self.offset
 
@@ -54,6 +57,7 @@ class AnalogPotentiometer(LiveWindowSendable):
         """Implement the PIDSource interface.
 
         :returns: The current reading.
+        :rtype: float
         """
         return self.get()
 

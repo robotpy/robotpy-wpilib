@@ -14,9 +14,10 @@ class Utility:
 
     @staticmethod
     def getFPGAVersion():
-        """Return the FPGA Version number. For now, expect this to be 2009.
+        """Return the FPGA Version number.
 
         :returns: FPGA Version number.
+        :rtype: int
         """
         return hal.getFPGAVersion()
 
@@ -28,6 +29,7 @@ class Utility:
         are the Build Number.
 
         :returns: FPGA Revision number.
+        :rtype: int
         """
         return hal.getFPGARevision()
 
@@ -36,6 +38,7 @@ class Utility:
         """Read the microsecond timer from the FPGA.
 
         :returns: The current time in microseconds according to the FPGA.
+        :rtype: int
         """
         return hal.getFPGATime()
 
@@ -44,5 +47,6 @@ class Utility:
         """Get the state of the "USER" button on the RoboRIO.
 
         :returns: True if the button is currently pressed down
+        :rtype: bool
         """
         return hal.getFPGAButton()

@@ -44,6 +44,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         The acceleration is returned units of Gs.
 
         :returns: The current acceleration of the sensor in Gs.
+        :rtype: float
         """
         return (self.analogChannel.getAverageVoltage() - self.zeroGVoltage) / self.voltsPerG
 
@@ -55,6 +56,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         There are constants defined for various models.
 
         :param sensitivity: The sensitivity of accelerometer in Volts per G.
+        :type  sensitivity: float
         """
         self.voltsPerG = sensitivity
 
@@ -65,6 +67,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         defined for various models.
 
         :param zero: The zero G voltage.
+        :type  zero: float
         """
         self.zeroGVoltage = zero
 
@@ -72,6 +75,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         """Get the Acceleration for the PID Source parent.
 
         :returns: The current acceleration in Gs.
+        :rtype: float
         """
         return self.getAcceleration()
 

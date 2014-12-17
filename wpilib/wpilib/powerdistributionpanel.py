@@ -17,12 +17,14 @@ class PowerDistributionPanel(SensorBase):
     def getVoltage(self):
         """
             :returns: The voltage of the PDP
+            :rtype: float
         """
         return hal.getPDPVoltage()
 
     def getTemperature(self):
         """
             :returns: The temperature of the PDP in degrees Celsius
+            :rtype: float
         """
         return hal.getPDPTemperature()
 
@@ -30,6 +32,7 @@ class PowerDistributionPanel(SensorBase):
         """
             :returns: The current of one of the PDP channels (channels 0-15)
                       in Amperes
+            :rtype: float
         """
         SensorBase.checkPDPChannel(channel)
         return hal.getPDPChannelCurrent(channel)
@@ -37,18 +40,21 @@ class PowerDistributionPanel(SensorBase):
     def getTotalCurrent(self):
         """
             :returns: The total current drawn from the PDP channels in Amperes
+            :rtype: float
         """
         return hal.getPDPTotalCurrent()
     
     def getTotalPower(self):
         """
             :returns: The total power drawn from the PDP channels in Joules
+            :rtype: float
         """
         return hal.getPDPTotalPower()
     
     def getTotalEnergy(self):
         """
             :returns: The total energy drawn from the PDP channels in Watts
+            :rtype: float
         """
         return hal.getPDPTotalEnergy()
     

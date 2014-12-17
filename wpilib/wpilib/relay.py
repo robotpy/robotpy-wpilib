@@ -68,8 +68,10 @@ class Relay(SensorBase):
         Initially the relay is set to both lines at 0v.
 
         :param channel: The channel number for this relay.
+        :type  channel: int
         :param direction: The direction that the Relay object will control.
             If not specified, defaults to allowing both directions.
+        :type  direction: :class:`Relay.Direction`
         """
         if direction is None:
             direction = self.Direction.kBoth
@@ -130,6 +132,7 @@ class Relay(SensorBase):
         kOff and kOn is recommended.
 
         :param value: The state to set the relay.
+        :type  value: :class:`Relay.Value`
         """
         if self.port is None:
             raise ValueError("operation on freed port")
@@ -174,7 +177,8 @@ class Relay(SensorBase):
         When set to kForwardOnly or kReverseOnly, value is returned as kOn/kOff
         not kForward/kReverse (per the recommendation in Set)
 
-        :returns: The current state of the relay as a Relay::Value
+        :returns: The current state of the relay
+        :rtype: :class:`Relay.Value`
         """
         if self.port is None:
             raise ValueError("operation on freed port")
@@ -204,6 +208,7 @@ class Relay(SensorBase):
         Valid inputs are kBothDirections, kForwardOnly, and kReverseOnly.
 
         :param direction: The direction for the relay to operate in
+        :type  direction: :class:`Relay.Direction`
         """
         if self.direction == direction:
             return

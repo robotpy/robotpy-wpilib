@@ -354,6 +354,14 @@ wpilib.solenoidbase module
     :members:
     :undoc-members:
     :show-inheritance:
+    
+wpilib.smartdashboard module
+----------------------------
+
+.. automodule:: wpilib.smartdashboard
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 wpilib.spi module
 -----------------

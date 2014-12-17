@@ -19,12 +19,19 @@ class SampleRobot(RobotBase):
     states (disabled, autonomous, or operator controlled).
 
     You can build a simple robot program off of this by overriding the
-    robotinit(), disabled(), autonomous() and operatorControl() methods.
-    The startCompetition() method will calls these methods (sometimes
-    repeatedly) depending on the state of the competition.
+    :meth:`robotinit`, :meth:`disabled`, :meth:`autonomous` and
+    :meth:`operatorControl` methods. The :meth:`startCompetition` method
+    will call these methods (sometimes repeatedly) depending on the state
+    of the competition.
 
-    Alternatively you can override the robotMain() method and manage all
+    Alternatively you can override the :meth:`robotMain` method and manage all
     aspects of the robot yourself (not recommended).
+    
+    .. warning:: While it may look like a good choice to use for your code
+                 if you're inexperienced, don't. Unless you know what you
+                 are doing, complex code will be much more difficult under
+                 this system. Use :class:`.IterativeRobot` or command based
+                 instead if you're new.
     """
     
     #: A python logging object that you can use to send messages to the log. It
@@ -35,9 +42,11 @@ class SampleRobot(RobotBase):
         """Robot-wide initialization code should go here.
 
         Users should override this method for default Robot-wide initialization
-        which will be called when the robot is first powered on.
-
-        Called exactly 1 time when the competition starts.
+        which will be called when the robot is first powered on.  It will be
+        called exactly 1 time.
+        
+        .. note:: It is simpler to override this function instead of defining
+                  a constructor for your robot class
         """
         self.logger.info("Default robotInit() method running, consider providing your own")
 

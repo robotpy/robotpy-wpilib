@@ -14,7 +14,7 @@ __all__ = ["IterativeRobot"]
 
 class IterativeRobot(RobotBase):
     """IterativeRobot implements a specific type of Robot Program framework,
-    extending the RobotBase class.
+    extending the :class:`.RobotBase` class.
 
     The IterativeRobot class is intended to be subclassed by a user creating a
     robot program.
@@ -23,7 +23,7 @@ class IterativeRobot(RobotBase):
     providing the following functions which are called by the main loop,
     :meth:`startCompetition`, at the appropriate times:
 
-    - robotInit() -- provide for initialization at robot power-on
+    - :meth:`robotInit` -- provide for initialization at robot power-on
 
     init() functions -- each of the following functions is called once when the
     appropriate mode is entered:
@@ -38,10 +38,11 @@ class IterativeRobot(RobotBase):
     the iterative robot is synced to the driver station control packets,
     giving a periodic frequency of about 50Hz (50 times per second).
     
-    - disabledPeriodic()
-    - autonomousPeriodic()
-    - teleopPeriodic()
-    - testPeriodoc()
+    - :meth:`disabledPeriodic`
+    - :meth:`autonomousPeriodic`
+    - :meth:`teleopPeriodic`
+    - :meth:`testPeriodic`
+    
     """
      
     #: A python logging object that you can use to send messages to the log. It
@@ -154,6 +155,8 @@ class IterativeRobot(RobotBase):
         """Determine if the appropriate next periodic function should be
         called.  Call the periodic functions whenever a packet is received
         from the Driver Station, or about every 20ms.
+        
+        :rtype: bool
         """
         return self.ds.isNewControlData()
 
@@ -165,6 +168,9 @@ class IterativeRobot(RobotBase):
         Users should override this method for default Robot-wide initialization
         which will be called when the robot is first powered on.  It will be
         called exactly 1 time.
+        
+        .. note:: It is simpler to override this function instead of defining
+                  a constructor for your robot class
         """
         self.logger.info("Default IterativeRobot.robotInit() method... Overload me!")
 

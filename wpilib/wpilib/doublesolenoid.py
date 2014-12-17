@@ -106,8 +106,8 @@ class DoubleSolenoid(SolenoidBase):
         """Set the value of a solenoid.
 
         :param value: Move the solenoid to forward, reverse, or don't move it.
+        :type  value: :class:`DoubleSolenoid.Value`
         """
-        rawValue = 0
 
         if value == self.Value.kOff:
             hal.setSolenoid(self.forwardPort, False)
@@ -123,12 +123,13 @@ class DoubleSolenoid(SolenoidBase):
         """Read the current value of the solenoid.
 
         :returns: The current value of the solenoid.
+        :rtype: :class:`DoubleSolenoid.Value`
         """
         if hal.getSolenoid(self.forwardPort):
             return self.Value.kForward
         if hal.getSolenoid(self.reversePort):
             return self.Value.kReverse
-        return Value.kOff
+        return self.Value.kOff
 
     # Live Window code, only does anything if live window is activated.
 
@@ -142,7 +143,7 @@ class DoubleSolenoid(SolenoidBase):
             val = self.get()
             if val == self.Value.kForward:
                 table.putString("Value", "Forward")
-            elif value == self.Value.kReverse:
+            elif val == self.Value.kReverse:
                 table.putString("Value", "Reverse")
             else:
                 table.putString("Value", "Off")

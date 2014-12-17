@@ -19,18 +19,17 @@ class RobotBase:
     implementation, the Autonomous code will run to completion before the
     OperatorControl code could start. In the future the Autonomous code might
     be spawned as a task, then killed at the end of the Autonomous period.
+    
+    User code should be placed in the constructor that runs before the
+    Autonomous or Operator Control period starts. The constructor will
+    run to completion before Autonomous is entered.
+
+    .. warning:: If you override __init__ in your robot class, you must call
+                 the base class constructor. This must be used to ensure that
+                 the communications code starts.
     """
 
     def __init__(self):
-        """Constructor for a generic robot program.
-        User code should be placed in the constructor that runs before the
-        Autonomous or Operator Control period starts. The constructor will
-        run to completion before Autonomous is entered.
-
-        This must be used to ensure that the communications code starts. In
-        the future it would be nice to put this code into it's own task that
-        loads on boot so ensure that it runs.
-        """
         # TODO: StartCAPI()
         # TODO: See if the next line is necessary
         # Resource.RestartProgram()
@@ -67,12 +66,18 @@ class RobotBase:
 
     @staticmethod
     def isSimulation():
-        """:returns: If the robot is running in simulation."""
+        """
+            :returns: If the robot is running in simulation.
+            :rtype: bool
+        """
         return hal.HALIsSimulation()
 
     @staticmethod
     def isReal():
-        """:returns: If the robot is running in the real world."""
+        """
+            :returns: If the robot is running in the real world.
+            :rtype: bool
+        """
         return not hal.HALIsSimulation()
 
     def isDisabled(self):
@@ -80,6 +85,7 @@ class RobotBase:
 
         :returns: True if the Robot is currently disabled by the field
             controls.
+        :rtype: bool
         """
         return self.ds.isDisabled()
 
@@ -88,6 +94,7 @@ class RobotBase:
 
         :returns: True if the Robot is currently enabled by the field
             controls.
+        :rtype: bool
         """
         return self.ds.isEnabled()
 
@@ -96,6 +103,7 @@ class RobotBase:
 
         :returns: True if the robot is currently operating Autonomously as
             determined by the field controls.
+        :rtype: bool
         """
         return self.ds.isAutonomous()
 
@@ -104,6 +112,7 @@ class RobotBase:
 
         :returns: True if the robot is currently operating in Test mode as
             determined by the driver station.
+        :rtype: bool
         """
         return self.ds.isTest()
 
@@ -112,6 +121,7 @@ class RobotBase:
 
         :returns: True if the robot is currently operating in Tele-Op mode as
             determined by the field controls.
+        :rtype: bool
         """
         return self.ds.isOperatorControl()
 
@@ -120,6 +130,7 @@ class RobotBase:
 
         :returns: Has new data arrived over the network since the last time
             this function was called?
+        :rtype: bool
         """
         return self.ds.isNewControlData()
 

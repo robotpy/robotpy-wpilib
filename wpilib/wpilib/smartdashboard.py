@@ -14,8 +14,8 @@ class SmartDashboard:
     SmartDashboard on the laptop.
 
     When a value is put into the SmartDashboard here, it pops up on the
-    SmartDashboard on the laptop.
-    Users can put values into and get values from the SmartDashboard
+    SmartDashboard on the laptop. Users can put values into and get values
+    from the SmartDashboard
     """
     # The NetworkTable used by SmartDashboard
     table = None
@@ -42,10 +42,13 @@ class SmartDashboard:
         is equal to the original key.
 
         Two argument formats are supported: key, data:
+        
         :param key: the key (cannot be None)
+        :type  key: str
         :param data: the value
 
         Or the single argument "value":
+        
         :param value: the named value (getName is called to retrieve the value)
         """
         # NOTE: mix of args and kwargs not allowed
@@ -73,8 +76,12 @@ class SmartDashboard:
     @staticmethod
     def getData(key):
         """Returns the value at the specified key.
+        
         :param key: the key
+        :type  key: str
         :returns: the value
+        
+        :raises: :exc:`KeyError` if the key doesn't exist
         """
         table = SmartDashboard.getTable()
         subtable = table.getSubTable(key)
@@ -87,9 +94,12 @@ class SmartDashboard:
     def putBoolean(key, value):
         """Maps the specified key to the specified value in this table.
         The key can not be None.
+        
         The value can be retrieved by calling the get method with a key that
         is equal to the original key.
+        
         :param key: the key
+        :type  key: str
         :param value: the value
         """
         table = SmartDashboard.getTable()
@@ -98,11 +108,14 @@ class SmartDashboard:
     @staticmethod
     def getBoolean(key, defaultValue=_defaultValueSentry):
         """Returns the value at the specified key.
-        Raises KeyError if the key doesn't exist and defaultValue is not
-        provided.
+        
         :param key: the key
+        :type  key: str
         :param defaultValue: returned if the key doesn't exist
         :returns: the value
+        
+        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
+                 is not provided.
         """
         table = SmartDashboard.getTable()
         if defaultValue is SmartDashboard._defaultValueSentry:
@@ -116,8 +129,11 @@ class SmartDashboard:
         The key can not be None.
         The value can be retrieved by calling the get method with a key that
         is equal to the original key.
+        
         :param key: the key
+        :type  key: str
         :param value: the value
+        :type  value: int or float
         """
         table = SmartDashboard.getTable()
         table.putNumber(key, value)
@@ -125,11 +141,14 @@ class SmartDashboard:
     @staticmethod
     def getNumber(key, defaultValue=_defaultValueSentry):
         """Returns the value at the specified key.
-        Raises KeyError if the key doesn't exist and defaultValue is not
-        provided.
+        
         :param key: the key
+        :type  key: str
         :param defaultValue: returned if the key doesn't exist
-        :returns: the value
+        :rtype: float
+        
+        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
+                 is not provided.
         """
         table = SmartDashboard.getTable()
         if defaultValue is SmartDashboard._defaultValueSentry:
@@ -143,8 +162,11 @@ class SmartDashboard:
         The key can not be None.
         The value can be retrieved by calling the get method with a key that
         is equal to the original key.
+        
         :param key: the key
+        :type  key: str
         :param value: the value
+        :type  value: str
         """
         table = SmartDashboard.getTable()
         table.putString(key, value)
@@ -152,11 +174,14 @@ class SmartDashboard:
     @staticmethod
     def getString(key, defaultValue=_defaultValueSentry):
         """Returns the value at the specified key.
-        Raises KeyError if the key doesn't exist and defaultValue is not
-        provided.
+        
         :param key: the key
+        :type  key: str
         :param defaultValue: returned if the key doesn't exist
-        :returns: the value
+        :rtype: str
+        
+        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
+                 is not provided.
         """
         table = SmartDashboard.getTable()
         if defaultValue is SmartDashboard._defaultValueSentry:
