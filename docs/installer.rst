@@ -1,0 +1,2 @@
+
+.. include:: ../installer/README.rst

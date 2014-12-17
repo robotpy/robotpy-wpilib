@@ -17,6 +17,11 @@ version.py
 .project
 .pydevproject
 
+# Installer files
+installer/pip_cache
+installer/opk_cache
+installer/.installer_config
+
 #PyCharm Project files
 *.iml
 .idea/*

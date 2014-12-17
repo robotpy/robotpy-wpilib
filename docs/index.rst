@@ -10,6 +10,8 @@ Contents:
 
 .. toctree::
    :maxdepth: 4
+   
+   installer
 
    internal
 
