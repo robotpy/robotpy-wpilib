@@ -44,26 +44,32 @@ class PIDController(LiveWindowSendable):
 
         Arguments can be structured as follows:
 
-        - kP, kI, kD, kF, PIDSource, PIDOutput, period
-        - kP, kI, kD, PIDSource, PIDOutput, period
-        - kP, kI, kD, PIDSource, PIDOutput
-        - kP, kI, kD, kF, PIDSource, PIDOutput
+        - Kp, Ki, Kd, Kf, PIDSource, PIDOutput, period
+        - Kp, Ki, Kd, PIDSource, PIDOutput, period
+        - Kp, Ki, Kd, PIDSource, PIDOutput
+        - Kp, Ki, Kd, Kf, PIDSource, PIDOutput
 
         :param Kp: the proportional coefficient
+        :type  Kp: float or int
         :param Ki: the integral coefficient
+        :type  Ki: float or int
         :param Kd: the derivative coefficient
+        :type  Kd: float or int
         :param Kf: the feed forward term
-        :param source: The :class:`.PIDSource` that is used to get values
-        :param output: The :class:`.PIDOutput` object that is set to the output
-            percentage
+        :type  Kf: float or int
+        :param source: Called to get values
+        :type  source: A function, or an object that implements :class:`.PIDSource`
+        :param output: Receives the output percentage
+        :type  output: A function, or an object that implements :class:`.PIDOutput`
         :param period: the loop time for doing calculations. This particularly
             effects calculations of the integral and differential terms.
             The default is 50ms.
+        :type  period: float or int
         """
 
-        p_arg = ("kP", [float, int])
-        i_arg = ("kI", [float, int])
-        d_arg = ("kD", [float, int])
+        p_arg = ("Kp", [float, int])
+        i_arg = ("Ki", [float, int])
+        d_arg = ("Kd", [float, int])
         f_arg = ("kf", [float, int])
         source_arg = ("source", [HasAttribute("pidGet"), HasAttribute("__callable__")])
         output_arg = ("output", [HasAttribute("pidWrite"), HasAttribute("__callable__")])
@@ -76,10 +82,10 @@ class PIDController(LiveWindowSendable):
 
         index, results = match_arglist(args, kwargs, templates)
 
-        self.P = results.pop("kP")     # factor for "proportional" control
-        self.I = results.pop("kI")     # factor for "integral" control
-        self.D = results.pop("kD")     # factor for "derivative" control
-        self.F = results.pop("kF", None)     # factor for feedforward term
+        self.P = results.pop("Kp")     # factor for "proportional" control
+        self.I = results.pop("Ki")     # factor for "integral" control
+        self.D = results.pop("Kd")     # factor for "derivative" control
+        self.F = results.pop("Kf", 0.0)# factor for feedforward term
         self.pidOutput = results.pop("output")
         self.pidInput = results.pop("source")
         self.period = results.pop("period", PIDController.kDefaultPeriod)
