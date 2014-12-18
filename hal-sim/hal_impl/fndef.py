@@ -11,6 +11,9 @@ from . import functions as _dll
 __all__ = ["_dll", "_RETFUNC", "_VAR"]
 
 def gen_check(pname, ptype):
+    
+    # TODO: This does checks on normal types, but if you pass a ctypes value
+    #       in then this does not check those properly.
 
     if ptype is C.c_bool:
         return 'isinstance(%s, bool)' % pname
@@ -50,8 +53,9 @@ def gen_check(pname, ptype):
         return 'isinstance(%s, int) and %s < %d and %s >= 0' % (pname, pname, 1<<64, pname)
 
     else:
+        # TODO: do validation here
         #return 'isinstance(%s, %s)' % (pname, type(ptype).__name__)
-        return 'True'
+        return None
 
 
 def gen_func(f, name, restype, params, out):
@@ -63,13 +67,18 @@ def gen_func(f, name, restype, params, out):
     if out is None:
         out = []
 
+    # Generate a check for each parameter
     for param in params:
         pname, ptype = param[:2]
 
         if pname not in out:
 
             check = gen_check(pname, ptype)
-            checks.append('assert %s, "%s; with %s=%%s, type(%s)=%%s" %% (%s, type(%s).__name__)' % (check, check, pname, pname, pname, pname))
+            
+            if check is not None:
+                # the check is an assert, but we provide a better error message
+                # otherwise these things will be impossible to debug
+                checks.append('assert %s, "invalid parameter \'%s\' (check was: %s); with %s=%%s, type(%s)=%%s" %% (%s, type(%s).__name__)' % (check, pname, check, pname, pname, pname, pname))
 
             if len(param) == 3:
                 args.append('%s=%s' % (pname, param[2]))
