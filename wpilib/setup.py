@@ -2,7 +2,7 @@
 
 from os.path import dirname, exists, join
 import sys, subprocess
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup_dir = dirname(__file__)
 base_package = 'wpilib'
@@ -41,10 +41,16 @@ setup(
     author_email='robotpy@googlegroups.com',
     url='https://github.com/robotpy',
     keywords='frc first robotics wpilib',
-    packages=[base_package,
-              base_package + '._impl',
-              base_package + '.buttons',
-              base_package + '.command',
-              base_package + '.interfaces'],
-    install_requires=['pynetworktables']
+    packages=find_packages(),
+    install_requires=['pynetworktables'],
+    license="MIT License",
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.4",
+        "Topic :: Scientific/Engineering"
+    ]
     )

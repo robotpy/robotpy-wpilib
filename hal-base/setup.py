@@ -42,5 +42,15 @@ setup(
     url='https://github.com/robotpy',
     keywords='frc first robotics hal can',
     packages=['hal'],
-    entry_points={'robotpy': [ 'run = hal.main:Main' ]}
+    entry_points={'robotpy': [ 'run = hal.main:Main' ]},
+    license="MIT License",
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.4",
+        "Topic :: Scientific/Engineering"
+    ]
     )
