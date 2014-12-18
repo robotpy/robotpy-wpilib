@@ -36,6 +36,8 @@ class PIDSubsystem(Subsystem):
         :param name: the name (optional)
         """
         super().__init__(name)
+        if period is None:
+            period = PIDController.kDefaultPeriod
         self.controller = PIDController(p, i, d, f, self.returnPIDInput,
                                         self.usePIDOutput, period)
 

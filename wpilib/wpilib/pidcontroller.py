@@ -71,8 +71,8 @@ class PIDController(LiveWindowSendable):
         i_arg = ("Ki", [float, int])
         d_arg = ("Kd", [float, int])
         f_arg = ("kf", [float, int])
-        source_arg = ("source", [HasAttribute("pidGet"), HasAttribute("__callable__")])
-        output_arg = ("output", [HasAttribute("pidWrite"), HasAttribute("__callable__")])
+        source_arg = ("source", [HasAttribute("pidGet"), HasAttribute("__call__")])
+        output_arg = ("output", [HasAttribute("pidWrite"), HasAttribute("__call__")])
         period_arg = ("period", [float, int])
 
         templates = [[p_arg, i_arg, d_arg, f_arg, source_arg, output_arg, period_arg],
