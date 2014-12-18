@@ -129,7 +129,7 @@ def getPort(pin):
 def getPortWithModule(module, pin):
     return types.Port(pin, module)
 
-def getHALErrorMessage(code):
+def _getHALErrorMessage(code):
     if code == 0:
         return ''
 
@@ -200,6 +200,9 @@ def getHALErrorMessage(code):
 
     else:
         return "Unknown error status"
+    
+def getHALErrorMessage(code):
+    return bytes(_getHALErrorMessage(code), 'utf-8')
 
 def getFPGAVersion(status):
     status.value = 0
