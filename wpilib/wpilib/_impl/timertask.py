@@ -4,10 +4,8 @@
 '''
 
 import threading
-
 from ..timer import Timer
 
-import time
 
 class TimerTask(threading.Thread):
     
