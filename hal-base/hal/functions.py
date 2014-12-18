@@ -28,7 +28,7 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
         status = C.c_int32(0)
         rv = _inner(*args, status=status, **kwargs)
         if status.value != 0:
-            raise HALError(getHALErrorMessage(status))
+            raise HALError(getHALErrorMessage(status.value))
         return rv
     
     # Support introspection for API validation
