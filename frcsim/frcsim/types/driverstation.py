@@ -30,6 +30,7 @@ class DriverStationControl:
         js = hal_data['joysticks'][idx]
         buttons = js['buttons']
         axes = js['axes']
+        js['has_source'] = True
         
         msg = Joystick.FromString(msg)
         
@@ -40,8 +41,6 @@ class DriverStationControl:
             
         for i, (b, _) in enumerate(zip(msg.buttons, buttons)):
             buttons[i] = b
-
-        hal_data['joysticks'][idx]['has_source'] = True
 
         helpers.notify_new_ds_data()
 
