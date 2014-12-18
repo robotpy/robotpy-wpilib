@@ -23,12 +23,14 @@ class DriverStationControl:
 
         self.state = None
         self.enabled = None
+        hal_data["control"]['has_source'] = True
 
     def on_joystick(self, idx, msg):
         
         js = hal_data['joysticks'][idx]
         buttons = js['buttons']
         axes = js['axes']
+        js['has_source'] = True
         
         msg = Joystick.FromString(msg)
         
@@ -39,7 +41,7 @@ class DriverStationControl:
             
         for i, (b, _) in enumerate(zip(msg.buttons, buttons)):
             buttons[i] = b
-            
+
         helpers.notify_new_ds_data()
 
     def on_state(self, msg):

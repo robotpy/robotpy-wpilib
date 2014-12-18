@@ -12,7 +12,7 @@ class SimAnalogInput:
         Controller.get().subscribe('simulator/analog/%s' % channel,
                                    'gazebo.msgs.Float64',
                                    self.on_message)
-        
+        analog_dict["has_source"] = True
         logger.info("Registered analog input device on channel %s", channel)
 
     def on_message(self, msg):

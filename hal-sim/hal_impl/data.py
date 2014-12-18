@@ -96,15 +96,22 @@ def reset_hal_data(hooks):
     hal_data.update({
 
         'alliance_station': constants.kHALAllianceStationID_red1,
+
+        'time': {
+            'has_source': False,
+
+            # Used to compute getFPGATime
+            'program_start': hooks.getTime(),
+
+            # Used to compute getMatchTime -- set to return value of getFPGATime()
+            'match_start': None,
+        },
         
-        # Used to compute getFPGATime
-        'program_start': hooks.getTime(),
-        
-        # Used to compute getMatchTime -- set to return value of getFPGATime()
-        'match_start': None,
+
 
         # See driver station notes above
         'control': {
+            'has_source': False,
             'enabled': False,
             'autonomous': False,
             'test': False,
@@ -124,6 +131,7 @@ def reset_hal_data(hooks):
         # axes are stored as values between -1 and 1
         # povs are stored as integer values
         'joysticks': [{
+            'has_source': False,
             'buttons': [False]*12, # numbered 0-11
             'axes':    [0]*constants.kMaxJoystickAxes,  # x is 0, y is 1, .. 
             'povs':    [-1]*constants.kMaxJoystickPOVs  # integers
@@ -137,6 +145,7 @@ def reset_hal_data(hooks):
 
         # built-in accelerometer on roboRIO
         'accelerometer': {
+            'has_source': False,
             'active': False,
             'range': 0,
             'x': 0,
@@ -157,6 +166,7 @@ def reset_hal_data(hooks):
 
         # TODO: make this easier to use
         'analog_in': [NotifyDict({
+            'has_source': False,
             'initialized': False,
             'avg_bits': 0,
             'oversample_bits': 0,
@@ -183,6 +193,7 @@ def reset_hal_data(hooks):
 
         # compressor control is here
         'compressor': NotifyDict({
+            'has_source': False,
             'initialized': False,
             'on': False,
             'closed_loop_enabled': False,
@@ -217,6 +228,7 @@ def reset_hal_data(hooks):
         }) for _ in range(8)],
                 
         'dio': [NotifyDict({
+            'has_source': False,
             'initialized': False,
             'value': False,
             'pulse_length': None,
@@ -225,6 +237,7 @@ def reset_hal_data(hooks):
         }) for _ in range(10)],
         
         'encoder': [{
+            'has_source': False,
             'initialized': False,
             'config': [None]*6, # list of pins/modules
             'count': 0,
@@ -238,6 +251,7 @@ def reset_hal_data(hooks):
         
         # There is a lot of config involved here... 
         'counter': [{
+            'has_source': False,
             'initialized': False,
             'count': 0,
             'period': sys.float_info.max,
@@ -267,6 +281,7 @@ def reset_hal_data(hooks):
         'user_program_state': None, # starting, disabled, autonomous, teleop, test
 
         'power': {
+            'has_source': False,
             'vin_voltage': 0,
             'vin_current': 0,
             'user_voltage_6v': 6.0,
@@ -287,6 +302,7 @@ def reset_hal_data(hooks):
         'solenoid': [None]*8,
 
         'pdp': {
+            'has_source': False,
             'temperature': 0,
             'voltage': 0,
             'current': [0]*16,

@@ -17,7 +17,7 @@ class SimHooks:
         return time.monotonic()
     
     def getFPGATime(self):
-        return int((time.monotonic() - hal_data['program_start']) * 1000000)
+        return int((time.monotonic() - hal_data['time']['program_start']) * 1000000)
     
     def delayMillis(self, ms):
         time.sleep(1000*ms)
