@@ -12,7 +12,7 @@ class CanTalonSRX:
     The TALON SRX is designed to instrument all runtime signals periodically.
     The default periods are chosen to support 16 TALONs with 10ms update rate
     for control (throttle or setpoint).  However these can be overridden with
-    SetStatusFrameRate. @see SetStatusFrameRate The getters for these
+    :meth:`setStatusFrameRate`. The getters for these
     unsolicited signals are auto generated at the bottom of this module.
 
     Likewise most control signals are sent periodically using the
@@ -38,20 +38,20 @@ class CanTalonSRX:
 
     Encoder position is measured in encoder edges.  Every edge is counted
     (similar to roboRIO 4X mode).  Analog position is 10 bits, meaning 1024
-    ticks per rotation (0V => 3.3V).  Use SetFeedbackDeviceSelect to select
+    ticks per rotation (0V => 3.3V).  Use :meth:`setFeedbackDeviceSelect` to select
     which sensor type you need.  Once you do that you can use
-    GetSensorPosition() and GetSensorVelocity().  These signals are updated on
+    :meth:`getSensorPosition` and :meth:`getSensorVelocity`.  These signals are updated on
     CANBus every 20ms (by default).  If a relative sensor is selected, you can
-    zero (or change the current value) using SetSensorPosition.
+    zero (or change the current value) using :meth:`setSensorPosition`.
 
     Analog Input and quadrature position (and velocity) are also explicitly
-    reported in GetEncPosition, GetEncVel, GetAnalogInWithOv, GetAnalogInVel.
+    reported in :meth:`getEncPosition`, :meth:`getEncVel`, :meth:`getAnalogInWithOv`, :meth:`getAnalogInVel`.
     These signals are available all the time, regardless of what sensor is
     selected at a rate of 100ms.  This allows easy instrumentation for "in the
     pits" checking of all sensors regardless of modeselect.  The 100ms rate is
     overridable for teams who want to acquire sensor data for processing, not
     just instrumentation.  Or just select the sensor using
-    SetFeedbackDeviceSelect to get it at 20ms.
+    :meth:`setFeedbackDeviceSelect` to get it at 20ms.
 
     Velocity is in position ticks / 100ms.
 
@@ -60,18 +60,18 @@ class CanTalonSRX:
     specifies duty cycle when in duty cycle mode) and rampRamp, which is in
     throttle units per 10ms (if nonzero).
 
-    Pos and velocity close loops are calc'd as:
+    Pos and velocity close loops are calc'd as::
 
-            err = target - posOrVel
-            iErr += err
-            if IZone != 0 and abs(err) > IZone:
-                ClearIaccum()
-            output = P * err + I * iErr + D * dErr + F * target
-            dErr = err - lastErr
+        err = target - posOrVel
+        iErr += err
+        if IZone != 0 and abs(err) > IZone:
+            ClearIaccum()
+        output = P * err + I * iErr + D * dErr + F * target
+        dErr = err - lastErr
 
     P, I, and D gains are always positive. F can be negative.
 
-    Motor direction can be reversed using SetRevMotDuringCloseLoopEn if sensor
+    Motor direction can be reversed using :meth:`setRevMotDuringCloseLoopEn` if sensor
     and motor are out of phase.  Similarly feedback sensor can also be reversed
     (multiplied by -1) if you prefer the sensor to be inverted.
 
@@ -90,12 +90,12 @@ class CanTalonSRX:
 
     I Zone is specified in the same units as sensor position (ADC units or
     quadrature edges).  If pos/vel error is outside of this value, the
-    integrated error will auto-clear...
+    integrated error will auto-clear::
 
-            if IZone != 0 and abs(err) > IZone:
-                ClearIaccum()
+        if IZone != 0 and abs(err) > IZone:
+            ClearIaccum()
 
-    ...this is very useful in preventing integral windup and is highly
+    This is very useful in preventing integral windup and is highly
     recommended if using full PID to keep stability low.
 
     CloseLoopRampRate is in throttle units per 1ms.  Set to zero to disable
@@ -171,9 +171,9 @@ class CanTalonSRX:
 
     def setIzone(self, slotIdx, zone):
         if slotIdx == 0:
-            hal.TalonSRX_SetParam(self.handle, hal.TalonSRXParam.eProfileParamSlot0_IZone, gain)
+            hal.TalonSRX_SetParam(self.handle, hal.TalonSRXParam.eProfileParamSlot0_IZone, zone)
         else:
-            hal.TalonSRX_SetParam(self.handle, hal.TalonSRXParam.eProfileParamSlot1_IZone, gain)
+            hal.TalonSRX_SetParam(self.handle, hal.TalonSRXParam.eProfileParamSlot1_IZone, zone)
 
     def setCloseLoopRampRate(self, slotIdx, closeLoopRampRate):
         if slotIdx == 0:
@@ -322,8 +322,8 @@ class CanTalonSRX:
     def getSensorVelocity(self):
         return hal.TalonSRX_GetSensorVelocity(self.handle)
 
-    def getCurrent(selfram):
-        return hal.TalonSRX_GetCurrent(self.handleram)
+    def getCurrent(self, param):
+        return hal.TalonSRX_GetCurrent(self.handle, param)
 
     def getBrakeIsEnabled(self):
         return hal.TalonSRX_GetBrakeIsEnabled(self.handle)
@@ -384,9 +384,6 @@ class CanTalonSRX:
 
     def setModeSelect(self, param):
         hal.TalonSRX_SetModeSelect(self.handle, param)
-
-    def setModeSelect(self, modeSelect, demand):
-        hal.TalonSRX_SetModeSelect(self.handle, modeSelect, demand)
 
     def setProfileSlotSelect(self, param):
         hal.TalonSRX_SetProfileSlotSelect(self.handle, param)
