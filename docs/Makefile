@@ -48,6 +48,14 @@ help:
 
 clean:
 	rm -rf $(BUILDDIR)/*
+	rm -rf wpilib/*.rst
+	rm -rf wpilib.buttons/*.rst
+	rm -rf wpilib.command/*.rst
+	rm -rf wpilib.interfaces/*.rst
+	rm -f wpilib.rst
+	rm -f wpilib.buttons.rst
+	rm -f wpilib.command.rst
+	rm -f wpilib.interfaces.rst
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
