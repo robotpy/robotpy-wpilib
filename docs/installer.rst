@@ -1,2 +1,2 @@
 
-.. include:: ../installer/README.rst
+.. include:: ../installer/installer.rst

@@ -23,7 +23,7 @@ invoking the --help command.
 install-robotpy
 ---------------
 
-.. code-block:: sh
+::
 
 	python3 installer.py install-robotpy
 
@@ -34,7 +34,7 @@ be reinstalled.
 download-robotpy
 ----------------
 
-.. code-block:: sh
+::
 
 	python3 installer.py download-robotpy
 
@@ -43,7 +43,7 @@ This will update the cached RobotPy packages to the newest versions available.
 download
 --------
 
-.. code-block:: sh
+::
 
 	python3 installer.py download PACKAGE [PACKAGE ..]
 
@@ -57,14 +57,14 @@ the download cache.
 You can also use a `requirements.txt` file to specify which packages should
 be downloaded.
 
-.. code-block:: sh
+::
 
 	python3 installer.py download -r requirements.txt
 
 install
 -------
 
-.. code-block:: sh
+::
 
 	python3 installer.py install PACKAGE [PACKAGE ..]
 
@@ -74,7 +74,7 @@ package already has been installed, it will be reinstalled.
 You can also use a `requirements.txt` file to specify which packages should
 be downloaded.
 
-.. code-block:: sh
+::
 
 	python3 installer.py download -r requirements.txt
 
