@@ -25,4 +25,5 @@ the dist directory at the root of the repository.
 
     ./build_installer.sh
 
-After the release package has been uploaded to github with release notes, and send an email to the mailing list!
+After the release package has been uploaded to github with release notes,
+send an email to the mailing list!
