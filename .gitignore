@@ -31,6 +31,8 @@ installer/pip_cache
 installer/opk_cache
 installer/.installer_config
 
+installer/win32/*.exe
+
 #PyCharm Project files
 *.iml
 .idea/*

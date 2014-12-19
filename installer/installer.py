@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 #
+# (C) 2014 Dustin Spicuzza. Distributed under MIT license.
+#
 # This is a simple (ha!) installer program that is designed to be used to
 # deploy RobotPy to a roborio via SSH
 #
 # It is intended to work on Windows, OSX, and Linux.
+#
+# For now, let's try to keep this to a single file so that it can be moved
+# around easily without having to think about it too hard and worry about
+# path issues. Reconsider this once we get to 4000+ lines of code... :p
 #
 
 
@@ -16,6 +22,7 @@ from os.path import abspath, basename, dirname, exists, isdir, join
 import shutil
 import subprocess
 import sys
+import tempfile
 
 from collections import OrderedDict
 from distutils.version import LooseVersion
@@ -225,51 +232,85 @@ class RobotpyInstaller(object):
         
         with open(self.cfg, 'w') as fp:
             config.write(fp)
-            
+  
     
     #
     # This sucks. We should be using paramiko here... 
     #
     
-    def _ssh(self, *args):
+    def _ssh(self, *args, get_output=False):
     
         # Check for requirements
-        cmd = shutil.which('ssh')
-        if cmd is None:
-            if is_windows:
-                cmd = join(self.win_bins, 'plink.exe')
-            else:
-                raise ArgError("Cannot find ssh executable")
-        
-        return subprocess.call([cmd, '%s@%s' % (self.username, self.hostname)]
-                               + list(args))
-        
+        if is_windows:
+            cmd = join(self.win_bins, 'plink.exe')
             
-    def _scp(self, src, dst):
+            # plink has a -pw argument we can use, which is nice
+            pw_args = [ '-pw', self.password ]
+            
+        else:
+            cmd = shutil.which('ssh')
+            if cmd is None:
+                raise ArgError("Cannot find ssh executable!")
+        
+        ssh_args = [cmd, '%s@%s' % (self.username, self.hostname)] + list(args)
+        
+        try:
+            if get_output:
+                return subprocess.check_output(ssh_args, universal_newlines=True)
+            else:
+                return subprocess.check_call(ssh_args)
+        except subprocess.CalledProcessError as e:
+            raise ArgError(e)
+    
+    def _sftp(self, src, dst):
+        '''
+            src can be a single file, list of files, or directory
+            dst is always a directory, for simplicity
+        '''
         
         # Check for requirements
-        cmd = shutil.which('scp')
-        if cmd is None:
-            if is_windows:
-                cmd = join(self.win_bins, 'pscp.exe')
-            else:
-                raise ArgError("Cannot find ssh executable")
-        
-            # plink has a -pw argument we can use, instead of trying to hack it
-            pw_args = [ '-pw', self.password ]
-        
-        scp_args = [cmd]
-        
-        if not isinstance(src, str):
-            scp_args.extend(src)
+        if is_windows:
+            cmd = join(self.win_bins, 'psftp.exe')
+            
+            # psftp has a -pw argument we can use, which is nice
+            sftp_args = [ cmd, '-pw', self.password ]
+            
         else:
-            if isdir(src):
-                scp_args.append('-r')
-            scp_args.append(src)
+            cmd = shutil.which('sftp')
+            if cmd is None:
+                raise ArgError("Cannot find sftp executable!")
+            
+            # Must disable BatchMode, else password interaction doesn't work
+            sftp_args = [cmd, '-oBatchMode=no']
         
-        scp_args.append('%s@%s:%s' % (self.username, self.hostname, dst))
-        
-        return subprocess.call(scp_args)
+        # Create the batch file
+        # - psftp cares about the destination file to be exact
+        # - sftp will accept a directory
+         
+        bfp, bfname = tempfile.mkstemp(text=True)
+        try:
+            with os.fdopen(bfp, 'w') as fp:
+                if isinstance(src, str):
+                    if isdir(src):
+                        fp.write('put -r "%s" "%s"\n' % (src, dst))
+                    else:
+                        fp.write('put "%s" "%s/%s"\n' % (src, dst, basename(src)))
+                else:
+                    for f in src:
+                        fp.write('put "%s" "%s/%s"\n' % (f, dst, basename(f)))
+            
+            sftp_args.extend(['-b', bfname,
+                              '%s@%s' % (self.username, self.hostname)])
+            
+            try:
+                return subprocess.check_call(sftp_args)
+            except subprocess.CalledProcessError as e:
+                raise ArgError(e)
+        finally:
+            try:
+                os.unlink(bfname)
+            except:
+                pass
     
     def _poor_sync(self, src, dst):
         
@@ -290,10 +331,10 @@ class RobotpyInstaller(object):
             hash = md5sum(join(src, file))
             local_files[file] = hash
         
-        lines = self._ssh('[ ! -d %s ] || md5sum %s/*' % (dst, dst), get_output=True)
+        lines = self._ssh('[ -n "$(ls -A %s)" ] && md5sum %s/* || true' % (dst, dst), get_output=True)
         
         # once you get it, compare them
-        for line in lines:
+        for line in lines.split('\n'):
             md5 = line[:32]
             fname = basename(line[32:].strip())
             
@@ -302,12 +343,10 @@ class RobotpyInstaller(object):
                 del local_files[fname]
         
         # Finally, copy the remaining files over
-        # -> TODO: going to have command line issues if there are too many files.. 
         if len(local_files) != 0:
             local_files = [join(src, file) for file in local_files.keys()]
-            self._scp(local_files)
-            
-            
+            self._sftp(local_files, dst)
+        
     def _get_opkg(self):
         return OpkgRepo(self.opkg_feed, self.opkg_arch, self.opkg_cache)
     
@@ -321,7 +360,9 @@ class RobotpyInstaller(object):
         options.packages = ['wpilib',
                             'robotpy-hal-base',
                             'robotpy-hal-roborio']
-
+        options.pre = False
+        options.upgrade = True
+        
         if options.basever is not None:
             options.packages = ['%s==%s' % (pkg, options.basever) for pkg in options.packages]
 
@@ -376,6 +417,10 @@ class RobotpyInstaller(object):
                             help='Install from the given requirements file. This option can be used multiple times.')
         parser.add_argument('--pre', action='store_true', default=False, 
                             help="Include pre-release and development versions.")
+        
+        # Should this always be enabled?
+        parser.add_argument('-U', '--upgrade', action='store_true', default=False,
+                            help="Upgrade packages (ignored when downloading, always downloads new packages)")
     
     def download(self, options):
         '''
@@ -403,7 +448,8 @@ class RobotpyInstaller(object):
     def install(self, options):
         '''
             Copies python packages over to the roboRIO, and installs them. If the
-            package already has been installed, it will be reinstalled.
+            package already has been installed, it will not be upgraded. Use -U to
+            upgrade a package.
         '''
         
         if len(options.requirement) == 0 and len(options.packages) == 0:
@@ -420,10 +466,16 @@ class RobotpyInstaller(object):
         # copy the pip cache over
         # .. this is inefficient
         print("Copying over the pip cache...")
-        retval = self._scp(self.pip_cache, '')
+        retval = self._poor_sync(self.pip_cache, 'pip_cache')
         
         print("Running installation...")
-        cmd = "/usr/local/bin/pip3 install --no-index --find-links=pip_cache -U "
+        cmd = "/usr/local/bin/pip3 install --no-index --find-links=pip_cache "
+        
+        if options.pre:
+            cmd += '--pre '
+        if options.upgrade:
+            cmd += '--upgrade '
+        
         cmd += ' '.join(options.packages)
     
         self._ssh(cmd)
