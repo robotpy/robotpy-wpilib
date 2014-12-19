@@ -50,6 +50,7 @@ NULL_PARAMETER = -1005
 ANALOG_TRIGGER_LIMIT_ORDER_ERROR = -1010
 ANALOG_TRIGGER_PULSE_OUTPUT_ERROR = -1011
 PARAMETER_OUT_OF_RANGE = -1028
+RESOURCE_IS_ALLOCATED = -1029
 
 #############################################################################
 # Semaphore
@@ -197,7 +198,8 @@ def _getHALErrorMessage(code):
         return "HAL: Attempted to read AnalogTrigger pulse output."
     elif code == PARAMETER_OUT_OF_RANGE:
         return "HAL: A parameter is out of range."
-
+    elif code == RESOURCE_IS_ALLOCATED:
+        return "HAL: A resource is already allocated."
     else:
         return "Unknown error status"
     
@@ -615,6 +617,19 @@ def checkRelayChannel(digital_port):
     return digital_port.pin < kRelayPins
 
 #
+# MXP
+#
+
+def remapMXPChannel(pin):
+    return pin - 10
+
+def remapMXPPWMChannel(pin):
+    if pin < 14:
+        return pin - 10
+    else:
+        return pin - 6
+
+#
 # PWM
 #
 
@@ -624,10 +639,22 @@ def setPWM(digital_port, value, status):
 
 def allocatePWMChannel(digital_port, status):
     status.value = 0
+
+    if digital_port.pin >= kNumHeaders:
+        mxp_port = remapMXPPWMChannel(digital_port.pin)
+        if hal_data["mxp"][mxp_port]["initialized"]:
+            status.value = RESOURCE_IS_ALLOCATED
+            return False
+
     if hal_data['pwm'][digital_port.pin]['initialized']:
+        status.value = RESOURCE_IS_ALLOCATED
         return False
     
     hal_data['pwm'][digital_port.pin]['initialized'] = True
+
+    if digital_port.pin >= kNumHeaders:
+        hal_data["mxp"][mxp_port]["initialized"] = True
+
     return True
 
 def freePWMChannel(digital_port, status):
@@ -637,6 +664,10 @@ def freePWMChannel(digital_port, status):
     hal_data['pwm'][digital_port.pin]['value'] = 0
     hal_data['pwm'][digital_port.pin]['period_scale'] = None
     hal_data['pwm'][digital_port.pin]['zero_latch'] = False
+
+    if digital_port.pin >= kNumHeaders:
+        mxp_port = remapMXPPWMChannel(digital_port.pin)
+        hal_data["mxp"][mxp_port]["initialized"] = False
 
 def getPWM(digital_port, status):
     status.value = 0
@@ -712,15 +743,27 @@ def getRelayReverse(digital_port, status):
 
 def allocateDIO(digital_port, input, status):
     status.value = 0
+    if digital_port.pin >= kNumHeaders:
+        mxp_port = remapMXPChannel(digital_port.pin)
+        if hal_data["mxp"][mxp_port]["initialized"]:
+            status.value = RESOURCE_IS_ALLOCATED
+            return False
     dio = hal_data['dio'][digital_port.pin]
     if dio['initialized']:
+        status.value = RESOURCE_IS_ALLOCATED
         return False
+    if digital_port.pin >= kNumHeaders:
+        hal_data["mxp"][mxp_port]["initialized"] = True
     dio['initialized'] = True
     dio['is_input'] = input
+
 
 def freeDIO(digital_port, status):
     status.value = 0
     hal_data['dio'][digital_port.pin]['initialized'] = False
+    if digital_port.pin >= kNumHeaders:
+        mxp_port = remapMXPChannel(digital_port.pin)
+        hal_data["mxp"][mxp_port]["initialized"] = False
 
 def setDIO(digital_port, value, status):
     status.value = 0

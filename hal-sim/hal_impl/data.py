@@ -226,6 +226,12 @@ def reset_hal_data(hooks):
             'rev': False,
 
         }) for _ in range(8)],
+
+        #Keep track of used MXP dio ports
+        'mxp': [{
+            'initialized': False,
+
+        } for _ in range(16)],
                 
         'dio': [NotifyDict({
             'has_source': False,
@@ -234,7 +240,7 @@ def reset_hal_data(hooks):
             'pulse_length': None,
             'is_input': False
             
-        }) for _ in range(10)],
+        }) for _ in range(26)],
         
         'encoder': [{
             'has_source': False,

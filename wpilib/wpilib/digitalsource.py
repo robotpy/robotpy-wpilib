@@ -46,6 +46,7 @@ class DigitalSource(InterruptableSensorBase):
 
         self._port = hal.initializeDigitalPort(hal.getPort(channel))
         hal.allocateDIO(self._port, True if input else False)
+
         self._port_finalizer = weakref.finalize(self, hal.freeDIO, self._port)
 
     @property
