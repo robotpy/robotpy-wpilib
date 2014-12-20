@@ -166,8 +166,18 @@ class OpkgRepo(object):
 
 def ssh_exec_pass(password, args, capture_output=False):
     '''
-        Send password to ssh/sftp. *nix only.
+        Wrapper around openssh that allows you to send a password to
+        ssh/sftp/scp et al similar to sshpass. *nix only, tested on linux
+        and OSX.
         
+        Not super robust, but works well enough for most purposes. Typical
+        usage might be::
+        
+            ssh_exec_pass('p@ssw0rd', ['ssh', 'root@1.2.3.4', 'echo hi!'])
+        
+        :param args: A list of args. arg[0] must be the command to run.
+        :param capture_output: If True, suppresses output to stdout and stores
+                               it in a buffer that is returned
         :returns: (retval, output)
     '''
 
