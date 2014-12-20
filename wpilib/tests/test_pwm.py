@@ -33,9 +33,9 @@ def test_pwm_create(hal, hal_data, wpilib):
     assert pwm.eliminateDeadband == False
     assert pwm.channel in hal_data['reports'][hal.HALUsageReporting.kResourceType_PWM]
 
-def test_pwm_allocate_error(wpilib):
+def test_pwm_allocate_error(wpilib, hal):
     _ = wpilib.PWM(5)
-    with pytest.raises(IndexError):
+    with pytest.raises(hal.HALError):
         _ = wpilib.PWM(5)
 
 def test_pwm_create_limits(wpilib):
