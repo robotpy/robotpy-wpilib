@@ -152,11 +152,11 @@ class TalonSRXConst:
 
     # mode select enumerations
     kMode_DutyCycle = 0
-    kMode_SlaveFollower = 1
-    kMode_VoltCompen = 2
-    kMode_PositionCloseLoop = 3
-    kMode_VelocityCloseLoop = 4
-    kMode_CurrentCloseLoop = 5
+    kMode_PositionCloseLoop = 1
+    kMode_VelocityCloseLoop = 2
+    kMode_CurrentCloseLoop = 3
+    kMode_VoltCompen = 4
+    kMode_SlaveFollower = 5
     kMode_NoDrive = 15
 
     # limit switch enumerations
