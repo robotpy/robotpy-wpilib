@@ -563,6 +563,7 @@ TalonSRX_SetFeedbackDeviceSelect = _CTRFUNC("c_TalonSRX_SetFeedbackDeviceSelect"
 TalonSRX_SetRevMotDuringCloseLoopEn = _CTRFUNC("c_TalonSRX_SetRevMotDuringCloseLoopEn", ("handle", TalonSRX_ptr), ("param", C.c_int))
 TalonSRX_SetOverrideBrakeType = _CTRFUNC("c_TalonSRX_SetOverrideBrakeType", ("handle", TalonSRX_ptr), ("param", C.c_int))
 TalonSRX_SetModeSelect = _CTRFUNC("c_TalonSRX_SetModeSelect", ("handle", TalonSRX_ptr), ("param", C.c_int))
+TalonSRX_SetModeSelect2 = _CTRFUNC("c_TalonSRX_SetModeSelect2", ("handle", TalonSRX_ptr), ("modeSelect", C.c_int), ("demand", C.c_int))
 TalonSRX_SetProfileSlotSelect = _CTRFUNC("c_TalonSRX_SetProfileSlotSelect", ("handle", TalonSRX_ptr), ("param", C.c_int))
 TalonSRX_SetRampThrottle = _CTRFUNC("c_TalonSRX_SetRampThrottle", ("handle", TalonSRX_ptr), ("param", C.c_int))
 TalonSRX_SetRevFeedbackSensor = _CTRFUNC("c_TalonSRX_SetRevFeedbackSensor", ("handle", TalonSRX_ptr), ("param", C.c_int))

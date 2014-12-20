@@ -1412,6 +1412,9 @@ def c_TalonSRX_SetOverrideBrakeType(handle, param):
 def c_TalonSRX_SetModeSelect(handle, param):
     assert False # TODO
 
+def c_TalonSRX_SetModeSelect2(handle, modeSelect, demand):
+    assert False # TODO
+
 def c_TalonSRX_SetProfileSlotSelect(handle, param):
     assert False # TODO
 
