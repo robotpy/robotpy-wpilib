@@ -209,6 +209,18 @@ class DriverStation:
         with self.mutex:
             return len(self.joystickPOVs[stick])
 
+    def getStickButtons(self, stick):
+        """The state of all the buttons on the joystick.
+
+        :param stick: The joystick port number
+        :returns: The state of all buttons, as a bit array.
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
+        with self.mutex:
+            return self.joystickButtons[stick]
+
     def getStickButton(self, stick, button):
         """The state of a button on the joystick.
 
