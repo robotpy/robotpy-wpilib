@@ -27,4 +27,4 @@ cp hal-roborio/dist/robotpy-hal-roborio-$VERSION.tar.gz $PIP_CACHE
 cp wpilib/dist/wpilib-$VERSION.tar.gz $PIP_CACHE
 
 # Run the install now
-python3 installer/installer.py install-robotpy --basever $VERSION --no-tools
+python3 installer/installer.py install robotpy-hal-base==$VERSION robotpy-hal-roborio==$VERSION wpilib==$VERSION
