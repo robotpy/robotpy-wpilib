@@ -15,6 +15,7 @@
 
 import argparse
 import configparser
+import getpass
 import hashlib
 import inspect
 import os
@@ -35,8 +36,6 @@ except ImportError:
     exit(1)
     
 is_windows = hasattr(sys, 'getwindowsversion')
-
-
 
 
 def md5sum(fname):
@@ -163,8 +162,88 @@ class OpkgRepo(object):
                     for kv in pkg.items():
                         fp.write('%s: %s\n' % kv)
                     fp.write('\n')
+
+
+def ssh_exec_pass(password, args, capture_output=False):
+    '''
+        Send password to ssh/sftp. *nix only.
+        
+        :returns: (retval, output)
+    '''
+
+    import pty, select
     
-class ArgError(Exception):
+    # create pipe for stdout
+    stdout_fd, w1_fd = os.pipe()
+    stderr_fd, w2_fd = os.pipe()
+    
+    pid, pty_fd = pty.fork()
+    if not pid:
+        # in child
+        os.close(stdout_fd)
+        os.close(stderr_fd)
+        os.dup2(w1_fd, 1)    # replace stdout on child
+        os.dup2(w2_fd, 2)    # replace stderr on child
+        os.close(w1_fd)
+        os.close(w2_fd)
+        
+        os.execv(args[0], args)
+    
+    os.close(w1_fd)
+    os.close(w2_fd)
+    
+    output = bytearray()
+    rd_fds = [stdout_fd, stderr_fd, pty_fd]
+    
+    def _read(fd):
+        if fd not in rd_ready:
+            return 
+        try:
+            data = os.read(fd, 1024)
+        except IOError:
+            data = None
+        if not data:
+            rd_fds.remove(fd) # EOF
+            
+        return data
+    
+    # Read data, etc
+    try:
+        while rd_fds:
+            
+            rd_ready, _, _ = select.select(rd_fds, [], [], 0.04)
+            
+            if rd_ready:
+                
+                # Deal with prompts from pty
+                data = _read(pty_fd)
+                if data is not None:
+                    if b'assword:' in data:
+                        os.write(pty_fd, bytes(password + '\n', 'utf-8'))
+                    elif b're you sure you want to continue connecting' in data:
+                        os.write(pty_fd, b'yes\n')
+                
+                # Deal with stdout
+                data = _read(stdout_fd)
+                if data is not None:
+                    if capture_output:
+                        output.extend(data)
+                    else:
+                        sys.stdout.write(data.decode('utf-8', 'ignore'))
+                        
+                data = _read(stderr_fd)
+                if data is not None:
+                    sys.stderr.write(data.decode('utf-8', 'ignore'))
+    finally:
+        os.close(pty_fd)
+        
+    pid, retval = os.waitpid(pid, 0)
+    return retval, output
+
+class Error(Exception):
+    pass
+  
+class ArgError(Error):
     pass
 
 class RobotpyInstaller(object):
@@ -208,7 +287,7 @@ class RobotpyInstaller(object):
             self.password = config['auth'].get('password', self.password)
             self.hostname = config['auth']['hostname']
         except KeyError as e:
-            raise ArgError("Error reading %s; delete it and try again" % self.cfg)
+            raise Error("Error reading %s; delete it and try again" % self.cfg)
     
     def _do_config(self):
         
@@ -218,7 +297,7 @@ class RobotpyInstaller(object):
             hostname = input('Robot hostname (like roborio-XXX.local, or an IP address): ')
         
         username = input('Username [%s]: ' % self.username)
-        password = input('Password [%s]: ' % self.password)
+        password = getpass.getpass('Password [%s]: ' % self.password)
         
         config = configparser.ConfigParser()
         config['auth'] = {}
@@ -240,49 +319,42 @@ class RobotpyInstaller(object):
     
     def _ssh(self, *args, get_output=False):
     
+        ssh_args = ['%s@%s' % (self.username, self.hostname)] + list(args)
+    
         # Check for requirements
         if is_windows:
             cmd = join(self.win_bins, 'plink.exe')
             
             # plink has a -pw argument we can use, which is nice
-            pw_args = [ '-pw', self.password ]
+            ssh_args = [cmd, '-pw', self.password ] + ssh_args
+            
+            try:
+                if get_output:
+                    return subprocess.check_output(ssh_args, universal_newlines=True)
+                else:
+                    subprocess.check_call(ssh_args)
+            except subprocess.CalledProcessError as e:
+                raise Error(e)
             
         else:
             cmd = shutil.which('ssh')
             if cmd is None:
-                raise ArgError("Cannot find ssh executable!")
+                raise Error("Cannot find ssh executable!")
+            
+            ssh_args = [cmd] + ssh_args
+            
+            retval, output = ssh_exec_pass(self.password, ssh_args, get_output)
+            if retval != 0:
+                raise Error('Command %s returned non-zero error status %s' % (ssh_args, retval))
+            return output.decode('utf-8')
         
-        ssh_args = [cmd, '%s@%s' % (self.username, self.hostname)] + list(args)
-        
-        try:
-            if get_output:
-                return subprocess.check_output(ssh_args, universal_newlines=True)
-            else:
-                return subprocess.check_call(ssh_args)
-        except subprocess.CalledProcessError as e:
-            raise ArgError(e)
     
     def _sftp(self, src, dst):
         '''
             src can be a single file, list of files, or directory
             dst is always a directory, for simplicity
         '''
-        
-        # Check for requirements
-        if is_windows:
-            cmd = join(self.win_bins, 'psftp.exe')
-            
-            # psftp has a -pw argument we can use, which is nice
-            sftp_args = [ cmd, '-pw', self.password ]
-            
-        else:
-            cmd = shutil.which('sftp')
-            if cmd is None:
-                raise ArgError("Cannot find sftp executable!")
-            
-            # Must disable BatchMode, else password interaction doesn't work
-            sftp_args = [cmd, '-oBatchMode=no']
-        
+         
         # Create the batch file
         # - psftp cares about the destination file to be exact
         # - sftp will accept a directory
@@ -299,13 +371,33 @@ class RobotpyInstaller(object):
                     for f in src:
                         fp.write('put "%s" "%s/%s"\n' % (f, dst, basename(f)))
             
-            sftp_args.extend(['-b', bfname,
-                              '%s@%s' % (self.username, self.hostname)])
+            sftp_args =['-b', bfname,
+                        '%s@%s' % (self.username, self.hostname)]
             
-            try:
-                return subprocess.check_call(sftp_args)
-            except subprocess.CalledProcessError as e:
-                raise ArgError(e)
+            
+            if is_windows:
+                cmd = join(self.win_bins, 'psftp.exe')
+                
+                # psftp has a -pw argument we can use, which is nice
+                sftp_args = [ cmd, '-pw', self.password ] + sftp_args
+                
+                try:
+                    subprocess.check_call(sftp_args)
+                except subprocess.CalledProcessError as e:
+                    raise Error(e)
+                
+            else:
+                cmd = shutil.which('sftp')
+                if cmd is None:
+                    raise Error("Cannot find sftp executable!")
+                
+                # Must disable BatchMode, else password interaction doesn't work
+                sftp_args = [cmd, '-oBatchMode=no'] + sftp_args
+                
+                retval, _ = ssh_exec_pass(self.password, sftp_args)
+                if retval != 0:
+                    raise Error('Command %s returned non-zero error status %s' % (ssh_args, retval))
+            
         finally:
             try:
                 os.unlink(bfname)
@@ -389,7 +481,7 @@ class RobotpyInstaller(object):
         try:
             fname = opkg.get_cached_pkg('python3')
         except OpkgError as e:
-            raise ArgError(e)
+            raise Error(e)
         
         # TODO: add to list of things to install..
         
@@ -489,7 +581,7 @@ def main(args=None):
 
     try:
         installer = RobotpyInstaller()
-    except ArgError as e:
+    except Error as e:
         print("ERROR: %s" % e)
         return 1
     
@@ -512,6 +604,9 @@ def main(args=None):
         retval = options.cmdobj(options)
     except ArgError as e:
         parser.error(str(e))
+        retval = 1
+    except Error as e:
+        sys.stderr.write(str(e) + '\n')
         retval = 1
     
     if retval is None:
