@@ -13,35 +13,38 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
     """Base class for all sensors.
     Stores most recent status information as well as containing utility
     functions for checking channels and error processing.
-
-    Class variables:
-
-    - kSystemClockTicksPerMicrosecond : Ticks per microsecond
-    - kDigitalChannels : Number of digital channels per roboRIO
-    - kAnalogInputChannels : Number of analog input channels
-    - kAnalogOutputChannels : Number of analog output channels
-    - kSolenoidChannels : Number of solenoid channels per module
-    - kSolenoidModules : Number of solenoid modules
-    - kPwmChannels : Number of PWM channels per roboRIO
-    - kRelayChannels : Number of relay channels per roboRIO
-    - kPDPChannels : Number of power distribution channels
-    - defaultSolenoidModule : Default solenoid module
-
-
     """
 
     # TODO: Move this to the HAL
 
+    #: Ticks per microsecond
     kSystemClockTicksPerMicrosecond = 40
+    
+    #: Number of digital channels per roboRIO
     kDigitalChannels = 26
+    
+    #: Number of analog input channels
     kAnalogInputChannels = 8
+    
+    #: Number of analog output channels
     kAnalogOutputChannels = 2
+    
+    #: Number of solenoid channels per module
     kSolenoidChannels = 8
+    
+    #: Number of solenoid modules
     kSolenoidModules = 2
+    
+    #: Number of PWM channels per roboRIO
     kPwmChannels = 20
+    
+    #: Number of relay channels per roboRIO
     kRelayChannels = 4
+    
+    #: Number of power distribution channels
     kPDPChannels = 16
 
+    #: Default solenoid module
     defaultSolenoidModule = 0
 
     @staticmethod
