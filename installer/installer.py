@@ -121,7 +121,7 @@ class OpkgRepo(object):
         return join(self.opkg_cache, basename(pkg['Filename']))
         
     def get_cached_pkg(self, name):
-        '''Returns the filename of a cached package'''
+        '''Returns the pkg, filename of a cached package'''
         pkg = self.get_pkginfo(name)
         fname = self._get_pkg_fname(pkg)
         
@@ -131,7 +131,7 @@ class OpkgRepo(object):
         if not md5sum(fname) == pkg['MD5Sum']:
             raise OpkgError('Cached package for %s md5sum does not match' % name)
         
-        return fname
+        return pkg, fname
         
     def download(self, name):
         
@@ -375,6 +375,7 @@ class RobotpyInstaller(object):
         bfp, bfname = tempfile.mkstemp(text=True)
         try:
             with os.fdopen(bfp, 'w') as fp:
+                fp.write('-mkdir "%s"\n' % dst)
                 if isinstance(src, str):
                     if isdir(src):
                         fp.write('put -r "%s" "%s"\n' % (src, dst))
@@ -409,7 +410,7 @@ class RobotpyInstaller(object):
                 
                 retval, _ = ssh_exec_pass(self.password, sftp_args)
                 if retval != 0:
-                    raise Error('Command %s returned non-zero error status %s' % (ssh_args, retval))
+                    raise Error('Command %s returned non-zero error status %s' % (sftp_args, retval))
             
         finally:
             try:
@@ -418,25 +419,38 @@ class RobotpyInstaller(object):
                 pass
     
     def _poor_sync(self, src, dst):
+        '''
+            :param src: Local file, list of files, or directory to sync
+            :param dst: Remote directory to copy file to
+            
+            .. warning:: if you use a list of files, they cannot have the same
+                         filename!
+        '''
         
         # Poor man's implementation of rsync. Why? Well..
         # -> Windows may not have rsync
         # -> The roborio does not have it by default (required on client and server side)
         # -> The cache may gather a lot of files, no sense copying all of them
         
-        if isdir(src):
-            files = os.listdir(src)
+        # files is a list of {fname: full_fname}
+        
+        if not isinstance(src, str):
+            files = {basename(f): f for f in src}
+            md5sum_cmd = 'md5sum %s || true' % ' '.join(['%s/%s' % (dst, f) for f in files.keys()])
+        elif isdir(src):
+            files = {f: join(src, f) for f in os.listdir(src)}
+            md5sum_cmd = '[ -n "$(ls -A %s)" ] && md5sum %s/* || true' % (dst, dst)
         else:
-            files = [basename(src)]
-            src = dirname(src)
+            files = {basename(src), src}
+            md5sum_cmd = 'md5sum %s/%s || true' % (dst, basename(src))
         
         local_files = {}
         
-        for file in files:
-            hash = md5sum(join(src, file))
-            local_files[file] = hash
+        for fname, full_fname in files.items():
+            hash = md5sum(full_fname)
+            local_files[fname] = hash
         
-        lines = self._ssh('[ -n "$(ls -A %s)" ] && md5sum %s/* || true' % (dst, dst), get_output=True)
+        lines = self._ssh(md5sum_cmd, get_output=True)
         
         # once you get it, compare them
         for line in lines.split('\n'):
@@ -449,7 +463,7 @@ class RobotpyInstaller(object):
         
         # Finally, copy the remaining files over
         if len(local_files) != 0:
-            local_files = [join(src, file) for file in local_files.keys()]
+            local_files = [files[file] for file in local_files.keys()]
             self._sftp(local_files, dst)
         
     def _get_opkg(self):
@@ -492,13 +506,36 @@ class RobotpyInstaller(object):
         opkg = self._get_opkg()
         
         try:
-            fname = opkg.get_cached_pkg('python3')
+            pkg, fname = opkg.get_cached_pkg('python3')
         except OpkgError as e:
             raise Error(e)
         
-        # TODO: add to list of things to install..
+        # Write out the install script
+        # -> we use a script because opkg doesn't have a good mechanism
+        #    to only install a package if it's not already installed
+        opkg_script_fname = join(self.opkg_cache, 'install_opkg.sh')
+        opkg_script = inspect.cleandoc('''
+            set -e
+            if ! opkg list-installed | grep -F '%(name)s - %(version)s'; then
+                opkg install opkg_cache/%(fname)s
+            else
+                echo "Python interpreter already installed, continuing..."
+            fi
+        ''')
         
-        return self.install(self._create_rpy_options(options))
+        opkg_script %= {
+            'fname': basename(fname),
+            'name': pkg['Package'],
+            'version': pkg['Version']
+        }
+        
+        with open(opkg_script_fname, 'w') as fp:
+            fp.write(opkg_script)
+        
+        self._poor_sync([fname, opkg_script_fname], 'opkg_cache')
+        extra_cmd = 'bash opkg_cache/install_opkg.sh'
+        
+        return self.install(self._create_rpy_options(options), extra_cmd=extra_cmd)
     
     # These share the same options
     download_robotpy_opts = install_robotpy_opts
@@ -550,7 +587,7 @@ class RobotpyInstaller(object):
     # These share the same options
     install_opts = download_opts
     
-    def install(self, options):
+    def install(self, options, extra_cmd=None):
         '''
             Copies python packages over to the roboRIO, and installs them. If the
             package already has been installed, it will not be upgraded. Use -U to
@@ -582,7 +619,12 @@ class RobotpyInstaller(object):
             cmd += '--upgrade '
         
         cmd += ' '.join(options.packages)
-    
+        
+        # This is here so we can execute the install-robotpy commands without
+        # a separate SSH connection.
+        if extra_cmd is not None:
+            cmd = extra_cmd + ' && ' + cmd
+        
         self._ssh(cmd)
         
         print("Done.")
