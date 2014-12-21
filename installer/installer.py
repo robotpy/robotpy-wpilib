@@ -112,7 +112,10 @@ class OpkgRepo(object):
             pkgs.append(pkg)
     
     def get_pkginfo(self, name):
-        return self.pkgs[name][-1]
+        try:
+            return self.pkgs[name][-1]
+        except KeyError:
+            raise OpkgError("Package '%s' is not in the package list (have you downloaded it yet?)" % name)
         
     def _get_pkg_fname(self, pkg):
         return join(self.opkg_cache, basename(pkg['Filename']))
@@ -123,7 +126,7 @@ class OpkgRepo(object):
         fname = self._get_pkg_fname(pkg)
         
         if not exists(fname):
-            raise OpkgError('Cached package for %s does not exist' % name)
+            raise OpkgError("Package '%s' has not been downloaded into the cache" % name)
         
         if not md5sum(fname) == pkg['MD5Sum']:
             raise OpkgError('Cached package for %s md5sum does not match' % name)
