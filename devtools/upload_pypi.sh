@@ -2,6 +2,7 @@
 
 set -e 
 cd `dirname $0`
+source _windows_env.sh
 source _gitver.sh
 
 echo "Starting upload process for RobotPy $VERSION"
@@ -16,7 +17,7 @@ wpilib/tests/run_tests.sh
 echo "Testing package build"
 for i in hal-base hal-roborio wpilib; do 
     pushd $i
-    python setup.py sdist
+    python3 setup.py sdist --formats=gztar
     popd
 done
 
@@ -24,7 +25,7 @@ done
 echo "Doing upload!"
 for i in hal-base hal-roborio wpilib; do 
     pushd $i
-    #python setup.py sdist upload
+    #python3 setup.py sdist --formats=gztar upload
     popd
 done
 

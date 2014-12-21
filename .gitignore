@@ -28,7 +28,7 @@ version.py
 
 # Installer files
 installer/pip_cache
-installer/opk_cache
+installer/opkg_cache
 installer/.installer_config
 
 installer/win32/*.exe

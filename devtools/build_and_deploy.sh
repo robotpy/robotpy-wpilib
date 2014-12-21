@@ -8,8 +8,10 @@
 # installed, or it must be present in the pip_cache
 
 set -e
+cd `dirname $0`
+source _windows_env.sh
 
-cd `dirname $0`/..
+cd ..
 VERSION=`git describe --tags --dirty='-dirty'`
 
 PIP_CACHE="installer/pip_cache/"
@@ -18,7 +20,7 @@ PIP_CACHE="installer/pip_cache/"
 
 for i in hal-base hal-roborio wpilib; do 
     pushd $i
-    python setup.py sdist
+    python3 setup.py sdist --formats=gztar
     popd
 done
 

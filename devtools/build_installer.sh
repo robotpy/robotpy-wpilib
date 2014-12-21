@@ -2,6 +2,7 @@
 
 set -e 
 cd `dirname $0`
+source _windows_env.sh
 source _gitver.sh
 
 echo "Packaging RobotPy $VERSION"
