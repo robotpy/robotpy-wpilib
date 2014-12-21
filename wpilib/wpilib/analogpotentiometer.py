@@ -39,11 +39,13 @@ class AnalogPotentiometer(LiveWindowSendable):
             the zero value.  Defaults to 0.0 if unspecified.
         :type  offset: float
         """
+
         if not hasattr(channel, "getVoltage"):
             channel = AnalogInput(channel)
         self.analog_input = channel
         self.fullRange = fullRange
         self.offset = offset
+        self.init_analog_input = True
 
     def get(self):
         """Get the current reading of the potentiometer.
@@ -78,3 +80,9 @@ class AnalogPotentiometer(LiveWindowSendable):
     def stopLiveWindowMode(self):
         # don't have to do anything special when exiting the LiveWindow
         pass
+
+    def free(self):
+        if self.init_analog_input:
+            self.analog_input.free()
+            del self.analog_input
+            self.init_analog_input = False
