@@ -353,13 +353,7 @@ kAnalogOutputPins = 2
 kAccumulatorNumChannels = 2
 kAccumulatorChannels = [0, 1]
 
-def _checkAnalogIsFree(port):
-    if port.pin < kAnalogOutputPins:
-        assert hal_data['analog_out'][port.pin]['initialized'] == False
-    assert hal_data['analog_in'][port.pin]['initialized'] == False
-
 def initializeAnalogOutputPort(port, status):
-    _checkAnalogIsFree(port)
     status.value = 0
     hal_data['analog_out'][port.pin]['initialized'] = True
     return types.AnalogPort(port)
@@ -376,7 +370,6 @@ def checkAnalogOutputChannel(pin):
     return pin < kAnalogOutputPins
 
 def initializeAnalogInputPort(port, status):
-    _checkAnalogIsFree(port)
     status.value = 0
     hal_data['analog_in'][port.pin]['initialized'] = True
     return types.AnalogPort(port)
@@ -484,7 +477,6 @@ def getAccumulatorOutput(analog_port, status):
            hal_data['analog_in'][analog_port.pin]['accumulator_count'])
 
 def initializeAnalogTrigger(port, status):
-    _checkAnalogIsFree(port)
     status.value = 0
     return types.AnalogTrigger(port)
 
