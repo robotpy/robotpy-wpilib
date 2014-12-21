@@ -490,7 +490,7 @@ class RobotpyInstaller(object):
         options.packages = ['wpilib',
                             'robotpy-hal-base',
                             'robotpy-hal-roborio']
-        options.pre = False
+        options.pre = options.pre
         options.upgrade = True
         
         if options.basever is not None:
@@ -506,6 +506,8 @@ class RobotpyInstaller(object):
                             help='Install a specific version of WPILib et al')
         parser.add_argument('--no-tools', action='store_true', default=False,
                             help="Don't install robotpy-wpilib-utilities")
+        parser.add_argument('--pre', action='store_true', default=False, 
+                            help="Include pre-release and development versions.")
     
     def install_robotpy(self, options):
         '''

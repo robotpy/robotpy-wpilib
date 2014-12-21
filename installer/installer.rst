@@ -1,6 +1,11 @@
 
+.. _robotpy_installer:
+
 RobotPy Installer
 =================
+
+.. note:: This is not the RobotPy installation guide, see :ref:`getting_started`
+          if you're looking for that!
 
 Most FRC robots are not placed on networks that have access to the internet,
 particularly at competition arenas. The RobotPy installer is designed for 

@@ -11,14 +11,18 @@ Contents:
 .. toctree::
    :maxdepth: 4
    
-   installer
+   getting_started
+   guide/index
 
    wpilib
    wpilib.buttons
    wpilib.command
    wpilib.interfaces
    
+   installer
    internal
+   support
+   
 
 
 Indices and tables
