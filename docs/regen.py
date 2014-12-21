@@ -40,6 +40,7 @@ cls_doc = '''
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: initTable, getTable, getSmartDashboardType, updateTable, startLiveWindowMode, stopLiveWindowMode, valueChanged
 '''
 
 def heading(name, c):
