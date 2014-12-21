@@ -33,7 +33,7 @@ class DriverStation:
     def getInstance():
         """Gets the global instance of the DriverStation
 
-        :returns: DriverStation
+        :returns: :class:`DriverStation`
         """
         if not hasattr(DriverStation, "instance"):
             DriverStation.instance = DriverStation()
@@ -319,7 +319,7 @@ class DriverStation:
         """Get the current alliance from the FMS.
 
         :returns: The current alliance
-        :rtype: :class:`.Alliance`
+        :rtype: :class:`DriverStation.Alliance`
         """
         allianceStationID = hal.HALGetAllianceStation()
         if allianceStationID in (hal.kHALAllianceStationID_red1,

@@ -54,6 +54,7 @@ class DigitalOutput(DigitalSource):
         """Set the value of a digital output.
 
         :param value: True is on, off is False
+        :type  value: bool
         """
         if self.port is None:
             raise ValueError("operation on freed port")
@@ -70,6 +71,7 @@ class DigitalOutput(DigitalSource):
 
         :param channel: The channel to pulse.
         :param pulseLength: The length of the pulse.
+        :type  pulseLength: float
         """
         if self.port is None:
             raise ValueError("operation on freed port")
@@ -80,6 +82,7 @@ class DigitalOutput(DigitalSource):
         started pulse is still going.
 
         :returns: True if pulsing
+        :rtype: bool
         """
         if self.port is None:
             raise ValueError("operation on freed port")
@@ -94,6 +97,7 @@ class DigitalOutput(DigitalSource):
         There is only one PWM frequency for all channnels.
 
         :param rate: The frequency to output all digital output PWM signals.
+        :type  rate: float
         """
         hal.setPWMRate(rate)
 
@@ -109,6 +113,7 @@ class DigitalOutput(DigitalSource):
         less) but is reduced the higher the frequency of the PWM signal is.
 
         :param initialDutyCycle: The duty-cycle to start generating. [0..1]
+        :type  initialDutyCycle: float
         """
         if self.pwmGenerator is not None:
             return
@@ -135,6 +140,7 @@ class DigitalOutput(DigitalSource):
         less) but is reduced the higher the frequency of the PWM signal is.
 
         :param dutyCycle: The duty-cycle to change to. [0..1]
+        :type  dutyCycle: float
         """
         if self.pwmGenerator is None:
             return

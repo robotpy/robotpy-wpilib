@@ -31,6 +31,13 @@ class BuiltInAccelerometer(LiveWindowSendable):
                       "Built-in accelerometer")
 
     def setRange(self, range):
+        """Set the measuring range of the accelerometer.
+
+        :param range: The maximum acceleration, positive or negative, that
+                      the accelerometer will measure.
+        :type  range: :class:`BuiltInAccelerometer.Range`
+        """
+        
         hal.setAccelerometerActive(False)
 
         if range == self.Range.k2G:

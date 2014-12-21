@@ -30,8 +30,10 @@ class GearTooth(Counter):
 
         :param channel: The GPIO channel index or DigitalSource that the sensor
             is connected to.
+        :type channel: int
         :param directionSensitive: Enable the pulse length decoding in
             hardware to specify count direction.  Defaults to False.
+        :type directionSensitive: bool
         """
         super().__init__(channel)
         self.enableDirectionSensing(directionSensitive)

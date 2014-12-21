@@ -104,6 +104,7 @@ class Encoder(SensorBase):
             then a counter object will be used and the returned value will
             either exactly match the spec'd count or be double (2x) the
             spec'd count.  Defaults to k4X if unspecified.
+        :type encodingType: :class:`Encoder.EncodingType`
         """
         a_source_arg = ("aSource", HasAttribute("getChannelForRouting"))
         b_source_arg = ("bSource", HasAttribute("getChannelForRouting"))

@@ -277,7 +277,9 @@ class Counter(SensorBase):
         source to either detect rising edges or falling edges.
 
         :param risingEdge: True to count rising edge
+        :type  risingEdge: bool
         :param fallingEdge: True to count falling edge
+        :type  fallingEdge: bool
         """
         if self.upSource is None:
             raise ValueError("Up Source must be set before setting the edge")
@@ -370,7 +372,9 @@ class Counter(SensorBase):
         source to either detect rising edges or falling edges.
 
         :param risingEdge: True to count rising edge
+        :type  risingEdge: bool
         :param fallingEdge: True to count falling edge
+        :type  fallingEdge: bool
         """
         if self.downSource is None:
             raise ValueError("Down Source must be set before setting the edge")
@@ -408,6 +412,7 @@ class Counter(SensorBase):
         falling edges.
 
         :param highSemiPeriod: True to count up on both rising and falling
+        :type  highSemiPeriod: bool
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -420,6 +425,7 @@ class Counter(SensorBase):
 
         :param threshold: The pulse length beyond which the counter counts the
             opposite direction. Units are seconds.
+        :type  threshold: float
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -439,6 +445,7 @@ class Counter(SensorBase):
         instant, scaled by the distance per pulse (defaults to 1).
 
         :returns: Scaled value
+        :rtype: float
         """
         return self.get() * self.distancePerPulse
 
@@ -459,6 +466,7 @@ class Counter(SensorBase):
 
         :param maxPeriod: The maximum period where the counted device is
             considered moving in seconds.
+        :type maxPeriod: float
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -480,6 +488,7 @@ class Counter(SensorBase):
         there are no samples to average).
 
         :param enabled: True to continue updating
+        :type  enabled: bool
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -494,6 +503,7 @@ class Counter(SensorBase):
 
         :returns: Returns True if the most recent counter period exceeds the
             MaxPeriod value set by SetMaxPeriod.
+        :rtype: bool
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -503,6 +513,7 @@ class Counter(SensorBase):
         """The last direction the counter value changed.
 
         :returns: The last direction the counter value changed.
+        :rtype: bool
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -515,6 +526,7 @@ class Counter(SensorBase):
         supported.
 
         :param reverseDirection: True if the value counted should be negated.
+        :type  reverseDirection: bool 
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -526,6 +538,7 @@ class Counter(SensorBase):
         to determine shaft speed.
 
         :returns: The period of the last two pulses in units of seconds.
+        :rtype: float
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -537,6 +550,7 @@ class Counter(SensorBase):
         value for distance per pulse (1) yields units of pulses per second.
 
         :returns: The rate in units/sec
+        :rtype: float
         """
         return self.distancePerPulse / self.getPeriod()
 
@@ -546,8 +560,8 @@ class Counter(SensorBase):
         to account for mechanical imperfections or as oversampling to increase
         resolution.
 
-        :param samplesToAverage:
-            The number of samples to average from 1 to 127.
+        :param samplesToAverage: The number of samples to average from 1 to 127.
+        :type  samplesToAverage: int
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -560,6 +574,7 @@ class Counter(SensorBase):
         resolution.
 
         :returns: The number of samples being averaged (from 1 to 127)
+        :rtype: int
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
@@ -575,6 +590,7 @@ class Counter(SensorBase):
         :param distancePerPulse:
             The scale factor that will be used to convert pulses to useful
             units.
+        :type  distancePerPulse: float
         """
         self.distancePerPulse = distancePerPulse
 
@@ -584,9 +600,11 @@ class Counter(SensorBase):
         parameters.
 
         :param pidSource: An enum to select the parameter.
+        :type  pidSource: :class:`Counter.PIDSourceParameter`
         """
-        if pidSource not in (0, 1):
-            raise ValueError("invalid pidSource: %s" % pidSource)
+        if pidSource not in (self.PIDSourceParameter.kDistance,
+                             self.PIDSourceParameter.kRate):
+            raise ValueError("Invalid pidSource argument '%s'" % pidSource)
         self.pidSource = pidSource
 
     def pidGet(self):
