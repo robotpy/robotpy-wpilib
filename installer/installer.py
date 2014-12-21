@@ -362,7 +362,7 @@ class RobotpyInstaller(object):
             return output.decode('utf-8')
         
     
-    def _sftp(self, src, dst):
+    def _sftp(self, src, dst, mkdir=True):
         '''
             src can be a single file, list of files, or directory
             dst is always a directory, for simplicity
@@ -375,7 +375,8 @@ class RobotpyInstaller(object):
         bfp, bfname = tempfile.mkstemp(text=True)
         try:
             with os.fdopen(bfp, 'w') as fp:
-                fp.write('-mkdir "%s"\n' % dst)
+                if mkdir:
+                    fp.write('mkdir "%s"\n' % dst)
                 if isinstance(src, str):
                     if isdir(src):
                         fp.write('put -r "%s" "%s"\n' % (src, dst))
@@ -436,13 +437,13 @@ class RobotpyInstaller(object):
         
         if not isinstance(src, str):
             files = {basename(f): f for f in src}
-            md5sum_cmd = 'md5sum %s || true' % ' '.join(['%s/%s' % (dst, f) for f in files.keys()])
+            md5sum_cmd = 'md5sum %s 2> /dev/null' % ' '.join(['%s/%s' % (dst, f) for f in files.keys()])
         elif isdir(src):
             files = {f: join(src, f) for f in os.listdir(src)}
-            md5sum_cmd = '[ -n "$(ls -A %s)" ] && md5sum %s/* || true' % (dst, dst)
+            md5sum_cmd = 'md5sum %s/* 2> /dev/null' % (dst)
         else:
             files = {basename(src), src}
-            md5sum_cmd = 'md5sum %s/%s || true' % (dst, basename(src))
+            md5sum_cmd = 'md5sum %s/%s 2> /dev/null' % (dst, basename(src))
         
         local_files = {}
         
@@ -450,10 +451,20 @@ class RobotpyInstaller(object):
             hash = md5sum(full_fname)
             local_files[fname] = hash
         
-        lines = self._ssh(md5sum_cmd, get_output=True)
+        # Hack to determine if the directory actually exists, so that 
+        # we create it before putting the files over (necessary because
+        # sftp doesn't behave predictably in a cross platform manner 
+        # when mkdir fails)
+        mkdir = False
+        ssh_cmd = md5sum_cmd + '; [ -d "%s" ]; echo $?' % dst
+        
+        lines = self._ssh(ssh_cmd, get_output=True)
         
         # once you get it, compare them
         for line in lines.split('\n'):
+            if len(line) == 1:
+                mkdir = (line == '1')
+                continue
             md5 = line[:32]
             fname = basename(line[32:].strip())
             
@@ -464,7 +475,7 @@ class RobotpyInstaller(object):
         # Finally, copy the remaining files over
         if len(local_files) != 0:
             local_files = [files[file] for file in local_files.keys()]
-            self._sftp(local_files, dst)
+            self._sftp(local_files, dst, mkdir=mkdir)
         
     def _get_opkg(self):
         return OpkgRepo(self.opkg_feed, self.opkg_arch, self.opkg_cache)
@@ -529,7 +540,7 @@ class RobotpyInstaller(object):
             'version': pkg['Version']
         }
         
-        with open(opkg_script_fname, 'w') as fp:
+        with open(opkg_script_fname, 'w', newline='\n') as fp:
             fp.write(opkg_script)
         
         self._poor_sync([fname, opkg_script_fname], 'opkg_cache')
