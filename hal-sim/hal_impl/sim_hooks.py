@@ -20,7 +20,7 @@ class SimHooks:
         return int((time.monotonic() - hal_data['time']['program_start']) * 1000000)
     
     def delayMillis(self, ms):
-        time.sleep(1000*ms)
+        time.sleep(.001*ms)
     
     def delaySeconds(self, s):
         time.sleep(s)

@@ -1,83 +1,6 @@
-'''
-    Various helper functions useful for interacting with the HAL data
-'''
-
 from . import data
 from .data import hal_data
-from . import functions as fns
-    
-def notify_new_ds_data():
-    '''Called when driver station data is modified'''
-    
-    if data.hal_newdata_sem is not None:
-        fns.giveMultiWait(data.hal_newdata_sem)
 
-
-def set_autonomous(enabled):
-    '''Only designed to be called on transition'''
-    
-    hal_data['control'].update({
-        'autonomous': True,
-        'test': False,
-        'enabled': enabled,
-        'ds_attached': True
-    })
-    
-    if enabled:
-        hal_data['time']['match_start'] = fns.hooks.getFPGATime()
-    else:
-        hal_data['time']['match_start'] = None
-    
-    notify_new_ds_data()
-    
-
-def set_test_mode(enabled):
-    '''Only designed to be called on transition'''
-    
-    hal_data['control'].update({
-        'autonomous': False,
-        'test': True,
-        'enabled': enabled,
-        'ds_attached': True
-    })
-    
-    hal_data['time']['match_start'] = None
-    notify_new_ds_data()
-    
-
-def set_teleop_mode(enabled):
-    '''Only designed to be called on transition'''
-    
-    hal_data['control'].update({
-        'autonomous': False,
-        'test': False,
-        'enabled': enabled,
-        'ds_attached': True
-    })
-    
-    if enabled:
-        hal_data['time']['match_start'] = fns.hooks.getFPGATime() - 15000000
-    else:
-        hal_data['time']['match_start'] = None
-    
-    notify_new_ds_data()
-
-
-def set_disabled():
-    '''Only designed to be called on transition'''
-    
-    hal_data['control'].update({
-        'autonomous': False,
-        'test': False,
-        'enabled': False,
-        'ds_attached': True
-    })
-    
-    hal_data['time']['match_start'] = None
-    
-    notify_new_ds_data()
-        
-    
 #
 # Various functions that allow us to reverse the HW values used by HAL, as
 # dealing directly with HW values is annoying
@@ -143,6 +66,44 @@ def reverseVictorSPPWM(value):
     
     return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
 
+def reverseByType(defining_val , value=None):
+    ''' 
+        Returns translated value type based on the type value of the pwm hal_data
+        entry
+        
+        :param defining_val:  Either a string that defines the type of pwm this should be or
+                              a number defining the instance we should be reversing
+        :param value:         raw value to transform, not used if defining_val int defining an instance
+        :returns:             value between -1 and 1
+    '''
+    if isinstance(defining_val, str):
+        type = defining_val.lower()
+        if value != None:
+            trans_val = value
+        else:
+            raise ValueError("Must have a value to translate")
+    
+    else:
+        type = hal_data['pwm'][defining_val]['type']
+        trans_val = hal_data['pwm'][defining_val]['raw_value']
+    
+    if type == 'jaguar':
+        return reverseJaguarPWM(trans_val)
+    elif type == 'talon':
+        return reverseTalonPWM(trans_val)
+    elif type == 'talonsrx':
+        return reverseTalonSRXPWM(trans_val)
+    elif type == 'victor':
+        return reverseVictorPWM(trans_val)
+    elif type == 'victorsp':
+        return reverseVictorSPPWM(trans_val)
+    else:
+        # hal may not have been reported to yet so just set this to zero
+        if type != None:
+            raise   TypeError('The type ' + str(type) + 'is not a useable motor controller type')
+        
+        return 0
+
 def rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale):
     # basically the PWM.getSpeed function
     if value > max_pos_pwm:
@@ -155,4 +116,3 @@ def rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm
         return float(value - max_neg_pwm) / neg_scale
     else:
         return 0.0
-

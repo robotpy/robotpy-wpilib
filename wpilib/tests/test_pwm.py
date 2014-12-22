@@ -82,21 +82,21 @@ def test_pwm_getChannel(pwm):
 @pytest.mark.parametrize("param,expected", [(0.5, 1000), (0.25, 750)])
 def test_setPosition(param, expected, boundpwm, pwm_data):
     boundpwm.setPosition(param)
-    assert pwm_data['value'] == expected
+    assert pwm_data['raw_value'] == expected
 
 @pytest.mark.parametrize("param,expected", [(1.5, 1500), (-0.5, 500)])
 def test_setPosition_limits(param, expected, boundpwm, pwm_data):
     boundpwm.setPosition(param)
-    assert pwm_data['value'] == expected
+    assert pwm_data['raw_value'] == expected
 
 @pytest.mark.parametrize("param,expected", [(1000, 0.5), (750, 0.25)])
 def test_getPosition(param, expected, boundpwm, pwm_data):
-    pwm_data['value'] = param
+    pwm_data['raw_value'] = param
     assert boundpwm.getPosition() == expected
 
 @pytest.mark.parametrize("param,expected", [(1600, 1.0), (400, 0.0)])
 def test_getPosition_limits(param, expected, boundpwm, pwm_data):
-    pwm_data['value'] = param
+    pwm_data['raw_value'] = param
     assert boundpwm.getPosition() == expected
 
 @pytest.mark.parametrize("db,param,expected",
@@ -107,12 +107,12 @@ def test_getPosition_limits(param, expected, boundpwm, pwm_data):
 def test_setSpeed(db, param, expected, boundpwm, pwm_data):
     boundpwm.eliminateDeadband = db
     boundpwm.setSpeed(param)
-    assert pwm_data['value'] == expected
+    assert pwm_data['raw_value'] == expected
 
 @pytest.mark.parametrize("param,expected", [(1.5, 1500), (-1.5, 500)])
 def test_setSpeed_limits(param, expected, boundpwm, pwm_data):
     boundpwm.setSpeed(param)
-    assert pwm_data['value'] == expected
+    assert pwm_data['raw_value'] == expected
 
 @pytest.mark.parametrize("db,param,expected",
         # no deadband elimination results in direct scaling from center
@@ -124,26 +124,26 @@ def test_setSpeed_limits(param, expected, boundpwm, pwm_data):
 def test_getSpeed(db, param, expected, boundpwm, pwm_data):
     # no deadband elimination
     boundpwm.eliminateDeadband = db
-    pwm_data['value'] = param
+    pwm_data['raw_value'] = param
     assert round(boundpwm.getSpeed(), 2) == expected
 
 @pytest.mark.parametrize("param,expected", [(1600, 1.0), (400, -1.0)])
 def test_getSpeed_limits(param, expected, boundpwm, pwm_data):
-    pwm_data['value'] = param
+    pwm_data['raw_value'] = param
     assert boundpwm.getSpeed() == expected
 
 def test_pwm_setRaw(pwm, pwm_data):
     pwm.setRaw(60)
-    assert pwm_data['value'] == 60
+    assert pwm_data['raw_value'] == 60
 
 def test_pwm_setRaw_freed(pwm, pwm_data):
     pwm.free()
     with pytest.raises(ValueError):
         pwm.setRaw(60)
-    assert pwm_data['value'] == 0
+    assert pwm_data['raw_value'] == 0
 
 def test_pwm_getRaw(pwm, pwm_data):
-    pwm_data['value'] = 1234
+    pwm_data['raw_value'] = 1234
     assert pwm.getRaw() == 1234
 
 def test_pwm_getRaw_freed(pwm):
@@ -232,12 +232,12 @@ def test_pwm_valueChanged(pwm):
     pwm.setSpeed.assert_called_once_with(0.5)
     
 def test_pwm_startLiveWindowMode(boundpwm, pwm_data):
-    pwm_data['value'] = 3000
+    pwm_data['raw_value'] = 3000
     boundpwm.startLiveWindowMode()
-    assert pwm_data['value'] == 1000
+    assert pwm_data['raw_value'] == 1000
     
 def test_pwm_stopLiveWindowMode(boundpwm, pwm_data):
-    pwm_data['value'] = 3000
+    pwm_data['raw_value'] = 3000
     boundpwm.stopLiveWindowMode()
-    assert pwm_data['value'] == 1000
+    assert pwm_data['raw_value'] == 1000
 
