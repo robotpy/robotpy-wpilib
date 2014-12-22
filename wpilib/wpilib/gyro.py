@@ -61,8 +61,10 @@ class Gyro(SensorBase):
 
         self.analog.initAccumulator()
         self.analog.resetAccumulator()
-
-        Timer.delay(Gyro.kCalibrationSampleTime)
+        
+        # Only do this on a real robot
+        if not hal.HALIsSimulation():
+            Timer.delay(Gyro.kCalibrationSampleTime)
 
         value, count = self.analog.getAccumulatorOutput()
 
