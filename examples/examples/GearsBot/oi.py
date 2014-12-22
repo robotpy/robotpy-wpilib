@@ -22,7 +22,7 @@ class OI:
         self.joy = wpilib.Joystick(0)
         
         # Put Some buttons on the SmartDashboard
-        wpilib.SmartDashboard.putData("Elevator Bottom", SetElevatorSetpoint(robot, 0));
+        SmartDashboard.putData("Elevator Bottom", SetElevatorSetpoint(robot, 0));
         SmartDashboard.putData("Elevator Platform", SetElevatorSetpoint(robot, 0.2));
         SmartDashboard.putData("Elevator Top", SetElevatorSetpoint(robot, 0.3));
         
