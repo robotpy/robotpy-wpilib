@@ -117,6 +117,8 @@ class RobotDrive(MotorSafety):
             not hasattr(self.rearRightMotor, "set")):
             self.rearRightMotor = cls(self.rearRightMotor)
 
+        self.allocatedSpeedControllers = True
+
         # all motors start non-inverted
         self.invertedMotors = [1]*self.kMaxNumberOfMotors
 
@@ -131,6 +133,7 @@ class RobotDrive(MotorSafety):
 
         # start off not moving
         self.setLeftRightMotorOutputs(0, 0)
+
 
     def drive(self, outputMagnitude, curve):
         """Drive the motors at "speed" and "curve".
@@ -637,3 +640,22 @@ class RobotDrive(MotorSafety):
         if self.rearLeftMotor is not None: motors += 1
         if self.rearRightMotor is not None: motors += 1
         return motors
+
+    def free(self):
+        """
+        Free the speed controllers if they were allocated locally
+        """
+        if self.frontLeftMotor is not None:
+            self.frontLeftMotor.free()
+        self.frontLeftMotor = None
+        if self.frontRightMotor is not None:
+            self.frontRightMotor.free()
+        self.frontRightMotor = None
+        if self.rearLeftMotor is not None:
+            self.rearLeftMotor.free()
+        self.rearLeftMotor = None
+        if self.rearRightMotor is not None:
+            self.rearRightMotor.free()
+        self.rearRightMotor = None
+        self.setSafetyEnabled(False)
+
