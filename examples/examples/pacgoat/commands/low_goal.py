@@ -1,3 +1,4 @@
+
 from wpilib.command import CommandGroup
 
 from subsystems.collector import Collector
@@ -7,7 +8,6 @@ from .extend_shooter import ExtendShooter
 from .set_collection_speed import SetCollectionSpeed
 from .set_pivot_setpoint import SetPivotSetpoint
 
-#TODO Check this when done
 
 class LowGoal(CommandGroup):
     """Spit the ball out into the low goal assuming that the robot is in front of it."""

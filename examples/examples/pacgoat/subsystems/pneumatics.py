@@ -11,25 +11,33 @@ class Pneumatics(Subsystem):
     MAX_PRESSURE = 2.55
 
     def __init__(self, robot):
+        super().__init__()
         self.robot = robot
-        self.pressure_sensor = wpilib.AnalogInput(2)
-        if robot.is_real():
+        
+        self.pressureSensor = wpilib.AnalogInput(3)
+        if robot.isReal():
             self.compressor = wpilib.Compressor()
 
-        wpilib.LiveWindow.addSensor("Pneumatics", "Pressure Sensor", self.pressure_sensor)
-        super().__init__()
+        wpilib.LiveWindow.addSensor("Pneumatics", "Pressure Sensor", self.pressureSensor)
+        
 
     def initDefaultCommand(self):
         """No default command."""
         pass
 
     def start(self):
+        """Start the compressor going. The compressor automatically starts and
+        stops as it goes above and below maximum pressure."""
+        if self.robot.isReal():
+            self.compressor.start()
+        
+    def isPressurized(self):
         """:return Whether or not the system is fully pressurized"""
-        if self.robot.is_real():
-            return self.MAX_PRESSURE <= self.pressure_sensor.getVoltage()
+        if self.robot.isReal():
+            return self.MAX_PRESSURE <= self.pressureSensor.getVoltage()
         else:
             return True
 
-    def write_pressure(self):
+    def writePressure(self):
         """Puts the pressure on the SmartDashboard."""
-        wpilib.SmartDashboard.putNumber("Pressure", self.pressure_sensor.getVoltage())
+        wpilib.SmartDashboard.putNumber("Pressure", self.pressureSensor.getVoltage())

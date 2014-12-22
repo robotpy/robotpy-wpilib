@@ -1,5 +1,5 @@
+
 from wpilib.command import Command
-#TODO Check this when done
 
 
 class WaitForPressure(Command):
@@ -24,7 +24,7 @@ class WaitForPressure(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return self.robot.pneumatics.is_pressurized()
+        return self.robot.pneumatics.isPressurized()
 
     def end(self):
         """Called once after isFinished returns true"""

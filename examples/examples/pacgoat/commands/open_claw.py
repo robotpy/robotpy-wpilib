@@ -21,7 +21,7 @@ class OpenClaw(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return self.robot.collector.is_open()
+        return self.robot.collector.isOpen()
 
     def end(self):
         """Called once after isFinished returns true"""

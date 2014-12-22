@@ -1,5 +1,6 @@
+
 from wpilib.command import Command
-#TODO Check this when done
+
 
 class DriveWithJoystick(Command):
     """
@@ -18,7 +19,7 @@ class DriveWithJoystick(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        self.robot.drivetrain.tankDrive(self.robot.oi.get_joystick())
+        self.robot.drivetrain.tankDriveJoystick(self.robot.oi.getJoystick())
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""

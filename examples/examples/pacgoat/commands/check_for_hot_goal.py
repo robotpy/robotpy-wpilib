@@ -1,7 +1,5 @@
+
 from wpilib.command import Command
-
-#TODO finish this
-
 
 class CheckForHotGoal(Command):
     """
@@ -16,16 +14,22 @@ class CheckForHotGoal(Command):
         self.setTimeout(time)
 
     def initialize(self):
+        """Called just before this Command runs the first time"""
         pass
 
     def execute(self):
+        """Called repeatedly when this Command is scheduled to run"""
         pass
 
     def isFinished(self):
-        return self.isTimedOut() or self.robot.shooter.goal_is_hot()
+        """Make this return true when this Command no longer needs to run execute()"""
+        return self.isTimedOut() or self.robot.shooter.goalIsHot()
 
     def end(self):
+        """Called once after isFinished returns true"""
         pass
 
     def interrupted(self):
+        """Called when another command which requires one or more of the same
+        subsystems is scheduled to run"""
         self.end()

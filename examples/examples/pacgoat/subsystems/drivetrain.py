@@ -1,6 +1,9 @@
-import wpilib
+
 import math
+
+import wpilib
 from wpilib.command import Subsystem
+
 from commands.drive_with_joystick import DriveWithJoystick
 
 
@@ -14,19 +17,19 @@ class DriveTrain(Subsystem):
 
         self.robot = robot
 
-        #Configure drive motors
-        self.front_left_cim = wpilib.Victor(0)
-        self.front_right_cim = wpilib.Victor(1)
-        self.back_left_cim = wpilib.Victor(2)
-        self.back_right_cim = wpilib.Victor(3)
-        wpilib.LiveWindow.addActuator("DriveTrain", "Front Left CIM", self.front_left_cim)
-        wpilib.LiveWindow.addActuator("DriveTrain", "Front Right CIM", self.front_right_cim)
-        wpilib.LiveWindow.addActuator("DriveTrain", "Back Left CIM", self.back_left_cim)
-        wpilib.LiveWindow.addActuator("DriveTrain", "Back Right CIM", self.back_right_cim)
+        # Configure drive motors
+        self.frontLeftCIM = wpilib.Victor(1)
+        self.frontRightCIM = wpilib.Victor(2)
+        self.backLeftCIM = wpilib.Victor(3)
+        self.backRightCIM = wpilib.Victor(4)
+        wpilib.LiveWindow.addActuator("DriveTrain", "Front Left CIM", self.frontLeftCIM)
+        wpilib.LiveWindow.addActuator("DriveTrain", "Front Right CIM", self.frontRightCIM)
+        wpilib.LiveWindow.addActuator("DriveTrain", "Back Left CIM", self.backLeftCIM)
+        wpilib.LiveWindow.addActuator("DriveTrain", "Back Right CIM", self.backRightCIM)
 
-        #Configure the RobotDrive to reflect the fact that all our motors are
-        #wired backwards and our drivers sensitivity preferences.
-        self.drive = wpilib.RobotDrive(self.front_left_cim, self.front_right_cim, self.back_left_cim, self.back_right_cim)
+        # Configure the RobotDrive to reflect the fact that all our motors are
+        # wired backwards and our drivers sensitivity preferences.
+        self.drive = wpilib.RobotDrive(self.frontLeftCIM, self.frontRightCIM, self.backLeftCIM, self.backRightCIM)
         self.drive.setSafetyEnabled(True)
         self.drive.setExpiration(.1)
         self.drive.setSensitivity(.5)
@@ -36,28 +39,35 @@ class DriveTrain(Subsystem):
         self.drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kRearLeft, True)
         self.drive.setInvertedMotor(wpilib.RobotDrive.MotorType.kRearRight, True)
 
-        #Configure encoders
-        self.right_encoder = wpilib.Encoder(0, 1, reverseDirection=True)
-        #self.left_encoder = wpilib.Encoder(2, 3, reverseDirection=False)
-        self.right_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
-        #self.left_encoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
+        # Configure encoders
+        self.rightEncoder = wpilib.Encoder(1, 2,
+                                           reverseDirection=True,
+                                           encodingType=wpilib.Encoder.EncodingType.k4X)
+        self.leftEncoder = wpilib.Encoder(3, 4,
+                                          reverseDirection=False,
+                                          encodingType=wpilib.Encoder.EncodingType.k4X)
+        self.rightEncoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
+        self.leftEncoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
 
-        if robot.is_real():
-            #Converts to feet
-            self.right_encoder.setDistancePerPulse(0.0785398)
-            #self.left_encoder.setDistancePerPulse(0.0785398)
+        if robot.isReal():
+            # Converts to feet
+            self.rightEncoder.setDistancePerPulse(0.0785398)
+            self.leftEncoder.setDistancePerPulse(0.0785398)
         else:
-            #Convert to feet 4in diameter wheels with 360 tick simulated encoders.
-            self.right_encoder.setDistancePerPulse((4*math.pi)/(360*12))
-            #self.left_encoder.setDistancePerPulse((4*math.pi)/(360*12))
+            # Convert to feet 4in diameter wheels with 360 tick simulated encoders.
+            self.rightEncoder.setDistancePerPulse((4*math.pi)/(360*12))
+            self.leftEncoder.setDistancePerPulse((4*math.pi)/(360*12))
 
-        wpilib.LiveWindow.addSensor("DriveTrain", "Right Encoder", self.right_encoder)
-        #wpilib.LiveWindow.addSensor("DriveTrain", "Left Encoder", self.left_encoder)
+        wpilib.LiveWindow.addSensor("DriveTrain", "Right Encoder", self.rightEncoder)
+        wpilib.LiveWindow.addSensor("DriveTrain", "Left Encoder", self.leftEncoder)
 
-        #Configure gyro
-        self.gyro = wpilib.Gyro(1)
-        if robot.is_real():
-            #TODO: Handle more gracefully
+        # Configure gyro
+        # -> the original pacgoat example is at channel 2, but that was before WPILib
+        #    moved to zero-based indexing. You need to change the gyro channel in
+        #    /usr/share/frcsim/models/PacGoat/robots/PacGoat.SDF, from 2 to 0. 
+        self.gyro = wpilib.Gyro(0)
+        if robot.isReal():
+            # TODO: Handle more gracefully
             self.gyro.setSensitivity(0.007)
 
         wpilib.LiveWindow.addSensor("DriveTrain", "Gyro", self.gyro)
@@ -71,29 +81,25 @@ class DriveTrain(Subsystem):
         """
         self.setDefaultCommand(DriveWithJoystick(self.robot))
 
-    def tank_drive(self, *args, **kwargs):
-        joy = kwargs.pop("joy", None)
+    def tankDriveJoystick(self, joy):
+        self.drive.tankDrive(joy.getY(), joy.getRawAxis(4))
 
-        if len(args) == 1:
-            joy = args[0]
-
-        if joy is not None:
-            self.drive.tankDrive(joy.getY(), joy.getRawAxis(4))
-        else:
-            self.drive.tankDrive(*args, **kwargs)
+    def tankDriveManual(self, leftAxis, rightAxis):
+        self.drive.tankDrive(leftAxis, rightAxis)
 
     def stop(self):
         """Stop the drivetrain from moving."""
-        self.tank_drive(0, 0)
+        self.tankDriveManual(0, 0)
 
-    def get_left_encoder(self):
-        """:return The encoder getting the distance and speed of the right side of the drivetrain."""
-        #return self.left_encoder
+    def getLeftEncoder(self):
+        """:returns: The encoder getting the distance and speed of the right side of the drivetrain."""
+        return self.leftEncoder
 
-    def get_right_encoder(self):
-        """:return The encoder getting the distance and speed of the right side of the drivetrain."""
-        return self.right_encoder
+    def getRightEncoder(self):
+        """:returns: The encoder getting the distance and speed of the right side of the drivetrain."""
+        return self.rightEncoder
 
-    def get_angle(self):
-        """:return The current angle of the drivetrain."""
+    def getAngle(self):
+        """:returns: The current angle of the drivetrain."""
         return self.gyro.getAngle()
+    

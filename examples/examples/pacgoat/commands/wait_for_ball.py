@@ -1,5 +1,5 @@
+
 from wpilib.command import Command
-#TODO Check this when done
 
 
 class WaitForBall(Command):
@@ -24,7 +24,7 @@ class WaitForBall(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return self.robot.collector.has_ball()
+        return self.robot.collector.hasBall()
 
     def end(self):
         """Called once after isFinished returns true"""

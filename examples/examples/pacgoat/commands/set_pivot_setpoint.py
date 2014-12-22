@@ -1,6 +1,5 @@
-from wpilib.command import Command
 
-#TODO Check this when done
+from wpilib.command import Command
 
 
 class SetPivotSetpoint(Command):

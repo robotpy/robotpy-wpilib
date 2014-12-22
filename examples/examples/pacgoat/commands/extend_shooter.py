@@ -1,6 +1,6 @@
+
 from wpilib.command import Command
 
-#TODO Check this when done
 
 class ExtendShooter(Command):
     """Extend the shooter and retract it after a second."""
@@ -13,7 +13,7 @@ class ExtendShooter(Command):
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        self.robot.extend_both()
+        self.robot.shooter.extendBoth()
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -25,7 +25,7 @@ class ExtendShooter(Command):
 
     def end(self):
         """Called once after isFinished returns true"""
-        self.robot.shooter.extend_both()
+        self.robot.shooter.retractBoth()
 
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""

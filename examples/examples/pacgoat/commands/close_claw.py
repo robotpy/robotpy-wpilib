@@ -1,11 +1,8 @@
+
 from wpilib.command import Command
 
-#TODO Check this when done
-
-
 class CloseClaw(Command):
-    """
-    Close the claw.
+    """Close the claw.
 
     NOTE: It doesn't wait for the claw to close since there is no sensor to detect that.
     """
@@ -25,7 +22,7 @@ class CloseClaw(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return False
+        return True
 
     def end(self):
         """Called once after isFinished returns true"""

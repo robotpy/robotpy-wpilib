@@ -1,5 +1,5 @@
+
 from wpilib.command import Command
-#TODO Check this when done
 
 
 class SetCollectionSpeed(Command):
@@ -9,8 +9,6 @@ class SetCollectionSpeed(Command):
     the spinners may still be adjusting their speed.
     """
 
-    speed = 0
-
     def __init__(self, robot, speed):
         super().__init__()
         self.requires(robot.collector)
@@ -19,7 +17,7 @@ class SetCollectionSpeed(Command):
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        self.robot.collector.set_speed(self.speed)
+        self.robot.collector.setSpeed(self.speed)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
