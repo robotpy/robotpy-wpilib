@@ -43,8 +43,8 @@ class AnalogInput(SensorBase):
             raise IndexError("Analog input channel %d cannot be allocated. Channel is not present." % channel)
         try:
             AnalogInput.channels.allocate(self, channel)
-        except IndexError:
-            raise IndexError("Analog input channel %d is already allocated" % channel)
+        except IndexError as e:
+            raise IndexError("Analog input channel %d is already allocated" % channel) from e
 
         self.channel = channel
         self.accumulatorOffset = 0

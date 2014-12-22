@@ -41,8 +41,8 @@ class DigitalSource(InterruptableSensorBase):
 
         try:
             DigitalSource.channels.allocate(self, channel)
-        except IndexError:
-            raise IndexError("Digital input %d is already allocated" % self.channel)
+        except IndexError as e:
+            raise IndexError("Digital input %d is already allocated" % self.channel) from e
 
         self._port = hal.initializeDigitalPort(hal.getPort(channel))
         hal.allocateDIO(self._port, True if input else False)

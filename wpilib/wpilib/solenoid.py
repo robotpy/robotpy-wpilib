@@ -68,8 +68,8 @@ class Solenoid(SolenoidBase):
 
         try:
             self.allocated.allocate(self, channel)
-        except IndexError:
-            raise IndexError("Solenoid channel %d on module %d is already allocated" % (channel, moduleNumber))
+        except IndexError as e:
+            raise IndexError("Solenoid channel %d on module %d is already allocated" % (channel, moduleNumber)) from e
 
         self.port = self.ports[channel]
 

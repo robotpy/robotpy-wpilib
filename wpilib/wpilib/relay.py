@@ -96,8 +96,8 @@ class Relay(SensorBase):
                 Relay.relayChannels.allocate(self, self.channel * 2 + 1)
                 hal.HALReport(hal.HALUsageReporting.kResourceType_Relay,
                               self.channel + 128)
-        except IndexError:
-            raise IndexError("Relay channel %d is already allocated" % self.channel)
+        except IndexError as e:
+            raise IndexError("Relay channel %d is already allocated" % self.channel) from e
 
         self._port = hal.initializeDigitalPort(hal.getPort(self.channel))
         self._port_finalizer = weakref.finalize(self, _freeRelay, self._port)

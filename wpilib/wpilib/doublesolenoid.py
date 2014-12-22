@@ -79,12 +79,12 @@ class DoubleSolenoid(SolenoidBase):
 
         try:
             self.allocated.allocate(self, forwardChannel)
-        except IndexError:
-            raise IndexError("Solenoid channel %d on module %d is already allocated" % (forwardChannel, moduleNumber))
+        except IndexError as e:
+            raise IndexError("Solenoid channel %d on module %d is already allocated" % (forwardChannel, moduleNumber)) from e
         try:
             self.allocated.allocate(self, reverseChannel)
-        except IndexError:
-            raise IndexError("Solenoid channel %d on module %d is already allocated" % (reverseChannel, moduleNumber))
+        except IndexError as e:
+            raise IndexError("Solenoid channel %d on module %d is already allocated" % (reverseChannel, moduleNumber)) from e
 
         self.forwardPort = self.ports[forwardChannel]
         self.reversePort = self.ports[reverseChannel]

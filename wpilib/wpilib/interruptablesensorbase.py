@@ -85,8 +85,8 @@ class InterruptableSensorBase(SensorBase):
         try:
             self.interruptIndex = \
                     InterruptableSensorBase.interrupts.allocate(self)
-        except IndexError:
-            raise IndexError("No interrupts are left to be allocated")
+        except IndexError as e:
+            raise IndexError("No interrupts are left to be allocated") from e
 
         self.isSynchronousInterrupt = watcher
         self._interrupt = hal.initializeInterrupts(self.interruptIndex,

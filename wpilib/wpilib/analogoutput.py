@@ -27,8 +27,8 @@ class AnalogOutput(SensorBase):
             raise IndexError("Analog output channel %d cannot be allocated. Channel is not present." % channel)
         try:
             AnalogOutput.channels.allocate(self, channel)
-        except IndexError:
-            raise IndexError("Analog output channel %d is already allocated" % channel)
+        except IndexError as e:
+            raise IndexError("Analog output channel %d is already allocated" % channel) from e
 
         self.channel = channel
 

@@ -190,9 +190,8 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
 
         try:
             CANJaguar.allocated.allocate(self, deviceNumber-1)
-        except IndexError:
-            raise IndexError(
-                    "CANJaguar device %d in use (increment index by one)" % deviceNumber)
+        except IndexError as e:
+            raise IndexError("CANJaguar device %d in use (increment index by one)" % deviceNumber) from e
 
         self.deviceNumber = deviceNumber
         self.value = 0.0
