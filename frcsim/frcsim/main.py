@@ -5,6 +5,8 @@ from .types.driverstation import DriverStationControl
 from .types.analog_input import SimAnalogInput
 from .types.digital_input import SimDigitalInput
 from .types.pwm import SimPWM
+from .types.relay import SimRelay
+from .types.solenoid import SimSolenoid
 from .types.timer import Timer
 
 from .hal_hooks import GazeboSimHooks
@@ -72,11 +74,22 @@ class FrcSimMain:
             for i, d in enumerate(data.hal_data['dio']):
                 d.register('initialized', self._create_cb('dio', i, d, SimDigitalInput))
             
+            
             # Encoders
+            
+            # Gyro
             
             # PWM
             for i, d in enumerate(data.hal_data['pwm']):
                 d.register('initialized', self._create_cb('pwm', i, d, SimPWM))
+            
+            # Relay
+            for i, d in enumerate(data.hal_data['relay']):
+                d.register('initialized', self._create_cb('relay', i, d, SimRelay))
+            
+            # Solenoid
+            for i, d in enumerate(data.hal_data['solenoid']):
+                d.register('initialized', self._create_cb('solenoid', i, d, SimSolenoid))
             
             return robot_class.main(robot_class)
             
