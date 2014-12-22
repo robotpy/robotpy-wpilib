@@ -48,6 +48,7 @@ class MotorSafety:
         """Set the expiration time for the corresponding motor safety object.
 
         :param expirationTime: The timeout value in seconds.
+        :type expirationTime: float
         """
         self.safetyExpiration = expirationTime
 
@@ -56,6 +57,7 @@ class MotorSafety:
         object.
 
         :returns: the timeout value in seconds.
+        :rtype: float
         """
         return self.safetyExpiration
 
@@ -64,6 +66,7 @@ class MotorSafety:
 
         :returns: True if the motor is still operating normally and hasn't
             timed out.
+        :rtype: float
         """
         return not self.safetyEnabled or self.safetyStopTime > Timer.getFPGATimestamp()
 
@@ -86,14 +89,16 @@ class MotorSafety:
         Turn on and off the motor safety option for this PWM object.
 
         :param enabled: True if motor safety is enforced for this object
+        :type  enabled: bool
         """
-        self.safetyEnabled = enabled
+        self.safetyEnabled = bool(enabled)
 
     def isSafetyEnabled(self):
         """Return the state of the motor safety enabled flag.
         Return if the motor safety is currently enabled for this device.
 
         :returns: True if motor safety is enforced for this device
+        :rtype: bool
         """
         return self.safetyEnabled
 

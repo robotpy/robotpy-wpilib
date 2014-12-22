@@ -141,6 +141,7 @@ class Ultrasonic(SensorBase):
             same time. If another scheduling algorithm is preffered, it
             can be implemented by pinging the sensors manually and waiting
             for the results to come back.
+        :type enabling: bool
         """
         if enabling and Ultrasonic.isAutomaticMode():
             return # ignore the case of no change
@@ -189,6 +190,7 @@ class Ultrasonic(SensorBase):
         has not yet been measured, and is invalid.
 
         :returns: True if the range is valid
+        :rtype: bool
         """
         return self.counter.get() > 1
 
@@ -198,6 +200,7 @@ class Ultrasonic(SensorBase):
         :returns: Range in inches of the target returned from the ultrasonic
             sensor. If there is no valid value yet, i.e. at least one
             measurement hasn't completed, then return 0.
+        :rtype: float
         """
         if self.isRangeValid():
             return self.counter.getPeriod() * \
@@ -211,6 +214,7 @@ class Ultrasonic(SensorBase):
         :returns: Range in millimeters of the target returned by the
             ultrasonic sensor. If there is no valid value yet, i.e. at least
             one measurement hasn't complted, then return 0.
+        :rtype: float
         """
         return self.getRangeInches() * 25.4
 
@@ -218,6 +222,7 @@ class Ultrasonic(SensorBase):
         """Get the range in the current DistanceUnit (PIDSource interface).
 
         :returns: The range in DistanceUnit
+        :rtype: float
         """
         if self.units == Ultrasonic.Unit.kInches:
             return self.getRangeInches()
