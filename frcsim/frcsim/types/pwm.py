@@ -2,7 +2,7 @@
 from ..controller import Controller
 from ..msgs.float64_pb2 import Float64
 
-from hal_impl import helpers
+from hal_impl import pwm_helpers
 
 import logging
 logger = logging.getLogger('gazebo.pwm')
@@ -19,11 +19,11 @@ class SimPWM:
         # function to use from that
         def _on_type_set(key, value):
             if value == 'jaguar':
-                self.convert_fn = helpers.reverseJaguarPWM
+                self.convert_fn = pwm_helpers.reverseJaguarPWM
             elif value == 'talon':
-                self.convert_fn = helpers.reverseTalonPWM
+                self.convert_fn = pwm_helpers.reverseTalonPWM
             elif value == 'victor':
-                self.convert_fn = helpers.reverseVictorPWM
+                self.convert_fn = pwm_helpers.reverseVictorPWM
             else:
                 logger.warn("Simulation cannot handle unknown pwm type '%s' on channel %s" % (value, channel))
                 return

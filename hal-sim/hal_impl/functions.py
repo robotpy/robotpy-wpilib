@@ -7,6 +7,7 @@ import threading
 from . import data
 from .data import hal_data, reset_hal_data
 from hal_impl.sim_hooks import SimHooks
+from hal_impl.pwm_helpers import reverseByType
 
 hooks = SimHooks()
 reset_hal_data(hooks)
@@ -629,7 +630,8 @@ def remapMXPPWMChannel(pin):
 
 def setPWM(digital_port, value, status):
     status.value = 0
-    hal_data['pwm'][digital_port.pin]['value'] = value
+    hal_data['pwm'][digital_port.pin]['raw_value'] = value
+    hal_data['pwm'][digital_port.pin]['trans_value'] = reverseByType(digital_port.pin)
 
 def allocatePWMChannel(digital_port, status):
     status.value = 0
@@ -655,7 +657,8 @@ def freePWMChannel(digital_port, status):
     status.value = 0
     assert hal_data['pwm'][digital_port.pin]['initialized']
     hal_data['pwm'][digital_port.pin]['initialized'] = False
-    hal_data['pwm'][digital_port.pin]['value'] = 0
+    hal_data['pwm'][digital_port.pin]['raw_value'] = 0
+    hal_data['pwm'][digital_port.pin]['trans_value'] = 0
     hal_data['pwm'][digital_port.pin]['period_scale'] = None
     hal_data['pwm'][digital_port.pin]['zero_latch'] = False
 
@@ -665,7 +668,7 @@ def freePWMChannel(digital_port, status):
 
 def getPWM(digital_port, status):
     status.value = 0
-    return hal_data['pwm'][digital_port.pin]['value']
+    return hal_data['pwm'][digital_port.pin]['raw_value']
 
 def latchPWMZero(digital_port, status):
     # TODO: what does this do?

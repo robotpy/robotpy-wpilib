@@ -7,11 +7,10 @@ import pytest
 
 @pytest.mark.parametrize('clsname, ',
                          ['Jaguar', 'Talon', 'TalonSRX', 'Victor', 'VictorSP'])
-def test_controller(wpilib, hal_data, hal_impl_helpers, clsname):
+def test_controller(wpilib, hal_data, hal_impl_pwm_helpers, clsname):
     
     # create object/helper function
     obj = getattr(wpilib, clsname)(2)
-    helper_fn = getattr(hal_impl_helpers, 'reverse%sPWM' % clsname)
     
     # validate reporting is correct
     assert hal_data['pwm'][2]['type'] == clsname.lower()
@@ -25,12 +24,15 @@ def test_controller(wpilib, hal_data, hal_impl_helpers, clsname):
     # validate that get returns the correct value
     assert obj.get() == 1
     
-    # validate that the helper returns the correct value
-    assert helper_fn(hal_data['pwm'][2]['value']) == 1
+    # validate that the helpers return the correct value and correct value stored in 'trans_value'
+    assert hal_impl_pwm_helpers.reverseByType(clsname ,hal_data['pwm'][2]['raw_value']) == 1
+    assert hal_impl_pwm_helpers.reverseByType(2) == 1
+    assert hal_data['pwm'][2]['trans_value'] == 1
     
     # pidWrite
     obj.pidWrite(-1)
     
     assert obj.get() == -1
-    assert helper_fn(hal_data['pwm'][2]['value']) == -1
-    
+    assert hal_impl_pwm_helpers.reverseByType(clsname ,hal_data['pwm'][2]['raw_value']) == -1
+    assert hal_impl_pwm_helpers.reverseByType(2) == -1
+    assert hal_data['pwm'][2]['trans_value'] == -1
