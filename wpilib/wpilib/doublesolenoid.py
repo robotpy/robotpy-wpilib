@@ -118,6 +118,8 @@ class DoubleSolenoid(SolenoidBase):
         elif value == self.Value.kReverse:
             hal.setSolenoid(self.forwardPort, False)
             hal.setSolenoid(self.reversePort, True)
+        else:
+            raise ValueError("Invalid argument '%s'" % value)
 
     def get(self):
         """Read the current value of the solenoid.

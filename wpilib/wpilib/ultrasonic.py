@@ -237,6 +237,10 @@ class Ultrasonic(SensorBase):
 
         :param units: The DistanceUnit that should be used.
         """
+        
+        if units not in [self.Unit.kInches, self.Unit.kMillimeters]:
+            raise ValueError("Invalid units argument '%s'" % units)
+        
         self.units = units
 
     def getDistanceUnits(self):
@@ -258,8 +262,9 @@ class Ultrasonic(SensorBase):
         """Set if the ultrasonic is enabled.
 
         :param enable: set to True to enable the ultrasonic
+        :type  enable: bool
         """
-        self.enabled = enable
+        self.enabled = bool(enable)
 
     # Live Window code, only does anything if live window is activated.
     def getSmartDashboardType(self):

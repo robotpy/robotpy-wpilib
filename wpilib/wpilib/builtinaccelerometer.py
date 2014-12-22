@@ -46,8 +46,10 @@ class BuiltInAccelerometer(LiveWindowSendable):
             hal.setAccelerometerRange(hal.AccelerometerRange.kRange_4G)
         elif range == self.Range.k8G:
             hal.setAccelerometerRange(hal.AccelerometerRange.kRange_8G)
-        else:
+        elif range == self.Range.k16G:
             raise ValueError("16G range not supported (use k2G, k4G, or k8G)")
+        else:
+            raise ValueError("Invalid range argument '%s'" % range)
 
         hal.setAccelerometerActive(True)
 

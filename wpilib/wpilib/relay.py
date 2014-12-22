@@ -167,7 +167,7 @@ class Relay(SensorBase):
                 self.direction == self.Direction.kReverse):
                 hal.setRelayReverse(self.port, True)
         else:
-            raise ValueError("unrecognized value %s" % value)
+            raise ValueError("Invalid value argument '%s'" % value)
 
     def get(self):
         """Get the Relay State
@@ -212,6 +212,11 @@ class Relay(SensorBase):
         """
         if self.direction == direction:
             return
+        
+        if direction not in [self.Direction.kBoth,
+                             self.Direction.kForward,
+                             self.Direction.kReverse]:
+            raise ValueError("Invalid direction argument '%s'" % direction)
 
         self.free()
         self.direction = direction

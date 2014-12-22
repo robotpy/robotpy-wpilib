@@ -292,7 +292,7 @@ class PWM(LiveWindowSendable):
             # Don't squelch any outputs
             hal.setPWMPeriodScale(self.port, 0)
         else:
-            raise ValueError("unknown mult value %s" % mult)
+            raise ValueError("Invalid mult argument '%s'" % mult)
 
     def setZeroLatch(self):
         if self.port is None:

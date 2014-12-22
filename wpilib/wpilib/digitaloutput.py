@@ -5,6 +5,8 @@
 # the project.
 #----------------------------------------------------------------------------
 
+import weakref
+
 import hal
 
 from .digitalsource import DigitalSource

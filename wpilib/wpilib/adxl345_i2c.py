@@ -61,17 +61,18 @@ class ADXL345_I2C(SensorBase):
 
         :param range: The maximum acceleration, positive or negative, that
                       the accelerometer will measure.
+        :type  range: :class:`ADXL345_I2C.Range`
         """
-        if range == self.k2G:
+        if range == self.Range.k2G:
             value = 0
-        elif range == self.k4G:
+        elif range == self.Range.k4G:
             value = 1
-        elif range == self.k8G:
+        elif range == self.Range.k8G:
             value = 2
-        elif range == self.k16G:
+        elif range == self.Range.k16G:
             value = 3
         else:
-            value = 0
+            raise ValueError("Invalid range argument '%s'" % range)
 
         # Specify the data format to read
         self.i2c.write(self.kDataFormatRegister, self.kDataFormat_FullRes | value)
