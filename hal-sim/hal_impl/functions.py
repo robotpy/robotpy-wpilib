@@ -315,6 +315,8 @@ def HALReport(resource, instanceNumber, context=0, feature=None):
         hal_data['pwm'][instanceNumber]['type'] = 'victor'
     elif resource == hur.kResourceType_VictorSP:
         hal_data['pwm'][instanceNumber]['type'] = 'victorsp'
+    elif resource == hur.kResourceType_Solenoid:
+        hal_data['solenoid'][instanceNumber]['initialized'] = True
     
     hal_data['reports'].setdefault(resource, []).append(instanceNumber)
 
@@ -1195,7 +1197,7 @@ def getUserCurrentFaults3V3(status):
 def initializeSolenoidPort(port, status):
     status.value = 0
     # sigh: it would be nice if all the solenoids weren't always initialized
-    hal_data['solenoid'][port.pin] = False 
+    hal_data['solenoid'][port.pin]['value'] = False 
     return types.SolenoidPort(port)
 
 def checkSolenoidModule(module):
@@ -1203,11 +1205,11 @@ def checkSolenoidModule(module):
 
 def getSolenoid(solenoid_port, status):
     status.value = 0
-    return hal_data['solenoid'][solenoid_port.pin]
+    return hal_data['solenoid'][solenoid_port.pin]['value']
 
 def setSolenoid(solenoid_port, value, status):
     status.value = 0
-    hal_data['solenoid'][solenoid_port.pin] = value
+    hal_data['solenoid'][solenoid_port.pin]['value'] = value
 
 #############################################################################
 # TalonSRX

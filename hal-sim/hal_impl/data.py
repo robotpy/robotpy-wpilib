@@ -305,7 +305,10 @@ def reset_hal_data(hooks):
         },
 
         # solenoid values are True, False 
-        'solenoid': [None]*8,
+        'solenoid': [NotifyDict({
+            'initialized': False,
+            'value': None
+        })]*8,
 
         'pdp': {
             'has_source': False,
