@@ -631,7 +631,7 @@ def remapMXPPWMChannel(pin):
 def setPWM(digital_port, value, status):
     status.value = 0
     hal_data['pwm'][digital_port.pin]['raw_value'] = value
-    hal_data['pwm'][digital_port.pin]['trans_value'] = reverseByType(digital_port.pin)
+    hal_data['pwm'][digital_port.pin]['value'] = reverseByType(digital_port.pin)
 
 def allocatePWMChannel(digital_port, status):
     status.value = 0
@@ -658,7 +658,7 @@ def freePWMChannel(digital_port, status):
     assert hal_data['pwm'][digital_port.pin]['initialized']
     hal_data['pwm'][digital_port.pin]['initialized'] = False
     hal_data['pwm'][digital_port.pin]['raw_value'] = 0
-    hal_data['pwm'][digital_port.pin]['trans_value'] = 0
+    hal_data['pwm'][digital_port.pin]['value'] = 0
     hal_data['pwm'][digital_port.pin]['period_scale'] = None
     hal_data['pwm'][digital_port.pin]['zero_latch'] = False
 

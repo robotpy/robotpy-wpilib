@@ -209,7 +209,7 @@ def reset_hal_data(hooks):
             'initialized': False,
             'type': None, # string value set by HALReport: jaguar, victor, talon, etc
             'raw_value': 0,# raw value that is used by wpilib represents the hardware PWM value
-            'trans_value':0,# trans_value is the PWM value that user set from -1 to 1
+            'value':0,# value is the PWM value that user set from -1 to 1
             'period_scale': None,
             'zero_latch': False,
 
