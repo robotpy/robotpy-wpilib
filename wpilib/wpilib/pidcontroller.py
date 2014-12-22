@@ -80,7 +80,8 @@ class PIDController(LiveWindowSendable):
                      [p_arg, i_arg, d_arg, source_arg, output_arg],
                      [p_arg, i_arg, d_arg, f_arg, source_arg, output_arg]]
 
-        index, results = match_arglist(args, kwargs, templates)
+        _, results = match_arglist('PIDController.__init__',
+                                   args, kwargs, templates)
 
         self.P = results.pop("Kp")     # factor for "proportional" control
         self.I = results.pop("Ki")     # factor for "integral" control

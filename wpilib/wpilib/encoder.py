@@ -124,8 +124,9 @@ class Encoder(SensorBase):
                               [a_channel_arg, b_channel_arg, index_channel_arg],
                               [a_channel_arg, b_channel_arg, index_channel_arg, ("reverseDirection", bool)]]
 
-        index, results = match_arglist(args, kwargs, argument_templates)
-
+        _, results = match_arglist('Encoder.__init__',
+                                   args, kwargs, argument_templates)
+        
         # keyword arguments
         aSource = results.pop("aSource", None)
         bSource = results.pop("bSource", None)
