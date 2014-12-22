@@ -3,7 +3,7 @@
 '''
 
 from . import data
-from .data import hal_data
+hal_data = data.hal_data
 from . import functions as fns
     
 def notify_new_ds_data():
@@ -11,7 +11,6 @@ def notify_new_ds_data():
     
     if data.hal_newdata_sem is not None:
         fns.giveMultiWait(data.hal_newdata_sem)
-
 
 def set_autonomous(enabled):
     '''Only designed to be called on transition'''
