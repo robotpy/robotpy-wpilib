@@ -138,16 +138,23 @@ class Encoder(SensorBase):
         encodingType = results.pop("encodingType", self.EncodingType.k4X)
 
         # convert channels into sources
+        self.allocatedA = False
+        self.allocatedB = False
+        self.allocatedIndex = False
+
         if aSource is None:
             if aChannel is None:
                 raise ValueError("didn't specify A channel")
             aSource = DigitalInput(aChannel)
+            self.allocatedA = True
         if bSource is None:
             if bChannel is None:
                 raise ValueError("didn't specify B channel")
             bSource = DigitalInput(bChannel)
+            self.allocatedB = True
         if indexSource is None and indexChannel is not None:
             indexSource = DigitalInput(indexChannel)
+            self.allocatedIndex = True
 
         # save to instance variables
         self.aSource = aSource
@@ -190,7 +197,23 @@ class Encoder(SensorBase):
         return self._encoder
 
     def free(self):
-        self._encoder_finalizer()
+        if self.aSource is not None and self.allocatedA:
+            self.aSource.free()
+            self.allocatedA = False
+        if self.bSource is not None and self.allocatedB:
+            self.bSource.free()
+            self.allocatedB = False
+        if self.indexSource is not None and self.allocatedIndex:
+            self.indexSource.free()
+            self.allocatedIndex = False
+        self.aSource = None
+        self.bSource = None
+        self.indexSource = None
+        if self.counter is not None:
+            self.counter.free()
+            self.counter = None
+        else:
+            self._encoder_finalizer()
 
     def getRaw(self):
         """Gets the raw value from the encoder. The raw value is the actual
