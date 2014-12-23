@@ -42,3 +42,6 @@ installer/win32/*.exe
 lextab.py
 parser.out
 parsetab.py
+
+# Downloaded libHALAthena
+/hal-roborio/hal_impl/libHALAthena_shared.so

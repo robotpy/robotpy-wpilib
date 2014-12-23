@@ -1,11 +1,13 @@
 import ctypes as C
+import os
+import sys
 
 __all__ = ["_dll", "_RETFUNC", "_VAR"]
 
 # XXX: load libstdc++.so.6.0.20 to work around crash loading libHALAthena.
 # This is due to multiple C++ libraries installed on the RoboRIO.
 _cpp_dll = C.CDLL("/lib/libstdc++.so.6.0.20", mode=C.RTLD_GLOBAL, use_errno=True)
-_dll = C.CDLL("/usr/local/frc/lib/libHALAthena_shared.so", use_errno=True)
+_dll = C.CDLL(os.path.join(os.path.dirname(sys.modules['hal_impl'].__file__), "libHALAthena_shared.so"), use_errno=True)
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
              errcheck=None, handle_missing=False):
