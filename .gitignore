@@ -11,15 +11,15 @@ dist
 MANIFEST
 
 # Doc-related stuffs
-docs/_build
-docs/wpilib.rst
-docs/wpilib
-docs/wpilib.buttons.rst
-docs/wpilib.buttons
-docs/wpilib.command.rst
-docs/wpilib.command
-docs/wpilib.interfaces
-docs/wpilib.interfaces.rst
+/docs/_build
+/docs/wpilib.rst
+/docs/wpilib
+/docs/wpilib.buttons.rst
+/docs/wpilib.buttons
+/docs/wpilib.command.rst
+/docs/wpilib.command
+/docs/wpilib.interfaces
+/docs/wpilib.interfaces.rst
 
 version.py
 
@@ -27,11 +27,11 @@ version.py
 .pydevproject
 
 # Installer files
-installer/pip_cache
-installer/opkg_cache
-installer/.installer_config
+/installer/pip_cache
+/installer/opkg_cache
+/installer/.installer_config
 
-installer/win32/*.exe
+/installer/win32/*.exe
 
 #PyCharm Project files
 *.iml
