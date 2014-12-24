@@ -12,7 +12,6 @@ hal_version = 'jenkins-stable-2015.286.beta-7-gb4097fb'
 hal_site = 'http://www.tortall.net/~robotpy/hal'
 hal_file = join(setup_dir, base_package, 'libHALAthena_shared.so')
 
-version = "master"
 __version__ = "master"
 __hal_version__ = None
 
@@ -44,6 +43,8 @@ if exists(join(setup_dir, '..', '.git')):
         sys.exit(1)
 
     version = out.decode('utf-8').rstrip()
+else:
+    version = __version__
 
 # Generate a new version.py if required
 if not exists(version_file) or __version__ != version or __hal_version__ != hal_version:
