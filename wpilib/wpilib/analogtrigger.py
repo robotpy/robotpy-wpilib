@@ -12,9 +12,6 @@ from .analogtriggeroutput import AnalogTriggerOutput
 
 __all__ = ["AnalogTrigger"]
 
-def _freeAnalogTrigger(port):
-    hal.cleanAnalogTrigger(port)
-
 class AnalogTrigger:
     """
         Class for creating and configuring Analog Triggers
@@ -36,22 +33,14 @@ class AnalogTrigger:
             channel = channel.getChannel()
 
         port = hal.getPort(channel)
-        self._port, self.index = hal.initializeAnalogTrigger(port)
-        self._analogtrigger_finalizer = \
-                weakref.finalize(self, _freeAnalogTrigger, self._port)
-
+        self.port, self.index = hal.initializeAnalogTrigger(port)
         hal.HALReport(hal.HALUsageReporting.kResourceType_AnalogTrigger,
                       channel)
 
-    @property
-    def port(self):
-        if not self._analogtrigger_finalizer.alive:
-            return None
-        return self._analogtrigger
-
     def free(self):
         """Release the resources used by this object"""
-        self._analogtrigger_finalizer()
+        hal.cleanAnalogTrigger(self.port)
+        self.port = None
 
     def setLimitsRaw(self, lower, upper):
         """Set the upper and lower limits of the analog trigger. The limits are

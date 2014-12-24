@@ -481,72 +481,82 @@ def getAccumulatorOutput(analog_port, status):
 
 def initializeAnalogTrigger(port, status):
     status.value = 0
-    return types.AnalogTrigger(port)
+    for idx in range(0, len(hal_data['analog_trigger'])):
+        cnt = hal_data['analog_trigger'][idx]
+        if cnt['initialized'] == False:
+            cnt['initialized'] = True
+            cnt['port'] = port
+            return types.AnalogTrigger(port, idx), idx
+
+    status.value = NO_AVAILABLE_RESOURCES
+    return None, -1
 
 def cleanAnalogTrigger(analog_trigger, status):
     status.value = 0
-    hal_data['analog_in'][analog_trigger.pin]['initialized'] = False
+    hal_data['analog_trigger'][analog_trigger.index]['initialized'] = False
 
 def setAnalogTriggerLimitsRaw(analog_trigger, lower, upper, status):
     if lower > upper:
         status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR 
     else:
         status.value = 0
-        hal_data['analog_in'][analog_trigger.pin]['trig_lower'] = lower
-        hal_data['analog_in'][analog_trigger.pin]['trig_upper'] = upper
+        hal_data['analog_trigger'][analog_trigger.index]['trig_lower'] = lower
+        hal_data['analog_trigger'][analog_trigger.index]['trig_upper'] = upper
 
 def setAnalogTriggerLimitsVoltage(analog_trigger, lower, upper, status):
     if lower > upper:
         status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR 
     else:
-        status.value = 0 
-        hal_data['analog_in'][analog_trigger.pin]['trig_lower'] = getAnalogVoltsToValue(analog_trigger, lower, status)
-        hal_data['analog_in'][analog_trigger.pin]['trig_upper'] = getAnalogVoltsToValue(analog_trigger, upper, status)
+        status.value = 0
+        analog_port = hal_data['analog_port'][analog_trigger.pin]
+        hal_data['analog_trigger'][analog_trigger.index]['trig_lower'] = getAnalogVoltsToValue(analog_port, lower, status)
+        hal_data['analog_trigger'][analog_trigger.index]['trig_upper'] = getAnalogVoltsToValue(analog_port, upper, status)
     
 
 def setAnalogTriggerAveraged(analog_trigger, use_averaged_value, status):
-    if hal_data['analog_in'][analog_trigger.pin]['trig_type'] is 'filtered':
+    if hal_data['analog_trigger'][analog_trigger.index]['trig_type'] is 'filtered':
         status.value = INCOMPATIBLE_STATE
     else:
-        status.value = 0    
-        hal_data['analog_in'][analog_trigger.pin]['trig_type'] = 'averaged' if use_averaged_value else None
+        status.value = 0
+        hal_data['analog_trigger'][analog_trigger.index]['trig_type'] = 'averaged' if use_averaged_value else None
 
 def setAnalogTriggerFiltered(analog_trigger, use_filtered_value, status):
-    if hal_data['analog_in'][analog_trigger.pin]['trig_type'] is 'averaged':
+    if hal_data['analog_trigger'][analog_trigger.index]['trig_type'] is 'averaged':
         status.value = INCOMPATIBLE_STATE
     else:
         status.value = 0    
-        hal_data['analog_in'][analog_trigger.pin]['trig_type'] = 'filtered' if use_filtered_value else None
+        hal_data['analog_trigger'][analog_trigger.index]['trig_type'] = 'filtered' if use_filtered_value else None
 
 def _get_trigger_value(analog_trigger):
     ain = hal_data['analog_in'][analog_trigger.pin]
-    trig_type = ain['trig_type']
+    atr = hal_data['analog_trigger'][analog_trigger.index]
+    trig_type = atr['trig_type']
     if trig_type is None:
-        return ain, ain['value']
+        return atr, ain['value']
     if trig_type is 'averaged':
-        return ain, ain['avg_value']
+        return atr, ain['avg_value']
     if trig_type is 'filtered':
-        return ain, ain['value'] # XXX
+        return atr, ain['value'] # XXX
     assert False
 
 def getAnalogTriggerInWindow(analog_trigger, status):
     status.value = 0
-    ain, val = _get_trigger_value(analog_trigger)
-    return val >= ain['trig_lower'] and val <= ain['trig_upper']
+    atr, val = _get_trigger_value(analog_trigger)
+    return val >= atr['trig_lower'] and val <= atr['trig_upper']
         
 def getAnalogTriggerTriggerState(analog_trigger, status):
     # To work properly, this needs some other runtime component managing the
     # state variable too, but this works well enough
     status.value = 0
-    ain, val = _get_trigger_value(analog_trigger)
-    if val < ain['trig_lower']:
-        ain['trig_state'] = False
+    atr, val = _get_trigger_value(analog_trigger)
+    if val < atr['trig_lower']:
+        atr['trig_state'] = False
         return False
-    elif val > ain['trig_upper']:
-        ain['trig_state'] = True
+    elif val > atr['trig_upper']:
+        atr['trig_state'] = True
         return True
     else:
-        return ain['trig_state']
+        return atr['trig_state']
 
 def getAnalogTriggerOutput(analog_trigger, type, status):
     if type == constants.AnalogTriggerType.kInWindow:

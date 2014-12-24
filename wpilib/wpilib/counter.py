@@ -15,14 +15,9 @@ from .analogtriggeroutput import AnalogTriggerOutput
 from .digitalinput import DigitalInput
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
+from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Counter"]
-
-def _freeCounter(counter):
-    hal.setCounterUpdateWhenEmpty(counter, True)
-    hal.clearCounterUpSource(counter)
-    hal.clearCounterDownSource(counter)
-    hal.freeCounter(counter)
 
 class Counter(SensorBase):
     """Class for counting the number of ticks on a digital input channel. This
@@ -53,6 +48,8 @@ class Counter(SensorBase):
 
     EncodingType = CounterBase.EncodingType
     PIDSourceParameter = PIDSource.PIDSourceParameter
+    allocatedUpSource = False
+    allocatedDownSource = False
 
     def __init__(self, *args, **kwargs):
         """Counter constructor.
@@ -65,36 +62,21 @@ class Counter(SensorBase):
         - (none)
         - upSource
         - upChannel
-        - analogTrigger
-        - upSource/upChannel, downSource/downChannel
+        - encodingType, upChannel, downChannel, inverted
+        - trigger
 
-        For positional arguments, if the passed object has a
+        If the passed object has a
         `getChannelForRouting` function, it is assumed to be a DigitalSource.
         If the passed object has a `createOutput` function, it is assumed to
         be an AnalogTrigger.
 
-        Alternatively, sources and/or channels may be passed as keyword
-        arguments.  The behavior of specifying both a source and a number
-        for the same channel is undefined, as is passing both a positional
-        and a keyword argument for the same channel.
-
-        In addition, keyword parameters may be provided for mode, inverted,
-        and inputType.
+        Any positional argument can be substituted with a keyword argument.
 
         :param upSource: The source that should be used for up counting.
         :param downSource: The source that should be used for down counting
                            or direction control.
         :param upChannel: The digital input index that should be used for up
                           counting.
-        :param downChannel: The digital input index that should be used for
-                            down counting or direction control.
-        :param analogTrigger: An analog trigger for up counting (assumed to
-                              be of kState type; use :func:`setUpSource`
-                              for other options).
-        :param mode:
-            How and what the counter counts (see :class:`.Mode`).  Defaults to
-            `Mode.kTwoPulse` for zero or one positional arguments, and
-            `Mode.kExternalDirection` for two positional arguments.
         :param inverted:
             Flips the direction of counting.  Defaults to False if unspecified.
             Only used when two sources are specified.
@@ -102,62 +84,36 @@ class Counter(SensorBase):
             Either k1X or k2X to indicate 1X or 2X decoding. 4X decoding
             is not supported by Counter; use `Encoder` instead.  Defaults
             to k1X if unspecified.  Only used when two sources are specified.
+        :param trigger:
+            The :class:`.AnalogTrigger` object that is used for the Up Source
         """
-        # keyword arguments
-        upSource = kwargs.pop("aSource", None)
-        downSource = kwargs.pop("bSource", None)
-        upChannel = kwargs.pop("aChannel", None)
-        downChannel = kwargs.pop("bChannel", None)
-        analogTrigger = kwargs.pop("analogTrigger", None)
-        mode = kwargs.pop("mode", None)
-        inverse = kwargs.pop("inverse", False)
-        encodingType = kwargs.pop("encodingType", None)
 
-        if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
+        argument_templates = [[],
+                              [("upSource", HasAttribute("getChannelForRouting")), ],
+                              [("upChannel", int), ],
+                              [("encodingType", None), ("upSource", HasAttribute("getChannelForRouting")),
+                               ("downSource", HasAttribute("getChannelForRouting")), ("inverted", bool)],
+                              [("trigger", HasAttribute("createOutput")), ]]
 
-        # positional arguments
-        if len(args) == 0:
-            if mode is None:
-                mode = self.Mode.kTwoPulse
-        elif len(args) == 1:
-            if mode is None:
-                mode = self.Mode.kTwoPulse
-            up = args[0]
-            if hasattr(up, "getChannelForRouting"):
-                upSource = up
-            elif hasattr(up, "createOutput"):
-                analogTrigger = up
-            else:
-                upChannel = up
-        elif len(args) == 2:
-            if mode is None:
-                mode = self.Mode.kExternalDirection
-            up, down = args
-            if hasattr(up, "getChannelForRouting"):
-                upSource = up
-            else:
-                upChannel = up
-            if hasattr(down, "getChannelForRouting"):
-                downSource = down
-            else:
-                downChannel = down
+
+        template_index, results = match_arglist('Counter.__init__',
+                                   args, kwargs, argument_templates)
+
+        # extract arguments
+        upSource = results.pop("upSource", None)
+        downSource = results.pop("downSource", None)
+        upChannel = results.pop("upChannel", None)
+        downChannel = results.pop("downChannel", None)
+        trigger = results.pop("trigger", None)
+
+        encodingType = results.pop("encodingType", None)
+        inverted = results.pop("inverted", False)
+
+        #Get the mode
+        if template_index == 3:
+            mode = self.Mode.kExternalDirection
         else:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
-
-        # convert channels into sources
-        if upSource is None:
-            if upChannel is not None:
-                upSource = DigitalInput(upChannel)
-            elif analogTrigger is not None:
-                upSource = analogTrigger.createOutput(
-                        AnalogTriggerOutput.AnalogTriggerType.STATE)
-            else:
-                raise ValueError("didn't specify up source")
-        if downSource is None:
-            if downChannel is not None:
-                downSource = DigitalInput(downChannel)
+            mode = self.Mode.kTwoPulse
 
         # save to instance variables
         self.upSource = upSource
@@ -166,46 +122,51 @@ class Counter(SensorBase):
         self.pidSource = PIDSource.PIDSourceParameter.kDistance
 
         # create counter
-        self._counter, self.index = hal.initializeCounter(mode)
-        self._counter_finalizer = \
-                weakref.finalize(self, _freeCounter, self._counter)
-
+        self.counter, self.index = hal.initializeCounter(mode)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Counter, self.index,
                       mode)
 
-        # set sources on counter
-        if upSource is not None:
-            hal.setCounterUpSource(self._counter,
-                                   upSource.getChannelForRouting(),
-                                   upSource.getAnalogTriggerForRouting())
-        if downSource is not None:
-            hal.setCounterDownSource(self.counter,
-                                     downSource.getChannelForRouting(),
-                                     downSource.getAnalogTriggerForRouting())
-
         # when given two sources, set edges
-        if upSource is not None and downSource is not None:
+        if template_index == 3:
             if encodingType == self.EncodingType.k1X:
                 self.setUpSourceEdge(True, False)
             else:
                 self.setUpSourceEdge(True, True)
-            self.setDownSourceEdge(inverse, True)
+            self.setDownSourceEdge(inverted, True)
 
-    @property
-    def counter(self):
-        if not self._counter_finalizer.alive:
-            return None
-        return self._counter
+        #Set sources
+        if upSource is not None:
+            self.setUpSource(upSource)
+        elif upChannel is not None:
+            self.setUpSource(upChannel)
+        elif trigger is not None:
+            self.setUpSource(trigger, AnalogTriggerOutput.AnalogTriggerType.STATE)
+        elif template_index != 0:
+            raise ValueError("No usable up source")
+
+        if downSource is not None:
+            self.setDownSource(downSource)
+        elif downChannel is not None:
+            self.setDownSource(downChannel)
+
 
     def free(self):
-        self._counter_finalizer()
+        self.setUpdateWhenEmpty(True)
+        self.clearUpSource()
+        self.clearDownSource()
+
+        hal.freeCounter(self.counter)
+
+        self.counter = None
+        self.upSource = None
+        self.downSource = None
 
     def setUpSource(self, *args, **kwargs):
-        """Set the upsource for the counter.
+        """Set the up counting source for the counter.
 
         This function accepts either a digital channel index, a
         `DigitalSource`, or an `AnalogTrigger` as positional arguments:
-        
+
         - source
         - channel
         - analogTrigger, triggerType
@@ -221,50 +182,45 @@ class Counter(SensorBase):
         and a keyword argument for the same channel.
 
         :param channel: the digital port to count
+        :type channel: int
         :param source: the digital source to count
+        :type source: DigitalInput
         :param analogTrigger:
-            The :class:`.AnalogTrigger` object that is used for the Up Source
+            The analog trigger object that is used for the Up Source
+        :type analogTrigger: AnalogTrigger
         :param triggerType:
-            The :class:`.AnalogTrigger` output that will trigger the counter.
+            The analog trigger output that will trigger the counter.
             Defaults to kState if not specified.
+        :type triggerType: AnalogTriggerType
         """
+
+        #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
+
         if self.counter is None:
             raise ValueError("operation on freed port")
 
-        # keyword arguments
-        source = kwargs.pop("source", None)
-        channel = kwargs.pop("channel", None)
-        analogTrigger = kwargs.pop("analogTrigger", None)
-        triggerType = kwargs.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.STATE)
+        argument_templates = [[("channel", int)],
+                              [("source", HasAttribute("getChannelForRouting")), ],
+                              [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
 
-        if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
+        _, results = match_arglist('Counter.setUpSource',
+                                   args, kwargs, argument_templates)
 
-        # positional arguments
-        if len(args) == 1:
-            if hasattr(args[0], "getChannelForRouting"):
-                source = args[0]
-            elif hasattr(args[0], "createOutput"):
-                analogTrigger = args[0]
-            else:
-                channel = args[0]
-        elif len(args) == 2:
-            # analogTrigger assumed
-            if not hasattr(args[0], "createOutput"):
-                raise ValueError("expected AnalogTrigger when 2 arguments used")
-            analogTrigger, triggerType = args
-        else:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
+        # extract arguments
+        source = results.pop("source", None)
+        channel = results.pop("channel", None)
+        analogTrigger = results.pop("analogTrigger", None)
+        triggerType = results.pop("triggerType", None)
 
-        # convert channel into source
+        # If we don't have source, generate it from other arguments.
         if source is None:
             if channel is not None:
                 source = DigitalInput(channel)
-            elif analogTrigger is not None:
+                self.allocatedUpSource = True
+            elif analogTrigger is not None and triggerType is not None:
                 source = analogTrigger.createOutput(triggerType)
             else:
-                raise ValueError("didn't specify source")
+                raise ValueError("No usable source.")
 
         # save and set
         self.upSource = source
@@ -288,9 +244,12 @@ class Counter(SensorBase):
         hal.setCounterUpSourceEdge(self.counter, risingEdge, fallingEdge)
 
     def clearUpSource(self):
-        """Disable the up counting source to the counter.
-        """
+        """Disable the up counting source to the counter."""
+        if self.upSource is not None and self.allocatedUpSource:
+            self.upSource.free()
+            self.allocatedUpSource = False
         self.upSource = None
+
         if self.counter is None:
             return
         hal.clearCounterUpSource(self.counter)
@@ -316,50 +275,45 @@ class Counter(SensorBase):
         and a keyword argument for the same channel.
 
         :param channel: the digital port to count
+        :type channel: int
         :param source: the digital source to count
+        :type source: DigitalInput
         :param analogTrigger:
             The analog trigger object that is used for the Up Source
+        :type analogTrigger: AnalogTrigger
         :param triggerType:
             The analog trigger output that will trigger the counter.
             Defaults to kState if not specified.
+        :type triggerType: AnalogTriggerType
         """
+
+        #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
+
         if self.counter is None:
             raise ValueError("operation on freed port")
 
-        # keyword arguments
-        source = kwargs.pop("source", None)
-        channel = kwargs.pop("channel", None)
-        analogTrigger = kwargs.pop("analogTrigger", None)
-        triggerType = kwargs.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.STATE)
+        argument_templates = [[("channel", int)],
+                              [("source", HasAttribute("getChannelForRouting")), ],
+                              [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
 
-        if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
+        _, results = match_arglist('Counter.setUpSource',
+                                   args, kwargs, argument_templates)
 
-        # positional arguments
-        if len(args) == 1:
-            if hasattr(args[0], "getChannelForRouting"):
-                source = args[0]
-            elif hasattr(args[0], "createOutput"):
-                analogTrigger = args[0]
-            else:
-                channel = args[0]
-        elif len(args) == 2:
-            # analogTrigger assumed
-            if not hasattr(args[0], "createOutput"):
-                raise ValueError("expected AnalogTrigger when 2 arguments used")
-            analogTrigger, triggerType = args
-        else:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
+        # extract arguments
+        source = results.pop("source", None)
+        channel = results.pop("channel", None)
+        analogTrigger = results.pop("analogTrigger", None)
+        triggerType = results.pop("triggerType", None)
 
-        # convert channel into source
+        # If we don't have source, generate it from other arguments.
         if source is None:
             if channel is not None:
                 source = DigitalInput(channel)
-            elif analogTrigger is not None:
+                self.allocatedDownSource = True
+            elif analogTrigger is not None and triggerType is not None:
                 source = analogTrigger.createOutput(triggerType)
             else:
-                raise ValueError("didn't specify source")
+                raise ValueError("No usable source.")
 
         # save and set
         self.downSource = source
@@ -385,7 +339,11 @@ class Counter(SensorBase):
     def clearDownSource(self):
         """Disable the down counting source to the counter.
         """
+        if self.downSource is not None and self.allocatedDownSource:
+            self.downSource.free()
+            self.allocatedDownSource = False
         self.downSource = None
+
         if self.counter is None:
             return
         hal.clearCounterDownSource(self.counter)
@@ -425,11 +383,11 @@ class Counter(SensorBase):
 
         :param threshold: The pulse length beyond which the counter counts the
             opposite direction. Units are seconds.
-        :type  threshold: float
+        :type  threshold: float, int
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
-        hal.setCounterPulseLengthMode(self.counter, threshold)
+        hal.setCounterPulseLengthMode(self.counter, float(threshold))
 
     def get(self):
         """Read the current counter value. Read the value at this instant. It
@@ -466,11 +424,11 @@ class Counter(SensorBase):
 
         :param maxPeriod: The maximum period where the counted device is
             considered moving in seconds.
-        :type maxPeriod: float
+        :type maxPeriod: float or int
         """
         if self.counter is None:
             raise ValueError("operation on freed port")
-        hal.setCounterMaxPeriod(self.counter, maxPeriod)
+        hal.setCounterMaxPeriod(self.counter, float(maxPeriod))
 
     def setUpdateWhenEmpty(self, enabled):
         """Select whether you want to continue updating the event timer
