@@ -194,7 +194,7 @@ class CANTalon(MotorSafety):
                 outputValue = 1
             elif outputValue < -1:
                 outputValue = -1
-            hal.TalonSRX_SetDemand(self.handle, 1023*outputValue)
+            hal.TalonSRX_SetDemand(self.handle, int(1023*outputValue))
         elif self.controlMode == self.ControlMode.Follower:
             hal.TalonSRX_SetDemand(self.handle, int(outputValue))
         elif self.controlMode == self.ControlMode.Voltage:
