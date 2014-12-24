@@ -19,6 +19,12 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Counter"]
 
+def _freeCounter(counter):
+    hal.setCounterUpdateWhenEmpty(counter, True)
+    hal.clearCounterUpSource(counter)
+    hal.clearCounterDownSource(counter)
+    hal.freeCounter(counter)
+
 class Counter(SensorBase):
     """Class for counting the number of ticks on a digital input channel. This
     is a general purpose class for counting repetitive events. It can return
@@ -122,7 +128,10 @@ class Counter(SensorBase):
         self.pidSource = PIDSource.PIDSourceParameter.kDistance
 
         # create counter
-        self.counter, self.index = hal.initializeCounter(mode)
+        self._counter, self.index = hal.initializeCounter(mode)
+        self._counter_finalizer = \
+            weakref.finalize(self, _freeCounter, self._counter)
+
         hal.HALReport(hal.HALUsageReporting.kResourceType_Counter, self.index,
                       mode)
 
@@ -149,17 +158,17 @@ class Counter(SensorBase):
         elif downChannel is not None:
             self.setDownSource(downChannel)
 
+    @property
+    def counter(self):
+        if not self._counter_finalizer.alive:
+            return None
+        return self._counter
 
     def free(self):
         self.setUpdateWhenEmpty(True)
         self.clearUpSource()
         self.clearDownSource()
-
-        hal.freeCounter(self.counter)
-
-        self.counter = None
-        self.upSource = None
-        self.downSource = None
+        self._counter_finalizer()
 
     def setUpSource(self, *args, **kwargs):
         """Set the up counting source for the counter.
