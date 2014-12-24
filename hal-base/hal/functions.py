@@ -37,8 +37,8 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
     return outer
 
 def _CTRFUNC_errcheck(result, func, args):
-    if result.value != 0:
-        raise HALError(getHALErrorMessage(result.value))
+    if result != 0:
+        raise HALError(getHALErrorMessage(result))
     return args
 
 def _CTRFUNC(name, *params, out=None, library=_dll, handle_missing=False):
