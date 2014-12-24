@@ -11,7 +11,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.m3 = wpilib.Victor(2)
         self.drive = wpilib.RobotDrive(self.m1, self.m2)
         self.shifter = wpilib.DoubleSolenoid(0, 1)
-        ctr = wpilib.Counter(3)
 
     def teleopPeriodic(self):
         self.drive.tankDrive(self.lstick, self.rstick)
