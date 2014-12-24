@@ -149,7 +149,7 @@ class CANTalon(MotorSafety):
         self.profile = 0
         self.setPoint = 0.0
         self.setProfile(self.profile)
-        self._applyControlMode(ControlMode.PercentVbus)
+        self._applyControlMode(self.ControlMode.PercentVbus)
 
     @property
     def handle(self):
