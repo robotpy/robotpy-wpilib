@@ -21,6 +21,8 @@ def _log_versions():
                 hal.__version__,
                 hal_impl.__halplatform__,
                 hal_impl.__version__)
+    if hasattr(hal_impl.version, "__hal_version__"):
+        logger.info("HAL library version %s", hal_impl.version.__hal_version__)
     
     # should we just die here?
     if hal.__version__ != wpilib.__version__ and \
