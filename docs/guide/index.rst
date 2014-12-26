@@ -5,3 +5,5 @@ Programmer's Guide
 ------------------
 
 .. toctree::
+
+	anatomy
