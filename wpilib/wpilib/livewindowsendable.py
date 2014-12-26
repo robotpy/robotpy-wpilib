@@ -3,8 +3,7 @@ from .sendable import Sendable
 __all__ = ["LiveWindowSendable"]
 
 class LiveWindowSendable(Sendable):
-    """Live Window Sendable is a special type of object sendable to the live
-    window.
+    """A special type of object that can be displayed on the live window.
     """
 
     def updateTable(self):

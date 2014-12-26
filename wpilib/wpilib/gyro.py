@@ -16,7 +16,9 @@ from .timer import Timer
 __all__ = ["Gyro"]
 
 class Gyro(SensorBase):
-    """Use a rate gyro to return the robots heading relative to a starting
+    """Interface to a gyro device via an :class:`.AnalogInput`
+    
+    Use a rate gyro to return the robots heading relative to a starting
     position.  The Gyro class tracks the robots heading based on the starting
     position. As the robot rotates the new heading is computed by integrating
     the rate of rotation returned by the sensor. When the class is

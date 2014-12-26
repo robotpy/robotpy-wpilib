@@ -25,12 +25,13 @@ def _freeCounter(counter):
     hal.freeCounter(counter)
 
 class Counter(SensorBase):
-    """Class for counting the number of ticks on a digital input channel. This
-    is a general purpose class for counting repetitive events. It can return
+    """Counts the number of ticks on a :class:`.DigitalInput` channel.
+    
+    This is a general purpose class for counting repetitive events. It can return
     the number of counts, the period of the most recent cycle, and detect when
     the signal being counted has stopped by supplying a maximum cycle time.
 
-    All counters will immediately start counting - reset() them if you need
+    All counters will immediately start counting - :meth:`reset` them if you need
     them to be zeroed before use.
     
     .. not_implemented: initCounter

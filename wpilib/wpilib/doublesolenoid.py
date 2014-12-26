@@ -15,8 +15,7 @@ from .solenoidbase import SolenoidBase
 __all__ = ["DoubleSolenoid"]
 
 class DoubleSolenoid(SolenoidBase):
-    """DoubleSolenoid class for running 2 channels of high voltage Digital
-    Output.
+    """Controls 2 channels of high voltage Digital Output.
 
     The DoubleSolenoid class is typically used for pneumatics solenoids that
     have two positions controlled by two separate channels.

@@ -24,7 +24,9 @@ def _freeEncoder(encoder):
     hal.freeEncoder(encoder)
 
 class Encoder(SensorBase):
-    """Class to read quad encoders. Quadrature encoders are devices that count
+    """Reads from quadrature encoders.
+    
+    Quadrature encoders are devices that count
     shaft rotation and can sense direction. The output of the QuadEncoder class
     is an integer that can count either up or down, and can go negative for
     reverse direction counting. When creating QuadEncoders, a direction is

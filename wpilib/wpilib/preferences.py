@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["Preferences"]
 
 class Preferences:
-    """The preferences class provides a relatively simple way to save important
+    """Provides a relatively simple way to save important
     values to the RoboRIO to access the next time the RoboRIO is booted.
 
     This class loads and saves from a file inside the RoboRIO. The user can not

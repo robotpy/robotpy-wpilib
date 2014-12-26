@@ -5,7 +5,8 @@ from .sensorbase import SensorBase
 __all__ = ["Compressor"]
 
 class Compressor(SensorBase):
-    """Class for operating the PCM (Pneumatics compressor module)
+    """Operates the PCM (Pneumatics compressor module)
+    
     The PCM automatically will run in close-loop mode by default whenever a
     Solenoid object is created. For most cases the Compressor object does not
     need to be instantiated or used in a robot program.

@@ -18,7 +18,7 @@ class _LiveWindowComponent:
         self.isSensor = isSensor
 
 class LiveWindow:
-    """The LiveWindow class is the public interface for putting sensors and
+    """The public interface for putting sensors and
     actuators on the LiveWindow."""
 
     sensors = set()

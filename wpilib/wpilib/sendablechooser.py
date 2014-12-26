@@ -10,8 +10,8 @@ from .sendable import Sendable
 __all__ = ["SendableChooser"]
 
 class SendableChooser(Sendable):
-    """The SendableChooser class is a useful tool for presenting a selection
-    of options to the SmartDashboard.
+    """A useful tool for presenting a selection of options to be displayed on
+    the SmartDashboard
 
     For instance, you may wish to be able to select between multiple
     autonomous modes. You can do this by putting every possible Command
@@ -19,6 +19,19 @@ class SendableChooser(Sendable):
     it into the SmartDashboard to have a list of options appear on the
     laptop. Once autonomous starts, simply ask the SendableChooser what
     the selected value is.
+    
+    Example::
+    
+        # This shows the user two options on the SmartDashboard
+        chooser = wpilib.SendableChooser()
+        chooser.addOption('option1', '1')
+        chooser.addOption('option2', '2')
+        
+        wpilib.SmartDashboard.putData('Choice', chooser)
+        
+        # .. later, ask to see what the user selected?
+        value = chooser.getSelected()
+    
     """
 
     # The key for the default value
@@ -80,11 +93,11 @@ class SendableChooser(Sendable):
         self.addObject(name, object)
 
     def getSelected(self):
-        """Returns the selected option. If there is none selected, it will
-        return the default. If there is none selected and no default, then it
-        will return None.
+        """Returns the object associated with the selected option. If there
+        is none selected, it will return the default. If there is none
+        selected and no default, then it will return None.
 
-        :returns: the option selected
+        :returns: the object associated with the selected option
         """
         table = self.getTable()
         if table is None:

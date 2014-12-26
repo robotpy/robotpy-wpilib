@@ -14,7 +14,7 @@ __all__ = ["Victor"]
 
 class Victor(SafePWM):
     """
-        VEX Robotics Victor 888 Speed Controller
+        VEX Robotics Victor 888 Speed Controller via PWM
         
         The Vex Robotics Victor 884 Speed Controller can also be used with this
         class but may need to be calibrated per the Victor 884 user manual.

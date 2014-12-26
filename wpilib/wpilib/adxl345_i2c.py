@@ -14,6 +14,10 @@ from .sensorbase import SensorBase
 __all__ = ["ADXL345_I2C"]
 
 class ADXL345_I2C(SensorBase):
+    """
+        ADXL345 accelerometer device via i2c
+    """
+    
     kAddress = 0x1D
     kPowerCtlRegister = 0x2D
     kDataFormatRegister = 0x31

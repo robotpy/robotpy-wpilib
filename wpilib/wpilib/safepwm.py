@@ -11,7 +11,8 @@ from .pwm import PWM
 __all__ = ["SafePWM"]
 
 class SafePWM(PWM, MotorSafety):
-    """
+    """A raw PWM interface that implements the :class:`.MotorSafety` interface
+    
         .. not_implemented: initSafePWM
     """
     

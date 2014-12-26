@@ -16,7 +16,10 @@ logger = logging.getLogger(__name__)
 __all__ = ["MotorSafety"]
 
 class MotorSafety:
-    """The MotorSafety object is constructed for every object that wants to
+    """Provides mechanisms to safely shutdown motors if they aren't updated
+    often enough.
+    
+    The MotorSafety object is constructed for every object that wants to
     implement the Motor Safety protocol. The helper object has the code to
     actually do the timing and call the motors stop() method when the timeout
     expires. The motor object is expected to call the feed() method whenever

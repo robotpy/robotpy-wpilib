@@ -10,12 +10,20 @@ import hal
 __all__ = ["SmartDashboard"]
 
 class SmartDashboard:
-    """The SmartDashboard class is the bridge between robot programs and the
-    SmartDashboard on the laptop.
+    """The bridge between robot programs and the SmartDashboard on the laptop
 
-    When a value is put into the SmartDashboard here, it pops up on the
-    SmartDashboard on the laptop. Users can put values into and get values
+    When a value is put into the SmartDashboard, it pops up on the
+    SmartDashboard on the remote host. Users can put values into and get values
     from the SmartDashboard.
+    
+    These values can also be accessed by a NetworkTables client via the
+    'SmartDashboard' table::
+    
+        from networktables import NetworkTable
+        sd = NetworkTable.getTable('SmartDashboard')
+        
+        # sd.putXXX and sd.getXXX work as expected here
+    
     """
     # The NetworkTable used by SmartDashboard
     table = None

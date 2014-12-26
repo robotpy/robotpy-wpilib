@@ -19,7 +19,8 @@ def _freePWM(port):
     hal.freeDIO(port)
 
 class PWM(LiveWindowSendable):
-    """Class implements the PWM generation in the FPGA.
+    """Raw interface to PWM generation in the FPGA.
+    
     Values supplied as arguments for PWM outputs range from -1.0 to 1.0. They
     are mapped to the hardware dependent values, in this case 0-255 for the
     FPGA.  Changes are immediately sent to the FPGA, and the update occurs at

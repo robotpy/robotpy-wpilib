@@ -13,7 +13,7 @@ from .pwm import PWM
 __all__ = ["Servo"]
 
 class Servo(PWM):
-    """Standard hobby style servo.
+    """Standard hobby style servo
 
     The range parameters default to the appropriate values for the Hitec
     HS-322HD servo provided in the FIRST Kit of Parts in 2008.

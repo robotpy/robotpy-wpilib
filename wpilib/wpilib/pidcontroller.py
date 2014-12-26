@@ -17,7 +17,7 @@ from ._impl.utils import match_arglist, HasAttribute
 __all__ = ["PIDController"]
 
 class PIDController(LiveWindowSendable):
-    """Class implements a PID Control Loop.
+    """Can be used to control devices via a PID Control Loop.
 
     Creates a separate thread which reads the given :class:`.PIDSource` and takes
     care of the integral calculations, as well as writing the given

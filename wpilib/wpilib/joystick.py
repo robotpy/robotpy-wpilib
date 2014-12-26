@@ -12,6 +12,7 @@ __all__ = ["Joystick"]
 
 class Joystick:
     """Handle input from standard Joysticks connected to the Driver Station.
+    
     This class handles standard input that comes from the Driver Station. Each
     time a value is requested the most recent value is returned. There is a
     single class instance for each joystick and the mapping of ports to

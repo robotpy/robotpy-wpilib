@@ -10,7 +10,7 @@ def _freeCANTalon(handle):
     hal.TalonSRX_Destroy(handle)
 
 class CANTalon(MotorSafety):
-    """CAN TALON SRX driver.
+    """Talon SRX device as a CAN device
 
     The TALON SRX is designed to instrument all runtime signals periodically.
     The default periods are chosen to support 16 TALONs with 10ms update rate

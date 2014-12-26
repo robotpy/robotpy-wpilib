@@ -17,7 +17,15 @@ def _freeAnalogTrigger(port):
 
 class AnalogTrigger:
     """
-        Class for creating and configuring Analog Triggers
+        Converts an analog signal into a digital signal
+        
+        An analog trigger is a way to convert an analog signal into a digital
+        signal using resources built into the FPGA. The resulting digital
+        signal can then be used directly or fed into other digital components
+        of the FPGA such as the counter or encoder modules. The analog trigger
+        module works by comparing analog signals to a voltage range set by
+        the code. The specific return types and meanings depend on the analog
+        trigger mode in use.
         
         .. not_implemented: initTrigger
     """

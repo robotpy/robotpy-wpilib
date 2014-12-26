@@ -15,6 +15,8 @@ __all__ = ["ADXL345_SPI"]
 
 class ADXL345_SPI(SensorBase):
     """
+        ADXL345 accelerometer device via spi
+        
         .. not_implemented: init
     """
     

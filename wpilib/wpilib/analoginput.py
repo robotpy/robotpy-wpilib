@@ -15,7 +15,7 @@ from .timer import Timer
 __all__ = ["AnalogInput"]
 
 class AnalogInput(SensorBase):
-    """Analog channel class.
+    """Analog input
 
     Each analog channel is read from hardware as a 12-bit number representing
     0V to 5V.

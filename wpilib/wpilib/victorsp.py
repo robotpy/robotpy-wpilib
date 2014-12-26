@@ -14,7 +14,7 @@ __all__ = ["VictorSP"]
 
 class VictorSP(SafePWM):
     """
-        VEX Robotics Victor SP Speed Controller
+        VEX Robotics Victor SP Speed Controller via PWM
         
         .. not_implemented: initVictorSP
     """

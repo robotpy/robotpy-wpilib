@@ -12,7 +12,7 @@ from .livewindowsendable import LiveWindowSendable
 __all__ = ["BuiltInAccelerometer"]
 
 class BuiltInAccelerometer(LiveWindowSendable):
-    """Built-in accelerometer.
+    """Built-in accelerometer device
 
     This class allows access to the RoboRIO's internal accelerometer.
     """

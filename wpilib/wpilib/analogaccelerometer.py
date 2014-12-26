@@ -14,7 +14,8 @@ from .livewindowsendable import LiveWindowSendable
 __all__ = ["AnalogAccelerometer"]
 
 class AnalogAccelerometer(LiveWindowSendable):
-    """Handle operation of an analog accelerometer.
+    """Analog Accelerometer
+    
     The accelerometer reads acceleration directly through the sensor. Many
     sensors have multiple axis and can be treated as multiple devices. Each
     is calibrated by finding the center value over a period of time.

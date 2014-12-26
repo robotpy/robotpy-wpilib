@@ -14,8 +14,9 @@ __all__ = ["TalonSRX"]
 
 class TalonSRX(SafePWM):
     """
-        Cross the Road Electronics (CTRE) Talon SRX Speed Controller with PWM
-        control. See :class:`.CANTalonSRX` for CAN control of Talon SRX.
+        Cross the Road Electronics (CTRE) Talon SRX Speed Controller via PWM
+        
+        .. seealso:: See :class:`.CANTalon` for CAN control of Talon SRX.
         
         .. not_implemented: initTalonSRX
     """

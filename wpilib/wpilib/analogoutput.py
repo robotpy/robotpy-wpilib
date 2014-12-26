@@ -14,7 +14,7 @@ from .sensorbase import SensorBase
 __all__ = ["AnalogOutput"]
 
 class AnalogOutput(SensorBase):
-    """Analog output class."""
+    """Analog output"""
 
     channels = Resource(SensorBase.kAnalogOutputChannels)
 

@@ -10,7 +10,8 @@ import weakref
 __all__ = ["Resource"]
 
 class Resource:
-    """Track resources in the program.
+    """Tracks resources in the program.
+    
     The Resource class is a convenient way of keeping track of allocated
     arbitrary resources in the program. Resources are just indicies that
     have an lower and upper bound that are tracked by this class. In the

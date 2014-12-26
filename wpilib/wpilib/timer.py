@@ -11,7 +11,7 @@ __all__ = ["Timer"]
 
 class Timer:
     """
-        Provides time-related functionality for the robot.
+        Provides time-related functionality for the robot
         
         .. note:: Prefer to use this module for time functions, instead of
                   the :mod:`time` module in the standard library. This will

@@ -12,7 +12,7 @@ from .sensorbase import SensorBase
 __all__ = ["PowerDistributionPanel"]
 
 class PowerDistributionPanel(SensorBase):
-    """Class for getting voltage, current, and temperature from the CAN PDP"""
+    """Use to obtain voltage, current, and temperature from the CAN PDP"""
 
     def getVoltage(self):
         """

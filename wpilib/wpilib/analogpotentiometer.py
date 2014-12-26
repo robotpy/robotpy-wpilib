@@ -13,7 +13,9 @@ from .livewindowsendable import LiveWindowSendable
 __all__ = ["AnalogPotentiometer"]
 
 class AnalogPotentiometer(LiveWindowSendable):
-    """Class for reading analog potentiometers. Analog potentiometers read
+    """Reads a potentiometer via an :class:`.AnalogInput`
+    
+    Analog potentiometers read
     in an analog voltage that corresponds to a position. The position is in
     whichever units you choose, by way of the scaling and offset constants
     passed to the constructor.

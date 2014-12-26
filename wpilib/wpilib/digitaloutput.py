@@ -20,7 +20,8 @@ def _freePWMGenerator(pwmGenerator):
     hal.freePWM(pwmGenerator)
 
 class DigitalOutput(DigitalSource):
-    """Class to write digital outputs. This class will write digital outputs.
+    """Writes to a digital output
+    
     Other devices that are implemented elsewhere will automatically allocate
     digital inputs and outputs as required.
     """

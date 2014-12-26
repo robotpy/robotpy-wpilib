@@ -14,7 +14,7 @@ __all__ = ["Talon"]
 
 class Talon(SafePWM):
     """
-        Cross the Road Electronics (CTRE) Talon and Talon SR Speed Controller
+        Cross the Road Electronics (CTRE) Talon and Talon SR Speed Controller via PWM
         
         .. not_implemented: initTalon
     """

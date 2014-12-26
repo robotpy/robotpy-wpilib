@@ -13,10 +13,11 @@ from .livewindow import LiveWindow
 __all__ = ["GearTooth"]
 
 class GearTooth(Counter):
-    """Alias for counter class.
-    Implement the gear tooth sensor supplied by FIRST. Currently there is no
-    reverse sensing on the gear tooth sensor, but in future versions we might
-    implement the necessary timing in the FPGA to sense direction.
+    """Interface to the gear tooth sensor supplied by FIRST
+    
+    Currently there is no reverse sensing on the gear tooth sensor, but in
+    future versions we might implement the necessary timing in the FPGA to
+    sense direction.
     """
 
     kGearToothThreshold = 55e-6

@@ -7,7 +7,7 @@ def _freeSPI(port):
     hal.spiClose(port)
 
 class SPI:
-    """Represents a SPI bus port."""
+    """Represents a SPI bus port"""
 
     class Port:
         kOnboardCS0 = 0
