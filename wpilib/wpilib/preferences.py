@@ -23,7 +23,7 @@ class Preferences:
 
     This class is thread safe.
 
-    This will also interact with :class:`NetworkTable` by creating a table
+    This will also interact with :class:`networktables.NetworkTable` by creating a table
     called "Preferences" with all the key-value pairs. To save using
     `NetworkTable`, simply set the boolean at position ~S A V E~ to true.
     Also, if the value of any variable is " in the `NetworkTable`, then

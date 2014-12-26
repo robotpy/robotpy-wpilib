@@ -15,7 +15,7 @@ class SmartDashboard:
 
     When a value is put into the SmartDashboard here, it pops up on the
     SmartDashboard on the laptop. Users can put values into and get values
-    from the SmartDashboard
+    from the SmartDashboard.
     """
     # The NetworkTable used by SmartDashboard
     table = None
