@@ -1,5 +1,4 @@
-
-def match_arglist(name, args, kwargs, templates):
+def match_arglist(name, args, kwargs, templates, allow_extra_kwargs=False):
     """
     This compares args and kwargs against the argument templates in templates.
     
@@ -8,6 +7,8 @@ def match_arglist(name, args, kwargs, templates):
     :param kwargs: The list of keyword arguments
     :param templates: A list of dictionaries corresponding to possible
     argument list formats.
+    :param allow_extra_kwargs: Whether or not to allow extra keyword arguments. If this
+        is true, then extra keyword arguments will be added to the result dictionary.
 
     An argument template is structured as follows:
 
@@ -16,12 +17,13 @@ def match_arglist(name, args, kwargs, templates):
 
     :returns The id of the selected template
     :returns A dictionary of argument name, value tuples.
+    :
     """
-    return __match_arglist(name, args, kwargs, templates, False) 
+    return __match_arglist(name, args, kwargs, templates, False, allow_extra_kwargs)
     
-def __match_arglist(name, args, kwargs, templates, err):
-    
-    # TODO: we can do better at giving the user an error message... 
+def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False):
+
+    # TODO: we can do better at giving the user an error message...
     
     if err:
         print("*"*50)
@@ -77,8 +79,10 @@ def __match_arglist(name, args, kwargs, templates, err):
 
         else:
             #If the results are valid and the argument lists are empty, return the results.
-            if len(args_copy) == 0 and len(kwargs_copy) == 0:
-                return templates.index(template), results
+            if len(args_copy) == 0 and (len(kwargs_copy) == 0 or allow_extra_kwargs):
+                output = kwargs.copy()
+                output.update(results)
+                return templates.index(template), output
         
         if err and not showed_error:
             if len(args_copy) != 0:
@@ -128,7 +132,7 @@ def types_match(object, type_structure):
         return True
 
     #Is it an attribute list?
-    elif isinstance(type_structure, HasAttribute):
+    elif hasattr(type_structure, "matches"):
         return type_structure.matches(object)
 
     elif isinstance(type_structure, list) and len(type_structure) != 0:
@@ -166,3 +170,4 @@ class HasAttribute:
                 return False
         
         return True
+

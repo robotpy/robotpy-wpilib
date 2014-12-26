@@ -64,25 +64,31 @@ class Counter(SensorBase):
 
         Positional arguments may be either channel numbers, :class:`.DigitalSource`
         sources, or :class:`.AnalogTrigger` sources in the following order:
+
+        A "source" is any valid single-argument input to :meth:`setUpSource` and :meth:`setDownSource`
         
         - (none)
         - upSource
-        - upChannel
-        - encodingType, upChannel, downChannel, inverted
-        - trigger
+        - upSource, down source
+        And, to keep consistency with Java wpilib.
+        - encodingType, up source, down source, inverted
 
         If the passed object has a
         `getChannelForRouting` function, it is assumed to be a DigitalSource.
         If the passed object has a `createOutput` function, it is assumed to
         be an AnalogTrigger.
 
-        Any positional argument can be substituted with a keyword argument.
+        In addition, extra keyword parameters may be provided for mode, inverted,
+        and encodingType.
 
-        :param upSource: The source that should be used for up counting.
-        :param downSource: The source that should be used for down counting
-                           or direction control.
-        :param upChannel: The digital input index that should be used for up
-                          counting.
+        :param upSource: The source (channel num, DigitalInput, or AnalogTrigger)
+            that should be used for up counting.
+        :param downSource: The source (channel num, DigitalInput, or AnalogTrigger)
+            that should be used for down counting or direction control.
+        :param mode:
+            How and what the counter counts (see :class:`.Mode`).  Defaults to
+            `Mode.kTwoPulse` for zero or one source, and
+            `Mode.kExternalDirection` for two sources.
         :param inverted:
             Flips the direction of counting.  Defaults to False if unspecified.
             Only used when two sources are specified.
@@ -94,36 +100,34 @@ class Counter(SensorBase):
             The :class:`.AnalogTrigger` object that is used for the Up Source
         """
 
+        source_identifier = [int, HasAttribute("getChannelForRouting"), HasAttribute("createOutput")]
+
         argument_templates = [[],
-                              [("upSource", HasAttribute("getChannelForRouting")), ],
-                              [("upChannel", int), ],
-                              [("encodingType", None), ("upSource", HasAttribute("getChannelForRouting")),
-                               ("downSource", HasAttribute("getChannelForRouting")), ("inverted", bool)],
-                              [("trigger", HasAttribute("createOutput")), ]]
+                              [("upSource", source_identifier), ],
+                              [("upSource", source_identifier), ("downSource", source_identifier)],
+                              [("encodingType", None), ("upSource", source_identifier),
+                               ("downSource", source_identifier), ("inverted", bool)], ]
 
 
-        template_index, results = match_arglist('Counter.__init__',
-                                   args, kwargs, argument_templates)
+        _, results = match_arglist('Counter.__init__',
+                                   args, kwargs, argument_templates, allow_extra_kwargs=True)
 
         # extract arguments
         upSource = results.pop("upSource", None)
         downSource = results.pop("downSource", None)
-        upChannel = results.pop("upChannel", None)
-        downChannel = results.pop("downChannel", None)
-        trigger = results.pop("trigger", None)
 
         encodingType = results.pop("encodingType", None)
         inverted = results.pop("inverted", False)
+        mode = results.pop("mode", None)
 
-        #Get the mode
-        if template_index == 3:
-            mode = self.Mode.kExternalDirection
-        else:
-            mode = self.Mode.kTwoPulse
+        if mode is None:
+            #Get the mode
+            if upSource is not None and downSource is not None:
+                mode = self.Mode.kExternalDirection
+            else:
+                mode = self.Mode.kTwoPulse
 
-        # save to instance variables
-        self.upSource = upSource
-        self.downSource = downSource
+        # save some variables
         self.distancePerPulse = 1.0 # distance of travel for each tick
         self.pidSource = PIDSource.PIDSourceParameter.kDistance
 
@@ -135,28 +139,20 @@ class Counter(SensorBase):
         hal.HALReport(hal.HALUsageReporting.kResourceType_Counter, self.index,
                       mode)
 
+        #Set sources
+        if upSource is not None:
+            self.setUpSource(upSource)
+
+        if downSource is not None:
+            self.setDownSource(downSource)
+
         # when given two sources, set edges
-        if template_index == 3:
+        if upSource is not None and downSource is not None:
             if encodingType == self.EncodingType.k1X:
                 self.setUpSourceEdge(True, False)
             else:
                 self.setUpSourceEdge(True, True)
             self.setDownSourceEdge(inverted, True)
-
-        #Set sources
-        if upSource is not None:
-            self.setUpSource(upSource)
-        elif upChannel is not None:
-            self.setUpSource(upChannel)
-        elif trigger is not None:
-            self.setUpSource(trigger, AnalogTriggerOutput.AnalogTriggerType.STATE)
-        elif template_index != 0:
-            raise ValueError("No usable up source")
-
-        if downSource is not None:
-            self.setDownSource(downSource)
-        elif downChannel is not None:
-            self.setDownSource(downChannel)
 
     @property
     def counter(self):
@@ -167,6 +163,7 @@ class Counter(SensorBase):
     def free(self):
         self.setUpdateWhenEmpty(True)
         self.clearUpSource()
+
         self.clearDownSource()
         self._counter_finalizer()
 
@@ -178,6 +175,7 @@ class Counter(SensorBase):
 
         - source
         - channel
+        - analogTrigger
         - analogTrigger, triggerType
 
         For positional arguments, if the passed object has a
@@ -210,6 +208,7 @@ class Counter(SensorBase):
 
         argument_templates = [[("channel", int)],
                               [("source", HasAttribute("getChannelForRouting")), ],
+                              [("analogTrigger", HasAttribute("createOutput"))],
                               [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
 
         _, results = match_arglist('Counter.setUpSource',
@@ -219,7 +218,7 @@ class Counter(SensorBase):
         source = results.pop("source", None)
         channel = results.pop("channel", None)
         analogTrigger = results.pop("analogTrigger", None)
-        triggerType = results.pop("triggerType", None)
+        triggerType = results.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.STATE)
 
         # If we don't have source, generate it from other arguments.
         if source is None:
@@ -271,6 +270,7 @@ class Counter(SensorBase):
         
         - source
         - channel
+        - analogTrigger
         - analogTrigger, triggerType
 
         For positional arguments, if the passed object has a
@@ -303,6 +303,7 @@ class Counter(SensorBase):
 
         argument_templates = [[("channel", int)],
                               [("source", HasAttribute("getChannelForRouting")), ],
+                              [("analogTrigger", HasAttribute("createOutput")), ],
                               [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
 
         _, results = match_arglist('Counter.setUpSource',
@@ -312,7 +313,7 @@ class Counter(SensorBase):
         source = results.pop("source", None)
         channel = results.pop("channel", None)
         analogTrigger = results.pop("analogTrigger", None)
-        triggerType = results.pop("triggerType", None)
+        triggerType = results.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.STATE)
 
         # If we don't have source, generate it from other arguments.
         if source is None:
