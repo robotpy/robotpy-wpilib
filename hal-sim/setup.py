@@ -43,12 +43,12 @@ setup(
     keywords='frc first robotics hal can',
     packages=['hal_impl'],
     install_requires='robotpy-hal-base==' + __version__, # is this a bad idea?
-    license="MIT License",
+    license="BSD License",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.4",
         "Topic :: Scientific/Engineering"

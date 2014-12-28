@@ -43,12 +43,12 @@ setup(
     keywords='frc first robotics wpilib',
     packages=find_packages(),
     install_requires=['pynetworktables'],
-    license="MIT License",
+    license="BSD License",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.4",
         "Topic :: Scientific/Engineering"

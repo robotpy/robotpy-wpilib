@@ -67,12 +67,12 @@ setup(
     packages=['hal_impl'],
     package_data={'hal_impl': ['libHALAthena_shared.so']},
     install_requires='robotpy-hal-base==' + version, # is this a bad idea?
-    license="MIT License",
+    license="BSD License",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3.4",
         "Topic :: Scientific/Engineering"

@@ -1,15 +1,20 @@
-WPILib
-======
+RobotPy WPILib
+==============
 
 This repository contains the source code for a 100% python implementation of WPILib, 
 the library used to interface with hardware for the FIRST Robotics Competition. 
 Teams can use this library to write their robot code in Python, a powerful dynamic
 programming language.
 
+Documentation
+=============
+
+TODO
+
 Installation
 ============
 
-TODO
+See the documentation at TODO
 
 
 Packages
@@ -23,4 +28,4 @@ Packages
 License
 =======
 
-See [LICENSE](LICENSE)
+See [LICENSE.txt](wpilib/LICENSE.txt)
