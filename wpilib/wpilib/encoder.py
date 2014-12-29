@@ -180,6 +180,7 @@ class Encoder(SensorBase):
                     reverseDirection)
             self._encoder_finalizer = \
                     weakref.finalize(self, _freeEncoder, self._encoder)
+            self.setMaxPeriod(.5)
         elif encodingType in (self.EncodingType.k2X, self.EncodingType.k1X):
             # Use Counter object for 1x and 2x encoding
             self.counter = Counter(encodingType, aSource, bSource,
@@ -261,12 +262,12 @@ class Encoder(SensorBase):
         """
         warnings.warn("use getRate instead", DeprecationWarning)
         if self.counter is not None:
-            measuredPeriod = self.counter.getPeriod()
+            measuredPeriod = self.counter.getPeriod() / self.decodingScaleFactor()
         elif self.encoder is not None:
             measuredPeriod = hal.getEncoderPeriod(self.encoder)
         else:
             raise ValueError("operation on freed port")
-        return measuredPeriod / self.decodingScaleFactor()
+        return measuredPeriod
 
     def setMaxPeriod(self, maxPeriod):
         """Sets the maximum period for stopped detection. Sets the value that

@@ -182,14 +182,20 @@ def reset_hal_data(hooks):
             'accumulator_value': 0,
             'accumulator_count': 1, # don't make zero, or divide by zero error occurs
             'accumulator_deadband': 0,
-            
+
+        }) for _ in range(8)],
+
+        'analog_trigger': [{
+            'has_source': False,
+            'initialized': False,
+            'port': 0,
             # trigger values
             'trig_lower': None,
             'trig_upper': None,
             'trig_type': None, # 'averaged' or 'filtered'
             'trig_state': False,
 
-        }) for _ in range(8)],
+        } for _ in range(8)],
 
         # compressor control is here
         'compressor': NotifyDict({

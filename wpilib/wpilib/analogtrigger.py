@@ -55,7 +55,7 @@ class AnalogTrigger:
     def port(self):
         if not self._analogtrigger_finalizer.alive:
             return None
-        return self._analogtrigger
+        return self._port
 
     def free(self):
         """Release the resources used by this object"""

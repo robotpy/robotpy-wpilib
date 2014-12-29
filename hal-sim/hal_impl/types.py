@@ -112,8 +112,9 @@ AnalogPort_ptr = fake_pointer(AnalogPort)
 
 # opaque analog trigger
 class AnalogTrigger:
-    def __init__(self, port):
+    def __init__(self, port, index):
         self.pin = port.pin
+        self.index = index
 AnalogTrigger_ptr = fake_pointer(AnalogTrigger)
 
 #############################################################################
