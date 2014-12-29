@@ -136,6 +136,8 @@ class Counter(SensorBase):
         self._counter_finalizer = \
             weakref.finalize(self, _freeCounter, self._counter)
 
+        self.setMaxPeriod(.5)
+
         hal.HALReport(hal.HALUsageReporting.kResourceType_Counter, self.index,
                       mode)
 
@@ -150,8 +152,10 @@ class Counter(SensorBase):
         if upSource is not None and downSource is not None:
             if encodingType == self.EncodingType.k1X:
                 self.setUpSourceEdge(True, False)
+                hal.setCounterAverageSize(self._counter, 1)
             else:
                 self.setUpSourceEdge(True, True)
+                hal.setCounterAverageSize(self._counter, 2)
             self.setDownSourceEdge(inverted, True)
 
     @property
