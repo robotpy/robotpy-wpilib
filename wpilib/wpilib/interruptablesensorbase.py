@@ -106,6 +106,9 @@ class InterruptableSensorBase(SensorBase):
 
     def waitForInterrupt(self, timeout, ignorePrevious=True):
         """In synchronous mode, wait for the defined interrupt to occur.
+        You should **NOT** attempt to read the sensor from another thread
+        while waiting for an interrupt. This is not threadsafe, and can cause 
+        memory corruption
 
         :param timeout: Timeout in seconds
         :param ignorePrevious: If True (default), ignore interrupts that
