@@ -1,7 +1,9 @@
+
 import wpilib
 from wpilib import command
-from .example_subsystem import ExampleSubsystem
-from .example_command import ExampleCommand
+
+from subsystems import ExampleSubsystem
+from commands import ExampleCommand
 
 
 class MyRobot(wpilib.IterativeRobot):
@@ -16,7 +18,7 @@ class MyRobot(wpilib.IterativeRobot):
         """
         self.oi = None
         #Create the command used for the autonomous period
-        self.autonomous_command = ExampleCommand()
+        self.autonomous_command = ExampleCommand(self)
 
     def autonomousInit(self):
         #Schedule the autonomous command

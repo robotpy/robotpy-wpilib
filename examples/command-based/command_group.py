@@ -1,3 +1,4 @@
+
 from wpilib.command import CommandGroup
 
 
@@ -7,16 +8,16 @@ class CommandGroupName(CommandGroup):
     name of your desired Command Group
     """
 
-    def __init__(self, name=None):
+    def __init__(self, robot, name=None):
         # Add Commands here:
-        # e.g. addSequential(Command1())
-        #      addSequential(Command2())
+        # e.g. addSequential(Command1(robot))
+        #      addSequential(Command2(robot))
         # these will run in order.
 
         # To run multiple commands at the same time,
         # use addParallel()
-        # e.g. addParallel(Command1())
-        #      addSequential(Command2())
+        # e.g. addParallel(Command1(robot))
+        #      addSequential(Command2(robot))
         # Command1 and Command2 will run in parallel.
 
         # A command group will require all of the subsystems that each member
@@ -25,3 +26,4 @@ class CommandGroupName(CommandGroup):
         # a CommandGroup containing them would require both the chassis and the
         # arm.
         super().__init__(name)
+        self.robot = robot

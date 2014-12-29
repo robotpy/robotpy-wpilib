@@ -1,14 +1,16 @@
+
 from wpilib.command import Command
 
 
 #This is a template Command, CommandName should, of course, be replaced by the name of your desired Command
 class CommandName(Command):
 
-    def __init__(self, name=None, timeout=None):
+    def __init__(self, robot, name=None, timeout=None):
         """This is the constructor of the command, use this to declare subsystem dependencies"""
         #Use self.requires() here to declare subsystem dependencies
         #eg. self.requires(chassis)
         super().__init__(name, timeout)
+        self.robot = robot
 
     def initialize(self):
         """Called just before this Command runs the first time"""
