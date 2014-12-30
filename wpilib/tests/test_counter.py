@@ -156,7 +156,7 @@ def test_counter_reset(wpilib, hal_data):
 @pytest.mark.parametrize("period", [1, 4.5, 1.5])
 def test_counter_set_max_period(wpilib, hal_data, period):
     ctr = wpilib.Counter()
-    assert hal_data["counter"][0]["max_period"] == 0
+    assert hal_data["counter"][0]["max_period"] == .5
     ctr.setMaxPeriod(period)
     assert hal_data["counter"][0]["max_period"] == period
 
