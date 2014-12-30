@@ -43,7 +43,7 @@ class FrcSimMain:
         
         return _cb
     
-    def run(self, options, robot_class):
+    def run(self, options, robot_class, **static_options):
 
         # TODO: filter out debug logs for pygazebo, as it's pretty noisy
 

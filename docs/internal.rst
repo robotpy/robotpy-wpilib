@@ -61,7 +61,9 @@ do the following:
 * The entrypoint must point at an object that has the following properties:
     * Must have a docstring (shown when --help is given)
     * Constructor must take a single argument (it is an argparse parser which options can be added to)
-    * Must have a 'run' function which takes two arguments: options, and robot_class
+    * Must have a 'run' function which takes two arguments: options, and robot_class. It must
+      also take arbitrary keyword arguments via the **kwargs mechanism. If it receives arguments
+      that it does not recognize, the entry point must ignore any such options.
 
 If your command's run function is called, it is your command's responsibility
 to execute the robot code (if that is desired). This sample command 
@@ -73,7 +75,7 @@ demonstrates how to do this::
         def __init__(self, parser):
             pass
 
-        def run(self, options, robot_class):
+        def run(self, options, robot_class, **static_options):
             # runs the robot code main loop
             robot_class.main(robot_class)
 

@@ -7,5 +7,5 @@ class Main:
     def __init__(self, parser):
         pass
     
-    def run(self, options, robot_class):
+    def run(self, options, robot_class, **static_options):
         return robot_class.main(robot_class)

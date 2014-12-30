@@ -29,7 +29,7 @@ def _log_versions():
        hal.__version__ != hal_impl.__version__:
         logger.warn("Core component versions are not identical! This is not a supported configuration, and you may run into errors!")
 
-def run(robot_class):
+def run(robot_class, **kwargs):
     '''
         This function gets called in robot.py like so::
         
@@ -42,6 +42,7 @@ def run(robot_class):
         a simulation.
         
         :param robot_class: A class that inherits from :class:`.RobotBase`
+        :param **kwargs: Keyword arguments that will be passed to the executed entry points
         :returns: This function should never return
     '''
     
@@ -75,7 +76,7 @@ def run(robot_class):
     configure_logging(options.verbose)
     
     _log_versions()
-    retval = options.cmdobj.run(options, robot_class)
+    retval = options.cmdobj.run(options, robot_class, **kwargs)
     
     if retval is None:
         retval = 0
