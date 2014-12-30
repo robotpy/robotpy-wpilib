@@ -241,6 +241,14 @@ getClosedLoopControl = _STATUSFUNC("getClosedLoopControl", C.c_bool, ("pcm", PCM
 
 getPressureSwitch = _STATUSFUNC("getPressureSwitch", C.c_bool, ("pcm", PCM_ptr))
 getCompressorCurrent = _STATUSFUNC("getCompressorCurrent", C.c_float, ("pcm", PCM_ptr))
+getCompressorCurrentTooHighFault = _STATUSFUNC("getCompressorCurrentTooHighFault", C.c_bool, ("pcm", PCM_ptr))
+getCompressorCurrentTooHighStickyFault = _STATUSFUNC("getCompressorCurrentTooHighStickyFault", C.c_bool, ("pcm", PCM_ptr))
+getCompressorShortedStickyFault = _STATUSFUNC("getCompressorShortedStickyFault", C.c_bool, ("pcm", PCM_ptr))
+getCompressorShortedFault = _STATUSFUNC("getCompressorShortedFault", C.c_bool, ("pcm", PCM_ptr))
+getCompressorNotConnectedStickyFault = _STATUSFUNC("getCompressorNotConnectedStickyFault", C.c_bool, ("pcm", PCM_ptr))
+getCompressorNotConnectedFault = _STATUSFUNC("getCompressorNotConnectedFault", C.c_bool, ("pcm", PCM_ptr))
+clearAllPCMStickyFaults = _STATUSFUNC("clearAllPCMStickyFaults", None, ("pcm", PCM_ptr))
+
 
 #############################################################################
 # Digital
@@ -508,6 +516,11 @@ checkSolenoidModule = _RETFUNC("checkSolenoidModule", C.c_bool, ("module", C.c_u
 
 getSolenoid = _STATUSFUNC("getSolenoid", C.c_bool, ("solenoid_port", SolenoidPort_ptr))
 setSolenoid = _STATUSFUNC("setSolenoid", None, ("solenoid_port", SolenoidPort_ptr), ("value", C.c_bool))
+
+getPCMSolenoidBlackList = _STATUSFUNC("getPCMSolenoidBlackList", C.c_int, ("solenoid_port", SolenoidPort_ptr))
+getPCMSolenoidVoltageStickyFault = _STATUSFUNC("getPCMSolenoidVoltageStickyFault", C.c_bool, ("solenoid_port", SolenoidPort_ptr))
+getPCMSolenoidVoltageFault = _STATUSFUNC("getPCMSolenoidVoltageFault", C.c_bool, ("solenoid_port", SolenoidPort_ptr))
+clearAllPCMStickyFaults_sol = _STATUSFUNC("clearAllPCMStickyFaults_sol", None, ("solenoid_port", SolenoidPort_ptr))
 
 #############################################################################
 # TalonSRX

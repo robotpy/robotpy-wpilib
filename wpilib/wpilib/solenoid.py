@@ -100,6 +100,17 @@ class Solenoid(SolenoidBase):
         with self.mutex:
             return hal.getSolenoid(self.port)
 
+    def isBlackListed(self):
+        """
+        Check if the solenoid is blacklisted.
+            If a solenoid is shorted, it is added to the blacklist and disabled until power cycle, or until faults are
+            cleared. See :meth:`clearAllPCMStickyFaults`
+
+        :returns: If solenoid is disabled due to short.
+        """
+        value = self.getPCMSolenoidBlackList() & (1 << self.channel)
+        return value != 0
+
     # Live Window code, only does anything if live window is activated.
 
     def getSmartDashboardType(self):

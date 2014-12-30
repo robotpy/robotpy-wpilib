@@ -132,6 +132,30 @@ class DoubleSolenoid(SolenoidBase):
             return self.Value.kReverse
         return self.Value.kOff
 
+    def isFwdSolenoidBlackListed(self):
+        """
+        Check if the forward solenoid is blacklisted.
+            If a solenoid is shorted, it is added to the blacklist and disabled until power cycle, or until faults are
+            cleared. See :meth:`clearAllPCMStickyFaults`
+
+        :returns: If solenoid is disabled due to short.
+        """
+        blacklist = self.getPCMSolenoidBlackList()
+
+        return (blacklist & (1 << self.forwardChannel)) != 0
+
+    def isRevSolenoidBlackListed(self):
+        """
+        Check if the reverse solenoid is blacklisted.
+            If a solenoid is shorted, it is added to the blacklist and disabled until power cycle, or until faults are
+            cleared. See :meth:`clearAllPCMStickyFaults`
+
+        :returns: If solenoid is disabled due to short.
+        """
+        blacklist = self.getPCMSolenoidBlackList()
+
+        return (blacklist & (1 << self.reverseChannel)) != 0
+
     # Live Window code, only does anything if live window is activated.
 
     def getSmartDashboardType(self):

@@ -600,6 +600,33 @@ def getCompressorCurrent(pcm, status):
     status.value = 0
     return hal_data['compressor']['current']
 
+def getCompressorCurrentTooHighFault(pcm, status):
+    status.value = 0
+    return False
+
+def getCompressorCurrentTooHighStickyFault(pcm, status):
+    status.value = 0
+    return False
+
+def getCompressorShortedFault(pcm, status):
+    status.value = 0
+    return False
+
+def getCompressorShortedStickyFault(pcm, status):
+    status.value = 0
+    return False
+
+def getCompressorNotConnectedFault(pcm, status):
+    status.value = 0
+    return False
+
+def getCompressorNotConnectedStickyFault(pcm, status):
+    status.value = 0
+    return False
+
+def clearAllPCMStickyFaults(pcm, status):
+    status.value = 0
+    return False
 
 #############################################################################
 # Digital
@@ -1223,6 +1250,23 @@ def getSolenoid(solenoid_port, status):
 def setSolenoid(solenoid_port, value, status):
     status.value = 0
     hal_data['solenoid'][solenoid_port.pin]['value'] = value
+
+def getPCMSolenoidBlackList(solenoid_port, status):
+    status.value = 0
+    return 0
+
+def getPCMSolenoidVoltageStickyFault(solenoid_port, status):
+    status.value = 0
+    return False
+
+def getPCMSolenoidVoltageFault(solenoid_port, status):
+    status.value = 0
+    return False
+
+def clearAllPCMStickyFaults_sol(solenoid_port, status):
+    status.value = 0
+    return False
+
 
 #############################################################################
 # TalonSRX
