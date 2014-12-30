@@ -170,6 +170,13 @@ class RobotBase:
         if not hasattr(robot, '_RobotBase__initialized'):
             logger.error("If your robot class has an __init__ function, it must call super().__init__()!")
             return False
+        
+        try:
+            import wpilib
+            with open('/tmp/frc_versions/FRC_Lib_Version.ini', 'w') as fp:
+                fp.write('RobotPy %s' % wpilib.__version__)
+        except:
+            logger.warning("Could not write FRC version file to disk")
 
         try:
             robot.startCompetition()
