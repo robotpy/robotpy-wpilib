@@ -29,7 +29,7 @@ class DigitalOutput(DigitalSource):
     def __init__(self, channel):
         """Create an instance of a digital output.
 
-        :param channel: the port to use for the digital output
+        :param channel: the DIO channel for the digital output. 0-9 are on-board, 10-25 are on the MXP
         """
         super().__init__(channel, False)
         self._pwmGenerator = None

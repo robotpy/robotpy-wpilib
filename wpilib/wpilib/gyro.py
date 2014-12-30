@@ -25,6 +25,8 @@ class Gyro(SensorBase):
     instantiated, it does a short calibration routine where it samples the
     gyro while at rest to determine the default offset. This is subtracted
     from each sample to determine the heading.
+
+    .. not_implemented: initGyro
     """
 
     kOversampleBits = 10
@@ -37,17 +39,15 @@ class Gyro(SensorBase):
         """Gyro constructor.
 
         Also initializes the gyro. Calibrate the gyro by running for a number
-        of samples and computing the center value for this part. Then use the
+        of samples and computing the center value. Then use the
         center value as the Accumulator center value for subsequent
         measurements. It's important to make sure that the robot is not
         moving while the centering calculations are in progress, this is
         typically done when the robot is first turned on while it's sitting
         at rest before the competition starts.
 
-        :param channel: The analog channel index or AnalogChannel object that
-            the gyro is connected to.
-            
-        .. not_implemented: initGyro
+        :param channel: The analog channel index or AnalogInput object that
+            the gyro is connected to. Gyros can only be used on on-board channels 0-1.
         """
         if not hasattr(channel, "initAccumulator"):
             channel = AnalogInput(channel)
@@ -108,9 +108,9 @@ class Gyro(SensorBase):
 
         The angle is based on the current accumulator value corrected by the
         oversampling rate, the gyro type and the A/D calibration values. The
-        angle is continuous, that is can go beyond 360 degrees. This make
+        angle is continuous, that is it will continue from 360 to 361 degrees. This allows
         algorithms that wouldn't want to see a discontinuity in the gyro output
-        as it sweeps past 0 on the second time around.
+        as it sweeps past from 360 to 0 on the second time around.
 
         :returns: The current heading of the robot in degrees. This heading is
                 based on integration of the returned rate from the gyro.
@@ -145,13 +145,13 @@ class Gyro(SensorBase):
                     / ((1 << self.analog.getOversampleBits()) * self.voltsPerDegreePerSecond))
 
     def setSensitivity(self, voltsPerDegreePerSecond):
-        """Set the gyro type based on the sensitivity. This takes the number of
+        """Set the gyro sensitivity. This takes the number of
         volts/degree/second sensitivity of the gyro and uses it in subsequent
-        calculations to allow the code to work with multiple gyros.
+        calculations to allow the code to work with multiple gyros. This value
+        is typically found in the gyro datasheet.
 
         :param voltsPerDegreePerSecond:
-            The type of gyro specified as the voltage that represents one
-            degree/second.
+            The sensitivity in Volts/degree/second
         :type  voltsPerDegreePerSecond: float
         """
         self.voltsPerDegreePerSecond = voltsPerDegreePerSecond
@@ -172,7 +172,7 @@ class Gyro(SensorBase):
         self.analog.setAccumulatorDeadband(deadband)
 
     def setPIDSourceParameter(self, pidSource):
-        """Set which parameter of the encoder you are using as a process
+        """Set which parameter of the gyro you are using as a process
         control variable. The Gyro class supports the rate and angle
         parameters.
 
@@ -185,7 +185,7 @@ class Gyro(SensorBase):
         self.pidSource = pidSource
 
     def pidGet(self):
-        """Get the angle of the gyro for use with PIDControllers
+        """Get the output of the gyro for use with PIDControllers
 
         :returns: the current angle according to the gyro
         :rtype: float

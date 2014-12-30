@@ -25,7 +25,7 @@ class SolenoidBase(SensorBase):
     def __init__(self, moduleNumber):
         """Constructor.
 
-        :param moduleNumber: The number of the solenoid module to use.
+        :param moduleNumber: The PCM CAN ID
         """
         self.moduleNumber = moduleNumber
 

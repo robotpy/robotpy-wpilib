@@ -45,7 +45,7 @@ class ADXL345_I2C(SensorBase):
     def __init__(self, port, range):
         """Constructor.
 
-        :param port: The I2C bus port.
+        :param port: The I2C port the accelerometer is attached to.
         :param range: The range (+ or -) that the accelerometer will measure.
         """
         self.i2c = I2C(port, self.kAddress)
@@ -106,7 +106,7 @@ class ADXL345_I2C(SensorBase):
         """Get the acceleration of one axis in Gs.
 
         :param axis: The axis to read from.
-        :returns: Acceleration of the ADXL345 in Gs.
+        :returns: An object containing the acceleration measured on each axis of the ADXL345 in Gs.
         """
         data = self.i2c.read(self.kDataRegister + axis, 2)
         # Sensor is little endian... swap bytes

@@ -29,10 +29,10 @@ class GearTooth(Counter):
     def __init__(self, channel, directionSensitive=False):
         """Construct a GearTooth sensor.
 
-        :param channel: The GPIO channel index or DigitalSource that the sensor
+        :param channel: The DIO channel index or DigitalSource that the sensor
             is connected to.
         :type channel: int
-        :param directionSensitive: Enable the pulse length decoding in
+        :param directionSensitive: True to enable the pulse length decoding in
             hardware to specify count direction.  Defaults to False.
         :type directionSensitive: bool
         """

@@ -129,10 +129,13 @@ class DriverStation:
     def getBatteryVoltage(self):
         """Read the battery voltage.
 
-        :returns: The battery voltage."""
+        :returns: The battery voltage in Volts."""
         return hal.getVinVoltage()
 
     def _reportJoystickUnpluggedError(self, message):
+        """
+        Reports errors related to unplugged joysticks and throttles them so that they don't overwhelm the DS
+        """
         currentTime = Timer.getFPGATimestamp()
         if currentTime > self.nextMessageTime:
             self.reportError(message, False)
@@ -166,9 +169,11 @@ class DriverStation:
             return value / 127.0
 
     def getStickAxisCount(self, stick):
-        """Returns the number of axis on a given joystick port
+        """Returns the number of axes on a given joystick port
 
         :param stick: The joystick port number
+
+        :returns: The number of axes on the indicated joystick
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
@@ -202,6 +207,8 @@ class DriverStation:
         """Returns the number of POVs on a given joystick port
 
         :param stick: The joystick port number
+
+        :returns: The number of POVs on the indicated joystick
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
@@ -245,6 +252,8 @@ class DriverStation:
         """Gets the number of buttons on a joystick
 
         :param stick: The joystick port number
+
+        :returns: The number of buttons on the indicated joystick.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
@@ -298,9 +307,20 @@ class DriverStation:
         return not (controlWord.autonomous != 0 or controlWord.test != 0)
 
     def isSysActive(self):
+        """
+        Gets a value indicating whether the FPGA outputs are enabled. The outputs may be disabled
+        if the robot is disabled or e-stopped, the watdhog has expired, or if the roboRIO browns out.
+
+        :returns: True if the FPGA outputs are enabled.
+        """
         return hal.HALGetSystemActive()
 
     def isBrownedOut(self):
+        """
+        Check if the system is browned out.
+
+        :returns: True if the system is browned out.
+        """
         return hal.HALGetBrownedOut()
 
     def isNewControlData(self):
@@ -371,20 +391,18 @@ class DriverStation:
 
     def getMatchTime(self):
         """Return the approximate match time.
-        The FMS does not currently send the official match time to the robots.
-        This returns the time since the enable signal sent from the Driver
-        Station.
-
-        * At the beginning of autonomous, the time is reset to 0.0 seconds.
-        * At the beginning of teleop, the time is reset to +15.0 seconds.
-        * If the robot is disabled, this returns 0.0 seconds.
+        The FMS does not currently send the official match time to the robots, but
+        does send an approximate match time. The value will count down the time
+        remaining in the current period (auto or teleop).
 
         .. warning::
 
             This is not an official time (so it cannot be used to argue with
-            referees).
+            referees or guarantee that a function will trigger before a match ends).
 
-        :returns: Match time in seconds since the beginning of autonomous
+        The Practice Match function of the DS approximates the behaviour seen on the field.
+
+        :returns: Time remaining in current match period (auto or teleop) in seconds
         """
         return hal.HALGetMatchTime()
 

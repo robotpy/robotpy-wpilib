@@ -20,9 +20,9 @@ class Talon(SafePWM):
     """
 
     def __init__(self, channel):
-        """Constructor.
+        """Constructor for a Talon (original or Talon SR)
 
-        :param channel: The PWM channel that the Talon is attached to.
+        :param channel: The PWM channel that the Talon is attached to. 0-9 are on-board, 10-19 are on the MXP port
         :type  channel: int
 
         .. note ::

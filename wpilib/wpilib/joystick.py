@@ -227,13 +227,13 @@ class Joystick:
         return False
 
     def getRawButton(self, button):
-        """Get the button value for buttons 1 through 12.
+        """Get the button value (starting at button 1).
 
         The buttons are returned in a single 16 bit value with one bit
         representing the state of each button. The appropriate button is
         returned as a boolean value.
 
-        :param button: The button number to be read.
+        :param button: The button number to be read (starting at 1).
         :type  button: int
         :returns: The state of the button.
         :rtype: bool

@@ -50,7 +50,7 @@ class ADXL345_SPI(SensorBase):
         """Constructor. Use this when the device is the first/only device on
         the bus
 
-        :param port: The SPI bus port.
+        :param port: The SPI port that the accelerometer is connected to
         :param range: The range (+ or -) that the accelerometer will measure.
         """
         self.spi = SPI(port)
@@ -116,7 +116,7 @@ class ADXL345_SPI(SensorBase):
         """Get the acceleration of one axis in Gs.
 
         :param axis: The axis to read from.
-        :returns: Acceleration of the ADXL345 in Gs.
+        :returns: An object containing the acceleration measured on each axis of the ADXL345 in Gs.
         """
         data = [(self.kAddress_Read | self.kAddress_MultiByte |
                  self.kDataRegister) + axis, 0, 0]

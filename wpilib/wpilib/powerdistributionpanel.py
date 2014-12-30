@@ -16,6 +16,8 @@ class PowerDistributionPanel(SensorBase):
 
     def getVoltage(self):
         """
+            Query the voltage of the PDP
+
             :returns: The voltage of the PDP
             :rtype: float
         """
@@ -23,6 +25,8 @@ class PowerDistributionPanel(SensorBase):
 
     def getTemperature(self):
         """
+            Query the temperature of the PDP
+
             :returns: The temperature of the PDP in degrees Celsius
             :rtype: float
         """
@@ -30,6 +34,8 @@ class PowerDistributionPanel(SensorBase):
 
     def getCurrent(self, channel):
         """
+            Query the current of a single channel of the PDP
+
             :returns: The current of one of the PDP channels (channels 0-15)
                       in Amperes
             :rtype: float
@@ -39,6 +45,8 @@ class PowerDistributionPanel(SensorBase):
     
     def getTotalCurrent(self):
         """
+            Query the current of all monitored PDP channels (0-15)
+
             :returns: The total current drawn from the PDP channels in Amperes
             :rtype: float
         """
@@ -46,6 +54,8 @@ class PowerDistributionPanel(SensorBase):
     
     def getTotalPower(self):
         """
+            Query the total power drawn from the monitored PDP channels
+
             :returns: The total power drawn from the PDP channels in Joules
             :rtype: float
         """
@@ -53,6 +63,8 @@ class PowerDistributionPanel(SensorBase):
     
     def getTotalEnergy(self):
         """
+            Query the total energy drawn from the monitored PDP channels
+
             :returns: The total energy drawn from the PDP channels in Watts
             :rtype: float
         """
@@ -60,13 +72,13 @@ class PowerDistributionPanel(SensorBase):
     
     def resetTotalEnergy(self):
         """
-            Reset the total energy drawn from the PDP
+            Reset the total energy to 0
         """
         hal.resetPDPTotalEnergy()
     
     def clearStickyFaults(self):
         """
-            Remove all of the fault flags on the PDP
+            Clear all pdp sticky faults
         """
         hal.clearPDPStickyFaults()
     

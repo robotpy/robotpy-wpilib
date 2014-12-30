@@ -56,6 +56,8 @@ class RobotBase:
         This hook is called right before :meth:`startCompetition`. By default, tell
         the DS that the robot is now ready to be enabled. If you don't want the
         robot to be enabled yet, you can override this method to do nothing.
+        If you do so, you will need to call hal.HALNetworkCommunicationObserveUserProgramStarting()
+        from your code when you are ready for the robot to be enabled.
         """
         hal.HALNetworkCommunicationObserveUserProgramStarting()
 

@@ -21,19 +21,19 @@ def _freePWM(port):
 class PWM(LiveWindowSendable):
     """Raw interface to PWM generation in the FPGA.
     
-    Values supplied as arguments for PWM outputs range from -1.0 to 1.0. They
-    are mapped to the hardware dependent values, in this case 0-255 for the
+    The values supplied as arguments for PWM outputs range from -1.0 to 1.0. They
+    are mapped to the hardware dependent values, in this case 0-2000 for the
     FPGA.  Changes are immediately sent to the FPGA, and the update occurs at
     the next FPGA cycle. There is no delay.
 
-    As of revision 0.1.4 of the FPGA, the FPGA interprets the 0-255 values as
+    As of revision 0.1.10 of the FPGA, the FPGA interprets the 0-2000 values as
     follows:
     
-    - 255 = full "forward"
-    - 254 to 129 = linear scaling from "full forward" to "center"
-    - 128 = center value
-    - 127 to 2 = linear scaling from "center" to "full reverse"
-    - 1 = full "reverse"
+    - 2000 = full "forward"
+    - 1999 to 1001 = linear scaling from "full forward" to "center"
+    - 1000 = center value
+    - 999 to 2 = linear scaling from "center" to "full reverse"
+    - 1 = minimum pulse width (currently .5ms)
     - 0 = disabled (i.e. PWM output is held low)
     
     kDefaultPwmPeriod is the 1x period (5.05 ms).  In hardware, the period
@@ -76,7 +76,7 @@ class PWM(LiveWindowSendable):
     def __init__(self, channel):
         """Allocate a PWM given a channel.
 
-        :param channel: The PWM channel.
+        :param channel: The PWM channel number. 0-9 are on-board, 10-19 are on the MXP port
         :type channel: int
         """
         SensorBase.checkPWMChannel(channel)

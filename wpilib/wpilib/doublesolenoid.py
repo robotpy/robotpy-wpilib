@@ -41,8 +41,8 @@ class DoubleSolenoid(SolenoidBase):
         Alternatively, the above names can be used as keyword arguments.
 
         :param moduleNumber: The module number of the solenoid module to use.
-        :param forwardChannel: The forward channel on the module to control.
-        :param reverseChannel: The reverse channel on the module to control.
+        :param forwardChannel: The forward channel number on the PCM.
+        :param reverseChannel: The reverse channel number on the PCM.
         """
         # keyword arguments
         forwardChannel = kwargs.pop("forwardChannel", None)
@@ -104,7 +104,7 @@ class DoubleSolenoid(SolenoidBase):
     def set(self, value):
         """Set the value of a solenoid.
 
-        :param value: Move the solenoid to forward, reverse, or don't move it.
+        :param value: The value to set (Off, Forward, Reverse)
         :type  value: :class:`DoubleSolenoid.Value`
         """
 

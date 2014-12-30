@@ -26,7 +26,7 @@ class I2C:
     def __init__(self, port, deviceAddress):
         """Constructor.
 
-        :param port: I2C bus port.
+        :param port: The I2C port the device is connected to.
         :param deviceAddress: The address of the device on the I2C bus.
         """
         self.port = port
