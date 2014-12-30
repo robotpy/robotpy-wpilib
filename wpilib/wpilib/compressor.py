@@ -93,6 +93,51 @@ class Compressor(SensorBase):
         """
         return hal.getClosedLoopControl(self.pcm)
 
+    def getCompressorCurrentTooHighFault(self):
+        """
+        :returns: True if PCM is in fault state : Compressor Drive is
+            disabled due to compressor current being too high
+        """
+        return hal.getCompressorCurrentTooHighFault(self.pcm)
+
+    def getCompressorCurrentTooHighStickyFault(self):
+        """
+        :returns: True if PCM sticky fault is set : Compressor Drive is
+            disabled due to compressor current being too high
+        """
+        return hal.getCompressorCurrentTooHighStickyFault(self.pcm)
+
+    def getCompressorShortedFault(self):
+        """
+        :returns: True if PCM is in fault state : Compressor Output
+            appears to be shorted
+        """
+        return hal.getCompressorShortedFault(self.pcm)
+
+    def getCompressorShortedStickyFault(self):
+        """
+        :returns: True if PCM sticky fault is set : Compressor Output
+            appears to be shorted
+        """
+        return hal.getCompressorShortedStickyFault(self.pcm)
+
+    def getCompressorNotConnectedFault(self):
+        """
+        :returns: True if PCM is in fault state : Compressor does not appear
+            to be wired, i.e. compressor is not drawing enough current.
+        """
+        return hal.getCompressorNotConnectedFault(self.pcm)
+
+    def getCompressorNotConnectedStickyFault(self):
+        """
+        :returns: True if PCM sticky fault is set : Compressor does not appear
+            to be wired, i.e. compressor is not drawing enough current.
+        """
+        return hal.getCompressorNotConnectedStickyFault(self.pcm)
+
+    def clearAllPCMStickyFaults(self):
+        hal.clearAllPCMStickyFaults(self.pcm)
+
     def getSmartDashboardType(self):
         return "Compressor"
 
