@@ -4,6 +4,9 @@ class HALError(RuntimeError):
 class CANError(RuntimeError):
     pass
 
+class CANNotInitializedException(RuntimeError):
+    pass
+
 class CANMessageNotFound(CANError):
     pass
 

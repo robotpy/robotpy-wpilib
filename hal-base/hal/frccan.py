@@ -1,10 +1,10 @@
 import ctypes as C
 import warnings
 
-from .exceptions import CANError, CANMessageNotFound
+from .exceptions import CANError, CANMessageNotFound, CANNotInitializedException
 from hal_impl.fndef import _dll, _RETFUNC
 
-__all__ = ["CANError", "CANMessageNotFound",
+__all__ = ["CANError", "CANMessageNotFound", "CANNotInitializedException",
            "CAN_SEND_PERIOD_NO_REPEAT", "CAN_SEND_PERIOD_STOP_REPEATING",
            "CAN_IS_FRAME_REMOTE", "CAN_IS_FRAME_11BIT", "CANStreamMessage",
            "CANSessionMux_sendMessage", "CANSessionMux_receiveMessage",
@@ -25,7 +25,7 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
             if status.value == -44086: raise CANError("invalid buffer")
             if status.value == -44087: raise CANMessageNotFound("message not found")
             if status.value == -44088: raise CANError("not allowed")
-            if status.value == -44089: raise CANError("not initialized")
+            if status.value == -44089: raise CANNotInitializedException("not initialized")
             if status.value == 44087:
                 warnings.warn("CAN session mux: no token", RuntimeWarning)
             elif status.value < 0:
