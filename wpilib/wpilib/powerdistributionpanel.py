@@ -81,5 +81,34 @@ class PowerDistributionPanel(SensorBase):
             Clear all pdp sticky faults
         """
         hal.clearPDPStickyFaults()
-    
-    
+
+    # Live Window code, only does anything if live window is activated.
+
+    def getSmartDashboardType(self):
+        return "PowerDistributionPanel"
+
+    def initTable(self, subtable):
+        self.table = subtable
+        self.updateTable()
+
+    def getTable(self):
+        return self.table
+
+    def updateTable(self):
+        if self.table is not None:
+            for channel in range(0, 15):
+                self.table.putNumber("Chan" + str(channel), self.getCurrent(channel))
+            self.table.putNumber("Voltage", self.getVoltage())
+            self.table.putNumber("Current", self.getTotalCurrent())
+
+    def startLiveWindowMode(self):
+        """
+        PDP doesn't have to do anything special when entering the LiveWindow.
+        """
+        pass
+
+    def stopLiveWindowMode(self):
+        """
+        PDP doesn't have to do anything special when exiting the LiveWindow.
+        """
+        pass

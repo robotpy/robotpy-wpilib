@@ -10,6 +10,7 @@ import hal
 from .interfaces import Accelerometer
 from .i2c import I2C
 from .sensorbase import SensorBase
+from .livewindow import LiveWindow
 
 __all__ = ["ADXL345_I2C"]
 
@@ -57,6 +58,8 @@ class ADXL345_I2C(SensorBase):
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_ADXL345,
                       hal.HALUsageReporting.kADXL345_I2C)
+
+        LiveWindow.addSensor("ADXL345_I2C", port, self)
 
     # Accelerometer interface
 
@@ -130,4 +133,32 @@ class ADXL345_I2C(SensorBase):
                 rawData[1] * self.kGsPerLSB,
                 rawData[2] * self.kGsPerLSB)
 
-    # TODO: Support LiveWindow
+    # Live Window code, only does anything if live window is activated.
+
+    def getSmartDashboardType(self):
+        return "3AxisAccelerometer"
+
+    def initTable(self, subtable):
+        self.table = subtable
+        self.updateTable()
+
+    def getTable(self):
+        return self.table
+
+    def updateTable(self):
+        if self.table is not None:
+            self.table.putNumber("X", self.getX())
+            self.table.putNumber("Y", self.getY())
+            self.table.putNumber("Z", self.getZ())
+
+    def startLiveWindowMode(self):
+        """
+        ADXL345_I2C doesn't have to do anything special when entering the LiveWindow.
+        """
+        pass
+
+    def stopLiveWindowMode(self):
+        """
+        ADXL345_I2C doesn't have to do anything special when exiting the LiveWindow.
+        """
+        pass
