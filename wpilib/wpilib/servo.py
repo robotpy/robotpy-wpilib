@@ -33,7 +33,7 @@ class Servo(PWM):
         * By default `kDefaultMaxServoPWM` ms is used as the maxPWM value
         * By default `kDefaultMinServoPWM` ms is used as the minPWM value
 
-        :param channel: The PWM channel to which the servo is attached.
+        :param channel: The PWM channel to which the servo is attached. 0-9 are on-board, 10-19 are on the MXP port.
         :type  channel: int
         """
         super().__init__(channel)

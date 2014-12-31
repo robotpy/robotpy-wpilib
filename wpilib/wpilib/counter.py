@@ -97,8 +97,6 @@ class Counter(SensorBase):
             Either k1X or k2X to indicate 1X or 2X decoding. 4X decoding
             is not supported by Counter; use `Encoder` instead.  Defaults
             to k1X if unspecified.  Only used when two sources are specified.
-        :param trigger:
-            The :class:`.AnalogTrigger` object that is used for the Up Source
         """
 
         source_identifier = [int, HasAttribute("getChannelForRouting"), HasAttribute("createOutput")]
@@ -193,9 +191,9 @@ class Counter(SensorBase):
         for the same channel is undefined, as is passing both a positional
         and a keyword argument for the same channel.
 
-        :param channel: the digital port to count
+        :param channel: the DIO channel to use as the up source. 0-9 are on-board, 10-25 are on the MXP
         :type channel: int
-        :param source: the digital source to count
+        :param source: The digital source to count
         :type source: DigitalInput
         :param analogTrigger:
             The analog trigger object that is used for the Up Source
@@ -288,9 +286,9 @@ class Counter(SensorBase):
         for the same channel is undefined, as is passing both a positional
         and a keyword argument for the same channel.
 
-        :param channel: the digital port to count
+        :param channel: the DIO channel to use as the down source. 0-9 are on-board, 10-25 are on the MXP
         :type channel: int
-        :param source: the digital source to count
+        :param source: The digital source to count
         :type source: DigitalInput
         :param analogTrigger:
             The analog trigger object that is used for the Up Source

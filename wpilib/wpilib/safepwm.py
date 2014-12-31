@@ -20,7 +20,7 @@ class SafePWM(PWM, MotorSafety):
         """Constructor for a SafePWM object taking a channel number.
 
         :param channel: The channel number to be used for the underlying PWM
-            object
+            object. 0-9 are on-board, 10-19 are on the MXP port.
         :type  channel: int
         """
         MotorSafety.__init__(self)

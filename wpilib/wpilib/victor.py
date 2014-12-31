@@ -25,7 +25,7 @@ class Victor(SafePWM):
             values were determined empirically and optimized for the Victor
             888. These values should work reasonably well for Victor 884
             controllers also but if users experience issues such as
-            asymmetric behavior around the deadband or inability to saturate
+            asymmetric behaviour around the deadband or inability to saturate
             the controller in either direction, calibration is recommended.
             The calibration procedure can be found in the Victor 884 User
             Manual available from VEX Robotics:
@@ -43,7 +43,7 @@ class Victor(SafePWM):
     def __init__(self, channel):
         """Constructor.
 
-        :param channel: The PWM channel that the Victor is attached to.
+        :param channel: The PWM channel that the Victor is attached to. 0-9 are on-board, 10-19 are on the MXP port
         :type  channel: int
         """
         super().__init__(channel)

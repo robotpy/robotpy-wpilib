@@ -34,9 +34,9 @@ class Solenoid(SolenoidBase):
 
         Alternatively, the above names can be used as keyword arguments.
 
-        :param moduleNumber: The module number of the solenoid module to use.
+        :param moduleNumber: The CAN ID of the PCM the solenoid is attached to
         :type moduleNumber: int
-        :param channel: The channel on the module to control.
+        :param channel: The channel on the PCM to control (0..7).
         :type channel: int
         """
         # keyword arguments

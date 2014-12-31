@@ -17,7 +17,7 @@ class ControllerPower:
         """
             Get the input voltage to the robot controller
             
-            :returns: The controller input voltage value
+            :returns: The controller input voltage value in Volts
             :rtype: float
         """
         return hal.getVinVoltage()
@@ -27,7 +27,7 @@ class ControllerPower:
         """
             Get the input current to the robot controller
             
-            :returns: The controller input current value
+            :returns: The controller input current value in Amps
             :rtype: float
         """
         return hal.getVinCurrent()
@@ -37,7 +37,7 @@ class ControllerPower:
         """
             Get the voltage of the 3.3V rail
             
-            :returns: The controller 3.3V rail voltage value
+            :returns: The controller 3.3V rail voltage value in Volts
             :rtype: float
         """
         return hal.getUserVoltage3V3()
@@ -47,7 +47,7 @@ class ControllerPower:
         """
             Get the current output of the 3.3V rail
             
-            :returns: The controller 3.3V rail output current value
+            :returns: The controller 3.3V rail output current value in Amps
             :rtype: float
         """
         return hal.getUserCurrent3V3()
@@ -80,7 +80,7 @@ class ControllerPower:
         """
             Get the voltage of the 5V rail
             
-            :returns: The controller 5V rail voltage value
+            :returns: The controller 5V rail voltage value in Volts
             :rtype: float
         """
         return hal.getUserVoltage5V()
@@ -90,7 +90,7 @@ class ControllerPower:
         """
             Get the current output of the 5V rail
             
-            :returns: The controller 5V rail output current value
+            :returns: The controller 5V rail output current value in Amps
             :rtype: float
         """
         return hal.getUserCurrent5V()
@@ -123,7 +123,7 @@ class ControllerPower:
         """
             Get the voltage of the 6V rail
             
-            :returns: The controller 6V rail voltage value
+            :returns: The controller 6V rail voltage value in Volts
             :rtype: float
         """
         return hal.getUserVoltage6V()
@@ -133,7 +133,7 @@ class ControllerPower:
         """
             Get the current output of the 6V rail
             
-            :returns: The controller 6V rail output current value
+            :returns: The controller 6V rail output current value in Amps
             :rtype: float
         """
         return hal.getUserCurrent6V()

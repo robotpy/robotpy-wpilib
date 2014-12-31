@@ -26,7 +26,7 @@ class DigitalInput(DigitalSource):
         """Create an instance of a Digital Input class. Creates a digital
         input given a channel.
 
-        :param channel: the port for the digital input
+        :param channel: the DIO channel for the digital input. 0-9 are on-board, 10-25 are on the MXP
         :type  channel: int
         """
         super().__init__(channel, True)
