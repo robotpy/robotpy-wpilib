@@ -170,6 +170,12 @@ class Counter(SensorBase):
         self.clearDownSource()
         self._counter_finalizer()
 
+    def getFPGAIndex(self):
+        """
+        :returns: The Counter's FPGA index.
+        """
+        return self.index
+
     def setUpSource(self, *args, **kwargs):
         """Set the up counting source for the counter.
 
