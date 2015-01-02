@@ -25,7 +25,7 @@ done
 echo "Doing upload!"
 for i in hal-base hal-roborio wpilib; do 
     pushd $i
-    #python3 setup.py sdist --formats=gztar upload
+    python3 setup.py sdist --formats=gztar upload
     popd
 done
 
