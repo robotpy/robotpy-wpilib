@@ -8,11 +8,24 @@
 import hal
 import math
 import warnings
+import weakref
 
 from .motorsafety import MotorSafety
 from .talon import Talon
+from .canjaguar import CANJaguar
+from hal import frccan
 
 __all__ = ["RobotDrive"]
+
+
+def _freeRobotDrive(allocatedSpeedControllers):
+    """
+    Free the speed controllers if they were allocated locally
+    """
+    for sc in allocatedSpeedControllers:
+        if hasattr(sc, "free"):
+            sc.free()
+
 
 class RobotDrive(MotorSafety):
     """Operations on a robot drivetrain based on a definition of the motor
@@ -85,9 +98,9 @@ class RobotDrive(MotorSafety):
         if "rightMotor" in kwargs:
             self.rearRightMotor = kwargs.pop("rightMotor")
 
-        cls = kwargs.pop("motorController", None)
-        if cls is None:
-            cls = Talon
+        controllerClass = kwargs.pop("motorController", None)
+        if controllerClass is None:
+            controllerClass = Talon
 
         if kwargs:
             warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
@@ -105,21 +118,25 @@ class RobotDrive(MotorSafety):
         elif len(args) != 0:
             raise ValueError("don't know how to handle %d positional arguments" % len(args))
 
+        self.allocatedSpeedControllers = list()
+
         # convert channel number into motor controller if needed
         if (self.frontLeftMotor is not None and
             not hasattr(self.frontLeftMotor, "set")):
-            self.frontLeftMotor = cls(self.frontLeftMotor)
+            self.frontLeftMotor = controllerClass(self.frontLeftMotor)
+            self.allocatedSpeedControllers.append(self.frontLeftMotor)
         if (self.rearLeftMotor is not None and
             not hasattr(self.rearLeftMotor, "set")):
-            self.rearLeftMotor = cls(self.rearLeftMotor)
+            self.rearLeftMotor = controllerClass(self.rearLeftMotor)
+            self.allocatedSpeedControllers.append(self.rearLeftMotor)
         if (self.frontRightMotor is not None and
             not hasattr(self.frontRightMotor, "set")):
-            self.frontRightMotor = cls(self.frontRightMotor)
+            self.frontRightMotor = controllerClass(self.frontRightMotor)
+            self.allocatedSpeedControllers.append(self.frontRightMotor)
         if (self.rearRightMotor is not None and
             not hasattr(self.rearRightMotor, "set")):
-            self.rearRightMotor = cls(self.rearRightMotor)
-
-        self.allocatedSpeedControllers = True
+            self.rearRightMotor = controllerClass(self.rearRightMotor)
+            self.allocatedSpeedControllers.append(self.rearRightMotor)
 
         # all motors start non-inverted
         self.invertedMotors = [1]*self.kMaxNumberOfMotors
@@ -127,14 +144,18 @@ class RobotDrive(MotorSafety):
         # other defaults
         self.maxOutput = RobotDrive.kDefaultMaxOutput
         self.sensitivity = RobotDrive.kDefaultSensitivity
-        self.isCANInitialized = False #TODO: fix can
+
+        self.isCANInitialized = False #Upstream: TODO Fix Can
 
         # set up motor safety
         self.setExpiration(self.kDefaultExpirationTime)
         self.setSafetyEnabled(True)
 
+        #Setup Finalizer
+        self._RobotDrive_finalizer = weakref.finalize(self, _freeRobotDrive, self.allocatedSpeedControllers)
+
         # start off not moving
-        self.setLeftRightMotorOutputs(0, 0)
+        self.drive(0, 0)
 
 
     def drive(self, outputMagnitude, curve):
@@ -450,13 +471,10 @@ class RobotDrive(MotorSafety):
         self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.invertedMotors[self.MotorType.kRearRight] * self.maxOutput, syncGroup)
 
         if self.isCANInitialized:
-            pass
-            # TODO
-            #try:
-            #    CANJaguar.updateSyncGroup(syncGroup)
-            #except CANNotInitializedException:
-            #    self.isCANInitialized = False
-
+            try:
+                CANJaguar.updateSyncGroup(syncGroup)
+            except frccan.CANNotInitializedException:
+                self.isCANInitialized = False
         self.feed()
 
     def mecanumDrive_Polar(self, magnitude, direction, rotation):
@@ -502,13 +520,10 @@ class RobotDrive(MotorSafety):
         self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.invertedMotors[self.MotorType.kRearRight] * self.maxOutput, syncGroup)
 
         if self.isCANInitialized:
-            pass
-            # TODO
-            #try:
-            #    CANJaguar.updateSyncGroup(syncGroup)
-            #except CANNotInitializedException:
-            #    self.isCANInitialized = False
-
+            try:
+                CANJaguar.updateSyncGroup(syncGroup)
+            except frccan.CANNotInitializedException:
+                self.isCANInitialized = False
         self.feed()
 
     def holonomicDrive(self, magnitude, direction, rotation):
@@ -553,13 +568,10 @@ class RobotDrive(MotorSafety):
         self.rearRightMotor.set(-rightOutput * self.invertedMotors[self.MotorType.kRearRight], syncGroup)
 
         if self.isCANInitialized:
-            pass
-            # TODO
-            #try:
-            #    CANJaguar.updateSyncGroup(syncGroup)
-            #except CANNotInitializedException:
-            #    self.isCANInitialized = False
-
+            try:
+                CANJaguar.updateSyncGroup(syncGroup)
+            except frccan.CANNotInitializedException:
+                self.isCANInitialized = False
         self.feed()
 
     @staticmethod
@@ -644,20 +656,11 @@ class RobotDrive(MotorSafety):
         return motors
 
     def free(self):
-        """
-        Free the speed controllers if they were allocated locally
-        """
-        if self.frontLeftMotor is not None:
-            self.frontLeftMotor.free()
+        self._RobotDrive_finalizer()
         self.frontLeftMotor = None
-        if self.frontRightMotor is not None:
-            self.frontRightMotor.free()
         self.frontRightMotor = None
-        if self.rearLeftMotor is not None:
-            self.rearLeftMotor.free()
         self.rearLeftMotor = None
-        if self.rearRightMotor is not None:
-            self.rearRightMotor.free()
         self.rearRightMotor = None
+        self.allocatedSpeedControllers = list()
         self.setSafetyEnabled(False)
 
