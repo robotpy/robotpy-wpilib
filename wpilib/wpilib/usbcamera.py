@@ -71,36 +71,40 @@ class UsbCamera:
         self.openCamera()
 
     def openCamera(self):
-        for i in range(3):
-            try:
-                self.id = nivision.IMAQdxOpenCamera(self.name,
-                        nivision.IMAQdxCameraControlModeController)
-            except nivision.ImaqDxError as e:
-                if i == 2:
-                    raise
-                time.sleep(2.0)
-                continue
-            break
+        with self.mutex:
+            for i in range(3):
+                try:
+                    self.id = nivision.IMAQdxOpenCamera(self.name,
+                            nivision.IMAQdxCameraControlModeController)
+                except nivision.ImaqDxError as e:
+                    if i == 2:
+                        raise
+                    time.sleep(2.0)
+                    continue
+                break
 
     def closeCamera(self):
-        if self.id is None:
-            return
-        nivision.IMAQdxCloseCamera(self.id)
-        self.id = None
+        with self.mutex:
+            if self.id is None:
+                return
+            nivision.IMAQdxCloseCamera(self.id)
+            self.id = None
 
     def startCapture(self):
-        if self.id is None or self.active:
-            return
-        nivision.IMAQdxConfigureGrab(self.id)
-        nivision.IMAQdxStartAcquisition(self.id)
-        self.active = True
+        with self.mutex:
+            if self.id is None or self.active:
+                return
+            nivision.IMAQdxConfigureGrab(self.id)
+            nivision.IMAQdxStartAcquisition(self.id)
+            self.active = True
 
     def stopCapture(self):
-        if self.id is None or not self.active:
-            return
-        nivision.IMAQdxStopAcquisition(self.id)
-        nivision.IMAQdxUnconfigureAcquisition(self.id)
-        self.active = False
+        with self.mutex:
+            if self.id is None or not self.active:
+                return
+            nivision.IMAQdxStopAcquisition(self.id)
+            nivision.IMAQdxUnconfigureAcquisition(self.id)
+            self.active = False
 
     def updateSettings(self):
         with self.mutex:
