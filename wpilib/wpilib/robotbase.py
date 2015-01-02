@@ -37,7 +37,7 @@ class RobotBase:
 
         try:
             from networktables import NetworkTable
-            NetworkTable.setServerMode()#must be before b
+            #NetworkTable.setServerMode() -- don't set this explicitly, it's the default.
         except ImportError:
             warnings.warn("networktables not found", ImportWarning)
             NetworkTable = None
