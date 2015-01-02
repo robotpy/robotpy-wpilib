@@ -8,6 +8,7 @@ import hal
 
 from .interfaces import Accelerometer
 from .livewindowsendable import LiveWindowSendable
+from .livewindow import LiveWindow
 
 __all__ = ["BuiltInAccelerometer"]
 
@@ -29,6 +30,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
         self.setRange(range)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Accelerometer, 0, 0,
                       "Built-in accelerometer")
+        LiveWindow.addSensor("BuiltInAccel", 0, self)
 
     def setRange(self, range):
         """Set the measuring range of the accelerometer.
@@ -78,7 +80,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
         return hal.getAccelerometerZ()
 
     def getSmartDashboardType(self):
-        return "Accelerometer"
+        return "3AxisAccelerometer"
 
     def updateTable(self):
         table = self.getTable()

@@ -37,7 +37,7 @@ def test_bacc_getZ(acc, acc_data):
     assert acc.getZ() == 3.14
 
 def test_bacc_getSmartDashboardType(acc):
-    assert acc.getSmartDashboardType() == "Accelerometer"
+    assert acc.getSmartDashboardType() == "3AxisAccelerometer"
     
 @pytest.mark.parametrize('table', [True, False])
 def test_bacc_updateTable(acc, acc_data, table):
