@@ -15,7 +15,7 @@ wpilib/tests/run_tests.sh
 
 # Test that all the packages can be built
 echo "Testing package build"
-for i in hal-base hal-roborio wpilib; do 
+for i in hal-sim hal-base hal-roborio wpilib; do 
     pushd $i
     python3 setup.py sdist --formats=gztar
     popd
@@ -23,7 +23,7 @@ done
 
 # Ok, actually upload them now
 echo "Doing upload!"
-for i in hal-base hal-roborio wpilib; do 
+for i in hal-sim hal-base hal-roborio wpilib; do 
     pushd $i
     python3 setup.py sdist --formats=gztar upload
     popd
