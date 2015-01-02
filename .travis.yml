@@ -9,3 +9,10 @@ install:
 # command to run tests
 script:
   - wpilib/tests/run_tests.sh
+notifications:
+  irc:
+    channels:
+    - "chat.freenode.net#robotpy"
+    use_notice: true
+    skip_join: true
+    on_success: change
