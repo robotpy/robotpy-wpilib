@@ -24,7 +24,7 @@ Reporting Bugs
 
 If you run into a problem with RobotPy that you think is a bug, or perhaps there
 is something wrong with the documentation or just too difficult to do, please
-feel free to file bug reports on the `github issue tracker <https://github.com/robotpy/robotpy/issues>`_.
+feel free to file bug reports on the `github issue tracker <https://github.com/robotpy/robotpy-wpilib/issues>`_.
 Someone should respond within a day or two, especially during the FIRST
 build season.
 
@@ -35,7 +35,7 @@ RobotPy is intended to be a project that all members of the FIRST community can
 **quickly** and **easily** contribute to. If you find a bug, or have an idea that you
 think others can use:
 
-1. `Fork this git repository <https://github.com/robotpy/robotpy/fork>`_ to your github account
+1. `Fork this git repository <https://github.com/robotpy/robotpy-wpilib/fork>`_ to your github account
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push -u origin my-new-feature`)

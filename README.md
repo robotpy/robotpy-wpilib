@@ -9,13 +9,12 @@ programming language.
 Documentation
 =============
 
-TODO
+All RobotPy documentation can be found at http://robotpy.readthedocs.org
 
 Installation
 ============
 
-See the documentation at TODO
-
+Installation instructions can be found in the [RobotPy documentation](http://robotpy.readthedocs.org/en/latest/getting_started.html)
 
 Packages
 ========

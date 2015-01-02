@@ -10,7 +10,7 @@ Automated installation
 RobotPy is truly cross platform, and can be installed from Windows, most Linux
 distributions, and from Mac OSX also. Here's how you do it:
 
-* `Download RobotPy from github <https://github.com/robotpy/robotpy/releases>`_
+* `Download RobotPy from github <https://github.com/robotpy/robotpy-wpilib/releases>`_
 * `Make sure Python 3.4 is installed <https://www.python.org/downloads/>`_
 
 Unzip the RobotPy zipfile somewhere, and there should be an installer.py

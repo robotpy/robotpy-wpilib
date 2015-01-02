@@ -39,7 +39,7 @@ setup(
     long_description=long_description,
     author='Peter Johnson, Dustin Spicuzza',
     author_email='robotpy@googlegroups.com',
-    url='https://github.com/robotpy',
+    url='https://github.com/robotpy/robotpy-wpilib',
     keywords='frc first robotics hal can',
     packages=['hal_impl'],
     install_requires='robotpy-hal-base==' + __version__, # is this a bad idea?

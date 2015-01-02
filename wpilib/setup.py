@@ -39,7 +39,7 @@ setup(
     long_description=long_description,
     author='Peter Johnson, Dustin Spicuzza',
     author_email='robotpy@googlegroups.com',
-    url='https://github.com/robotpy',
+    url='https://github.com/robotpy/robotpy-wpilib',
     keywords='frc first robotics wpilib',
     packages=find_packages(),
     install_requires=['pynetworktables'],
