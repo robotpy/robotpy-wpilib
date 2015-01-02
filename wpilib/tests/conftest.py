@@ -34,9 +34,9 @@ def hal_impl_mode_helpers(_module_patch):
 @pytest.fixture(scope="function")
 def hal_data(_module_patch):
     """Simulation data for HAL"""
+    import hal_impl.functions
     import hal_impl.data
-    from hal_impl.functions import hooks
-    hal_impl.data.reset_hal_data(hooks)
+    hal_impl.functions.reset_hal()
     return hal_impl.data.hal_data
 
 @pytest.fixture(scope="function")
