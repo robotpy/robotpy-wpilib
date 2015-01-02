@@ -4,7 +4,7 @@ python:
   - "3.4"
 # command to install dependencies
 install:
-  - "pushd wpilib; pip install .; popd"
+  - "pushd wpilib; pip install . && pip install -r testing-requirements.txt; popd"
   - "pushd hal-base; pip install .; popd"
   - "pushd hal-sim; pip install .; popd"
 # command to run tests
