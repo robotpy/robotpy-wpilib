@@ -181,10 +181,16 @@ class Encoder(SensorBase):
             self._encoder_finalizer = \
                     weakref.finalize(self, _freeEncoder, self._encoder)
             self.setMaxPeriod(.5)
+            self.encodingScale = 4
         elif encodingType in (self.EncodingType.k2X, self.EncodingType.k1X):
             # Use Counter object for 1x and 2x encoding
             self.counter = Counter(encodingType, aSource, bSource,
                                    reverseDirection)
+            if encodingType == self.encodingType.k2X:
+                self.encodingScale = 2
+            else:
+                self.encodingScale = 1
+            self.index = self.counter.getFPGAIndex()
         else:
             raise ValueError("unrecognized encodingType: %s" % encodingType)
 
@@ -198,6 +204,19 @@ class Encoder(SensorBase):
         if not self._encoder_finalizer.alive:
             return None
         return self._encoder
+
+    def getFPGAIndex(self):
+        """
+        :returns: The Encoder's FPGA index
+        """
+        return self.index
+
+    def getEncodingScale(self):
+        """
+        :returns: The encoding scale factor 1x, 2x, or 4x, per the requested
+            encodingType. Used to divide raw edge counts down to spec'd counts.
+        """
+        return self.encodingScale
 
     def free(self):
         if self.aSource is not None and self.allocatedA:
