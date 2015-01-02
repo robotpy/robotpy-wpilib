@@ -29,6 +29,12 @@ def _log_versions():
        hal.__version__ != hal_impl.__version__:
         logger.warn("Core component versions are not identical! This is not a supported configuration, and you may run into errors!")
 
+
+class _CustomHelpAction(argparse._HelpAction):
+    def __call__(self, parser, namespace, values, option_string=None):
+        parser.print_help()
+        parser.exit(1)  # argparse uses an exit code of zero by default
+    
 def run(robot_class, **kwargs):
     '''
         This function gets called in robot.py like so::
@@ -51,7 +57,13 @@ def run(robot_class, **kwargs):
         print("ERROR: run() must be passed a robot class that inherits from RobotBase (or IterativeBase/SampleBase)")
         exit(1)
     
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(add_help=False)
+    
+    # Use a custom help handler to make the exit code non-zero
+    parser.register('action', 'help', _CustomHelpAction)
+    parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
+                        help=argparse._('show this help message and exit'))
+    
     subparser = parser.add_subparsers(dest='command', help="commands")
     subparser.required = True
     
