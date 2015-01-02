@@ -30,10 +30,25 @@ def _log_versions():
         logger.warn("Core component versions are not identical! This is not a supported configuration, and you may run into errors!")
 
 
-class _CustomHelpAction(argparse._HelpAction):
+class _CustomHelpAction(argparse.Action):
+
+    def __init__(self,
+                 option_strings,
+                 dest=argparse.SUPPRESS,
+                 default=argparse.SUPPRESS,
+                 help=None):
+        super(_CustomHelpAction, self).__init__(
+            option_strings=option_strings,
+            dest=dest,
+            default=default,
+            nargs=0,
+            help=help)
+
     def __call__(self, parser, namespace, values, option_string=None):
         parser.print_help()
         parser.exit(1)  # argparse uses an exit code of zero by default
+    
+argparse._HelpAction = _CustomHelpAction
     
 def run(robot_class, **kwargs):
     '''
@@ -57,13 +72,7 @@ def run(robot_class, **kwargs):
         print("ERROR: run() must be passed a robot class that inherits from RobotBase (or IterativeBase/SampleBase)")
         exit(1)
     
-    parser = argparse.ArgumentParser(add_help=False)
-    
-    # Use a custom help handler to make the exit code non-zero
-    parser.register('action', 'help', _CustomHelpAction)
-    parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
-                        help=argparse._('show this help message and exit'))
-    
+    parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers(dest='command', help="commands")
     subparser.required = True
     
