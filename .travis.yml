@@ -1,0 +1,12 @@
+language: python
+python:
+  - "3.3"
+  - "3.4"
+# command to install dependencies
+install:
+  - "cd wpilib && pip install ."
+  - "cd hal-base && pip install ."
+  - "cd hal-sim && pip install ."
+# command to run tests
+script:
+  - wpilib/tests/run_tests.sh
