@@ -1,3 +1,7 @@
+
+import sys
+import inspect
+
 def match_arglist(name, args, kwargs, templates, allow_extra_kwargs=False):
     """
     This compares args and kwargs against the argument templates in templates.
@@ -171,3 +175,31 @@ class HasAttribute:
         
         return True
 
+
+def reset_wpilib():
+    '''
+        Clears all devices from WPILib, and resets the hal data
+    
+        .. warning:: This is only intended to be used by test frameworks and
+                     other debugging tools with the simulated HAL!
+    '''
+    
+    modules = [
+        'wpilib',
+        'wpilib.buttons',
+        'wpilib.command',
+        'wpilib.interfaces'
+    ]
+    
+    for modname in modules:
+        try:
+            module = sys.modules[modname]
+        except KeyError:
+            continue
+        
+        for _, cls in inspect.getmembers(module, inspect.isclass):
+            if hasattr(cls, '_reset'):
+                cls._reset()
+                
+    import hal_impl.functions
+    hal_impl.functions.reset_hal()

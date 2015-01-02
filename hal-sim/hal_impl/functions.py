@@ -5,12 +5,16 @@ from . import types
 import threading
 
 from . import data
-from .data import hal_data, reset_hal_data
+from .data import hal_data
 from hal_impl.sim_hooks import SimHooks
 from hal_impl.pwm_helpers import reverseByType
 
 hooks = SimHooks()
-reset_hal_data(hooks)
+
+def reset_hal():
+    data._reset_hal_data(hooks)
+
+reset_hal()
 
 #
 # Misc constants

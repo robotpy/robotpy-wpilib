@@ -26,6 +26,13 @@ class Scheduler(Sendable):
 
     .. seealso:: :class:`.Command`
     """
+    
+    @staticmethod
+    def _reset():
+        try:
+            del Scheduler.instance
+        except:
+            pass
 
     @staticmethod
     def getInstance():

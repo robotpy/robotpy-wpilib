@@ -13,12 +13,29 @@ class Resource:
     """Tracks resources in the program.
     
     The Resource class is a convenient way of keeping track of allocated
-    arbitrary resources in the program. Resources are just indicies that
+    arbitrary resources in the program. Resources are just indices that
     have an lower and upper bound that are tracked by this class. In the
     library they are used for tracking allocation of hardware channels
     but this is purely arbitrary. The resource class does not do any actual
     allocation, but simply tracks if a given index is currently in use.
     """
+    
+    _resources = [] 
+    
+    @staticmethod
+    def _reset():
+        for resource in Resource._resources:
+            
+            # free all the resources, if a free method is defined
+            for ref in resource.numAllocated:
+                if ref is None:
+                    continue
+                obj = ref()
+                if obj is not None and hasattr(obj, 'free'):
+                    obj.free()
+            
+            resource.numAllocated = [None]*len(resource.numAllocated)
+    
 
     def __init__(self, size):
         """Allocate storage for a new instance of Resource.
@@ -28,6 +45,7 @@ class Resource:
 
         :param size: The number of blocks to allocate
         """
+        Resource._resources.append(self)
         self.numAllocated = [None]*size
 
     def allocate(self, obj, index=None):

@@ -33,6 +33,11 @@ class SmartDashboard:
 
     class _defaultValueSentry:
         pass
+    
+    @staticmethod
+    def _reset():
+        SmartDashboard.tablesToData = {}
+        SmartDashboard.table = None
 
     @staticmethod
     def getTable():

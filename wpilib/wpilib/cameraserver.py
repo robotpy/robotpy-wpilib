@@ -21,6 +21,10 @@ class CameraServer:
     intStruct = struct.Struct("!i")
 
     server = None
+    
+    @staticmethod
+    def _reset():
+        CameraServer.server = None
 
     @staticmethod
     def getInstance():

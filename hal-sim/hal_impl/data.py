@@ -69,9 +69,10 @@ class NotifyDict(dict):
                 logger.exception("BAD INTERNAL ERROR")
         
 
-def reset_hal_data(hooks):
+def _reset_hal_data(hooks):
     '''
-        Intended to be used by the test runner or simulator
+        Intended to be used by the test runner or simulator. Don't call this
+        directly, instead call hal_impl.reset_hal()
         
         Subject to change until the simulator is fully developed, as the
         usefulness of some of this isn't immediately clear yet.

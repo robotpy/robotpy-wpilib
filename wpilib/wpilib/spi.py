@@ -17,6 +17,10 @@ class SPI:
         kMXP = 4
 
     devices = 0
+    
+    @staticmethod
+    def _reset():
+        SPI.devices = 0
 
     def __init__(self, port):
         """Constructor

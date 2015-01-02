@@ -21,6 +21,12 @@ class SolenoidBase(SensorBase):
     all_allocated = {}
     all_ports = {}
     all_mutex = {}
+    
+    @staticmethod
+    def _reset():
+        SolenoidBase.all_allocated = {}
+        SolenoidBase.all_ports = {}
+        SolenoidBase.all_mutex = {}
 
     def __init__(self, moduleNumber):
         """Constructor.

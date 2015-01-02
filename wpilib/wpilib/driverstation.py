@@ -28,6 +28,15 @@ class DriverStation:
         Red = 0
         Blue = 1
         Invalid = 2
+        
+    @staticmethod
+    def _reset():
+        if hasattr(DriverStation, 'instance'):
+            ds = DriverStation.instance
+            ds.release()
+            hal.giveMultiWait(ds.packetDataAvailableSem)
+            ds.thread.join()
+            del DriverStation.instance
 
     @staticmethod
     def getInstance():

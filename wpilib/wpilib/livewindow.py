@@ -28,6 +28,15 @@ class LiveWindow:
     statusTable = None
     liveWindowEnabled = False
     firstTime = True
+    
+    @staticmethod
+    def _reset():
+        LiveWindow.sensors = set()
+        LiveWindow.components = {}
+        LiveWindow.livewindowTable = None
+        LiveWindow.statusTable = None
+        LiveWindow.liveWindowEnabled = False
+        LiveWindow.firstTime = True
 
     @staticmethod
     def initializeLiveWindowComponents():
