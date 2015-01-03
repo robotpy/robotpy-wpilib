@@ -1,3 +1,5 @@
+.. _anatomy:
+
 Anatomy of a robot
 ==================
 

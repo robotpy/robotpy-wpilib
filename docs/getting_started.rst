@@ -4,6 +4,11 @@
 Getting Started
 ===============
 
+.. note:: These instructions tell you how to install RobotPy on your robot. Once you've
+		  got it installed there, check out :ref:`anatomy` to learn how to write robot
+		  code using python and RobotPy.
+
+
 Automated installation
 ----------------------
 
