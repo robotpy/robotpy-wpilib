@@ -1,9 +1,11 @@
 
-.. _programmers-guide:
+.. _programmers_guide:
 
 Programmer's Guide
 ------------------
 
 .. toctree::
-
-	anatomy
+    :maxdepth: 2
+    
+    anatomy
+    running

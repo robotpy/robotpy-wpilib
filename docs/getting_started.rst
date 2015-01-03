@@ -30,7 +30,7 @@ It will ask you a few questions, and copy the right files over to your robot
 and set things up for you. 
 
 Next, you'll want to create some code (or maybe use one of our examples),
-and upload it to your robot! Refer to our :ref:`programmers-guide` for more
+and upload it to your robot! Refer to our :ref:`programmers_guide` for more
 information.
 
 Upgrading

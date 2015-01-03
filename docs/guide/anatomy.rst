@@ -203,9 +203,4 @@ can find them at `our github site <https://github.com/robotpy/robotpy/tree/maste
 Next Steps
 ----------
 
-This is a good foundation for building your robot, next we'll discuss some
-topic that will be decided upon in the future, if someone writes more
-documentation here. Until then, remember that the FIRST documentation and
-our example programs are great resources to learn more about programming
-with WPILib.
-
+This is a good foundation for building your robot, next you will probably want to know about :ref:`running_robot_code`. 
