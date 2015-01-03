@@ -110,7 +110,7 @@ def _reset_hal_data(hooks):
         
 
 
-        # See driver station notes above
+        # You should not modify these directly, instead use the mode_helpers!
         'control': {
             'has_source': False,
             'enabled': False,
@@ -214,9 +214,9 @@ def _reset_hal_data(hooks):
         # -> value isn't sane
         'pwm': [NotifyDict({
             'initialized': False,
-            'type': None, # string value set by HALReport: jaguar, victor, talon, etc
-            'raw_value': 0,# raw value that is used by wpilib represents the hardware PWM value
-            'value':0,# value is the PWM value that user set from -1 to 1
+            'type': None,   # string value set by HALReport: jaguar, victor, talon, etc
+            'raw_value': 0, # raw value that is used by wpilib represents the hardware PWM value
+            'value':0,      # value is the PWM value that user set from -1 to 1 (but it might not be exactly what you expect)
             'period_scale': None,
             'zero_latch': False,
 
