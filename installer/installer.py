@@ -269,9 +269,9 @@ class RobotpyInstaller(object):
     win_bins = abspath(join(dirname(__file__), 'win32'))
     
     # Defaults, actual values come from config file
-    username = 'admin'
-    password = ''
-    hostname = ''
+    _username = 'admin'
+    _password = ''
+    _hostname = ''
     
     # opkg feed
     opkg_feed = 'http://www.tortall.net/~robotpy/feeds/2014/'
@@ -289,6 +289,30 @@ class RobotpyInstaller(object):
         if not exists(self.pip_cache):
             os.makedirs(self.pip_cache)
         
+        self._cfg_initialized = False
+
+    @property
+    def username(self):
+        self._init_cfg()
+        return self._username
+    
+    @property
+    def password(self):
+        self._init_cfg()
+        return self._password
+    
+    @property
+    def hostname(self):
+        self._init_cfg()
+        return self._hostname
+
+    def _init_cfg(self):
+
+        if self._cfg_initialized:
+            return
+        
+        self._cfg_initialized = True
+
         if not exists(self.cfg):
             self._do_config()
             
@@ -296,9 +320,9 @@ class RobotpyInstaller(object):
         config.read(self.cfg)
         
         try:
-            self.username = config['auth'].get('username', self.username)
-            self.password = config['auth'].get('password', self.password)
-            self.hostname = config['auth']['hostname']
+            self._username = config['auth'].get('username', self.username)
+            self._password = config['auth'].get('password', self.password)
+            self._hostname = config['auth']['hostname']
         except KeyError as e:
             raise Error("Error reading %s; delete it and try again" % self.cfg)
     
