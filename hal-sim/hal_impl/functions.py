@@ -122,7 +122,7 @@ def takeMultiWait(sem, mutex, timeout):
 
 def giveMultiWait(sem):
     with sem.cond:
-        sem.cond.notifyAll() # hal uses pthread_cond_broadcast, which wakes all threads
+        sem.cond.notify_all() # hal uses pthread_cond_broadcast, which wakes all threads
 
 
 #############################################################################
