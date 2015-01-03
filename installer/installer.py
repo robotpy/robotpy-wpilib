@@ -514,7 +514,6 @@ class RobotpyInstaller(object):
         options.packages = ['wpilib',
                             'robotpy-hal-base',
                             'robotpy-hal-roborio']
-        options.pre = options.pre
         options.upgrade = True
         
         if options.basever is not None:
@@ -572,7 +571,12 @@ class RobotpyInstaller(object):
         self._poor_sync([fname, opkg_script_fname], 'opkg_cache')
         extra_cmd = 'bash opkg_cache/install_opkg.sh'
         
-        return self.install(self._create_rpy_options(options), extra_cmd=extra_cmd)
+        # We always add --pre to install-robotpy, in case the user downloaded
+        # a prerelease version. Never add --pre without user intervention
+        # for download-robotpy, however
+        inst_options = self._create_rpy_options(options)
+        inst_options.pre = True
+        return self.install(inst_options, extra_cmd=extra_cmd)
     
     # These share the same options
     download_robotpy_opts = install_robotpy_opts
@@ -613,6 +617,9 @@ class RobotpyInstaller(object):
         pip_args = ['install',
                     '--download',
                     self.pip_cache]
+        
+        if options.pre:
+            pip_args.append('--pre')
         
         for r in options.requirement:
             pip_args.extend(['-r', r])
