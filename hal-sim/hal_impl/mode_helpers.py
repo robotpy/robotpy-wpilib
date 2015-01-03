@@ -76,6 +76,34 @@ def set_disabled():
     
     notify_new_ds_data()
         
+def set_mode(new_mode, new_enabled):
+    '''
+        Calls the appropriate function based on the mode string
+        
+        Can be called repeatedly, will only update a mode when it
+        changes.
+        
+        :param new_mode: auto, test, or teleop
+        :param enabled:  True if enabled, False otherwise
+    '''
     
-
-
+    assert new_mode in ['auto', 'test', 'teleop']
+    new_enabled = bool(new_enabled)
+    
+    ctrl = hal_data['control']
+    
+    enabled = ctrl['enabled']
+    if ctrl['autonomous']:
+        old_mode = 'auto'
+    elif ctrl['test']:
+        old_mode = 'test'
+    else:
+        old_mode = 'teleop'
+    
+    if new_mode != old_mode or enabled != new_enabled:
+        if new_mode == 'test':
+            set_test_mode(new_enabled)
+        elif new_mode == 'auto':
+            set_autonomous(new_enabled)
+        elif new_mode == 'teleop':
+            set_teleop_mode(new_enabled)
