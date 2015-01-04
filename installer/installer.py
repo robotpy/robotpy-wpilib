@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# (C) 2014 Dustin Spicuzza. Distributed under MIT license.
+# (C) 2014-2015 Dustin Spicuzza. Distributed under MIT license.
 #
 # This is a simple (ha!) installer program that is designed to be used to
 # deploy RobotPy to a roborio via SSH
@@ -10,6 +10,9 @@
 # For now, let's try to keep this to a single file so that it can be moved
 # around easily without having to think about it too hard and worry about
 # path issues. Reconsider this once we get to 4000+ lines of code... :p
+#
+# NOTE: This file is used in robotpy-wpilib and in pyfrc, please keep the two
+# copies in sync!
 #
 
 
@@ -29,12 +32,7 @@ from collections import OrderedDict
 from distutils.version import LooseVersion
 from urllib.request import urlopen, urlretrieve
 
-try:
-    import pip
-except ImportError:
-    print("ERROR: pip must be installed for the installer to work!")
-    exit(1)
-    
+
 is_windows = hasattr(sys, 'getwindowsversion')
 
 
@@ -259,38 +257,25 @@ class Error(Exception):
 class ArgError(Error):
     pass
 
-class RobotpyInstaller(object):
-
-    cfg = abspath(join(dirname(__file__), '.installer_config'))
-
-    pip_cache = abspath(join(dirname(__file__), 'pip_cache'))
-    opkg_cache = abspath(join(dirname(__file__), 'opkg_cache'))
-    
-    win_bins = abspath(join(dirname(__file__), 'win32'))
+class SshController(object):
+    '''
+        Use this to transfer files and execute commands on a RoboRIO in a
+        cross platform manner
+    '''
     
     # Defaults, actual values come from config file
     _username = 'admin'
     _password = ''
     _hostname = ''
     
-    # opkg feed
-    opkg_feed = 'http://www.tortall.net/~robotpy/feeds/2014/'
-    opkg_arch = 'armv7a-vfp-neon'
+    win_bins = abspath(join(dirname(__file__), 'win32'))
     
-    commands = [
-        'install-robotpy',
-        'download-robotpy',
-        'install',
-        'download'
-    ]
-
-    def __init__(self):
+    def __init__(self, cfg_filename):
+        self.cfg_filename = cfg_filename
+        self.cfg = None
+        self.config_to_write = None
+        self.dirty = False
         
-        if not exists(self.pip_cache):
-            os.makedirs(self.pip_cache)
-        
-        self._cfg_initialized = False
-
     @property
     def username(self):
         self._init_cfg()
@@ -308,23 +293,24 @@ class RobotpyInstaller(object):
 
     def _init_cfg(self):
 
-        if self._cfg_initialized:
+        if self.cfg is not None:
             return
         
-        self._cfg_initialized = True
+        self.cfg_initialized = True
 
-        if not exists(self.cfg):
-            self._do_config()
-            
-        config = configparser.ConfigParser()
-        config.read(self.cfg)
+        if not exists(self.cfg_filename):
+            self.cfg = self._do_config()
+            self.dirty = True
+        else:
+            self.cfg = configparser.ConfigParser()
+            self.cfg.read(self.cfg_filename)
         
         try:
-            self._username = config['auth'].get('username', self.username)
-            self._password = config['auth'].get('password', self.password)
-            self._hostname = config['auth']['hostname']
-        except KeyError as e:
-            raise Error("Error reading %s; delete it and try again" % self.cfg)
+            self._username = self.cfg['auth'].get('username', self.username)
+            self._password = self.cfg['auth'].get('password', self.password)
+            self._hostname = self.cfg['auth']['hostname']
+        except KeyError:
+            raise Error("Error reading %s; delete it and try again" % self.cfg_filename)
     
     def _do_config(self):
         
@@ -333,28 +319,32 @@ class RobotpyInstaller(object):
         while hostname == '':
             hostname = input('Robot hostname (like roborio-XXX.local, or an IP address): ')
         
-        username = input('Username [%s]: ' % self.username)
-        password = getpass.getpass('Password [%s]: ' % self.password)
+        username = input('Username [%s]: ' % self._username)
+        password = getpass.getpass('Password [%s]: ' % self._password)
         
         config = configparser.ConfigParser()
         config['auth'] = {}
         
-        if username != '' and username != self.username:
+        if username != '' and username != self._username:
             config['auth']['username'] = username
-        if password != '' and password != self.password:
+        if password != '' and password != self._password:
             config['auth']['username'] = password
             
         config['auth']['hostname'] = hostname
         
-        with open(self.cfg, 'w') as fp:
-            config.write(fp)
-  
-    
+        return config
+        
+    def close(self):
+        '''Only call this on success'''
+        if self.dirty:
+            with open(self.cfg_filename, 'w') as fp:
+                self.cfg.write(fp)
+        
     #
     # This sucks. We should be using paramiko here... 
     #
     
-    def _ssh(self, *args, get_output=False):
+    def ssh(self, *args, get_output=False):
     
         ssh_args = ['%s@%s' % (self.username, self.hostname)] + list(args)
     
@@ -386,7 +376,7 @@ class RobotpyInstaller(object):
             return output.decode('utf-8')
         
     
-    def _sftp(self, src, dst, mkdir=True):
+    def sftp(self, src, dst, mkdir=True):
         '''
             src can be a single file, list of files, or directory
             dst is always a directory, for simplicity
@@ -399,14 +389,22 @@ class RobotpyInstaller(object):
         bfp, bfname = tempfile.mkstemp(text=True)
         try:
             with os.fdopen(bfp, 'w') as fp:
-                if mkdir:
-                    fp.write('mkdir "%s"\n' % dst)
+                
                 if isinstance(src, str):
                     if isdir(src):
+                        if mkdir:
+                            fp.write('mkdir "%s/%s"\n' % (dst, basename(src)))
+                        
                         fp.write('put -r "%s" "%s"\n' % (src, dst))
                     else:
+                        if mkdir:
+                            fp.write('mkdir "%s"\n' % dst)
+                        
                         fp.write('put "%s" "%s/%s"\n' % (src, dst, basename(src)))
                 else:
+                    if mkdir:
+                        fp.write('mkdir "%s"\n' % dst)
+                    
                     for f in src:
                         fp.write('put "%s" "%s/%s"\n' % (f, dst, basename(f)))
             
@@ -443,7 +441,7 @@ class RobotpyInstaller(object):
             except:
                 pass
     
-    def _poor_sync(self, src, dst):
+    def poor_sync(self, src, dst):
         '''
             :param src: Local file, list of files, or directory to sync
             :param dst: Remote directory to copy file to
@@ -472,8 +470,8 @@ class RobotpyInstaller(object):
         local_files = {}
         
         for fname, full_fname in files.items():
-            hash = md5sum(full_fname)
-            local_files[fname] = hash
+            fhash = md5sum(full_fname)
+            local_files[fname] = fhash
         
         # Hack to determine if the directory actually exists, so that 
         # we create it before putting the files over (necessary because
@@ -482,7 +480,7 @@ class RobotpyInstaller(object):
         mkdir = False
         ssh_cmd = md5sum_cmd + '; [ -d "%s" ]; echo $?' % dst
         
-        lines = self._ssh(ssh_cmd, get_output=True)
+        lines = self.ssh(ssh_cmd, get_output=True)
         
         # once you get it, compare them
         for line in lines.split('\n'):
@@ -499,7 +497,35 @@ class RobotpyInstaller(object):
         # Finally, copy the remaining files over
         if len(local_files) != 0:
             local_files = [files[file] for file in local_files.keys()]
-            self._sftp(local_files, dst, mkdir=mkdir)
+            self.sftp(local_files, dst, mkdir=mkdir)
+
+
+class RobotpyInstaller(object):
+    '''
+        Logic for installing RobotPy
+    '''
+    
+    pip_cache = abspath(join(dirname(__file__), 'pip_cache'))
+    opkg_cache = abspath(join(dirname(__file__), 'opkg_cache'))
+    
+    # opkg feed
+    opkg_feed = 'http://www.tortall.net/~robotpy/feeds/2014/'
+    opkg_arch = 'armv7a-vfp-neon'
+    
+    commands = [
+        'install-robotpy',
+        'download-robotpy',
+        'install',
+        'download'
+    ]
+
+    def __init__(self):
+        
+        if not exists(self.pip_cache):
+            os.makedirs(self.pip_cache)
+        
+        cfg_filename = abspath(join(dirname(__file__), '.installer_config'))
+        self.ctrl = SshController(cfg_filename)
         
     def _get_opkg(self):
         return OpkgRepo(self.opkg_feed, self.opkg_arch, self.opkg_cache)
@@ -568,7 +594,7 @@ class RobotpyInstaller(object):
         with open(opkg_script_fname, 'w', newline='\n') as fp:
             fp.write(opkg_script)
         
-        self._poor_sync([fname, opkg_script_fname], 'opkg_cache')
+        self.ctrl.poor_sync([fname, opkg_script_fname], 'opkg_cache')
         extra_cmd = 'bash opkg_cache/install_opkg.sh'
         
         # We always add --pre to install-robotpy, in case the user downloaded
@@ -609,6 +635,11 @@ class RobotpyInstaller(object):
         '''
             Specify python package(s) to download, and store them in the cache
         '''
+        
+        try:
+            import pip
+        except ImportError:
+            raise Error("ERROR: pip must be installed to download python packages")
         
         if len(options.requirement) == 0 and len(options.packages) == 0:
             raise ArgError("You must give at least one requirement to install")
@@ -652,7 +683,7 @@ class RobotpyInstaller(object):
         # copy the pip cache over
         # .. this is inefficient
         print("Copying over the pip cache...")
-        retval = self._poor_sync(self.pip_cache, 'pip_cache')
+        self.ctrl.poor_sync(self.pip_cache, 'pip_cache')
         
         print("Running installation...")
         cmd = "/usr/local/bin/pip3 install --no-index --find-links=pip_cache "
@@ -669,7 +700,7 @@ class RobotpyInstaller(object):
         if extra_cmd is not None:
             cmd = extra_cmd + ' && ' + cmd
         
-        self._ssh(cmd)
+        self.ctrl.ssh(cmd)
         
         print("Done.")
 
@@ -714,7 +745,11 @@ def main(args=None):
         retval = 0
     elif retval is False:
         retval = 1
-        
+    
+    # finally.. write the config out
+    if retval == 0:
+        installer.ctrl.close()
+    
     return retval
 
 
