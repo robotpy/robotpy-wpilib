@@ -758,11 +758,11 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         data = _packFXP16_16(i)
 
         if self.controlMode == self.ControlMode.Speed:
-            self.sendMessage(_cj.LM_API_SPD_IC, data, dataSize)
+            self.sendMessage(_cj.LM_API_SPD_IC, data)
         elif self.controlMode == self.ControlMode.Position:
-            self.sendMessage(_cj.LM_API_POS_IC, data, dataSize)
+            self.sendMessage(_cj.LM_API_POS_IC, data)
         elif self.controlMode == self.ControlMode.Current:
-            self.sendMessage(_cj.LM_API_ICTRL_IC, data, dataSize)
+            self.sendMessage(_cj.LM_API_ICTRL_IC, data)
         else:
             raise ValueError("PID constants only apply in Speed, Position, and Current mode")
 
@@ -777,11 +777,11 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         data = _packFXP16_16(d)
 
         if self.controlMode == self.ControlMode.Speed:
-            self.sendMessage(_cj.LM_API_SPD_DC, data, dataSize)
+            self.sendMessage(_cj.LM_API_SPD_DC, data)
         if self.controlMode == self.ControlMode.Position:
-            self.sendMessage(_cj.LM_API_POS_DC, data, dataSize)
+            self.sendMessage(_cj.LM_API_POS_DC, data)
         if self.controlMode == self.ControlMode.Current:
-            self.sendMessage(_cj.LM_API_ICTRL_DC, data, dataSize)
+            self.sendMessage(_cj.LM_API_ICTRL_DC, data)
         else:
             raise ValueError("PID constants only apply in Speed, Position, and Current mode")
 
