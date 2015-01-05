@@ -2,6 +2,7 @@ import hal
 import weakref
 
 from .motorsafety import MotorSafety
+from .resource import Resource
 from .timer import Timer
 
 __all__ = ["CANTalon"]
@@ -150,6 +151,9 @@ class CANTalon(MotorSafety):
         self.setPoint = 0.0
         self.setProfile(self.profile)
         self._applyControlMode(self.ControlMode.PercentVbus)
+        
+        # Need this to free on unit test wpilib reset
+        Resource._add_global_resource(self)
 
     @property
     def handle(self):

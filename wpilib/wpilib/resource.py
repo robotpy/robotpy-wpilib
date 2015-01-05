@@ -20,11 +20,17 @@ class Resource:
     allocation, but simply tracks if a given index is currently in use.
     """
     
-    _resources = [] 
+    _resource_objects = []
+    _global_resources = []
     
     @staticmethod
     def _reset():
-        for resource in Resource._resources:
+        '''
+            This clears all resources in the program and calls free() on any
+            objects that have a free method.
+        '''
+        
+        for resource in Resource._resource_objects:
             
             # free all the resources, if a free method is defined
             for ref in resource.numAllocated:
@@ -35,7 +41,19 @@ class Resource:
                     obj.free()
             
             resource.numAllocated = [None]*len(resource.numAllocated)
-    
+        
+        for ref in Resource._global_resources:
+            obj = ref()
+            if obj is not None and hasattr(obj, 'free'):
+                obj.free()
+        
+        Resource._resource_objects.clear()
+        Resource._global_resources.clear()
+        
+    @staticmethod
+    def _add_global_resource(obj):
+        Resource._global_resources.append(weakref.ref(obj))
+        
 
     def __init__(self, size):
         """Allocate storage for a new instance of Resource.
@@ -45,7 +63,7 @@ class Resource:
 
         :param size: The number of blocks to allocate
         """
-        Resource._resources.append(self)
+        Resource._resource_objects.append(self)
         self.numAllocated = [None]*size
 
     def allocate(self, obj, index=None):

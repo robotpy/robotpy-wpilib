@@ -260,6 +260,9 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         self._canjaguar_finalizer = weakref.finalize(self, _freeJaguar,
                                                      self.deviceNumber,
                                                      self.controlMode)
+        
+        # Need this to free on unit test wpilib reset
+        Resource._add_global_resource(self)
 
         # Wait until we've gotten all of the status data at least once.
         for i in range(CANJaguar.kReceiveStatusAttempts):

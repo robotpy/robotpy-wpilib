@@ -9,6 +9,7 @@ import hal
 import warnings
 
 from .livewindow import LiveWindow
+from .resource import Resource
 from .sensorbase import SensorBase
 from .solenoidbase import SolenoidBase
 
@@ -84,6 +85,9 @@ class DoubleSolenoid(SolenoidBase):
             self.allocated.allocate(self, reverseChannel)
         except IndexError as e:
             raise IndexError("Solenoid channel %d on module %d is already allocated" % (reverseChannel, moduleNumber)) from e
+        
+        # Need this to free on unit test wpilib reset
+        Resource._add_global_resource(self)
 
         self.forwardPort = self.ports[forwardChannel]
         self.reversePort = self.ports[reverseChannel]

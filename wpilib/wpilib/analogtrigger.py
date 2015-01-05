@@ -9,6 +9,7 @@ import hal
 import weakref
 
 from .analogtriggeroutput import AnalogTriggerOutput
+from .resource import Resource
 
 __all__ = ["AnalogTrigger"]
 
@@ -47,6 +48,9 @@ class AnalogTrigger:
         self._port, self.index = hal.initializeAnalogTrigger(port)
         self._analogtrigger_finalizer = \
                 weakref.finalize(self, _freeAnalogTrigger, self._port)
+                
+        # Need this to free on unit test wpilib reset
+        Resource._add_global_resource(self)
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_AnalogTrigger,
                       channel)

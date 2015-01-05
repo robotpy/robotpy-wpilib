@@ -9,6 +9,7 @@ import hal
 import weakref
 
 from .livewindowsendable import LiveWindowSendable
+from .resource import Resource
 from .sensorbase import SensorBase
 
 __all__ = ["PWM"]
@@ -85,6 +86,9 @@ class PWM(LiveWindowSendable):
 
         if not hal.allocatePWMChannel(self._port):
             raise IndexError("PWM channel %d is already allocated" % channel)
+        
+        # Need this to free on unit test wpilib reset
+        Resource._add_global_resource(self)
 
         hal.setPWM(self._port, 0)
 

@@ -11,6 +11,7 @@ import warnings
 import hal
 
 from .livewindowsendable import LiveWindowSendable
+from .resource import Resource
 from ._impl.timertask import TimerTask
 from ._impl.utils import match_arglist, HasAttribute
 
@@ -107,6 +108,9 @@ class PIDController(LiveWindowSendable):
 
         self.pid_task = TimerTask('PIDTask%d' % PIDController.instances, self.period, self.calculate)
         self.pid_task.start()
+        
+        # Need this to free on unit test wpilib reset
+        Resource._add_global_resource(self)
 
         PIDController.instances += 1
         hal.HALReport(hal.HALUsageReporting.kResourceType_PIDController,

@@ -14,6 +14,7 @@ from .interfaces.pidsource import PIDSource
 from .counter import Counter
 from .digitalinput import DigitalInput
 from .livewindow import LiveWindow
+from .resource import Resource
 from .sensorbase import SensorBase
 
 from ._impl.utils import match_arglist, HasAttribute
@@ -193,7 +194,10 @@ class Encoder(SensorBase):
             self.index = self.counter.getFPGAIndex()
         else:
             raise ValueError("unrecognized encodingType: %s" % encodingType)
-
+        
+        # Need this to free on unit test wpilib reset
+        Resource._add_global_resource(self)
+        
         hal.HALReport(hal.HALUsageReporting.kResourceType_Encoder,
                       self.index, encodingType)
         LiveWindow.addSensorChannel("Encoder", aSource.getChannelForRouting(),
