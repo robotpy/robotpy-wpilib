@@ -18,9 +18,9 @@ distributions, and from Mac OSX also. Here's how you do it:
 * `Download RobotPy from github <https://github.com/robotpy/robotpy-wpilib/releases>`_
 * `Make sure Python 3.4 is installed <https://www.python.org/downloads/>`_
 
-Unzip the RobotPy zipfile somewhere, and there should be an installer.py
-there. Open up a command line, change directory to the installer location,
-and run this::
+Unzip the RobotPy zipfile somewhere on your computer (not on the RoboRIO),
+and there should be an installer.py there. Open up a command line, change
+directory to the installer location, and run this::
 
 	Windows:   py installer.py install-robotpy
 	
