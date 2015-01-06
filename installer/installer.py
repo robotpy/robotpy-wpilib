@@ -539,7 +539,8 @@ class RobotpyInstaller(object):
         options.requirement = []
         options.packages = ['wpilib',
                             'robotpy-hal-base',
-                            'robotpy-hal-roborio']
+                            'robotpy-hal-roborio',
+                            'pynivision']
         options.upgrade = True
         
         if options.basever is not None:
