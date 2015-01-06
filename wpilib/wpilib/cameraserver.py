@@ -1,11 +1,14 @@
 import nivision
 import ctypes
+import logging
 import socket
 import struct
 import threading
 import time
 
 __all__ = ["CameraServer"]
+
+logger = logging.getLogger(__name__)
 
 class CameraServer:
     kPort = 1180
@@ -19,7 +22,7 @@ class CameraServer:
     intStruct = struct.Struct("!i")
 
     server = None
-    
+
     @staticmethod
     def _reset():
         CameraServer.server = None
@@ -183,22 +186,22 @@ class CameraServer:
         while True:
             try:
                 conn, addr = sock.accept()
-                #print("Client connected")
 
                 s = conn.makefile('rwb')
 
                 fps = self.intStruct.unpack(s.read(4))[0]
                 compression = self.intStruct.unpack(s.read(4))[0]
                 size = self.intStruct.unpack(s.read(4))[0]
+                logger.info("Client connected: %d fps, %d compression, %d size"
+                            % (fps, compression, size))
 
                 with self.mutex:
                     doWait = self.camera is None
 
                 if doWait:
-                    print("camera not ready yet, awaiting first image")
+                    logger.info("camera not ready yet, awaiting first image")
                     self.ready.wait()
 
-                print(fps, compression, size)
                 if compression == self.kHardwareCompression:
                     hwClient = True
                 else:
@@ -237,18 +240,18 @@ class CameraServer:
                         s.write(data)
                     except IOError:
                         # print error to driverstation
-                        print("error sending image")
+                        logger.exception("error sending image")
                         break
                     finally:
                         self._freeImageData(imageData)
 
                     s.flush()
                     dt = time.time() - t0
-                    print(dt, period)
+                    #print(dt, period)
                     if dt < period:
                         time.sleep(period - dt)
             except IOError:
                 # print error to driverstation
-                print("error in conn")
+                logger.exception("error in conn")
                 continue
 

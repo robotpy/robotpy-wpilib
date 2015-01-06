@@ -1,9 +1,12 @@
 import nivision
+import logging
 import re
 import threading
 import time
 
 __all__ = ["USBCamera"]
+
+logger = logging.getLogger(__name__)
 
 def getJpegSize(data):
     if data[0] != 0xff or data[1] != 0xd8:
@@ -139,7 +142,7 @@ class USBCamera:
                 foundMode = mode
                 foundFps = fps
             if foundMode is not None:
-                print("found mode %d: %s" % (foundMode.Value, foundMode.Name))
+                logger.info("found mode %d: %s" % (foundMode.Value, foundMode.Name))
                 if foundMode.Value != currentMode.value:
                     nivision.IMAQdxSetAttribute(self.id, nivision.IMAQdxAttributeVideoMode, foundMode)
 
