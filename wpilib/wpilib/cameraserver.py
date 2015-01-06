@@ -5,8 +5,6 @@ import struct
 import threading
 import time
 
-from .usbcamera import UsbCamera
-
 __all__ = ["CameraServer"]
 
 class CameraServer:
@@ -105,7 +103,7 @@ class CameraServer:
         without doing any vision processing on the roboRIO. {@link #setImage}
         shouldn't be called after this is called.
 
-        :param camera: The camera interface (e.g. a UsbCamera instance)
+        :param camera: The camera interface (e.g. a USBCamera instance)
         """
         if self.captureThread is not None:
             return

@@ -1,8 +1,8 @@
 import threading
 
-__all__ = ["UsbCamera", "CameraServer"]
+__all__ = ["USBCamera", "CameraServer"]
 
-class UsbCamera:
+class USBCamera:
     kDefaultCameraName = b"cam0"
 
     class WhiteBalance:
@@ -14,7 +14,7 @@ class UsbCamera:
 
     def __init__(self, name=None):
         if name is None:
-            name = UsbCamera.kDefaultCameraName
+            name = USBCamera.kDefaultCameraName
         self.name = name
         self.id = None
         self.active = False
@@ -179,7 +179,7 @@ class CameraServer:
         without doing any vision processing on the roboRIO. {@link #setImage}
         shouldn't be called after this is called.
 
-        :param camera: The camera interface (e.g. a UsbCamera instance)
+        :param camera: The camera interface (e.g. a USBCamera instance)
         """
         if self.camera is not None:
             return

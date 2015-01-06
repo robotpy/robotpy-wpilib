@@ -3,7 +3,7 @@ import re
 import threading
 import time
 
-__all__ = ["UsbCamera"]
+__all__ = ["USBCamera"]
 
 def getJpegSize(data):
     if data[0] != 0xff or data[1] != 0xd8:
@@ -29,7 +29,7 @@ def getJpegSize(data):
             len = ((data[pos+2] & 0xff) << 8) | (data[pos+3] & 0xff)
             pos += len + 2
 
-class UsbCamera:
+class USBCamera:
     kDefaultCameraName = b"cam0"
 
     ATTR_WB_MODE = b"CameraAttributes::WhiteBalance::Mode"
@@ -50,7 +50,7 @@ class UsbCamera:
 
     def __init__(self, name=None):
         if name is None:
-            name = UsbCamera.kDefaultCameraName
+            name = USBCamera.kDefaultCameraName
         self.name = name
         self.id = None
         self.active = False

@@ -13,7 +13,7 @@ import wpilib
 class MyRobot(wpilib.SampleRobot):
 
     def robotInit(self):
-        camera = wpilib.UsbCamera()
+        camera = wpilib.USBCamera()
         camera.setExposureManual(50)
         camera.setBrightness(80)
         camera.updateSetting() # force update before we start thread
