@@ -78,7 +78,7 @@ your RoboRIO.
 	
 * Then run this::
 
-	pip3 install robotpy-hal-roborio wpilib
+	pip3 install pynivision robotpy-hal-roborio wpilib
 	
 Upgrading requires you to run the same commands, but with the appropriate
 flags set to tell pip3/opkg to upgrade the packages for you.

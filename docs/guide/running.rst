@@ -9,8 +9,6 @@ Now that you've created your first Python robot program, you probably want to kn
 On the robot (using pyfrc)
 --------------------------
 
-.. note:: pyfrc support for uploading to a RoboRIO is not complete yet, and will be working by the end of the weekend
-
 The easiest way to install code on the robot is to use pyfrc. 
 
 1. Make sure you have RobotPy installed on the robot
@@ -40,7 +38,7 @@ If you don't have (or don't want) to install pyfrc, running code manually is pre
 
 Your driver station should be able to connect to your code, and it will be able to operate your robot!
 
-.. note:: This is good for running experimental code, but it won't start the code when the robot starts up. In the future we'll add notes on how to properly do this.
+.. note:: This is good for running experimental code, but it won't start the code when the robot starts up. Use pyfrc to do that.
 
 
 On your computer
