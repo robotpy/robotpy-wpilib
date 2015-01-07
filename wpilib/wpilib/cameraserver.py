@@ -114,11 +114,11 @@ class CameraServer:
         self.camera = camera
         self.camera.startCapture()
 
-        self.captureThread = threading.Thread(target=lambda: self._autoCapture(cameraName), name="CaptureThread")
+        self.captureThread = threading.Thread(target=self._autoCapture, name="CaptureThread")
         self.captureThread.daemon = True
         self.captureThread.start()
 
-    def _autoCapture(self, name):
+    def _autoCapture(self):
         frame = nivision.imaqCreateImage(nivision.IMAQ_IMAGE_RGB, 0)
 
         while True:
@@ -127,12 +127,15 @@ class CameraServer:
                 if hwClient:
                     data = self.dataPool[-1]
                     self.dataPool.pop()
-            if hwClient:
-                size = self.camera.getImageData(data, self.kMaxImageSize)
-                self._setImageData(data, size)
-            else:
-                self.camera.getImage(frame)
-                self.setImage(frame)
+            try:
+                if hwClient:
+                    size = self.camera.getImageData(data, self.kMaxImageSize)
+                    self._setImageData(data, size)
+                else:
+                    self.camera.getImage(frame)
+                    self.setImage(frame)
+            except ValueError:
+                time.sleep(0.1)
 
     def isAutoCaptureStarted(self):
         """check if auto capture is started

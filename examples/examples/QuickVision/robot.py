@@ -16,7 +16,7 @@ class MyRobot(wpilib.SampleRobot):
         camera = wpilib.USBCamera()
         camera.setExposureManual(50)
         camera.setBrightness(80)
-        camera.updateSetting() # force update before we start thread
+        camera.updateSettings() # force update before we start thread
 
         server = wpilib.CameraServer.getInstance()
         server.startAutomaticCapture(camera)
