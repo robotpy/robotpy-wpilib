@@ -22,8 +22,16 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
                 handle_missing=False):
     realparams = list(params)
     realparams.append(("status", C.POINTER(C.c_int32)))
+    if restype is not None and out is not None:
+        outindexes = [i for i, p in enumerate(params) if p[0] in out]
+        def errcheck(rv, f, args):
+            out = [rv]
+            out.extend(args[i].value for i in outindexes)
+            return tuple(out)
+    else:
+        errcheck = None
     _inner = _RETFUNC(name, restype, *realparams, out=out, library=library,
-                      handle_missing=handle_missing)
+                      errcheck=errcheck, handle_missing=handle_missing)
     def outer(*args, **kwargs):
         status = C.c_int32(0)
         rv = _inner(*args, status=status, **kwargs)
