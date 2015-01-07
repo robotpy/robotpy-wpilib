@@ -134,7 +134,7 @@ class CameraServer:
                 else:
                     self.camera.getImage(frame)
                     self.setImage(frame)
-            except ValueError:
+            except (ValueError, IndexError):
                 time.sleep(0.1)
 
     def isAutoCaptureStarted(self):
