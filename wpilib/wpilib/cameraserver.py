@@ -17,7 +17,7 @@ class CameraServer:
     kSize320x240 = 1
     kSize160x120 = 2
     kHardwareCompression = -1
-    kMaxImageSize = 20000
+    kMaxImageSize = 200000
 
     intStruct = struct.Struct("!i")
 
@@ -135,6 +135,9 @@ class CameraServer:
                     self.camera.getImage(frame)
                     self.setImage(frame)
             except (ValueError, IndexError):
+                logger.exception("getting image")
+                if hwClient and not self.ready.is_set():
+                    self.dataPool.append(data)
                 time.sleep(0.1)
 
     def isAutoCaptureStarted(self):
