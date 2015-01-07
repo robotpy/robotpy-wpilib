@@ -70,16 +70,26 @@ your RoboRIO.
 * Connect your RoboRIO to the internet
 * SSH in, and copy the following to /etc/opkg/robotpy.conf::
 
-	src/gz robotpy http://www.tortall.net/~robotpy/feeds/2014
+    src/gz robotpy http://www.tortall.net/~robotpy/feeds/2014
 	
 * Run this::
 
-	opkg install python3
+    opkg install python3
 	
 * Then run this::
 
-	pip3 install pynivision robotpy-hal-roborio wpilib
-	
+    pip3 install pynivision robotpy-hal-roborio wpilib
+
+.. note:: When powered off, your RoboRIO does not keep track of the correct
+          date, and as a result pip may fail with an SSL related error message.
+          To set the date, you can either:
+
+          * Set the date via the web interface 
+          * You can login to your roboRIO via SSH, and set the date via the
+            date command::
+
+          		date -s "2015-01-03 00:00:00"
+
 Upgrading requires you to run the same commands, but with the appropriate
 flags set to tell pip3/opkg to upgrade the packages for you.
 
