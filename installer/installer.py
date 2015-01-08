@@ -395,7 +395,10 @@ class SshController(object):
                         if mkdir:
                             fp.write('mkdir "%s/%s"\n' % (dst, basename(src)))
                         
-                        fp.write('put -r "%s" "%s"\n' % (src, dst))
+                        if is_windows:
+                            fp.write('put -r "%s" "%s/%s"\n' % (src, dst, basename(src)))
+                        else:
+                            fp.write('put -r "%s" "%s"\n' % (src, dst))
                     else:
                         if mkdir:
                             fp.write('mkdir "%s"\n' % dst)
