@@ -32,8 +32,8 @@ if not exists(hal_file) or __hal_version__ != hal_version:
                 hal_file, _reporthook)
 
 # Automatically generate a version.py based on the git version
-if exists(join(setup_dir, '..', '.git')):
-    p = subprocess.Popen(["git", "describe", "--tags", "--long"],
+if exists(join(setup_dir, '.git')):
+    p = subprocess.Popen(["git", "describe", "--tags", "--long", "--dirty=-dirty"],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     out, err = p.communicate()
@@ -45,7 +45,7 @@ if exists(join(setup_dir, '..', '.git')):
     # Convert git version to PEP440 compliant version
     # - Older versions of pip choke on local identifiers, so we can't include the git commit
     version, commits, local = out.decode('utf-8').rstrip().split('-', 2)
-    if commits != '0':
+    if commits != '0' or '-dirty' in local:
         version = '%s.post0.dev%s' % (version, commits)
 else:
     version = __version__
