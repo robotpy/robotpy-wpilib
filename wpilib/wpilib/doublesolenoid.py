@@ -42,8 +42,8 @@ class DoubleSolenoid(SolenoidBase):
         Alternatively, the above names can be used as keyword arguments.
 
         :param moduleNumber: The module number of the solenoid module to use.
-        :param forwardChannel: The forward channel number on the PCM.
-        :param reverseChannel: The reverse channel number on the PCM.
+        :param forwardChannel: The forward channel number on the PCM (0..7)
+        :param reverseChannel: The reverse channel number on the PCM (0..7)
         """
         # keyword arguments
         forwardChannel = kwargs.pop("forwardChannel", None)

@@ -12,13 +12,16 @@ from .sensorbase import SensorBase
 __all__ = ["PowerDistributionPanel"]
 
 class PowerDistributionPanel(SensorBase):
-    """Use to obtain voltage, current, and temperature from the CAN PDP"""
+    """Use to obtain voltage, current, temperature, power, and energy from the CAN PDP
+    
+    The PDP must be at CAN Address 0
+    """
 
     def getVoltage(self):
         """
             Query the voltage of the PDP
 
-            :returns: The voltage of the PDP
+            :returns: The voltage of the PDP in volts
             :rtype: float
         """
         return hal.getPDPVoltage()
@@ -56,7 +59,7 @@ class PowerDistributionPanel(SensorBase):
         """
             Query the total power drawn from the monitored PDP channels
 
-            :returns: The total power drawn from the PDP channels in Joules
+            :returns: The total power drawn from the PDP channels in Watts
             :rtype: float
         """
         return hal.getPDPTotalPower()
@@ -65,7 +68,7 @@ class PowerDistributionPanel(SensorBase):
         """
             Query the total energy drawn from the monitored PDP channels
 
-            :returns: The total energy drawn from the PDP channels in Watts
+            :returns: The total energy drawn from the PDP channels in Joules
             :rtype: float
         """
         return hal.getPDPTotalEnergy()

@@ -68,7 +68,7 @@ class Relay(SensorBase):
 
         Initially the relay is set to both lines at 0v.
 
-        :param channel: The channel number for this relay.
+        :param channel: The channel number for this relay (0-3)
         :type  channel: int
         :param direction: The direction that the Relay object will control.
             If not specified, defaults to allowing both directions.

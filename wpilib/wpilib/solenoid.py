@@ -36,7 +36,7 @@ class Solenoid(SolenoidBase):
 
         :param moduleNumber: The CAN ID of the PCM the solenoid is attached to
         :type moduleNumber: int
-        :param channel: The channel on the PCM to control (0..7).
+        :param channel: The channel on the PCM to control (0..7)
         :type channel: int
         """
         # keyword arguments
