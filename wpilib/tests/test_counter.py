@@ -51,7 +51,7 @@ def test_counter_set_up_source(wpilib, hal_data):
 def test_counter_set_up_trigger(wpilib, hal_data):
     src = wpilib.AnalogTrigger(4)
     ctr = wpilib.Counter()
-    ctr.setUpSource(src, wpilib.AnalogTriggerOutput.AnalogTriggerType.STATE)
+    ctr.setUpSource(src, wpilib.AnalogTriggerOutput.AnalogTriggerType.kState)
     #Analog triggers get their channel ids from their index, not their analog port.
     check_init(hal_data, 0, 1, 0, (True, False), (False, False), True)
 
@@ -69,7 +69,7 @@ def test_counter_set_down_source(wpilib, hal_data):
 def test_counter_set_down_trigger(wpilib, hal_data):
     src = wpilib.AnalogTrigger(4)
     ctr = wpilib.Counter()
-    ctr.setDownSource(src, wpilib.AnalogTriggerOutput.AnalogTriggerType.STATE)
+    ctr.setDownSource(src, wpilib.AnalogTriggerOutput.AnalogTriggerType.kState)
     #Analog triggers get their channel ids from their index, not their analog port.
     check_init(hal_data, 0, 0, 1, (False, False), (False, False), False, True)
 

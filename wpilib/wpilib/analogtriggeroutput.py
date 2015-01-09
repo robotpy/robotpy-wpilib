@@ -67,6 +67,7 @@ class AnalogTriggerOutput:
         """Get the state of the analog trigger output.
 
         :returns: The state of the analog trigger output.
+        :rtype: :class:`.AnalogTriggerType`
         """
         return hal.getAnalogTriggerOutput(self.trigger.port, self.outputType)
 
@@ -80,8 +81,8 @@ class AnalogTriggerOutput:
         return True
 
     class AnalogTriggerType:
-        """Defines the state in which the AnalogTrigger triggers"""
-        IN_WINDOW = hal.AnalogTriggerType.kInWindow
-        STATE = hal.AnalogTriggerType.kState
-        RISING_PULSE = hal.AnalogTriggerType.kRisingPulse
-        FALLING_PULSE = hal.AnalogTriggerType.kFallingPulse
+        """Defines the state in which the :class:`.AnalogTrigger` triggers"""
+        kInWindow = hal.AnalogTriggerType.kInWindow
+        kState = hal.AnalogTriggerType.kState
+        kRisingPulse = hal.AnalogTriggerType.kRisingPulse
+        kFallingPulse = hal.AnalogTriggerType.kFallingPulse

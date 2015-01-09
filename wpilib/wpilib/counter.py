@@ -227,7 +227,7 @@ class Counter(SensorBase):
         source = results.pop("source", None)
         channel = results.pop("channel", None)
         analogTrigger = results.pop("analogTrigger", None)
-        triggerType = results.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.STATE)
+        triggerType = results.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.kState)
 
         # If we don't have source, generate it from other arguments.
         if source is None:
@@ -322,7 +322,7 @@ class Counter(SensorBase):
         source = results.pop("source", None)
         channel = results.pop("channel", None)
         analogTrigger = results.pop("analogTrigger", None)
-        triggerType = results.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.STATE)
+        triggerType = results.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.kState)
 
         # If we don't have source, generate it from other arguments.
         if source is None:
