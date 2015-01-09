@@ -15,9 +15,13 @@ install it by running the following command in this directory:
 
     pip3 install -r requirements.txt
 
-Then, make sure that you have make or something similar installed, and run:
+If you are on OSX/Linux, you can build the docs using this command:
 
     make html
+
+On Windows, you need to run this:
+
+    make.bat html
 
 Once this completes, you can open `_build/html/index.html` to view the docs!
 
