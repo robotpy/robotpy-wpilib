@@ -25,8 +25,8 @@ def getJpegSize(data):
         elif t == 0xda: # SOS
             len = ((data[pos+2] & 0xff) << 8) | (data[pos+3] & 0xff)
             pos += len + 2
-            # find next marker
-            while data[pos] != 0xff or data[pos+1] == 0x00:
+            # Find next marker.  Skip over escaped and RST markers.
+            while data[pos] != 0xff or data[pos+1] == 0x00 or (data[pos+1] >= 0xd0 and data[pos+1] <= 0xd7):
                 pos += 1
         else: # various
             len = ((data[pos+2] & 0xff) << 8) | (data[pos+3] & 0xff)
