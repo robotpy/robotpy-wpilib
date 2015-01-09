@@ -6,6 +6,7 @@ from setuptools import setup
 from urllib.request import urlretrieve
 
 setup_dir = dirname(__file__)
+git_dir = join(setup_dir, '..', '.git')
 base_package = 'hal_impl'
 version_file = join(setup_dir, base_package, 'version.py')
 hal_version = 'jenkins-stable-2015.312.beta'
@@ -32,7 +33,7 @@ if not exists(hal_file) or __hal_version__ != hal_version:
                 hal_file, _reporthook)
 
 # Automatically generate a version.py based on the git version
-if exists(join(setup_dir, '.git')):
+if exists(git_dir):
     p = subprocess.Popen(["git", "describe", "--tags", "--long", "--dirty=-dirty"],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
