@@ -14,6 +14,12 @@ source _windows_env.sh
 cd ..
 VERSION=`git describe --tags --dirty='-dirty'`
 
+if [[ ! $VERSION =~ ^[0-9]+\.[0-9]\.[0-9]+$ ]]; then
+    # Convert to PEP440
+    IFS=- read VTAG VCOMMITS VLOCAL <<< "$VERSION"
+    VERSION=`printf "%s.post0.dev%s" $VTAG $VCOMMITS`
+fi
+
 PIP_CACHE="installer/pip_cache/"
 
 [ -d $PIP_CACHE ] || mkdir $PIP_CACHE

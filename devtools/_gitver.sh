@@ -16,4 +16,8 @@ if [[ ! $VERSION =~ ^[0-9]+\.[0-9]\.[0-9]+$ ]]; then
         echo "and try again"
         exit 1
     fi
+
+    # Convert to PEP440
+    IFS=- read VTAG VCOMMITS VLOCAL <<< "$VERSION"
+    VERSION=`printf "%s.post0.dev%s" $VTAG $VCOMMITS`
 fi

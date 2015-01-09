@@ -31,9 +31,9 @@ if not exists(hal_file) or __hal_version__ != hal_version:
     urlretrieve("%s/%s/libHALAthena_shared.so" % (hal_site, hal_version),
                 hal_file, _reporthook)
 
-# Automatically generate a version based on the git version
+# Automatically generate a version.py based on the git version
 if exists(join(setup_dir, '..', '.git')):
-    p = subprocess.Popen(["git", "describe", "--tags", "--dirty=-dirty"],
+    p = subprocess.Popen(["git", "describe", "--tags", "--long"],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     out, err = p.communicate()
@@ -42,7 +42,11 @@ if exists(join(setup_dir, '..', '.git')):
         print("Error: You need to create a tag for this repo to use the builder")
         sys.exit(1)
 
-    version = out.decode('utf-8').rstrip()
+    # Convert git version to PEP440 compliant version
+    # - Older versions of pip choke on local identifiers, so we can't include the git commit
+    version, commits, local = out.decode('utf-8').rstrip().split('-', 2)
+    if commits != '0':
+        version = '%s.post0.dev%s' % (version, commits)
 else:
     version = __version__
 
