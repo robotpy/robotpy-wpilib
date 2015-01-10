@@ -33,7 +33,7 @@ class MyRobot(wpilib.SampleRobot):
         
         self.drive.setSafetyEnabled(True)
         
-        while not self.isOperatorControl():
+        while self.isOperatorControl() and self.isEnabled():
             self.drive.arcadeDrive(self.stick)  # drive with arcade style (use right stick)
             wpilib.Timer.delay(.005)    # wait for a motor update time
 
