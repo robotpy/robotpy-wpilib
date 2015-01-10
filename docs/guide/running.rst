@@ -21,6 +21,15 @@ The easiest way to install code on the robot is to use pyfrc.
 
     Linux/OSX: python3 robot.py upload
 
+A really useful option is ``--nc``, which will cause the deploy command to show
+your program's console output, by launching a netconsole listener.
+
+.. code-block:: sh
+
+    Windows:   py robot.py deploy --nc
+    
+    Linux/OSX: python3 robot.py deploy --nc
+
 You can use netconsole and the normal FRC tools to interact with the running robot code.
 
 On the robot (manual)
