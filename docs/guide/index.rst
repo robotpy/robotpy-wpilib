@@ -9,3 +9,4 @@ Programmer's Guide
     
     anatomy
     running
+    sim_and_tests

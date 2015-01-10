@@ -4,9 +4,25 @@
 Getting Started
 ===============
 
-.. note:: These instructions tell you how to install RobotPy on your robot. Once you've
-		  got it installed there, check out :ref:`anatomy` to learn how to write robot
-		  code using python and RobotPy.
+Welcome to RobotPy! RobotPy is a community of FIRST mentors and students
+dedicated to developing python-related projects for the FIRST Robotics
+Competition.
+
+RobotPy WPILib is a set of libraries that are used on your roboRIO to
+enable you to use Python as your main programming language for FIRST Robotics
+robot development. It includes support for all components that are supported by
+WPILib's Java implementation. The following instructions tell you how to
+install RobotPy on your robot.
+
+If you want to run your python code on your computer (of course you do!),
+then you need to install our python development support tools, which is a
+separate project of ours called pyfrc. For more information, check out the
+`pyfrc documentation site <http://pyfrc.readthedocs.org/>`_.
+
+
+.. note:: Once you've got robotpy installed on your robot, check out 
+          :ref:`anatomy` to learn how to write robot code using python and
+          RobotPy.
 
 
 Automated installation
