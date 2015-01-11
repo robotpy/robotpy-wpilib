@@ -545,6 +545,10 @@ class RobotpyInstaller(object):
                             'robotpy-hal-roborio']
         options.upgrade = True
         
+        options.force_reinstall = False
+        options.ignore_installed = False
+        options.no_deps = False
+        
         if options.basever is not None:
             options.packages = ['%s==%s' % (pkg, options.basever) for pkg in options.packages]
 
