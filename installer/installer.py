@@ -633,9 +633,32 @@ class RobotpyInstaller(object):
         parser.add_argument('--pre', action='store_true', default=False, 
                             help="Include pre-release and development versions.")
         
-        # Should this always be enabled?
+        # Various pip arguments
         parser.add_argument('-U', '--upgrade', action='store_true', default=False,
                             help="Upgrade packages (ignored when downloading, always downloads new packages)")
+        
+        parser.add_argument('--force-reinstall', action='store_true', default=False,
+                            help='When upgrading, reinstall all packages even if they are already up-to-date.')
+        parser.add_argument('-I', '--ignore-installed', action='store_true', default=False,
+                            help='Ignore the installed packages (reinstalling instead).')
+        
+        parser.add_argument('--no-deps', action='store_true', default=False,
+                            help="Don't install package dependencies.")
+    
+    def _process_pip_args(self, options):
+        pip_args = []
+        if options.pre:
+            pip_args.append('--pre')
+        if options.upgrade:
+            pip_args.append('--upgrade')
+        if options.force_reinstall:
+            pip_args.append('--force-reinstall')
+        if options.ignore_installed:
+            pip_args.append('--ignore-installed')
+        if options.no_deps:
+            pip_args.append('--no-deps')
+        
+        return pip_args
     
     def download(self, options):
         '''
@@ -655,8 +678,7 @@ class RobotpyInstaller(object):
                     '--download',
                     self.pip_cache]
         
-        if options.pre:
-            pip_args.append('--pre')
+        pip_args.extend(self._process_pip_args(options))
         
         for r in options.requirement:
             pip_args.extend(['-r', r])
@@ -694,12 +716,7 @@ class RobotpyInstaller(object):
         print("Running installation...")
         cmd = "/usr/local/bin/pip3 install --no-index --find-links=pip_cache "
         
-        if options.pre:
-            cmd += '--pre '
-        if options.upgrade:
-            cmd += '--upgrade '
-        
-        cmd += ' '.join(options.packages)
+        cmd += ' '.join(self._process_pip_args(options) + options.packages)
         
         # This is here so we can execute the install-robotpy commands without
         # a separate SSH connection.
