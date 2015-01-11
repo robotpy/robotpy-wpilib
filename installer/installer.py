@@ -264,26 +264,24 @@ class SshController(object):
     '''
     
     # Defaults, actual values come from config file
-    _username = 'admin'
-    _password = ''
     _hostname = ''
     
     win_bins = abspath(join(dirname(__file__), 'win32'))
     
-    def __init__(self, cfg_filename):
+    def __init__(self, cfg_filename, username, password):
         self.cfg_filename = cfg_filename
         self.cfg = None
         self.config_to_write = None
         self.dirty = False
+        self._username = username
+        self._password = password
         
     @property
     def username(self):
-        self._init_cfg()
         return self._username
     
     @property
     def password(self):
-        self._init_cfg()
         return self._password
     
     @property
@@ -306,8 +304,6 @@ class SshController(object):
             self.cfg.read(self.cfg_filename)
         
         try:
-            self._username = self.cfg['auth'].get('username', self.username)
-            self._password = self.cfg['auth'].get('password', self.password)
             self._hostname = self.cfg['auth']['hostname']
         except KeyError:
             raise Error("Error reading %s; delete it and try again" % self.cfg_filename)
@@ -319,16 +315,16 @@ class SshController(object):
         while hostname == '':
             hostname = input('Robot hostname (like roborio-XXX.local, or an IP address): ')
         
-        username = input('Username [%s]: ' % self._username)
-        password = getpass.getpass('Password [%s]: ' % self._password)
+        #username = input('Username [%s]: ' % self._username)
+        #password = getpass.getpass('Password [%s]: ' % self._password)
         
         config = configparser.ConfigParser()
         config['auth'] = {}
         
-        if username != '' and username != self._username:
-            config['auth']['username'] = username
-        if password != '' and password != self._password:
-            config['auth']['username'] = password
+        #if username != '' and username != self._username:
+        #    config['auth']['username'] = username
+        #if password != '' and password != self._password:
+        #    config['auth']['username'] = password
             
         config['auth']['hostname'] = hostname
         
@@ -528,7 +524,7 @@ class RobotpyInstaller(object):
             os.makedirs(self.pip_cache)
         
         cfg_filename = abspath(join(dirname(__file__), '.installer_config'))
-        self.ctrl = SshController(cfg_filename)
+        self.ctrl = SshController(cfg_filename, username='admin', password='')
         
     def _get_opkg(self):
         return OpkgRepo(self.opkg_feed, self.opkg_arch, self.opkg_cache)
