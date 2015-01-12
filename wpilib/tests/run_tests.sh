@@ -31,7 +31,7 @@ EXAMPLES="
 # - examples/GearsBot/
 # - examples/pacgoat/
 
-if [ ! "$NOPYFRC" == "" ]; then
+if [ -z "${NOPYFRC}" ]; then
 	for example in $EXAMPLES; do
 		pushd ../../examples/$example
 		python3 robot.py test --builtin
