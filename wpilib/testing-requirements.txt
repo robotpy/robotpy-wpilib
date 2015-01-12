@@ -1,2 +1,7 @@
+-e .
+-e ../hal-base
+-e ../hal-sim
+
 pytest
 coverage
+pyfrc
