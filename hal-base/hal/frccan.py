@@ -62,7 +62,7 @@ def CANSessionMux_sendMessage(messageID, data, periodMs):
 _CANSessionMux_receiveMessage = _STATUSFUNC("FRC_NetworkCommunication_CANSessionMux_receiveMessage", None, ("messageID", C.POINTER(C.c_uint32)), ("messageIDMask", C.c_uint32), ("data", C.POINTER(C.c_uint8)), ("dataSize", C.POINTER(C.c_uint8)), ("timeStamp", C.POINTER(C.c_uint32)), out=["dataSize", "timeStamp"])
 def CANSessionMux_receiveMessage(messageID, messageIDMask):
     idbuf = C.c_uint32(messageID)
-    buffer = C.c_uint8 * 8
+    buffer = (C.c_uint8 * 8)()
     dataSize, timeStamp = _CANSessionMux_receiveMessage(idbuf, messageIDMask,
                                                         buffer)
     if dataSize is 0:
@@ -75,7 +75,7 @@ CANSessionMux_closeStreamSession = _RETFUNC("FRC_NetworkCommunication_CANSession
 
 _CANSessionMux_readStreamSession = _STATUSFUNC("FRC_NetworkCommunication_CANSessionMux_readStreamSession", None, ("sessionHandle", C.c_uint32), ("messages", C.POINTER(CANStreamMessage)), ("messagesToRead", C.c_uint32), ("messagesRead", C.POINTER(C.c_uint32)), out=["messagesRead"])
 def CANSessionMux_readStreamSession(sessionHandle, messagesToRead):
-    messages = CANStreamMessage * messagesToRead
+    messages = (CANStreamMessage * messagesToRead)()
     messagesRead = _CANSessionMux_readStreamSession(sessionHandle, messages, messagesToRead)
     return messages[0:messagesRead]
 
