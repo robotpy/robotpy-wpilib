@@ -326,6 +326,10 @@ def _reset_hal_data(hooks):
             'total_current': 0,
             'total_power': 0,
             'total_energy': 0
-        }
+        },
+        
+        # The key is the device number as an integer. The value is a dictionary
+        # that is specific to each CAN device
+        'CAN': NotifyDict(),
     })
 

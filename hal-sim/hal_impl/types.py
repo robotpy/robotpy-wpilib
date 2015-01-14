@@ -191,5 +191,6 @@ SolenoidPort_ptr = fake_pointer(SolenoidPort)
 
 # opaque TalonSRX
 class TalonSRX:
-    pass
+    def __init__(self, deviceNumber):
+        self.id = deviceNumber
 TalonSRX_ptr = fake_pointer(TalonSRX)

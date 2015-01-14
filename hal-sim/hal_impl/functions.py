@@ -1276,208 +1276,235 @@ def clearAllPCMStickyFaults_sol(solenoid_port, status):
 # TalonSRX
 #############################################################################
 def c_TalonSRX_Create(deviceNumber, controlPeriodMs):
-    assert False # TODO
+    assert deviceNumber not in hal_data['CAN']
+    
+    hal_data['CAN'][deviceNumber] = data.NotifyDict({
+        'type': 'talonsrx',
+        'value': 0,
+        'params': data.NotifyDict({}), # key is param, value is the value
+        'fault_overtemp': 0,
+        'fault_undervoltage': 0,
+        'fault_forlim': 0,
+        'fault_revlim': 0,
+        'fault_hwfailure': 0,
+        'fault_forsoftlim': 0,
+        'fault_revsoftlim': 0,
+        'stickyfault_overtemp': 0,
+        'stickyfault_undervoltage': 0,
+        'stickyfault_forlim': 0,
+        'stickyfault_revlim': 0,
+        'stickyfault_forsoftlim': 0,
+        'stickyfault_revsoftlim': 0,
+        'applied_throttle': 0,
+        'closeloop_err': 0,
+        'feedback_device_select': 0,
+        'mode_select': 0,
+        'limit_switch_en': 0,
+        'limit_switch_closed_for': 0,
+        'limit_switch_closed_rev': 0,
+        'sensor_position': 0,
+        'sensor_velocity': 0,
+        'current': 0,
+        'brake_enabled': 0,
+        'enc_position': 0,
+        'enc_velocity': 0,
+        'enc_index_rise_events': 0,
+        'quad_apin': 0,
+        'quad_bpin': 0,
+        'quad_idxpin': 0,
+        'analog_in_with_ov': 0,
+        'analog_in_vel': 0,
+        'temp': 0,
+        'battery': 0,
+        'reset_count': 0,
+        'reset_flags': 0,
+        'firmware_version': 0,
+        
+        'feedback_device': None,
+        'rev_motor_during_close_loop': None,
+        'override_braketype': None,
+        'profile_slot_select': None,
+        'ramp_throttle': None,
+        'rev_feedback_sensor': None
+        
+    })
+    
+    return types.TalonSRX(deviceNumber)
+    
 
 def c_TalonSRX_Destroy(handle):
-    assert False # TODO
+    del hal_data['CAN'][handle.id]
 
 def c_TalonSRX_SetParam(handle, paramEnum, value):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['params'][paramEnum] = value
 
 def c_TalonSRX_RequestParam(handle, paramEnum):
-    assert False # TODO
+    params = hal_data['CAN'][handle.id]['params']
+    assert paramEnum in params, "Parameter %s not set!" # TODO: is this correct?
+    return params[paramEnum]
 
 def c_TalonSRX_GetParamResponse(handle, paramEnum):
-    assert False # TODO
-    return value
+    params = hal_data['CAN'][handle.id]['params']
+    assert paramEnum in params, "Parameter %s not set!" # TODO: is this correct?
+    return params[paramEnum]
 
 def c_TalonSRX_GetParamResponseInt32(handle, paramEnum):
-    assert False # TODO
-    return value
+    params = hal_data['CAN'][handle.id]['params']
+    assert paramEnum in params, "Parameter %s not set!" # TODO: is this correct?
+    return params[paramEnum]
 
 def c_TalonSRX_SetStatusFrameRate(handle, frameEnum, periodMs):
-    assert False # TODO
+    pass
 
 def c_TalonSRX_ClearStickyFaults(handle):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['sticky_overtemp'] = 0
+    hal_data['CAN'][handle.id]['stickyfault_undervoltage'] = 0
+    hal_data['CAN'][handle.id]['stickyfault_forlim'] = 0
+    hal_data['CAN'][handle.id]['stickyfault_revlim'] = 0
+    hal_data['CAN'][handle.id]['stickyfault_forsoftlim'] = 0
+    hal_data['CAN'][handle.id]['stickyfault_revsoftlim'] = 0
 
 def c_TalonSRX_GetFault_OverTemp(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['fault_overtemp']
 
 def c_TalonSRX_GetFault_UnderVoltage(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['fault_undervoltage']
 
 def c_TalonSRX_GetFault_ForLim(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['fault_forlim']
 
 def c_TalonSRX_GetFault_RevLim(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['fault_revlim']
 
 def c_TalonSRX_GetFault_HardwareFailure(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['fault_hwfailure']
 
 def c_TalonSRX_GetFault_ForSoftLim(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['fault_forsoftlim']
 
 def c_TalonSRX_GetFault_RevSoftLim(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['fault_revsoftlim']
 
 def c_TalonSRX_GetStckyFault_OverTemp(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['stickyfault_overtemp']
 
 def c_TalonSRX_GetStckyFault_UnderVoltage(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['stickyfault_undervoltage']
 
 def c_TalonSRX_GetStckyFault_ForLim(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['stickyfault_forlim']
 
 def c_TalonSRX_GetStckyFault_RevLim(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['stickyfault_revlim']
 
 def c_TalonSRX_GetStckyFault_ForSoftLim(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['stickyfault_forsoftlim']
 
 def c_TalonSRX_GetStckyFault_RevSoftLim(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['stickyfault_revsoftlim']
 
 def c_TalonSRX_GetAppliedThrottle(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['applied_throttle']
 
 def c_TalonSRX_GetCloseLoopErr(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['closeloop_err']
 
 def c_TalonSRX_GetFeedbackDeviceSelect(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['feedback_device_select']
 
 def c_TalonSRX_GetModeSelect(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['mode_select']
 
 def c_TalonSRX_GetLimitSwitchEn(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['limit_switch_en']
 
 def c_TalonSRX_GetLimitSwitchClosedFor(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['limit_switch_closed_for']
 
 def c_TalonSRX_GetLimitSwitchClosedRev(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['limit_switch_closed_rev']
 
 def c_TalonSRX_GetSensorPosition(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['sensor_position']
 
 def c_TalonSRX_GetSensorVelocity(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['sensor_velocity']
 
 def c_TalonSRX_GetCurrent(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['current']
 
 def c_TalonSRX_GetBrakeIsEnabled(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['brake_enabled']
 
 def c_TalonSRX_GetEncPosition(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['enc_position']
 
 def c_TalonSRX_GetEncVel(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['enc_velocity']
 
 def c_TalonSRX_GetEncIndexRiseEvents(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['enc_index_rise_events']
 
 def c_TalonSRX_GetQuadApin(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['quad_apin']
 
 def c_TalonSRX_GetQuadBpin(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['quad_bpin']
 
 def c_TalonSRX_GetQuadIdxpin(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['quad_idxpin']
 
 def c_TalonSRX_GetAnalogInWithOv(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['analog_in_with_ov']
 
 def c_TalonSRX_GetAnalogInVel(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['analog_in_vel']
 
 def c_TalonSRX_GetTemp(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['temp']
 
 def c_TalonSRX_GetBatteryV(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['battery']
 
 def c_TalonSRX_GetResetCount(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['reset_count']
 
 def c_TalonSRX_GetResetFlags(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['reset_flags']
 
 def c_TalonSRX_GetFirmVers(handle):
-    assert False # TODO
-    return param
+    return hal_data['CAN'][handle.id]['firmware_version']
 
 def c_TalonSRX_SetDemand(handle, param):
-    assert False # TODO
+    hal_data['CAN']['value'] = param
 
 def c_TalonSRX_SetOverrideLimitSwitchEn(handle, param):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['']
 
 def c_TalonSRX_SetFeedbackDeviceSelect(handle, param):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['feedback_device'] = param
 
 def c_TalonSRX_SetRevMotDuringCloseLoopEn(handle, param):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['rev_motor_during_close_loop'] = param
 
 def c_TalonSRX_SetOverrideBrakeType(handle, param):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['override_braketype'] = param
 
 def c_TalonSRX_SetModeSelect(handle, param):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['mode_select'] = param
 
 def c_TalonSRX_SetModeSelect2(handle, modeSelect, demand):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['mode_select'] = modeSelect
+    hal_data['CAN']['value'] = demand
 
 def c_TalonSRX_SetProfileSlotSelect(handle, param):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['profile_slot_select'] = param
 
 def c_TalonSRX_SetRampThrottle(handle, param):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['ramp_throttle'] = param
 
 def c_TalonSRX_SetRevFeedbackSensor(handle, param):
-    assert False # TODO
+    hal_data['CAN'][handle.id]['rev_feedback_sensor'] = param
 
 #############################################################################
 # Utilities

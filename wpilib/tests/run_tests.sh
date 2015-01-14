@@ -19,6 +19,8 @@ EXAMPLES="
 	sample/
 	test/
 	
+	examples/CANTalon/
+	examples/CANTalonPID/
 	examples/GettingStarted/
 	examples/MecanumDrive/
 	examples/MotorControl/
