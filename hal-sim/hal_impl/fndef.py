@@ -19,7 +19,7 @@ def gen_check(pname, ptype):
         return 'isinstance(%s, bool)' % pname
 
     elif ptype in [C.c_float, C.c_double, C.c_longdouble]:
-        return 'isinstance(%s, float)' % pname
+        return 'isinstance(%s, (int, float))' % pname
 
     elif ptype is C.c_char:
         return 'isinstance(%s, bytes) and len(%s) == 1' % (pname, pname)
