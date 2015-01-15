@@ -157,8 +157,7 @@
     <file source="examples/MotorControl/robot.py"
       destination="src/robot.py"></file>
   </files>
-  </example>
-<!--
+ </example>
  <example>
   <name>CAN Talon SRX</name>
   <description>Demonstrate running a Talon SRX with the basic throttle mode.</description>
@@ -174,7 +173,7 @@
     <file source="examples/CANTalon/robot.py"
       destination="src/robot.py"></file>
   </files>
-  </example>
+ </example>
 
  <example>
   <name>CAN Talon SRX PID</name>
@@ -192,7 +191,6 @@
       destination="src/robot.py"></file>
   </files>
   </example>
--->
 
   <tagDescription>
     <name>CommandBased Robot</name>
@@ -300,7 +298,7 @@
             destination="src/triggers/double_button.py"></file>
     </files>
   </example>
-<!--
+
   <example>
     <name>Simple Vision</name>
     <description>Demonstrate the use of the CameraServer class to stream from a USB Webcam without processing the images.</description>
@@ -315,7 +313,7 @@
         destination="src/robot.py"></file>
     </files>
   </example>
-
+<!--
   <example>
     <name>Intermediate Vision</name>
     <description>Demonstrate the use of the NIVision class to capture image from a Webcam, process them, and then send them to the dashboard.</description>
