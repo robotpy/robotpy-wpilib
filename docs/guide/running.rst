@@ -17,12 +17,11 @@ The easiest way to install code on the robot is to use pyfrc.
 
 :: 
     
-    Windows:   py robot.py upload
+    Windows:   py robot.py deploy
 
-    Linux/OSX: python3 robot.py upload
+    Linux/OSX: python3 robot.py deploy
 
-A really useful option is ``--nc``, which will cause the deploy command to show
-your program's console output, by launching a netconsole listener.
+Note that when you run this command like that, you won't get any feedback from the robot whether your code actually worked or not. If you want to see the feedback from your robot, a really useful option is ``--nc``. This will cause the deploy command to show your program's console output, by launching a netconsole listener.
 
 .. code-block:: sh
 
@@ -30,7 +29,7 @@ your program's console output, by launching a netconsole listener.
     
     Linux/OSX: python3 robot.py deploy --nc
 
-You can use netconsole and the normal FRC tools to interact with the running robot code.
+You can watch your robot code's output (and see any problems) by using the netconsole program (you can either use NI's tool, or `pynetconsole <https://github.com/robotpy/pynetconsole>`_. You can use netconsole and the normal FRC tools to interact with the running robot code.
 
 On the robot (manual)
 ---------------------
