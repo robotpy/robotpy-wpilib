@@ -31,6 +31,8 @@ Note that when you run this command like that, you won't get any feedback from t
 
 You can watch your robot code's output (and see any problems) by using the netconsole program (you can either use NI's tool, or `pynetconsole <https://github.com/robotpy/pynetconsole>`_. You can use netconsole and the normal FRC tools to interact with the running robot code.
 
+If you're having problems deploying code to the robot, check out the troubleshooting section at http://pyfrc.readthedocs.org/en/latest/deploy.html
+
 On the robot (manual)
 ---------------------
 
