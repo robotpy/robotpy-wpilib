@@ -40,19 +40,19 @@ def _packINT32(value):
     return [x for x in struct.pack("<i", int(value))]
 
 def _unpackPercentage(buffer):
-    return struct.unpack("<h", bytes(buffer[:2])) / 32767.0
+    return struct.unpack("<h", bytes(buffer[:2]))[0] / 32767.0
 
 def _unpackFXP8_8(buffer):
-    return struct.unpack("<h", bytes(buffer[:2])) / 256.0
+    return struct.unpack("<h", bytes(buffer[:2]))[0] / 256.0
 
 def _unpackFXP16_16(buffer):
-    return struct.unpack("<i", bytes(buffer[:4])) / 65536.0
+    return struct.unpack("<i", bytes(buffer[:4]))[0] / 65536.0
 
 def _unpackINT16(buffer):
-    return struct.unpack("<h", bytes(buffer[:2]))
+    return struct.unpack("<h", bytes(buffer[:2]))[0]
 
 def _unpackINT32(buffer):
-    return struct.unpack("<i", bytes(buffer[:4]))
+    return struct.unpack("<i", bytes(buffer[:4]))[0]
 
 def _FXP8_EQ(a, b):
     """Compare floats for equality as fixed point numbers"""
@@ -65,11 +65,12 @@ def _FXP16_EQ(a, b):
 def _sendMessageHelper(messageID, data, period):
     if (CANJaguar.kFullMessageIDMask & messageID) in CANJaguar.kTrustedMessages:
         # Make sure the data will still fit after adjusting for the token.
-        if len(data) > CANJaguar.kMaxMessageDataSize - 2:
+        if data is not None and len(data) > CANJaguar.kMaxMessageDataSize - 2:
             raise RuntimeError("CAN message has too much data.")
 
         trustedData = [0, 0] # token placeholder
-        trustedData.extend(data)
+        if data is not None:
+            trustedData.extend(data)
         frccan.CANSessionMux_sendMessage(messageID, trustedData, period)
     else:
         frccan.CANSessionMux_sendMessage(messageID, data, period)
