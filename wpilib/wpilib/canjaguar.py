@@ -345,16 +345,16 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
             if self.controlMode == self.ControlMode.PercentVbus:
                 messageID = _cj.LM_API_VOLT_T_SET
                 data = _packPercentage(outputValue)
-            if self.controlMode == self.ControlMode.Speed:
+            elif self.controlMode == self.ControlMode.Speed:
                 messageID = _cj.LM_API_SPD_T_SET
                 data = _packFXP16_16(outputValue)
-            if self.controlMode == self.ControlMode.Position:
+            elif self.controlMode == self.ControlMode.Position:
                 messageID = _cj.LM_API_POS_T_SET
                 data = _packFXP16_16(outputValue)
-            if self.controlMode == self.ControlMode.Current:
+            elif self.controlMode == self.ControlMode.Current:
                 messageID = _cj.LM_API_ICTRL_T_SET
                 data = _packFXP8_8(outputValue)
-            if self.controlMode == self.ControlMode.Voltage:
+            elif self.controlMode == self.ControlMode.Voltage:
                 messageID = _cj.LM_API_VCOMP_T_SET
                 data = _packFXP8_8(outputValue)
             else:
@@ -493,7 +493,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
                     else:
                         # It's wrong - set it again
                         self.setP(self.p)
-                except frccan.CANMessageNotFoundException:
+                except frccan.CANMessageNotFound:
                     # Verification is needed but not available - request it again.
                     self.requestMessage(message)
 
@@ -557,7 +557,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
 
         if not self.encoderCodesPerRevVerified:
             try:
-                self.getMessage(_cj.LM_API_CFG_ENC_LINES,
+                data = self.getMessage(_cj.LM_API_CFG_ENC_LINES,
                                 _cj.CAN_MSGID_FULL_M)
                 codes = _unpackINT16(data)
                 if codes == self.encoderCodesPerRev:
@@ -782,9 +782,9 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
 
         if self.controlMode == self.ControlMode.Speed:
             self.sendMessage(_cj.LM_API_SPD_DC, data)
-        if self.controlMode == self.ControlMode.Position:
+        elif self.controlMode == self.ControlMode.Position:
             self.sendMessage(_cj.LM_API_POS_DC, data)
-        if self.controlMode == self.ControlMode.Current:
+        elif self.controlMode == self.ControlMode.Current:
             self.sendMessage(_cj.LM_API_ICTRL_DC, data)
         else:
             raise ValueError("PID constants only apply in Speed, Position, and Current mode")
@@ -1572,8 +1572,8 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
 
     def startLiveWindowMode(self):
         self.set(0)  # Stop for safety
-        super(LiveWindowSendable, self).startLiveWindowMode()
+        super(CANJaguar, self).startLiveWindowMode()
 
     def stopLiveWindowMode(self):
-        super(LiveWindowSendable, self).stopLiveWindowMode()
+        super(CANJaguar, self).stopLiveWindowMode()
         self.set(0)  # Stop for safety
