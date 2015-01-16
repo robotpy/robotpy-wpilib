@@ -324,7 +324,7 @@ class SshController(object):
         #if username != '' and username != self._username:
         #    config['auth']['username'] = username
         #if password != '' and password != self._password:
-        #    config['auth']['username'] = password
+        #    config['auth']['password'] = password
             
         config['auth']['hostname'] = hostname
         
