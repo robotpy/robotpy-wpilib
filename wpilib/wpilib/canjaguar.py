@@ -98,7 +98,7 @@ def _freeJaguar(deviceNumber, controlMode):
                                      frccan.CAN_SEND_PERIOD_STOP_REPEATING)
 
     data = _packFXP8_8(CANJaguar.kApproxBusVoltage)
-    _sendMessageHelper(_cj.LM_API_CFG_MAX_VOUT | deviceNumber, data)
+    _sendMessageHelper(_cj.LM_API_CFG_MAX_VOUT | deviceNumber, data, frccan.CAN_SEND_PERIOD_NO_REPEAT)
 
 class CANJaguar(LiveWindowSendable, MotorSafety):
     """Texas Instruments Jaguar Speed Controller as a CAN device."""
