@@ -16,6 +16,14 @@ def ds(wpimock, halmock):
 # Tests
 #
 
+def test_dup(wpilib):
+    '''Don't allow creating a driverStation instance manually'''
+    ds = wpilib.DriverStation.getInstance()
+    
+    with pytest.raises(ValueError):
+        _ = wpilib.DriverStation()
+    
+
 def test_init(wpimock, halmock):
     with patch("wpilib.driverstation.threading") as mockthread:
         ds = wpimock.DriverStation.getInstance()

@@ -45,6 +45,7 @@ class DriverStation:
         :returns: :class:`DriverStation`
         """
         if not hasattr(DriverStation, "instance"):
+            DriverStation.instance = None
             DriverStation.instance = DriverStation()
         return DriverStation.instance
 
@@ -52,8 +53,13 @@ class DriverStation:
         """DriverStation constructor.
 
         The single DriverStation instance is created statically with the
-        instance static member variable.
+        instance static member variable, you should never create a
+        DriverStation instance.
         """
+        
+        if not hasattr(DriverStation, 'instance') or DriverStation.instance is not None:
+            raise ValueError("Do not create DriverStation instances, use DriverStation.getInstance() instead")
+        
         self.mutex = threading.RLock()
         self.dataSem = threading.Condition(self.mutex)
 
