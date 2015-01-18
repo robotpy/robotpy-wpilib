@@ -49,6 +49,12 @@ class Encoder(SensorBase):
     .. not_implemented: initEncoder
     """
 
+    class IndexingType:
+        kResetWhileHigh = 0
+        kResetWhileLow = 1
+        kResetOnFallingEdge = 2
+        kResetOnRisingEdge = 3
+
     EncodingType = CounterBase.EncodingType
     PIDSourceParameter = PIDSource.PIDSourceParameter
 
@@ -455,6 +461,24 @@ class Encoder(SensorBase):
             return self.getRate()
         else:
             return 0.0
+
+    def setIndexSource(self, source, indexing_type=IndexingType.kResetOnRisingEdge):
+        """
+        Set the index source for the encoder. When this source rises, the encoder count automatically resets.
+
+        :param source: Either an initialized DigitalSource or a DIO channel number
+        :type: Either a :class:`wpilib.DigitalInput` or number
+        :param indexing_type: The state that will cause the encoder to reset
+        :type: A value from :class:`wpilib.DigitalInput.IndexingType`
+        """
+        if hasattr(source, "getChannelForRouting"):
+            self.indexSource = source
+        else:
+            self.indexSource = DigitalInput(source)
+
+        activeHigh = indexing_type == self.IndexingType.kResetWhileHigh or indexing_type == self.IndexingType.kResetOnRisingEdge
+        edgeSensitive = indexing_type == self.IndexingType.kResetOnFallingEdge or indexing_type == self.IndexingType.kResetOnRisingEdge
+        hal.setEncoderIndexSource(self.encoder, self.indexSource, False, activeHigh, edgeSensitive)
 
     # Live Window code, only does anything if live window is activated.
 

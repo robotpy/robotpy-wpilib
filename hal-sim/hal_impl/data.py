@@ -253,7 +253,7 @@ def _reset_hal_data(hooks):
         'encoder': [{
             'has_source': False,
             'initialized': False,
-            'config': [None]*6, # list of pins/modules
+            'config': {}, # dictionary of pins/modules
             'count': 0,
             'period': sys.float_info.max,
             'max_period': 0,

@@ -331,6 +331,7 @@ getEncoderDirection = _STATUSFUNC("getEncoderDirection", C.c_bool, ("encoder", E
 setEncoderReverseDirection = _STATUSFUNC("setEncoderReverseDirection", None, ("encoder", Encoder_ptr), ("reverse_direction", C.c_bool))
 setEncoderSamplesToAverage = _STATUSFUNC("setEncoderSamplesToAverage", None, ("encoder", Encoder_ptr), ("samples_to_average", C.c_uint32))
 getEncoderSamplesToAverage = _STATUSFUNC("getEncoderSamplesToAverage", C.c_uint32, ("encoder", Encoder_ptr))
+setEncoderIndexSource = _STATUSFUNC("setEncoderIndexSource", None, ("encoder", Encoder_ptr), ("pin", C.c_uint32), ("analogTrigger", C.c_bool), ("activeHigh", C.c_bool), ("edgeSensitive", C.c_bool))
 
 getLoopTiming = _STATUSFUNC("getLoopTiming", C.c_uint16)
 

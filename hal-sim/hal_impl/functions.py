@@ -970,7 +970,9 @@ def initializeEncoder(port_a_module, port_a_pin, port_a_analog_trigger, port_b_m
         enc = hal_data['encoder'][idx]
         if enc['initialized'] == False:
             enc['initialized'] = True
-            enc['config'] = [port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger]
+
+            enc['config'] = {"ASource_Module": port_a_module, "ASource_Channel": port_a_pin, "ASource_AnalogTrigger": port_a_analog_trigger,
+                             "BSource_Module": port_b_module, "BSource_Channel": port_b_pin, "BSource_AnalogTrigger": port_b_analog_trigger}
             enc['reverse_direction'] = reverse_direction
             return types.Encoder(idx), idx 
         
@@ -1018,6 +1020,12 @@ def setEncoderSamplesToAverage(encoder, samples_to_average, status):
 def getEncoderSamplesToAverage(encoder, status):
     status.value = 0
     return hal_data['encoder'][encoder.idx]['samples_to_average']
+
+def setEncoderIndexSource(encoder, pin, analogTrigger, activeHigh, edgeSensitive, status):
+    status.value = 0
+    index_conf = {"IndexSource_Channel": pin, "IndexSource_Module": 0, "IndexSource_AnalogTrigger": analogTrigger,
+                  "IndexActiveHigh": activeHigh, "IndexEdgeSensitive": edgeSensitive}
+    hal_data['encoder'][encoder.idx]['config'].update(index_conf)
 
 def getLoopTiming(status):
     status.value = 0
