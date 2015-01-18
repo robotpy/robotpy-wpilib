@@ -13,7 +13,6 @@ import weakref
 from .motorsafety import MotorSafety
 from .talon import Talon
 from .canjaguar import CANJaguar
-from hal import frccan
 
 __all__ = ["RobotDrive"]
 
@@ -145,7 +144,7 @@ class RobotDrive(MotorSafety):
         self.maxOutput = RobotDrive.kDefaultMaxOutput
         self.sensitivity = RobotDrive.kDefaultSensitivity
 
-        self.isCANInitialized = False #Upstream: TODO Fix Can
+        self.syncGroup = 0x0
 
         # set up motor safety
         self.setExpiration(self.kDefaultExpirationTime)
@@ -463,18 +462,14 @@ class RobotDrive(MotorSafety):
 
         RobotDrive.normalize(wheelSpeeds)
 
-        syncGroup = 0x80
 
-        self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.invertedMotors[self.MotorType.kFrontLeft] * self.maxOutput, syncGroup)
-        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.invertedMotors[self.MotorType.kFrontRight] * self.maxOutput, syncGroup)
-        self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.invertedMotors[self.MotorType.kRearLeft] * self.maxOutput, syncGroup)
-        self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.invertedMotors[self.MotorType.kRearRight] * self.maxOutput, syncGroup)
+        self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.invertedMotors[self.MotorType.kFrontLeft] * self.maxOutput, self.syncGroup)
+        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.invertedMotors[self.MotorType.kFrontRight] * self.maxOutput, self.syncGroup)
+        self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.invertedMotors[self.MotorType.kRearLeft] * self.maxOutput, self.syncGroup)
+        self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.invertedMotors[self.MotorType.kRearRight] * self.maxOutput, self.syncGroup)
 
-        if self.isCANInitialized:
-            try:
-                CANJaguar.updateSyncGroup(syncGroup)
-            except frccan.CANNotInitializedException:
-                self.isCANInitialized = False
+        if self.syncGroup != 0:
+            CANJaguar.updateSyncGroup(self.syncGroup)
         self.feed()
 
     def mecanumDrive_Polar(self, magnitude, direction, rotation):
@@ -512,18 +507,14 @@ class RobotDrive(MotorSafety):
 
         RobotDrive.normalize(wheelSpeeds)
 
-        syncGroup = 0x80
 
-        self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.invertedMotors[self.MotorType.kFrontLeft] * self.maxOutput, syncGroup)
-        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.invertedMotors[self.MotorType.kFrontRight] * self.maxOutput, syncGroup)
-        self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.invertedMotors[self.MotorType.kRearLeft] * self.maxOutput, syncGroup)
-        self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.invertedMotors[self.MotorType.kRearRight] * self.maxOutput, syncGroup)
+        self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.invertedMotors[self.MotorType.kFrontLeft] * self.maxOutput, self.syncGroup)
+        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.invertedMotors[self.MotorType.kFrontRight] * self.maxOutput, self.syncGroup)
+        self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.invertedMotors[self.MotorType.kRearLeft] * self.maxOutput, self.syncGroup)
+        self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.invertedMotors[self.MotorType.kRearRight] * self.maxOutput, self.syncGroup)
 
-        if self.isCANInitialized:
-            try:
-                CANJaguar.updateSyncGroup(syncGroup)
-            except frccan.CANNotInitializedException:
-                self.isCANInitialized = False
+        if self.syncGroup != 0:
+            CANJaguar.updateSyncGroup(self.syncGroup)
         self.feed()
 
     def holonomicDrive(self, magnitude, direction, rotation):
@@ -554,24 +545,19 @@ class RobotDrive(MotorSafety):
         if self.rearLeftMotor is None or self.rearRightMotor is None:
             raise ValueError("Null motor provided")
 
-        syncGroup = 0x80
-
         leftOutput = RobotDrive.limit(leftOutput) * self.maxOutput
         rightOutput = RobotDrive.limit(rightOutput) * self.maxOutput
 
         if self.frontLeftMotor is not None:
-            self.frontLeftMotor.set(leftOutput * self.invertedMotors[self.MotorType.kFrontLeft], syncGroup)
-        self.rearLeftMotor.set(leftOutput * self.invertedMotors[self.MotorType.kRearLeft], syncGroup)
+            self.frontLeftMotor.set(leftOutput * self.invertedMotors[self.MotorType.kFrontLeft], self.syncGroup)
+        self.rearLeftMotor.set(leftOutput * self.invertedMotors[self.MotorType.kRearLeft], self.syncGroup)
 
         if self.frontRightMotor is not None:
-            self.frontRightMotor.set(-rightOutput * self.invertedMotors[self.MotorType.kFrontRight], syncGroup)
-        self.rearRightMotor.set(-rightOutput * self.invertedMotors[self.MotorType.kRearRight], syncGroup)
+            self.frontRightMotor.set(-rightOutput * self.invertedMotors[self.MotorType.kFrontRight], self.syncGroup)
+        self.rearRightMotor.set(-rightOutput * self.invertedMotors[self.MotorType.kRearRight], self.syncGroup)
 
-        if self.isCANInitialized:
-            try:
-                CANJaguar.updateSyncGroup(syncGroup)
-            except frccan.CANNotInitializedException:
-                self.isCANInitialized = False
+        if self.syncGroup != 0:
+            CANJaguar.updateSyncGroup(self.syncGroup)
         self.feed()
 
     @staticmethod
@@ -654,6 +640,14 @@ class RobotDrive(MotorSafety):
         if self.rearLeftMotor is not None: motors += 1
         if self.rearRightMotor is not None: motors += 1
         return motors
+
+    def setCANJaguarSyncGroup(self, syncGroup):
+        """
+        Set the number of the sync group for the motor controllers. If the motor controllers are :class:`CANJaguar`s,
+        then they will be added to this sync group, causing them to update their values at the same time.
+
+        :param syncGroup: The update group to add the motor controllers to.
+        """
 
     def free(self):
         self._RobotDrive_finalizer()
