@@ -163,7 +163,7 @@ def _reset_hal_data(hooks):
             'initialized': False,
             'voltage': 0.0
 
-        }) for _ in range(2)],
+        }) for _ in range(8)],
 
         # TODO: make this easier to use
         'analog_in': [NotifyDict({
