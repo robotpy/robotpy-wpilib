@@ -39,8 +39,8 @@ def test_init_two(kw, mc, wpimock, halmock):
         assert drive.rearLeftMotor == left
         assert drive.rearRightMotor == right
 
-        left.set.assert_called_once_with(0.0, 0x80)
-        right.set.assert_called_once_with(0.0, 0x80)
+        left.set.assert_called_once_with(0.0, 0)
+        right.set.assert_called_once_with(0.0, 0)
     else:
         if mc:
             mclass = getattr(wpimock, mc)
@@ -99,10 +99,10 @@ def test_init_four(kw, mc, wpimock, halmock):
         assert drive.frontRightMotor == fright
         assert drive.rearRightMotor == rright
 
-        fleft.set.assert_called_once_with(0.0, 0x80)
-        rleft.set.assert_called_once_with(0.0, 0x80)
-        fright.set.assert_called_once_with(0.0, 0x80)
-        rright.set.assert_called_once_with(0.0, 0x80)
+        fleft.set.assert_called_once_with(0.0, 0)
+        rleft.set.assert_called_once_with(0.0, 0)
+        fright.set.assert_called_once_with(0.0, 0)
+        rright.set.assert_called_once_with(0.0, 0)
     else:
         if mc:
             mclass = getattr(wpimock, mc)
@@ -407,10 +407,10 @@ def test_holonomicDrive(drive4):
 def test_setLeftRightMotorOutputs(drive4):
     drive4.feed = MagicMock()
     drive4.setLeftRightMotorOutputs(0.2, 0.3)
-    drive4.frontLeftMotor.set.assert_called_once_with(0.2, 0x80)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.2, 0x80)
-    drive4.frontRightMotor.set.assert_called_once_with(-0.3, 0x80)
-    drive4.rearRightMotor.set.assert_called_once_with(-0.3, 0x80)
+    drive4.frontLeftMotor.set.assert_called_once_with(0.2, 0)
+    drive4.rearLeftMotor.set.assert_called_once_with(0.2, 0)
+    drive4.frontRightMotor.set.assert_called_once_with(-0.3, 0)
+    drive4.rearRightMotor.set.assert_called_once_with(-0.3, 0)
     assert drive4.feed.called
 
     drive4.frontLeftMotor = None
@@ -418,8 +418,8 @@ def test_setLeftRightMotorOutputs(drive4):
     drive4.rearLeftMotor.reset_mock()
     drive4.rearRightMotor.reset_mock()
     drive4.setLeftRightMotorOutputs(0.2, 0.3)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.2, 0x80)
-    drive4.rearRightMotor.set.assert_called_once_with(-0.3, 0x80)
+    drive4.rearLeftMotor.set.assert_called_once_with(0.2, 0)
+    drive4.rearRightMotor.set.assert_called_once_with(-0.3, 0)
 
 @pytest.mark.parametrize("motor", ["rearLeftMotor", "rearRightMotor"])
 def test_setLeftRightMotorOutputs_error(motor, drive4):
@@ -461,10 +461,10 @@ def test_setInvertedMotor(motor, drive4):
     assert drive4.invertedMotors[motor] == 1 # not inverted
     # drive to make sure it took effect
     drive4.setLeftRightMotorOutputs(0.2, 0.3)
-    drive4.frontLeftMotor.set.assert_called_once_with(0.2*drive4.invertedMotors[drive4.MotorType.kFrontLeft], 0x80)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.2*drive4.invertedMotors[drive4.MotorType.kRearLeft], 0x80)
-    drive4.frontRightMotor.set.assert_called_once_with(-0.3*drive4.invertedMotors[drive4.MotorType.kFrontRight], 0x80)
-    drive4.rearRightMotor.set.assert_called_once_with(-0.3*drive4.invertedMotors[drive4.MotorType.kRearRight], 0x80)
+    drive4.frontLeftMotor.set.assert_called_once_with(0.2*drive4.invertedMotors[drive4.MotorType.kFrontLeft], 0)
+    drive4.rearLeftMotor.set.assert_called_once_with(0.2*drive4.invertedMotors[drive4.MotorType.kRearLeft], 0)
+    drive4.frontRightMotor.set.assert_called_once_with(-0.3*drive4.invertedMotors[drive4.MotorType.kFrontRight], 0)
+    drive4.rearRightMotor.set.assert_called_once_with(-0.3*drive4.invertedMotors[drive4.MotorType.kRearRight], 0)
 
 def test_setSensitivity(drive_lr):
     drive_lr.setSensitivity(0.1)
@@ -478,8 +478,8 @@ def test_setMaxOutput(drive4):
     assert drive4.maxOutput == 0.5
     # drive to make sure it took effect
     drive4.setLeftRightMotorOutputs(1.0, 0.75)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.5, 0x80)
-    drive4.rearRightMotor.set.assert_called_once_with(-0.375, 0x80)
+    drive4.rearLeftMotor.set.assert_called_once_with(0.5, 0)
+    drive4.rearRightMotor.set.assert_called_once_with(-0.375, 0)
 
 def test_getDescription(drive_lr):
     assert drive_lr.getDescription() == "Robot Drive"
