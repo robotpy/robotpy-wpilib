@@ -78,6 +78,9 @@ def _sendMessageHelper(messageID, data, period):
 def _freeJaguar(deviceNumber, controlMode):
     # Cancel periodic messages to the Jaguar, effectively disabling it.
     # Disable periodic setpoints
+
+    CANJaguar.allocated.free(deviceNumber-1)
+
     if controlMode == CANJaguar.ControlMode.PercentVbus:
         messageID = deviceNumber | _cj.LM_API_VOLT_T_SET
     elif controlMode == CANJaguar.ControlMode.Speed:
@@ -95,7 +98,7 @@ def _freeJaguar(deviceNumber, controlMode):
                                      frccan.CAN_SEND_PERIOD_STOP_REPEATING)
 
     data = _packFXP8_8(CANJaguar.kApproxBusVoltage)
-    _sendMessageHelper(_cj.LM_API_CFG_MAX_VOUT | deviceNumber, data)
+    _sendMessageHelper(_cj.LM_API_CFG_MAX_VOUT | deviceNumber, data, frccan.CAN_SEND_PERIOD_NO_REPEAT)
 
 class CANJaguar(LiveWindowSendable, MotorSafety):
     """Texas Instruments Jaguar Speed Controller as a CAN device."""
@@ -303,6 +306,13 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
                 DriverStation.reportError("Jag %d firmware %d is too old (must be at least version 108 of the FIRST approved firmware)" % (self.deviceNumber, self.firmwareVersion), False)
             else:
                 DriverStation.reportError("Jag %d firmware %d is not FIRST approved (must be at least version 108 of the FIRST approved firmware)" % (self.deviceNumber, self.firmwareVersion), False)
+
+    def free(self):
+        """
+        Cancel periodic messages to the Jaguar, effectively disabling it.
+        No other methods should be called after this is called.
+        """
+        self._canjaguar_finalizer()
 
     def getDeviceNumber(self):
         """:returns: The CAN ID passed in the constructor
