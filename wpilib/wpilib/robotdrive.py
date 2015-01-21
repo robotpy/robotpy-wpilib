@@ -648,6 +648,7 @@ class RobotDrive(MotorSafety):
 
         :param syncGroup: The update group to add the motor controllers to.
         """
+        self.syncGroup = syncGroup
 
     def free(self):
         self._RobotDrive_finalizer()
