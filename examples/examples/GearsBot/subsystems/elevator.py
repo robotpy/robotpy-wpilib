@@ -19,7 +19,7 @@ class Elevator(PIDSubsystem):
         
         # Check for simulation and update PID values
         if robot.isSimulation():
-            self.getPIDController().setPID(self.kP_simulation, self.kP_simulation, 0, 0)
+            self.getPIDController().setPID(self.kP_simulation, self.kI_simulation, 0, 0)
             
         self.setAbsoluteTolerance(0.005)
         
