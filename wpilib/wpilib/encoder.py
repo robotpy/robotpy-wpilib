@@ -204,6 +204,9 @@ class Encoder(SensorBase):
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
         
+        if self.indexSource is not None:
+            self.setIndexSource(self.indexSource)
+
         hal.HALReport(hal.HALUsageReporting.kResourceType_Encoder,
                       self.index, encodingType)
         LiveWindow.addSensorChannel("Encoder", aSource.getChannelForRouting(),
