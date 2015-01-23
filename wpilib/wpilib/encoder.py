@@ -479,9 +479,11 @@ class Encoder(SensorBase):
         else:
             self.indexSource = DigitalInput(source)
 
-        activeHigh = indexing_type == self.IndexingType.kResetWhileHigh or indexing_type == self.IndexingType.kResetOnRisingEdge
-        edgeSensitive = indexing_type == self.IndexingType.kResetOnFallingEdge or indexing_type == self.IndexingType.kResetOnRisingEdge
-        hal.setEncoderIndexSource(self.encoder, self.indexSource, False, activeHigh, edgeSensitive)
+        activeHigh = (indexing_type == self.IndexingType.kResetWhileHigh or indexing_type == self.IndexingType.kResetOnRisingEdge)
+        edgeSensitive = (indexing_type == self.IndexingType.kResetOnFallingEdge or indexing_type == self.IndexingType.kResetOnRisingEdge)
+        
+        hal.setEncoderIndexSource(self.encoder, self.indexSource.getChannelForRouting(),
+                                  self.indexSource.getAnalogTriggerForRouting(), activeHigh, edgeSensitive)
 
     # Live Window code, only does anything if live window is activated.
 
