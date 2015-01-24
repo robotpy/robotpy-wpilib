@@ -165,7 +165,7 @@ class OpkgRepo(object):
                     fp.write('\n')
 
 
-def ssh_exec_pass(password, args, capture_output=False):
+def ssh_exec_pass(password, args, capture_output=False, suppress_known_hosts=False):
     '''
         Wrapper around openssh that allows you to send a password to
         ssh/sftp/scp et al similar to sshpass. *nix only, tested on linux
@@ -233,6 +233,7 @@ def ssh_exec_pass(password, args, capture_output=False):
                         os.write(pty_fd, bytes(password + '\n', 'utf-8'))
                     elif b're you sure you want to continue connecting' in data:
                         os.write(pty_fd, b'yes\n')
+                    
                 
                 # Deal with stdout
                 data = _read(stdout_fd)
@@ -244,7 +245,8 @@ def ssh_exec_pass(password, args, capture_output=False):
                         
                 data = _read(stderr_fd)
                 if data is not None:
-                    sys.stderr.write(data.decode('utf-8', 'ignore'))
+                    if not suppress_known_hosts or b'Warning: Permanently added' not in data:
+                        sys.stderr.write(data.decode('utf-8', 'ignore'))
     finally:
         os.close(pty_fd)
         
@@ -257,6 +259,9 @@ class Error(Exception):
 class ArgError(Error):
     pass
 
+# Arguments to pass to SSH to allow a man in the middle attack
+mitm_args = ['-oStrictHostKeyChecking=no', '-oUserKnownHostsFile=/dev/null']
+
 class SshController(object):
     '''
         Use this to transfer files and execute commands on a RoboRIO in a
@@ -268,13 +273,14 @@ class SshController(object):
     
     win_bins = abspath(join(dirname(__file__), 'win32'))
     
-    def __init__(self, cfg_filename, username, password):
+    def __init__(self, cfg_filename, username, password, allow_mitm=False):
         self.cfg_filename = cfg_filename
         self.cfg = None
         self.config_to_write = None
         self.dirty = False
         self._username = username
         self._password = password
+        self._allow_mitm = allow_mitm
         
     @property
     def username(self):
@@ -364,9 +370,13 @@ class SshController(object):
             if cmd is None:
                 raise Error("Cannot find ssh executable!")
             
+            if self._allow_mitm:
+                ssh_args = mitm_args + ssh_args
+            
             ssh_args = [cmd] + ssh_args
             
-            retval, output = ssh_exec_pass(self.password, ssh_args, get_output)
+            retval, output = ssh_exec_pass(self.password, ssh_args, get_output,
+                                           suppress_known_hosts=self._allow_mitm)
             if retval != 0:
                 raise Error('Command %s returned non-zero error status %s' % (ssh_args, retval))
             return output.decode('utf-8')
@@ -427,10 +437,14 @@ class SshController(object):
                 if cmd is None:
                     raise Error("Cannot find sftp executable!")
                 
+                if self._allow_mitm:
+                    sftp_args = mitm_args + sftp_args
+                
                 # Must disable BatchMode, else password interaction doesn't work
                 sftp_args = [cmd, '-oBatchMode=no'] + sftp_args
                 
-                retval, _ = ssh_exec_pass(self.password, sftp_args)
+                retval, _ = ssh_exec_pass(self.password, sftp_args,
+                                          suppress_known_hosts=self._allow_mitm)
                 if retval != 0:
                     raise Error('Command %s returned non-zero error status %s' % (sftp_args, retval))
             
@@ -524,7 +538,7 @@ class RobotpyInstaller(object):
             os.makedirs(self.pip_cache)
         
         cfg_filename = abspath(join(dirname(__file__), '.installer_config'))
-        self.ctrl = SshController(cfg_filename, username='admin', password='')
+        self.ctrl = SshController(cfg_filename, username='admin', password='', allow_mitm=True)
         
     def _get_opkg(self):
         return OpkgRepo(self.opkg_feed, self.opkg_arch, self.opkg_cache)
