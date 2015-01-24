@@ -260,6 +260,11 @@ class Error(Exception):
 class ArgError(Error):
     pass
 
+class SshExecError(Error):
+    def __init__(self, msg, retval):
+        super().__init__(msg)
+        self.retval = retval
+
 # Arguments to pass to SSH to allow a man in the middle attack
 mitm_args = ['-oStrictHostKeyChecking=no', '-oUserKnownHostsFile=/dev/null']
 
@@ -364,7 +369,7 @@ class SshController(object):
                 else:
                     subprocess.check_call(ssh_args)
             except subprocess.CalledProcessError as e:
-                raise Error(e)
+                raise SshExecError(e, e.returncode)
             
         else:
             cmd = shutil.which('ssh')
@@ -379,7 +384,8 @@ class SshController(object):
             retval, output = ssh_exec_pass(self.password, ssh_args, get_output,
                                            suppress_known_hosts=self._allow_mitm)
             if retval != 0:
-                raise Error('Command %s returned non-zero error status %s' % (ssh_args, retval))
+                raise SshExecError('Command %s returned non-zero error status %s' % (' '.join(ssh_args), retval),
+                                   retval)
             return output.decode('utf-8')
         
     
@@ -431,7 +437,7 @@ class SshController(object):
                 try:
                     subprocess.check_call(sftp_args)
                 except subprocess.CalledProcessError as e:
-                    raise Error(e)
+                    raise SshExecError(e, e.returncode)
                 
             else:
                 cmd = shutil.which('sftp')
@@ -447,7 +453,8 @@ class SshController(object):
                 retval, _ = ssh_exec_pass(self.password, sftp_args,
                                           suppress_known_hosts=self._allow_mitm)
                 if retval != 0:
-                    raise Error('Command %s returned non-zero error status %s' % (sftp_args, retval))
+                    raise SshExecError('Command %s returned non-zero error status %s' % (sftp_args, retval),
+                                       retval)
             
         finally:
             try:
