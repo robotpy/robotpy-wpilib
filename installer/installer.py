@@ -251,6 +251,7 @@ def ssh_exec_pass(password, args, capture_output=False, suppress_known_hosts=Fal
         os.close(pty_fd)
         
     pid, retval = os.waitpid(pid, 0)
+    retval = (retval & 0xff00) >> 8
     return retval, output
 
 class Error(Exception):
