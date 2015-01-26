@@ -14,7 +14,7 @@ class _LiveWindowComponent:
     be inserted, then renamed."""
     def __init__(self, subsystem, name, isSensor):
         self.subsystem = subsystem
-        self.name = name
+        self.name = str(name)
         self.isSensor = isSensor
 
 class LiveWindow:
