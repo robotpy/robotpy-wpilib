@@ -47,9 +47,6 @@ class Resource:
             if obj is not None and hasattr(obj, 'free'):
                 obj.free()
         
-        Resource._resource_objects.clear()
-        Resource._global_resources.clear()
-        
     @staticmethod
     def _add_global_resource(obj):
         Resource._global_resources.append(weakref.ref(obj))
