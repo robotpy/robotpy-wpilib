@@ -256,3 +256,6 @@ class TalonSRXParam:
     eSettingsChanged = 90
     eQuadFilterEn = 91
     ePidIaccum = 93
+
+TalonSRXParam_tostr = {getattr(TalonSRXParam, p): p for p in dir(TalonSRXParam) if not p.startswith('__')}
+

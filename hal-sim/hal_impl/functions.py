@@ -1348,17 +1348,17 @@ def c_TalonSRX_SetParam(handle, paramEnum, value):
 
 def c_TalonSRX_RequestParam(handle, paramEnum):
     params = hal_data['CAN'][handle.id]['params']
-    assert paramEnum in params, "Parameter %s not set!" # TODO: is this correct?
+    assert paramEnum in params, "Parameter %s not set!" % constants.TalonSRXParam_tostr[paramEnum] # TODO: is this correct?
     return params[paramEnum]
 
 def c_TalonSRX_GetParamResponse(handle, paramEnum):
     params = hal_data['CAN'][handle.id]['params']
-    assert paramEnum in params, "Parameter %s not set!" # TODO: is this correct?
+    assert paramEnum in params, "Parameter %s not set!" % constants.TalonSRXParam_tostr[paramEnum] # TODO: is this correct?
     return params[paramEnum]
 
 def c_TalonSRX_GetParamResponseInt32(handle, paramEnum):
     params = hal_data['CAN'][handle.id]['params']
-    assert paramEnum in params, "Parameter %s not set!" # TODO: is this correct?
+    assert paramEnum in params, "Parameter %s not set!" % constants.TalonSRXParam_tostr[paramEnum] # TODO: is this correct?
     return params[paramEnum]
 
 def c_TalonSRX_SetStatusFrameRate(handle, frameEnum, periodMs):
