@@ -169,6 +169,7 @@ class Joystick:
         example :func:`getX`).
 
         :param axis: The axis to read.
+        :type axis: :class:`Joystick.AxisType`
         :returns: The value of the axis.
         :rtype: float
         """
@@ -183,7 +184,7 @@ class Joystick:
         elif axis == self.AxisType.kThrottle:
             return self.getThrottle()
         else:
-            return 0.0
+            raise ValueError("Invalid axis specified! Must be one of wpilib.Joystick.AxisType, or use getRawAxis instead")
         
     def getAxisCount(self):
         """For the current joystick, return the number of axis"""
@@ -280,7 +281,7 @@ class Joystick:
         elif button == self.ButtonType.kTop:
             return self.getTop()
         else:
-            return False
+            raise ValueError("Invalid button specified! Must be one of wpilib.Joystick.ButtonType, or use getRawButton instead")
 
     def getMagnitude(self):
         """Get the magnitude of the direction vector formed by the joystick's
@@ -347,7 +348,7 @@ class Joystick:
         elif type == self.RumbleType.kRightRumble_val:
             self.rightRumble = int(value*65535)
         else:
-            raise ValueError("Invalid Rumble type: {}".format(type))
+            raise ValueError("Invalid wpilib.Joystick.RumbleType: {}".format(type))
         self.flush_outputs()
 
     def setOutput(self, outputNumber, value):
