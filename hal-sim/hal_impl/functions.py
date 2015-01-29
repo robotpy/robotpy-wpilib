@@ -9,6 +9,9 @@ from .data import hal_data
 from hal_impl.sim_hooks import SimHooks
 from hal_impl.pwm_helpers import reverseByType
 
+import logging
+logger = logging.getLogger('hal')
+
 hooks = SimHooks()
 
 def reset_hal():
@@ -228,6 +231,7 @@ def getFPGAButton(status):
     return hal_data['fpga_button']
 
 def HALSetErrorData(errors, errorsLength, wait_ms):
+    logger.warn(errors.decode('utf-8').strip())
     hal_data['error_data'] = errors
 
 def HALGetControlWord():
