@@ -133,7 +133,7 @@ def _reset_hal_data(hooks):
         # povs are stored as integer values
         'joysticks': [{
             'has_source': False,
-            'buttons': [False]*12, # numbered 0-11
+            'buttons': [None] + [False]*12, # numbered 1-12 -- 0 is ignored
             'axes':    [0]*constants.kMaxJoystickAxes,  # x is 0, y is 1, .. 
             'povs':    [-1]*constants.kMaxJoystickPOVs  # integers
         
