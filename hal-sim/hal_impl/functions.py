@@ -1331,6 +1331,7 @@ def c_TalonSRX_Create(deviceNumber, controlPeriodMs):
         'reset_count': 0,
         'reset_flags': 0,
         'firmware_version': 0,
+        'override_limit_switch': 0,
         
         'feedback_device': None,
         'rev_motor_during_close_loop': None,
@@ -1488,10 +1489,10 @@ def c_TalonSRX_GetFirmVers(handle):
     return hal_data['CAN'][handle.id]['firmware_version']
 
 def c_TalonSRX_SetDemand(handle, param):
-    hal_data['CAN']['value'] = param
+    hal_data['CAN'][handle.id]['value'] = param
 
 def c_TalonSRX_SetOverrideLimitSwitchEn(handle, param):
-    hal_data['CAN'][handle.id]['']
+    hal_data['CAN'][handle.id]['override_limit_switch'] = param
 
 def c_TalonSRX_SetFeedbackDeviceSelect(handle, param):
     hal_data['CAN'][handle.id]['feedback_device'] = param
@@ -1507,7 +1508,7 @@ def c_TalonSRX_SetModeSelect(handle, param):
 
 def c_TalonSRX_SetModeSelect2(handle, modeSelect, demand):
     hal_data['CAN'][handle.id]['mode_select'] = modeSelect
-    hal_data['CAN']['value'] = demand
+    hal_data['CAN'][handle.id]['value'] = demand
 
 def c_TalonSRX_SetProfileSlotSelect(handle, param):
     hal_data['CAN'][handle.id]['profile_slot_select'] = param
