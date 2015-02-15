@@ -4,14 +4,24 @@
 
 from hal import constants
 import sys
+import copy
 
 import logging
 logger = logging.getLogger('hal.data')
 
-#: Dictionary of all robot data
+#: Dictionary of all robot data (input and output data)
 hal_data = {
     # don't fill this out, fill out the version in reset_hal_data
 }
+
+#: A dictionary with only hal input data
+#: -> this allows you to create a dictionary that you can do update_hal_data
+#:    with, without worrying that you're overwriting any values that the robot
+#:    might set something and cause a weird race condition
+hal_in_data = {
+    # don't fill this out
+}
+
 
 #: A multiwait object. Use hal.giveMultiWait() to set this when
 #: driver station related data has been updated
@@ -67,7 +77,17 @@ class NotifyDict(dict):
                 cb(k, v)
             except:
                 logger.exception("BAD INTERNAL ERROR")
-        
+    
+
+class IN:
+    '''Marks a variable in the dict as something the simulator can set'''
+    def __init__(self, value):
+        self.value = value
+  
+class OUT:
+    '''Marks a variable in the dict as something the robot will set'''
+    def __init__(self, value):
+        self.value = value
 
 def _reset_hal_data(hooks):
     '''
@@ -94,31 +114,33 @@ def _reset_hal_data(hooks):
     hal_newdata_sem = None
     
     hal_data.clear()
+    hal_in_data.clear()
+    
     hal_data.update({
 
-        'alliance_station': constants.kHALAllianceStationID_red1,
+        'alliance_station': IN(constants.kHALAllianceStationID_red1),
 
         'time': {
-            'has_source': False,
+            'has_source': IN(False),
 
             # Used to compute getFPGATime
-            'program_start': hooks.getTime(),
+            'program_start': OUT(hooks.getTime()),
 
             # Used to compute getMatchTime -- set to return value of getFPGATime()
-            'match_start': None,
+            'match_start': OUT(None),
         },
         
 
 
         # You should not modify these directly, instead use the mode_helpers!
         'control': {
-            'has_source': False,
-            'enabled': False,
-            'autonomous': False,
-            'test': False,
-            'eStop': False,
-            'fms_attached': False,
-            'ds_attached': False
+            'has_source':   IN(False),
+            'enabled':      IN(False),
+            'autonomous':   IN(False),
+            'test':         IN(False),
+            'eStop':        IN(False),
+            'fms_attached': IN(False),
+            'ds_attached':  IN(False),
         },
                      
         # key:   resource type
@@ -132,80 +154,80 @@ def _reset_hal_data(hooks):
         # axes are stored as values between -1 and 1
         # povs are stored as integer values
         'joysticks': [{
-            'has_source': False,
-            'buttons': [None] + [False]*12, # numbered 1-12 -- 0 is ignored
-            'axes':    [0]*constants.kMaxJoystickAxes,  # x is 0, y is 1, .. 
-            'povs':    [-1]*constants.kMaxJoystickPOVs  # integers
+            'has_source': IN(False),
+            'buttons': IN([None] + [False]*12), # numbered 1-12 -- 0 is ignored
+            'axes':    IN([0]*constants.kMaxJoystickAxes),  # x is 0, y is 1, .. 
+            'povs':    IN([-1]*constants.kMaxJoystickPOVs)  # integers
         
         } for _ in range(6)],
 
         
 
-        'fpga_button': False,
-        'error_data': None,
+        'fpga_button': IN(False),
+        'error_data': OUT(None),
 
         # built-in accelerometer on roboRIO
         'accelerometer': {
-            'has_source': False,
-            'active': False,
-            'range': 0,
-            'x': 0,
-            'y': 0,
-            'z': 0
+            'has_source': IN(False),
+            'active':   OUT(False),
+            'range':    OUT(0),
+            'x':        IN(0),
+            'y':        IN(0),
+            'z':        IN(0),
         },
 
         # global for all
-        'analog_sample_rate': 1024.0, # need a better default
+        'analog_sample_rate': OUT(1024.0), # need a better default
 
         # 8 analog channels, each is a dictionary.
 
         'analog_out': [NotifyDict({
-            'initialized': False,
-            'voltage': 0.0
+            'initialized': OUT(False),
+            'voltage': OUT(0.0),
 
         }) for _ in range(8)],
 
         # TODO: make this easier to use
         'analog_in': [NotifyDict({
-            'has_source': False,
-            'initialized': False,
-            'avg_bits': 0,
-            'oversample_bits': 0,
-            'value': 0,
-            'avg_value': 0,
-            'voltage': 0,
-            'avg_voltage': 0,
-            'lsb_weight': 1,    # TODO: better default
-            'offset': 65535,    # TODO: better default
+            'has_source':       IN(False),
+            'initialized':      OUT(False),
+            'avg_bits':         OUT(0),
+            'oversample_bits':  OUT(0),
+            'value':            IN(0),
+            'avg_value':        IN(0),
+            'voltage':          IN(0),
+            'avg_voltage':      IN(0),
+            'lsb_weight':       IN(1),    # TODO: better default
+            'offset':           IN(65535),    # TODO: better default
 
-            'accumulator_initialized': False,
-            'accumulator_center': 0,
-            'accumulator_value': 0,
-            'accumulator_count': 1, # don't make zero, or divide by zero error occurs
-            'accumulator_deadband': 0,
+            'accumulator_initialized': OUT(False),
+            'accumulator_center':   OUT(0),
+            'accumulator_value':    IN(0),
+            'accumulator_count':    IN(1), # don't make zero, or divide by zero error occurs
+            'accumulator_deadband': OUT(0),
 
         }) for _ in range(8)],
 
         'analog_trigger': [{
-            'has_source': False,
-            'initialized': False,
-            'port': 0,
+            'has_source':   IN(False),
+            'initialized':  OUT(False),
+            'port':         OUT(0),
             # trigger values
-            'trig_lower': None,
-            'trig_upper': None,
-            'trig_type': None, # 'averaged' or 'filtered'
-            'trig_state': False,
+            'trig_lower':   OUT(None),
+            'trig_upper':   OUT(None),
+            'trig_type':    OUT(None), # 'averaged' or 'filtered'
+            'trig_state':   OUT(False), # TODO: might be BOTH
 
         } for _ in range(8)],
 
         # compressor control is here
         'compressor': NotifyDict({
-            'has_source': False,
-            'initialized': False,
-            'on': False,
-            'closed_loop_enabled': False,
-            'pressure_switch': False,
-            'current': 0.0
+            'has_source':           IN(False),
+            'initialized':          OUT(False),
+            'on':                   IN(False),
+            'closed_loop_enabled':  OUT(False),
+            'pressure_switch':      IN(False),
+            'current':              IN(0.0)
         }),
                 
         # digital stuff here
@@ -213,123 +235,190 @@ def _reset_hal_data(hooks):
         # pwm contains dicts with keys: value, period_scale
         # -> value isn't sane
         'pwm': [NotifyDict({
-            'initialized': False,
-            'type': None,   # string value set by HALReport: jaguar, victor, talon, etc
-            'raw_value': 0, # raw value that is used by wpilib represents the hardware PWM value
-            'value':0,      # value is the PWM value that user set from -1 to 1 (but it might not be exactly what you expect)
-            'period_scale': None,
-            'zero_latch': False,
+            'initialized':  OUT(False),
+            'type':         OUT(None),   # string value set by HALReport: jaguar, victor, talon, etc
+            'raw_value':    OUT(0), # raw value that is used by wpilib represents the hardware PWM value
+            'value':        OUT(0),      # value is the PWM value that user set from -1 to 1 (but it might not be exactly what you expect)
+            'period_scale': OUT(None),
+            'zero_latch':   OUT(False),
 
         }) for _ in range(20)],
 
-        'pwm_loop_timing': 40, # this is the value the roboRIO returns
+        'pwm_loop_timing': IN(40), # this is the value the roboRIO returns
                
         # for pwm attached to a DIO
-        'd0_pwm': [None]*6, # dict with keys: duty_cycle, pin
-        'd0_pwm_rate': None,
+        'd0_pwm':       OUT([None]*6), # dict with keys: duty_cycle, pin
+        'd0_pwm_rate':  OUT(None),
                 
         'relay': [NotifyDict({
-            'initialized': False,
-            'fwd': False,
-            'rev': False,
+            'initialized': OUT(False),
+            'fwd':         OUT(False),
+            'rev':         OUT(False),
 
         }) for _ in range(8)],
 
         #Keep track of used MXP dio ports
         'mxp': [{
-            'initialized': False,
+            'initialized': OUT(False),
 
         } for _ in range(16)],
                 
         'dio': [NotifyDict({
-            'has_source': False,
-            'initialized': False,
-            'value': False,
-            'pulse_length': None,
-            'is_input': False
+            'has_source':   IN(False),
+            'initialized':  OUT(False),
+            'value':        IN(False), # technically both
+            'pulse_length': OUT(None),
+            'is_input':     OUT(False)
             
         }) for _ in range(26)],
         
         'encoder': [{
-            'has_source': False,
-            'initialized': False,
-            'config': {}, # dictionary of pins/modules
-            'count': 0,
-            'period': sys.float_info.max,
-            'max_period': 0,
-            'direction': False,
-            'reverse_direction': False,
-            'samples_to_average': 0,
+            'has_source':         IN(False),
+            'initialized':        OUT(False),
+            'config':             OUT({}), # dictionary of pins/modules
+            'count':              IN(0),
+            'period':             IN(sys.float_info.max),
+            'max_period':         OUT(0),
+            'direction':          IN(False),
+            'reverse_direction':  OUT(False),
+            'samples_to_average': OUT(0),
 
         } for _ in range(4)],
         
         # There is a lot of config involved here... 
         'counter': [{
-            'has_source': False,
-            'initialized': False,
-            'count': 0,
-            'period': sys.float_info.max,
-            'max_period': 0,
-            'direction': False,
-            'reverse_direction': False,
-            'samples_to_average': 0,
-            'mode': 0,
-            'average_size': 0,
+            'has_source':         IN(False),
+            'initialized':        OUT(False),
+            'count':              IN(0),
+            'period':             OUT(sys.float_info.max),
+            'max_period':         OUT(0),
+            'direction':          IN(False),
+            'reverse_direction':  OUT(False),
+            'samples_to_average': OUT(0),
+            'mode':               OUT(0),
+            'average_size':       OUT(0),
             
-            'up_source_channel': 0,
-            'up_source_trigger': False,
-            'down_source_channel': 0,
-            'down_source_trigger': False,
+            'up_source_channel':  OUT(0),
+            'up_source_trigger':  OUT(False),
+            'down_source_channel': OUT(0),
+            'down_source_trigger': OUT(False),
             
-            'update_when_empty': False,
+            'update_when_empty':  OUT(False),
             
-            'up_rising_edge': False,
-            'up_falling_edge': False,
-            'down_rising_edge': False,
-            'down_falling_edge': False,
+            'up_rising_edge':     OUT(False),
+            'up_falling_edge':    OUT(False),
+            'down_rising_edge':   OUT(False),
+            'down_falling_edge':  OUT(False),
             
-            'pulse_length_threshold': 0
+            'pulse_length_threshold': OUT(0),
             
         } for _ in range(8)],
         
-        'user_program_state': None, # starting, disabled, autonomous, teleop, test
+        'user_program_state': OUT(None), # starting, disabled, autonomous, teleop, test
 
         'power': {
-            'has_source': False,
-            'vin_voltage': 0,
-            'vin_current': 0,
-            'user_voltage_6v': 6.0,
-            'user_current_6v': 0,
-            'user_active_6v': False,
-            'user_faults_6v': 0,
-            'user_voltage_5v': 5.0,
-            'user_current_5v': 0,
-            'user_active_5v': False,
-            'user_faults_5v': 0,
-            'user_voltage_3v3': 3.3,
-            'user_current_3v3': 0,
-            'user_active_3v3': False,
-            'user_faults_3v3': 0,
+            'has_source':       IN(False),
+            'vin_voltage':      IN(0),
+            'vin_current':      IN(0),
+            'user_voltage_6v':  IN(6.0),
+            'user_current_6v':  IN(0),
+            'user_active_6v':   IN(False),
+            'user_faults_6v':   IN(0),
+            'user_voltage_5v':  IN(5.0),
+            'user_current_5v':  IN(0),
+            'user_active_5v':   IN(False),
+            'user_faults_5v':   IN(0),
+            'user_voltage_3v3': IN(3.3),
+            'user_current_3v3': IN(0),
+            'user_active_3v3':  IN(False),
+            'user_faults_3v3':  IN(0),
         },
 
         # solenoid values are True, False 
         'solenoid': [NotifyDict({
-            'initialized': False,
-            'value': None
-        })]*8,
+            'initialized': OUT(False),
+            'value':       OUT(None)
+        }) for _ in range(8)],
 
         'pdp': {
-            'has_source': False,
-            'temperature': 0,
-            'voltage': 0,
-            'current': [0]*16,
-            'total_current': 0,
-            'total_power': 0,
-            'total_energy': 0
+            'has_source':    IN(False),
+            'temperature':   IN(0),
+            'voltage':       IN(0),
+            'current':       IN([0]*16),
+            'total_current': IN(0),
+            'total_power':   IN(0),
+            'total_energy':  IN(0)
         },
         
         # The key is the device number as an integer. The value is a dictionary
         # that is specific to each CAN device
         'CAN': NotifyDict(),
     })
+    
+    # Ok, filter out the data into a 'both' and 'in' dictionary, removing
+    # the OUT and IN objects
+    _filter_hal_data(hal_data, hal_in_data)
 
+    
+def _filter_hal_data(both_dict, in_dict):
+    
+    for k, v in both_dict.items():
+        
+        if isinstance(v, IN):
+            # strip 
+            both_dict[k] = v.value
+            in_dict[k] = copy.deepcopy(v.value)
+            
+        elif isinstance(v, OUT):
+            # strip
+            both_dict[k] = v.value
+        
+        elif isinstance(v, dict):
+            
+            v_in = {}
+            _filter_hal_data(v, v_in)
+            if len(v_in) > 0:
+                in_dict[k] = v_in
+        
+        elif isinstance(v, list):
+        
+            v_in = _filter_hal_list(v)
+            if v_in:
+                in_dict[k] = v_in
+        
+        else:
+            raise ValueError("Must be dict, list, IN or OUT; %s: %s" % (k, v))
+
+def _filter_hal_list(both_list):
+    
+    in_list = []
+    
+    for v in both_list:
+        if not isinstance(v, dict):
+            raise ValueError("lists can only contain dicts, otherwise must be contained in IN or OUT")
+        
+        v_in = {}
+        _filter_hal_data(v, v_in)
+        
+        if len(v_in) != 0:
+            in_list.append(v_in)
+    
+    assert len(in_list) == 0 or len(in_list) == len(both_list)
+    return in_list
+
+def update_hal_data(in_dict, out_dict=hal_data):
+    '''Given a dictionary of inputs, update the hal_data'''
+    
+    for k, v in in_dict.items():
+        if isinstance(v, dict):
+            update_hal_data(v, out_dict[k])
+        elif isinstance(v, list):
+            v_out = out_dict[k]
+            for i, vv in enumerate(v):
+                if isinstance(vv, dict):
+                    update_hal_data(vv, v_out[i])
+                else:
+                    # This works, lists of lists are not allowed
+                    v_out[i] = vv
+        else:
+            out_dict[k] = v
