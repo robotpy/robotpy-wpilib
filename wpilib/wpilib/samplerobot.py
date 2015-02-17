@@ -38,6 +38,10 @@ class SampleRobot(RobotBase):
     #: is recommended to use this instead of print statements.
     logger = logging.getLogger("robot")
 
+    def prestart(self):
+        """Don't immediately say that the robot's ready to be enabled, see below"""
+        pass
+
     def robotInit(self):
         """Robot-wide initialization code should go here.
 
@@ -96,6 +100,14 @@ class SampleRobot(RobotBase):
         called. If it has not been overridden by a user subclass (i.e. the
         default version runs), then the robotInit(), disabled(), autonomous()
         and operatorControl() methods will be called.
+        
+        If you override this function, you must call ``hal.HALNetworkCommunicationObserveUserProgramStarting()``
+        to indicate that your robot is ready to be enabled, as it will not
+        be called for you.
+        
+        .. warning:: Nobody actually wants to override this function. Neither
+                     do you.
+        
         """
         self._no_robot_main = True
 
@@ -117,6 +129,12 @@ class SampleRobot(RobotBase):
             # first and one-time initialization
             LiveWindow.setEnabled(False)
             self.robotInit()
+            
+            #We call this now (not in prestart like default) so that the robot
+            #won't enable until the initialization has finished. This is useful
+            #because otherwise it's sometimes possible to enable the robot before
+            #the code is ready.
+            hal.HALNetworkCommunicationObserveUserProgramStarting()
 
             while True:
                 if self.isDisabled():
