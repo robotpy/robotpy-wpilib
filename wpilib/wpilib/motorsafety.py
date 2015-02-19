@@ -6,6 +6,7 @@
 #----------------------------------------------------------------------------
 
 import weakref
+import threading
 
 from .robotstate import RobotState
 from .timer import Timer
@@ -27,6 +28,7 @@ class MotorSafety:
     """
     DEFAULT_SAFETY_EXPIRATION = 0.1
     helpers = weakref.WeakSet()
+    helpers_lock = threading.Lock()
 
     def __init__(self):
         """The constructor for a MotorSafety object.
@@ -39,7 +41,8 @@ class MotorSafety:
         self.safetyEnabled = False
         self.safetyExpiration = MotorSafety.DEFAULT_SAFETY_EXPIRATION
         self.safetyStopTime = Timer.getFPGATimestamp()
-        MotorSafety.helpers.add(self)
+        with MotorSafety.helpers_lock:
+            MotorSafety.helpers.add(self)
 
     def feed(self):
         """Feed the motor safety object.
@@ -111,7 +114,6 @@ class MotorSafety:
         This static method is called periodically to poll all the motors and
         stop any that have timed out.
         """
-        # TODO: these should be synchronized with the setting methods
-        # in case it's called from a different thread
-        for msh in MotorSafety.helpers:
-            msh.check()
+        with MotorSafety.helpers_lock:
+            for msh in MotorSafety.helpers:
+                msh.check()
