@@ -19,19 +19,19 @@ class SendableChooser(Sendable):
     it into the SmartDashboard to have a list of options appear on the
     laptop. Once autonomous starts, simply ask the SendableChooser what
     the selected value is.
-    
+
     Example::
-    
+
         # This shows the user two options on the SmartDashboard
         chooser = wpilib.SendableChooser()
-        chooser.addOption('option1', '1')
-        chooser.addOption('option2', '2')
-        
+        chooser.addObject('option1', '1')
+        chooser.addObject('option2', '2')
+
         wpilib.SmartDashboard.putData('Choice', chooser)
-        
+
         # .. later, ask to see what the user selected?
         value = chooser.getSelected()
-    
+
     """
 
     # The key for the default value
