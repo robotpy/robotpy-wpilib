@@ -75,6 +75,21 @@ def set_disabled():
     hal_data['time']['match_start'] = None
     
     notify_new_ds_data()
+    
+def set_estop():
+    '''Only designed to be called on transition'''
+    
+    hal_data['control'].update({
+        'autonomous': False,
+        'test': False,
+        'enabled': False,
+        'ds_attached': True,
+        'eStop': True
+    })
+    
+    hal_data['time']['match_start'] = None
+    
+    notify_new_ds_data()
         
 def set_mode(new_mode, new_enabled):
     '''

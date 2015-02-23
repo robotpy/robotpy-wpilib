@@ -135,12 +135,12 @@ def _reset_hal_data(hooks):
         # You should not modify these directly, instead use the mode_helpers!
         'control': {
             'has_source':   IN(False),
-            'enabled':      IN(False),
-            'autonomous':   IN(False),
-            'test':         IN(False),
-            'eStop':        IN(False),
+            'enabled':      OUT(False),
+            'autonomous':   OUT(False),
+            'test':         OUT(False),
+            'eStop':        OUT(False),
             'fms_attached': IN(False),
-            'ds_attached':  IN(False),
+            'ds_attached':  OUT(False),
         },
                      
         # key:   resource type
@@ -408,7 +408,6 @@ def _filter_hal_list(both_list):
 
 def update_hal_data(in_dict, out_dict=hal_data):
     '''Given a dictionary of inputs, update the hal_data'''
-    
     for k, v in in_dict.items():
         if isinstance(v, dict):
             update_hal_data(v, out_dict[k])
