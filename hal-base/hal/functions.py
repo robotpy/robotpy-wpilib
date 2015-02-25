@@ -36,9 +36,13 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
     def outer(*args, **kwargs):
         status = C.c_int32(0)
         rv = _inner(*args, status=status, **kwargs)
-        if status.value != 0:
+        if status.value == 0:
+            return rv
+        elif status.value < 0:
             raise HALError(getHALErrorMessage(status.value))
-        return rv
+        elif status.value > 0:
+            warnings.warn(getHALErrorMessage(status.value))
+            return rv
     
     # Support introspection for API validation
     if hasattr(_inner, 'fndata'):
