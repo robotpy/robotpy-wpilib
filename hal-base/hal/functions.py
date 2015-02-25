@@ -41,7 +41,7 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
         elif status.value < 0:
             raise HALError(getHALErrorMessage(status.value))
         elif status.value > 0:
-            warnings.warn(getHALErrorMessage(status.value))
+            warnings.warn(getHALErrorMessage(status.value), stacklevel=2)
             return rv
     
     # Support introspection for API validation
