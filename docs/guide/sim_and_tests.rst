@@ -1,3 +1,6 @@
+
+.. _sim_testing:
+
 Simulation and Testing
 ======================
 
@@ -7,3 +10,8 @@ project provides tools to make those types of things easier through the
 `pyfrc <https://github.com/robotpy/pyfrc>`_ project.
 
 To get started, check out the `pyfrc documentation <http://pyfrc.readthedocs.org>`_.
+
+Next Steps
+----------
+
+Learn more about some :ref:`best_practices` when creating robot code. 

@@ -71,7 +71,7 @@ This is currently experimental, and will be updated in the coming weeks. If you 
 Next steps
 ----------
 
-Next we'll discuss some topic that will be decided upon in the future, if someone writes more documentation here. Until then, remember that the FIRST documentation and our example programs are great resources to learn more about programming with WPILib.
+The next section discusses a very important part of writing robot code -- :ref:`sim_testing`.
 
 
 
