@@ -11,6 +11,13 @@ eliminate possible failures.
 
 If you have things to add to this section, feel free to submit a pull request!
 
+Make sure you're running the latest version of RobotPy!
+-------------------------------------------------------
+
+Seriously. We try to fix bugs as we find them, and if you haven't updated 
+recently, check to see if you're out of date! This is particularly true
+this year.
+
 Don't use the print statement/logger excessively
 ------------------------------------------------
 
