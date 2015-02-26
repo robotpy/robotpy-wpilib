@@ -7,7 +7,35 @@ This section has a selection of things that other teams have found to be good
 things to keep in mind to build robot code that works consistently, and to 
 eliminate possible failures.
 
+.. contents::
+
 If you have things to add to this section, feel free to submit a pull request!
+
+Don't use the print statement/logger excessively
+------------------------------------------------
+
+Printing output can easily take up a large proportion of your robot code
+CPU usage if you do it often enough. Try to limit the amount of things
+that you print, and your robot will perform better.
+
+Instead, you may want to use this pattern to only print once every half
+second (or whatever arbitrary period)::
+
+    # Put this in robotInit
+    self.printTimer = wpilib.Timer()
+    self.printTimer.start()
+
+    .. 
+
+    # Put this where you want to print
+    if self.printTimer.hasPeriodPassed(0.5):
+        self.logger.info("Something happened")
+
+
+Remember, during a competition you can't actually see the output of Netconsole
+(it gets blocked by the field network), so there's not much point in using
+these except for diagnostics off the field. In a competition, disable it.
+
 
 Don't die during the competition!
 ---------------------------------
@@ -98,6 +126,6 @@ With these thoughts in mind, here's an example of what I mean::
           around.
 
 Next Steps
-----------
+==========
 
 Next we'll discuss some topic that will be decided upon in the future, if someone writes more documentation here. Until then, remember that the FIRST documentation and our example programs are great resources to learn more about programming with WPILib.
