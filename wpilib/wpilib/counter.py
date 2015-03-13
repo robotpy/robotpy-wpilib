@@ -143,9 +143,13 @@ class Counter(SensorBase):
         #Set sources
         if upSource is not None:
             self.setUpSource(upSource)
+        else:
+            self.upSource = None
 
         if downSource is not None:
             self.setDownSource(downSource)
+        else:
+            self.downSource = None
 
         # when given two sources, set edges
         if upSource is not None and downSource is not None:
