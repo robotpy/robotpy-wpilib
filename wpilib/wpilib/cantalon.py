@@ -1,6 +1,8 @@
 import hal
 import weakref
 
+from .livewindow import LiveWindow
+from .livewindowsendable import LiveWindowSendable
 from .motorsafety import MotorSafety
 from .resource import Resource
 from .timer import Timer
@@ -10,7 +12,7 @@ __all__ = ["CANTalon"]
 def _freeCANTalon(handle):
     hal.TalonSRX_Destroy(handle)
 
-class CANTalon(MotorSafety):
+class CANTalon(LiveWindowSendable, MotorSafety):
     """Talon SRX device as a CAN device
 
     The TALON SRX is designed to instrument all runtime signals periodically.
@@ -151,6 +153,10 @@ class CANTalon(MotorSafety):
         self.setPoint = 0.0
         self.setProfile(self.profile)
         self._applyControlMode(self.ControlMode.PercentVbus)
+        
+        LiveWindow.addActuatorChannel("CANTalonSRX", deviceNumber, self)
+        hal.HALReport(hal.HALUsageReporting.kResourceType_CANTalonSRX,
+                      deviceNumber)
         
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
@@ -758,3 +764,25 @@ class CANTalon(MotorSafety):
 
     def getDescription(self):
         return "CANTalon ID %d" % self.deviceNumber
+    
+    # Live Window code, only does anything if live window is activated.
+
+    def getSmartDashboardType(self):
+        return "Speed Controller"
+
+    def updateTable(self):
+        table = self.getTable()
+        if table is not None:
+            table.putNumber("Value", self.get())
+
+    def valueChanged(self, itable, key, value, bln):
+        self.set(float(value))
+
+    def startLiveWindowMode(self):
+        self.set(0) # Stop for safety
+        super().startLiveWindowMode()
+
+    def stopLiveWindowMode(self):
+        super().stopLiveWindowMode()
+        self.set(0) # Stop for safety
+    
