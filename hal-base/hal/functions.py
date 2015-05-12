@@ -342,11 +342,11 @@ _spiTransaction = _RETFUNC("spiTransaction", C.c_int32, ("port", C.c_uint8),
 def spiTransaction(port, data_to_send):
     size = len(data_to_send)
     send_buffer = (C.c_uint8 * size)(*data_to_send)
-    recv_buffer = C.c_uint8 * size
+    recv_buffer = (C.c_uint8 * size)()
     rv = _spiTransaction(port, send_buffer, recv_buffer, size)
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
-    return [x for x in recv_buffer]
+    return recv_buffer[:rv]
 
 _spiWrite = _RETFUNC("spiWrite", C.c_int32, ("port", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
 @hal_wrapper
