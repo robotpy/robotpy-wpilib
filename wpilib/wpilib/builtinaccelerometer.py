@@ -32,6 +32,9 @@ class BuiltInAccelerometer(LiveWindowSendable):
                       "Built-in accelerometer")
         LiveWindow.addSensor("BuiltInAccel", 0, self)
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+
     def setRange(self, range):
         """Set the measuring range of the accelerometer.
 

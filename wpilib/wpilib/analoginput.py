@@ -56,6 +56,7 @@ class AnalogInput(SensorBase):
                       channel)
 
     def free(self):
+        LiveWindow.removeComponent(self)
         if self.channel is None:
             return
         AnalogInput.channels.free(self.channel)

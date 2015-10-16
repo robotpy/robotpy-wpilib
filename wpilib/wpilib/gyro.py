@@ -98,6 +98,7 @@ class Gyro(SensorBase):
         """Delete (free) the accumulator and the analog components used for the
         gyro.
         """
+        LiveWindow.removeComponent(self)
         if self.analog is not None:
             self.analog.free()
             self.analog = None

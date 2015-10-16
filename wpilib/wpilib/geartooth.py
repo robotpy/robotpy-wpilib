@@ -48,6 +48,10 @@ class GearTooth(Counter):
         LiveWindow.addSensorChannel("GearTooth", self.upSource.getChannel(),
                                     self)
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+        super().free()
+
     # Live Window code, only does anything if live window is activated.
 
     def getSmartDashboardType(self):

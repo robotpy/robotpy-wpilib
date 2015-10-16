@@ -50,6 +50,10 @@ class Talon(SafePWM):
         hal.HALReport(hal.HALUsageReporting.kResourceType_Talon,
                       self.getChannel())
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+        super().free()
+
     def set(self, speed, syncGroup=0):
         """Set the PWM value.
 

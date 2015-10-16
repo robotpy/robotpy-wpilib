@@ -42,6 +42,7 @@ class AnalogOutput(SensorBase):
     def free(self):
         """Channel destructor.
         """
+        LiveWindow.removeComponent(self)
         if self.channel is None:
             return
         AnalogOutput.channels.free(self.channel)

@@ -168,6 +168,7 @@ class CANTalon(LiveWindowSendable, MotorSafety):
         return self._handle
 
     def free(self):
+        LiveWindow.removeComponent(self)
         self._handle_finalizer()
 
     def pidWrite(self, output):

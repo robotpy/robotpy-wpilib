@@ -232,6 +232,7 @@ class Encoder(SensorBase):
         return self.encodingScale
 
     def free(self):
+        LiveWindow.removeComponent(self)
         if self.aSource is not None and self.allocatedA:
             self.aSource.free()
             self.allocatedA = False

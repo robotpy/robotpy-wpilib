@@ -61,6 +61,10 @@ class ADXL345_I2C(SensorBase):
 
         LiveWindow.addSensor("ADXL345_I2C", port, self)
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+        super().free()
+
     # Accelerometer interface
 
     def setRange(self, range):

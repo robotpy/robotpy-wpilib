@@ -82,8 +82,16 @@ class LiveWindow:
                     LiveWindow.firstTime = False
                 Scheduler.getInstance().disable()
                 Scheduler.getInstance().removeAll()
+                bad_components = []
                 for component in LiveWindow.components.keys():
-                    component.startLiveWindowMode()
+                    try:
+                        component.startLiveWindowMode()
+                    except Exception as e:
+                        logger.error("Exception running startLiveWindowMode() on {}, removing from component list.".format(component))
+                        logger.exception(e)
+                        bad_components.append(component)
+                for component in bad_components:
+                    del(LiveWindow.components[component])
             else:
                 logger.info("Stopping live window mode.")
                 for component in LiveWindow.components.keys():
@@ -181,3 +189,14 @@ class LiveWindow:
                 "Ungrouped",
                 "%s[%s,%s]" % (moduleType, moduleNumber, channel),
                 component)
+
+    @staticmethod
+    def removeComponent(component):
+        """Removes a component from LiveWindow.
+
+        :param component: The reference to the object being removed.
+        """
+        if component in LiveWindow.components:
+            if LiveWindow.components[component].isSensor:
+                LiveWindow.sensors.remove(component)
+            del(LiveWindow.components[component])
