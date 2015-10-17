@@ -15,7 +15,7 @@ def hal_wrapper(f):
     '''
     
     wrapped = globals()['_' + f.__name__]
-    if hasattr(f, 'fndata'):
+    if hasattr(wrapped, 'fndata'):
         f.fndata = wrapped.fndata
     return f
 
@@ -73,24 +73,16 @@ SEMAPHORE_WAIT_FOREVER = _VAR("SEMAPHORE_WAIT_FOREVER", C.c_int32)
 SEMAPHORE_EMPTY = _VAR("SEMAPHORE_EMPTY", C.c_uint32)
 SEMAPHORE_FULL = _VAR("SEMAPHORE_FULL", C.c_uint32)
 
-initializeMutexRecursive = _RETFUNC("initializeMutexRecursive", MUTEX_ID)
 initializeMutexNormal = _RETFUNC("initializeMutexNormal", MUTEX_ID)
 deleteMutex = _RETFUNC("deleteMutex", None, ("sem", MUTEX_ID))
 takeMutex = _RETFUNC("takeMutex", C.c_int8, ("sem", MUTEX_ID))
 tryTakeMutex = _RETFUNC("tryTakeMutex", C.c_int8, ("sem", MUTEX_ID))
 giveMutex = _RETFUNC("giveMutex", C.c_int8, ("sem", MUTEX_ID))
 
-initializeSemaphore = _RETFUNC("initializeSemaphore", SEMAPHORE_ID,
-                               ("initial_value", C.c_uint32))
-deleteSemaphore = _RETFUNC("deleteSemaphore", None, ("sem", SEMAPHORE_ID))
-takeSemaphore = _RETFUNC("takeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
-tryTakeSemaphore = _RETFUNC("tryTakeSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
-giveSemaphore = _RETFUNC("giveSemaphore", C.c_int8, ("sem", SEMAPHORE_ID))
-
 initializeMultiWait = _RETFUNC("initializeMultiWait", MULTIWAIT_ID)
 deleteMultiWait = _RETFUNC("deleteMultiWait", None, ("sem", MULTIWAIT_ID))
 takeMultiWait = _RETFUNC("takeMultiWait", C.c_int8, ("sem", MULTIWAIT_ID),
-                         ("mutex", MUTEX_ID), ("timeout", C.c_int32))
+                         ("mutex", MUTEX_ID))
 giveMultiWait = _RETFUNC("giveMultiWait", C.c_int8, ("sem", MULTIWAIT_ID))
 
 #############################################################################
@@ -380,8 +372,6 @@ spiSetChipSelectActiveHigh = _STATUSFUNC("spiSetChipSelectActiveHigh", None, ("p
 spiSetChipSelectActiveLow = _STATUSFUNC("spiSetChipSelectActiveLow", None, ("port", C.c_uint8))
 spiGetHandle = _RETFUNC("spiGetHandle", C.c_int32, ("port", C.c_uint8));
 spiSetHandle = _RETFUNC("spiSetHandle", None, ("port", C.c_uint8), ("handle", C.c_int32))
-spiGetSemaphore = _RETFUNC("spiGetSemaphore", MUTEX_ID, ("port", C.c_uint8))
-spiSetSemaphore = _RETFUNC("spiSetSemaphore", None, ("port", C.c_uint8), ("semaphore", MUTEX_ID))
 
 i2CInitialize = _STATUSFUNC("i2CInitialize", None, ("port", C.c_uint8))
 
@@ -494,14 +484,14 @@ updateNotifierAlarm = _STATUSFUNC("updateNotifierAlarm", None, ("notifier", Noti
 #############################################################################
 # PDP
 #############################################################################
-getPDPTemperature = _STATUSFUNC("getPDPTemperature", C.c_double)
-getPDPVoltage = _STATUSFUNC("getPDPVoltage", C.c_double)
-getPDPChannelCurrent = _STATUSFUNC("getPDPChannelCurrent", C.c_double, ("channel", C.c_uint8))
-getPDPTotalCurrent = _STATUSFUNC("getPDPTotalCurrent", C.c_double)
-getPDPTotalPower = _STATUSFUNC("getPDPTotalPower", C.c_double)
-getPDPTotalEnergy = _STATUSFUNC("getPDPTotalEnergy", C.c_double)
-resetPDPTotalEnergy = _STATUSFUNC("resetPDPTotalEnergy", None)
-clearPDPStickyFaults = _STATUSFUNC("clearPDPStickyFaults", None)
+getPDPTemperature = _STATUSFUNC("getPDPTemperature", C.c_uint8, ("module", C.c_uint8))
+getPDPVoltage = _STATUSFUNC("getPDPVoltage", C.c_uint8, ("module", C.c_uint8))
+getPDPChannelCurrent = _STATUSFUNC("getPDPChannelCurrent", C.c_uint8, ("channel", C.c_uint8), ("module", C.c_uint8))
+getPDPTotalCurrent = _STATUSFUNC("getPDPTotalCurrent", C.c_uint8, ("module", C.c_uint8))
+getPDPTotalPower = _STATUSFUNC("getPDPTotalPower", C.c_uint8, ("module", C.c_uint8))
+getPDPTotalEnergy = _STATUSFUNC("getPDPTotalEnergy", C.c_uint8, ("module", C.c_uint8))
+resetPDPTotalEnergy = _STATUSFUNC("resetPDPTotalEnergy", None, ("module", C.c_uint8))
+clearPDPStickyFaults = _STATUSFUNC("clearPDPStickyFaults", None, ("module", C.c_uint8))
 
 #############################################################################
 # Power
