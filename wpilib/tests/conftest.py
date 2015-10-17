@@ -67,7 +67,13 @@ def wpilib(_module_patch, hal, hal_data):
     """Actual wpilib implementation"""
     import wpilib
     return wpilib
-    
+
+@pytest.fixture(scope="function")
+def networktables():
+    """Networktables instance"""
+    import networktables
+    networktables.NetworkTable.setTestMode()
+    return networktables
 
 #
 # Mock fixtures for testing things that don't have to interact with 

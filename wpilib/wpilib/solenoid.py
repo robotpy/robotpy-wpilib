@@ -81,6 +81,8 @@ class Solenoid(SolenoidBase):
     def free(self):
         """Mark the solenoid as freed."""
         self.allocated.free(self.channel)
+        LiveWindow.removeComponent(self)
+        super().free()
 
     def set(self, on):
         """Set the value of a solenoid.

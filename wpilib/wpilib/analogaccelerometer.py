@@ -39,6 +39,9 @@ class AnalogAccelerometer(LiveWindowSendable):
         LiveWindow.addSensorChannel("Accelerometer",
                                     self.analogChannel.getChannel(), self)
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+
     def getAcceleration(self):
         """Return the acceleration in Gs.
 

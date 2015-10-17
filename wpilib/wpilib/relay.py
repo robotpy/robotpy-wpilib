@@ -117,6 +117,8 @@ class Relay(SensorBase):
             self.direction == self.Direction.kReverse):
             Relay.relayChannels.free(self.channel*2 + 1)
 
+        LiveWindow.removeComponent(self)
+
         self._port_finalizer()
 
     def set(self, value):

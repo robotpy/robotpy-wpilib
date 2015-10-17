@@ -71,6 +71,10 @@ class ADXL345_SPI(SensorBase):
 
         LiveWindow.addSensor("ADXL345_SPI", port, self)
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+        super().free()
+
     # Accelerometer interface
 
     def setRange(self, range):

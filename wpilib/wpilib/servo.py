@@ -45,6 +45,9 @@ class Servo(PWM):
         hal.HALReport(hal.HALUsageReporting.kResourceType_Servo,
                       self.getChannel())
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+        super().free()
 
     def set(self, value):
         """Set the servo position.

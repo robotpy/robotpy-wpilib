@@ -45,6 +45,10 @@ class Jaguar(SafePWM):
                       self.getChannel())
         LiveWindow.addActuatorChannel("Jaguar", self.getChannel(), self)
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+        super().free()
+
     def set(self, speed, syncGroup=0):
         """Set the PWM value.
 

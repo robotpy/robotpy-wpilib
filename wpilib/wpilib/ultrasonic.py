@@ -132,6 +132,10 @@ class Ultrasonic(SensorBase):
                       Ultrasonic.instances)
         LiveWindow.addSensor("Ultrasonic", self.echoChannel.getChannel(), self)
 
+    def free(self):
+        LiveWindow.removeComponent(self)
+        super().free()
+
     def setAutomaticMode(self, enabling):
         """Turn Automatic mode on/off. When in Automatic mode, all sensors
         will fire in round robin, waiting a set time between each sensor.
