@@ -1,7 +1,7 @@
 import ctypes as C
 from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
 
-__all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
+__all__ = ["MUTEX_ID", "MULTIWAIT_ID",
            "HALControlWord", "HALControlWord_ptr", "Port_ptr",
            "HALJoystickAxes", "HALJoystickAxes_ptr",
            "HALJoystickPOVs", "HALJoystickPOVs_ptr",
@@ -20,10 +20,6 @@ __all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
 class _pthread_mutex_t(C.Structure):
     pass
 MUTEX_ID = C.POINTER(_pthread_mutex_t)
-
-class _sem_t(C.Structure):
-    pass
-SEMAPHORE_ID = C.POINTER(_sem_t)
 
 class _pthread_cond_t(C.Structure):
     pass

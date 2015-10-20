@@ -85,9 +85,7 @@ def takeMutex(sem):
     return 0
 
 def tryTakeMutex(sem):
-    if not sem.lock.acquire(False):
-        return -1
-    return 0
+    return sem.lock.acquire(False)
 
 def giveMutex(sem):
     sem.lock.release()
@@ -1124,6 +1122,9 @@ def updateNotifierAlarm(notifier, triggerTime, status):
 #############################################################################
 # PDP
 #############################################################################
+
+def initializePDP(module):
+    pass
 
 def getPDPTemperature(module, status):
     status.value = 0

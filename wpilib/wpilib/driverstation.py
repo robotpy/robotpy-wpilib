@@ -102,7 +102,7 @@ class DriverStation:
         safetyCounter = 0
         while self.thread_keepalive:
             hal.takeMultiWait(self.packetDataAvailableSem,
-                              self.packetDataAvailableMutex, 0)
+                              self.packetDataAvailableMutex)
             self.getData()
             with self.dataSem:
                 self.dataSem.notify_all()

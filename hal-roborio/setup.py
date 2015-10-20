@@ -9,7 +9,7 @@ setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')
 base_package = 'hal_impl'
 version_file = join(setup_dir, base_package, 'version.py')
-hal_version = 'jenkins-stable-2015.326'
+hal_version = 'jenkins-stable-2015.340-112-g4e46692'
 hal_site = 'http://www.tortall.net/~robotpy/hal'
 hal_file = join(setup_dir, base_package, 'libHALAthena_shared.so')
 

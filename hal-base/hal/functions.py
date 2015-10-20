@@ -76,7 +76,7 @@ SEMAPHORE_FULL = _VAR("SEMAPHORE_FULL", C.c_uint32)
 initializeMutexNormal = _RETFUNC("initializeMutexNormal", MUTEX_ID)
 deleteMutex = _RETFUNC("deleteMutex", None, ("sem", MUTEX_ID))
 takeMutex = _RETFUNC("takeMutex", C.c_int8, ("sem", MUTEX_ID))
-tryTakeMutex = _RETFUNC("tryTakeMutex", C.c_int8, ("sem", MUTEX_ID))
+tryTakeMutex = _RETFUNC("tryTakeMutex", C.c_bool, ("sem", MUTEX_ID))
 giveMutex = _RETFUNC("giveMutex", C.c_int8, ("sem", MUTEX_ID))
 
 initializeMultiWait = _RETFUNC("initializeMultiWait", MULTIWAIT_ID)
@@ -484,6 +484,7 @@ updateNotifierAlarm = _STATUSFUNC("updateNotifierAlarm", None, ("notifier", Noti
 #############################################################################
 # PDP
 #############################################################################
+initializePDP = _RETFUNC("initializePDP", None, ("module", C.c_int))
 getPDPTemperature = _STATUSFUNC("getPDPTemperature", C.c_uint8, ("module", C.c_uint8))
 getPDPVoltage = _STATUSFUNC("getPDPVoltage", C.c_uint8, ("module", C.c_uint8))
 getPDPChannelCurrent = _STATUSFUNC("getPDPChannelCurrent", C.c_uint8, ("channel", C.c_uint8), ("module", C.c_uint8))
