@@ -18,6 +18,8 @@ class Resource:
     library they are used for tracking allocation of hardware channels
     but this is purely arbitrary. The resource class does not do any actual
     allocation, but simply tracks if a given index is currently in use.
+
+    .. not_implemented: restartProgram
     """
     
     _resource_objects = []

@@ -74,9 +74,6 @@ SEMAPHORE_WAIT_FOREVER = -1
 SEMAPHORE_EMPTY = 0
 SEMAPHORE_FULL = 1
 
-def initializeMutexRecursive():
-    return types.MUTEX_ID(threading.RLock())
-
 def initializeMutexNormal():
     return types.MUTEX_ID(threading.Lock())
 
@@ -88,30 +85,11 @@ def takeMutex(sem):
     return 0
 
 def tryTakeMutex(sem):
-    if not sem.lock.acquire(False):
-        return -1
-    return 0
+    return sem.lock.acquire(False)
 
 def giveMutex(sem):
     sem.lock.release()
     return 0
-
-def initializeSemaphore(initial_value):
-    return types.SEMAPHORE_ID(threading.Semaphore(initial_value))
-
-def deleteSemaphore(sem):
-    sem.sem = None
-
-def takeSemaphore(sem):
-    sem.sem.acquire()
-
-def tryTakeSemaphore(sem):
-    if not sem.sem.acquire(False):
-        return -1
-    return 0
-
-def giveSemaphore(sem):
-    sem.sem.release()
 
 def initializeMultiWait():
     return types.MULTIWAIT_ID(threading.Condition())
@@ -119,9 +97,9 @@ def initializeMultiWait():
 def deleteMultiWait(sem):
     sem.cond = None
 
-def takeMultiWait(sem, mutex, timeout):
+def takeMultiWait(sem, mutex):
     with sem.cond:
-        sem.cond.wait() # timeout is ignored in C++ HAL
+        sem.cond.wait()
 
 def giveMultiWait(sem):
     with sem.cond:
@@ -262,6 +240,18 @@ def HALGetJoystickDescriptor(joystickNum, descriptor):
     descriptor.name = stick["name"]
     descriptor.axisCount = stick["axisCount"]
     descriptor.buttonCount = stick["buttonCount"]
+
+def HALGetJoystickIsXbox(joystickNum):
+    return hal_data["joysticks"][joystickNum]["isXbox"]
+
+def HALGetJoystickType(joystickNum):
+    return hal_data["joysticks"][joystickNum]["type"]
+
+def HALGetJoystickName(joystickNum):
+    return hal_data["joysticks"][joystickNum]["name"]
+
+def HALGetJoystickAxisType(joystickNum, axis):
+    assert False
 
 def HALSetJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
     hal_data['joysticks'][joystickNum]["leftRumble"] = leftRumble
@@ -1072,12 +1062,6 @@ def spiGetHandle(port):
 def spiSetHandle(port, handle):
     assert False
 
-def spiGetSemaphore(port):
-    assert False
-
-def spiSetSemaphore(port, semaphore):
-    assert False
-
 #
 # i2c
 #
@@ -1151,38 +1135,41 @@ def updateNotifierAlarm(notifier, triggerTime, status):
 # PDP
 #############################################################################
 
-def getPDPTemperature(status):
+def initializePDP(module):
+    pass
+
+def getPDPTemperature(module, status):
     status.value = 0
     return hal_data['pdp']['temperature']
 
-def getPDPVoltage(status):
+def getPDPVoltage(module, status):
     status.value = 0
     return hal_data['pdp']['voltage']
 
-def getPDPChannelCurrent(channel, status):
+def getPDPChannelCurrent(channel, module, status):
     if channel < 0 or channel >= len(hal_data['pdp']['current']):
         status.value = CTR_InvalidParamValue
         return 0
     status.value = 0
     return hal_data['pdp']['current'][channel]
 
-def getPDPTotalCurrent(status):
+def getPDPTotalCurrent(module, status):
     status.value = 0
     return hal_data['pdp']['total_current']
 
-def getPDPTotalPower(status):
+def getPDPTotalPower(module, status):
     status.value = 0
     return hal_data['pdp']['total_power']
 
-def getPDPTotalEnergy(status):
+def getPDPTotalEnergy(module, status):
     status.value = 0
     return hal_data['pdp']['total_energy']
 
-def resetPDPTotalEnergy(status):
+def resetPDPTotalEnergy(module, status):
     status.value = 0
     hal_data['pdp']['total_energy'] = 0
 
-def clearPDPStickyFaults(status):
+def clearPDPStickyFaults(module, status):
     status.value = 0
     # not sure what to do here?
 

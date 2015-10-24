@@ -45,6 +45,9 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
     #: Number of power distribution channels
     kPDPChannels = 16
 
+    #: Number of power distribution channels
+    kPDPModules = 63
+
     #: Default solenoid module
     defaultSolenoidModule = 0
 
@@ -141,6 +144,16 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
         """
         if channel < 0 or channel >= SensorBase.kPDPChannels:
             raise IndexError("Requested PDP channel number %d is out of range." % channel)
+
+    @staticmethod
+    def checkPDPModule(module):
+        """Verify that the power distribution module number is within limits.
+        Module numbers are 0-based.
+
+        :param module: The module number to check.
+        """
+        if module < 0 or module >= SensorBase.kPDPModules:
+            raise IndexError("Requested PDP module number %d is out of range." % module)
 
     @staticmethod
     def getDefaultSolenoidModule():

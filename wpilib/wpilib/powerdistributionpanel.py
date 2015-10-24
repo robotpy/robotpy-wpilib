@@ -12,10 +12,12 @@ from .sensorbase import SensorBase
 __all__ = ["PowerDistributionPanel"]
 
 class PowerDistributionPanel(SensorBase):
-    """Use to obtain voltage, current, temperature, power, and energy from the CAN PDP
-    
-    The PDP must be at CAN Address 0
-    """
+    """Use to obtain voltage, current, temperature, power, and energy from the CAN PDP"""
+
+    def __init__(self, module=0):
+        self.module = module
+        SensorBase.checkPDPModule(module)
+        hal.initializePDP(module)
 
     def getVoltage(self):
         """
@@ -24,7 +26,7 @@ class PowerDistributionPanel(SensorBase):
             :returns: The voltage of the PDP in volts
             :rtype: float
         """
-        return hal.getPDPVoltage()
+        return hal.getPDPVoltage(self.module)
 
     def getTemperature(self):
         """
@@ -33,7 +35,7 @@ class PowerDistributionPanel(SensorBase):
             :returns: The temperature of the PDP in degrees Celsius
             :rtype: float
         """
-        return hal.getPDPTemperature()
+        return hal.getPDPTemperature(self.module)
 
     def getCurrent(self, channel):
         """
@@ -44,7 +46,7 @@ class PowerDistributionPanel(SensorBase):
             :rtype: float
         """
         SensorBase.checkPDPChannel(channel)
-        return hal.getPDPChannelCurrent(channel)
+        return hal.getPDPChannelCurrent(channel, self.module)
     
     def getTotalCurrent(self):
         """
@@ -53,7 +55,7 @@ class PowerDistributionPanel(SensorBase):
             :returns: The total current drawn from the PDP channels in Amperes
             :rtype: float
         """
-        return hal.getPDPTotalCurrent()
+        return hal.getPDPTotalCurrent(self.module)
     
     def getTotalPower(self):
         """
@@ -62,7 +64,7 @@ class PowerDistributionPanel(SensorBase):
             :returns: The total power drawn from the PDP channels in Watts
             :rtype: float
         """
-        return hal.getPDPTotalPower()
+        return hal.getPDPTotalPower(self.module)
     
     def getTotalEnergy(self):
         """
@@ -71,19 +73,19 @@ class PowerDistributionPanel(SensorBase):
             :returns: The total energy drawn from the PDP channels in Joules
             :rtype: float
         """
-        return hal.getPDPTotalEnergy()
+        return hal.getPDPTotalEnergy(self.module)
     
     def resetTotalEnergy(self):
         """
             Reset the total energy to 0
         """
-        hal.resetPDPTotalEnergy()
+        hal.resetPDPTotalEnergy(self.module)
     
     def clearStickyFaults(self):
         """
             Clear all pdp sticky faults
         """
-        hal.clearPDPStickyFaults()
+        hal.clearPDPStickyFaults(self.module)
 
     # Live Window code, only does anything if live window is activated.
 

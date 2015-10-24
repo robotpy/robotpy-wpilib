@@ -52,6 +52,8 @@ def compare_folders(python_object, java_dirs):
 
         #For each java type declaration
         tree = plyj_parser.parse_file(java_file)
+        if tree is None:
+            continue
         for java_child in tree.type_declarations:
             #Make sure it is something of interest
             if not isinstance(java_child, m.ClassDeclaration) and not isinstance(java_child, m.MethodDeclaration) and\

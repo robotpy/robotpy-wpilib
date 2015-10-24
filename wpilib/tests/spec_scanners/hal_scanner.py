@@ -217,7 +217,7 @@ def _get_c_typeinfo(typename, c_pointer):
     c_type_name = translate_obj(typename)
 
     #Workaround for typedefed pointers
-    if c_type_name in ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID"]:
+    if c_type_name in ["MUTEX_ID", "MULTIWAIT_ID"]:
         c_pointer = True
 
     #Check for pointers

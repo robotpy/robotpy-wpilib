@@ -50,7 +50,7 @@ def test_release(ds):
 
 def test_task(ds, halmock):
     # exit function after one iteration
-    def unalive(sem, mutex, timeout):
+    def unalive(sem, mutex):
         assert sem == ds.packetDataAvailableSem
         ds.thread_keepalive = False
     halmock.takeMultiWait = unalive
@@ -58,14 +58,13 @@ def test_task(ds, halmock):
     ds.task()
     assert ds.getData.called
     assert ds.dataSem.notify_all.called
-    halmock.HALGetControlWord.assert_called_once()
 
 def test_task_safetyCounter(ds, halmock):
     # exit function after 5 iterations
     class unalive:
         def __init__(self):
             self.count = 0
-        def __call__(self, sem, mutex, timeout):
+        def __call__(self, sem, mutex):
             self.count += 1
             if self.count >= 5:
                 ds.thread_keepalive = False
@@ -78,7 +77,7 @@ def test_task_safetyCounter(ds, halmock):
 @pytest.mark.parametrize("mode", ["Disabled", "Autonomous", "Teleop", "Test"])
 def test_task_usermode(mode, ds, halmock):
     # exit function after one iteration
-    def unalive(sem, mutex, timeout):
+    def unalive(sem, mutex):
         ds.thread_keepalive = False
     halmock.takeMultiWait = unalive
     ds.getData = MagicMock()

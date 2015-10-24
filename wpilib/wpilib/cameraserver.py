@@ -11,6 +11,10 @@ __all__ = ["CameraServer"]
 logger = logging.getLogger(__name__)
 
 class CameraServer:
+    """
+    
+    .. not_implemented: setImageData, capture, serve
+    """
     kPort = 1180
     kMagicNumber = bytes([0x01, 0x00, 0x00, 0x00])
     kSize640x480 = 0

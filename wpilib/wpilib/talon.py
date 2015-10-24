@@ -45,6 +45,7 @@ class Talon(SafePWM):
         self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
         self.setRaw(self.centerPwm)
         self.setZeroLatch()
+        self.isInverted = False
 
         LiveWindow.addActuatorChannel("Talon", self.getChannel(), self)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Talon,
@@ -65,8 +66,24 @@ class Talon(SafePWM):
         :param syncGroup: The update group to add this set() to, pending
             updateSyncGroup().  If 0, update immediately.
         """
-        self.setSpeed(speed)
+        self.setSpeed(-speed if self.isInverted else speed)
         self.feed()
+
+    def setInverted(self, isInverted):
+        """
+        Common interface for inverting the direction of a speed controller.
+
+        :param isInverted: The state of inversion (True is inverted).
+        """
+        self.isInverted = isInverted
+
+    def getInverted(self):
+        """
+        Common interface for inverting the direction of a speed controller.
+
+        :returns: The state of inversion (True is inverted)
+        """
+        return self.isInverted
 
     def get(self):
         """Get the recently set value of the PWM.

@@ -4,7 +4,7 @@
 
 import copy
 
-__all__ = ["MUTEX_ID", "SEMAPHORE_ID", "MULTIWAIT_ID",
+__all__ = ["MUTEX_ID", "MULTIWAIT_ID",
            "HALControlWord_ptr", "HALControlWord",
            "Port_ptr", "Port",
            "HALJoystickAxes_ptr", "HALJoystickAxes",
@@ -42,11 +42,6 @@ class _MUTEX_ID:
     def __init__(self, lock):
         self.lock = lock
 MUTEX_ID = fake_pointer(_MUTEX_ID, "MUTEX_ID")
-
-class _SEMAPHORE_ID:
-    def __init__(self, sem):
-        self.sem = sem
-SEMAPHORE_ID = fake_pointer(_SEMAPHORE_ID, "SEMAPHORE_ID")
 
 class _MULTIWAIT_ID:
     def __init__(self, cond):
