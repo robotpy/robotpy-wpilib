@@ -141,9 +141,11 @@ def HALGetJoystickDescriptor(joystickNum):
     _HALGetJoystickDescriptor(joystickNum, descriptor)
     return descriptor
 
-
+HALGetJoystickIsXbox = _RETFUNC("HALGetJoystickIsXbox", C.c_int, ("joystickNum", C.c_uint8))
+HALGetJoystickType = _RETFUNC("HALGetJoystickType", C.c_int, ("joystickNum", C.c_uint8))
+HALGetJoystickName = _RETFUNC("HALGetJoystickName", C.c_char_p, ("joystickNum", C.c_uint8))
+HALGetJoystickAxisType = _RETFUNC("HALGetJoystickAxisType", C.c_int, ("joystickNum", C.c_uint8), ("axis", C.c_uint8))
 HALSetJoystickOutputs = _RETFUNC("HALSetJoystickOutputs", C.c_int, ("joystickNum", C.c_uint8), ("outputs", C.c_uint32), ("leftRumble", C.c_uint16), ("rightRumble", C.c_uint16))
-
 HALGetMatchTime = _RETFUNC("HALGetMatchTime", C.c_int, ("matchTime", C.POINTER(C.c_float)), out=["matchTime"])
 
 HALSetNewDataSem = _RETFUNC("HALSetNewDataSem", None, ("sem", MULTIWAIT_ID))

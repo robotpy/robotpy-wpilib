@@ -575,7 +575,7 @@ class Counter(SensorBase):
         """
         self.distancePerPulse = distancePerPulse
 
-    def setPIDSourceParameter(self, pidSource):
+    def setPIDSourceType(self, pidSource):
         """Set which parameter of the encoder you are using as a process
         control variable. The counter class supports the rate and distance
         parameters.
@@ -587,6 +587,9 @@ class Counter(SensorBase):
                              self.PIDSourceParameter.kRate):
             raise ValueError("Invalid pidSource argument '%s'" % pidSource)
         self.pidSource = pidSource
+
+    def getPIDSourceType(self):
+        return self.pidSource
 
     def pidGet(self):
         if self.pidSource == self.PIDSourceParameter.kDistance:

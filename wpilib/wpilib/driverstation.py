@@ -276,6 +276,63 @@ class DriverStation:
         with self.mutex:
             return self.joystickButtons[stick].count
 
+    def getJoystickIsXbox(self, stick):
+        """
+        Gets the value of isXbox on a joystick
+
+        :param stick: The joystick port number
+
+        :returns A boolean that returns the value of isXbox
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
+        # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
+        if 1 > self.joystickButtons[stick].count and 1 > self.joystickAxes[stick].length:
+            self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
+                                               "plugged in.\n".format(stick))
+            return False
+
+        return hal.HALJoystickIsXbox(stick) == 1
+
+    def getJoystickType(self, stick):
+        """
+        Gets the value of type on a joystick
+
+        :param stick: The joystick port number
+
+        :returns An integer that returns the value of type.
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
+        # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
+        if 1 > self.joystickButtons[stick].count and 1 > self.joystickAxes[stick].length:
+            self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
+                                               "plugged in.\n".format(stick))
+            return False
+
+        return hal.HALJoystickType(stick)
+
+    def getJoystickName(self, stick):
+        """
+        Gets the name of a joystick
+
+        :param stick: The joystick port number
+
+        :returns The joystick name.
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
+        # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
+        if 1 > self.joystickButtons[stick].count and 1 > self.joystickAxes[stick].length:
+            self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
+                                               "plugged in.\n".format(stick))
+            return False
+
+        return hal.HALJoystickName(stick)
+
     def isEnabled(self):
         """Gets a value indicating whether the Driver Station requires the
         robot to be enabled.

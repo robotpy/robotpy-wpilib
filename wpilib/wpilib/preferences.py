@@ -28,6 +28,8 @@ class Preferences:
     `NetworkTable`, simply set the boolean at position ~S A V E~ to true.
     Also, if the value of any variable is " in the `NetworkTable`, then
     that represents non-existence in the `Preferences` table.
+
+    .. not_implemented: putDouble, putLong, getDouble, getLong
     """
 
     # The Preferences table name

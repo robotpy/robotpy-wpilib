@@ -204,6 +204,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         self.controlMode = CANJaguar.ControlMode.PercentVbus
         self.speedReference = _cj.LM_REF_NONE
         self.positionReference = _cj.LM_REF_NONE
+        self.isInverted = False
         self.p = 0.0
         self.i = 0.0
         self.d = 0.0
@@ -335,6 +336,23 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         """
         return self.value
 
+    def getSetpoint(self):
+        """
+        Equivalent to `get()`
+        """
+        return self.get()
+
+    def getError(self):
+        """
+        Get the difference between the setpoint and goal in closed loop modes.
+
+        Outside of position and velocity modes the return value of getError() has
+        relatively little meaning.
+
+        :returns: The difference between the setpoint and the current position.
+        """
+        return self.get() - self.getPosition()
+
     def set(self, outputValue, syncGroup=0):
         """Sets the output set-point value.
 
@@ -354,10 +372,10 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         if self.controlEnabled:
             if self.controlMode == self.ControlMode.PercentVbus:
                 messageID = _cj.LM_API_VOLT_T_SET
-                data = _packPercentage(outputValue)
+                data = _packPercentage(-outputValue if self.isInverted else outputValue)
             elif self.controlMode == self.ControlMode.Speed:
                 messageID = _cj.LM_API_SPD_T_SET
-                data = _packFXP16_16(outputValue)
+                data = _packFXP16_16(-outputValue if self.isInverted else outputValue)
             elif self.controlMode == self.ControlMode.Position:
                 messageID = _cj.LM_API_POS_T_SET
                 data = _packFXP16_16(outputValue)
@@ -366,7 +384,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
                 data = _packFXP8_8(outputValue)
             elif self.controlMode == self.ControlMode.Voltage:
                 messageID = _cj.LM_API_VCOMP_T_SET
-                data = _packFXP8_8(outputValue)
+                data = _packFXP8_8(-outputValue if self.isInverted else outputValue)
             else:
                 return
 
@@ -380,6 +398,33 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         self.value = outputValue
 
         self.verify()
+
+    def setSetpoint(self, value):
+        """
+        Equivalent to `set()`. Implements PIDInterface.
+        """
+        self.set(value)
+
+    def reset(self):
+        self.set(self.value)
+        self.disableControl()
+
+    def setInverted(self, isInverted):
+        """
+        Inverts the direction of rotation of the motor.
+        Only works in percentVbus, Speed, and Voltage modes.
+
+        :param isInverted: The state of inversion (True is inverted).
+        """
+        self.isInverted = isInverted
+
+    def getInverted(self):
+        """
+        Common interface for the inverting direction of a speed controller.
+
+        :returns: The state of inversion (True is inverted).
+        """
+        return self.isInverted
 
     def verify(self):
         """Check all unverified params and make sure they're equal to their
@@ -867,6 +912,14 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
             self.sendMessage(_cj.LM_API_VCOMP_T_EN, None)
 
         self.controlEnabled = True
+
+    def isEnabled(self):
+        """
+        Return whether the controller is enabled.
+
+        :returns: True if enabled
+        """
+        return self.controlEnabled
 
     def disableControl(self):
         """Disable the closed loop controller.

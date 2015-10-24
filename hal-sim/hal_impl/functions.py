@@ -241,6 +241,18 @@ def HALGetJoystickDescriptor(joystickNum, descriptor):
     descriptor.axisCount = stick["axisCount"]
     descriptor.buttonCount = stick["buttonCount"]
 
+def HALGetJoystickIsXbox(joystickNum):
+    return hal_data["joysticks"][joystickNum]["isXbox"]
+
+def HALGetJoystickType(joystickNum):
+    return hal_data["joysticks"][joystickNum]["type"]
+
+def HALGetJoystickName(joystickNum):
+    return hal_data["joysticks"][joystickNum]["name"]
+
+def HALGetJoystickAxisType(joystickNum, axis):
+    assert False
+
 def HALSetJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
     hal_data['joysticks'][joystickNum]["leftRumble"] = leftRumble
     hal_data['joysticks'][joystickNum]["rightRumble"] = rightRumble

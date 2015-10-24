@@ -9,6 +9,8 @@ import hal
 import weakref
 
 from .livewindow import LiveWindow
+from .livewindowsendable import LiveWindowSendable
+from .motorsafety import MotorSafety
 from .resource import Resource
 from .sensorbase import SensorBase
 
@@ -19,7 +21,7 @@ def _freeRelay(port):
     hal.setRelayReverse(port, False)
     hal.freeDIO(port)
 
-class Relay(SensorBase):
+class Relay(SensorBase, LiveWindowSendable, MotorSafety):
     """Controls VEX Robotics Spike style relay outputs.
     
     Relays are intended to be connected to Spikes or similar relays. The relay
@@ -84,6 +86,8 @@ class Relay(SensorBase):
         LiveWindow.addActuatorChannel("Relay", self.channel, self)
         self.set(self.Value.kOff)
 
+        MotorSafety.__init__(self)
+
     def _initRelay(self):
         SensorBase.checkRelayChannel(self.channel)
         try:
@@ -102,6 +106,8 @@ class Relay(SensorBase):
 
         self._port = hal.initializeDigitalPort(hal.getPort(self.channel))
         self._port_finalizer = weakref.finalize(self, _freeRelay, self._port)
+
+        self.setSafetyEnabled(False)
 
     @property
     def port(self):
@@ -201,6 +207,20 @@ class Relay(SensorBase):
                     return self.Value.kReverse
             else:
                 return self.Value.kOff
+
+    def getChannel(self):
+        """
+        Get the channel number.
+
+        :returns: The channel number.
+        """
+        return self.channel
+
+    def stopMotor(self):
+        self.set(self.Value.kOff)
+
+    def getDescription(self):
+        return "Relay ID {}".format(self.getChannel())
 
     def setDirection(self, direction):
         """Set the Relay Direction.

@@ -330,6 +330,31 @@ class Joystick:
         """
         self.axes[axis] = channel
 
+    def getIsXbox(self):
+        """
+        Get the value of isXbox for the current joystick.
+
+        :returns: A boolean that is true if the controller is an xbox controller.
+        """
+        return self.ds.getJoystickIsXbox(self.port)
+
+
+    def getType(self):
+        """
+        Get the HID type of the current joystick.
+
+        :returns: The HID type value of the current joystick.
+        """
+        return self.ds.getJoystickType(self.port)
+
+    def getName(self):
+        """
+        Get the name of the current joystick.
+
+        :returns: The name of the current joystick.
+        """
+        return self.ds.getJoystickName(self.port)
+
     def setRumble(self, type, value):
         """Set the rumble output for the joystick. The DS currently supports 2 rumble values,
         left rumble and right rumble
