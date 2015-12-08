@@ -71,11 +71,11 @@ initialized when your robot first starts. Examples of this data includes:
 * Creating various wpilib objects for devices and sensors
 * Creating instances of other objects for your robot
 
-In python, the constructor for an object is the `__init__` function. Instead
+In python, the constructor for an object is the ``__init__`` function. Instead
 of defining a constructor for your main robot object, you can override
-robotInit instead. If you do decide that you want to override __init__, then
-you must call `super().__init__()` in your `__init__` method, or an exception
-will be thrown.
+robotInit instead. If you do decide that you want to override ``__init__``, then
+you must call ``super().__init__()`` in your ``__init__`` method, or an
+exception will be thrown.
 
 Adding motors and sensors
 -------------------------
@@ -198,7 +198,7 @@ below, taken from one of the samples in our github repository.
 
 
 There are a few different python-based robot samples available, and you
-can find them at `our github site <https://github.com/robotpy/robotpy/tree/master/examples>`_.
+can find them at `our github site <https://github.com/robotpy/robotpy-wpilib/tree/master/examples>`_.
 
 Next Steps
 ----------
