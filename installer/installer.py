@@ -22,7 +22,7 @@ import getpass
 import hashlib
 import inspect
 import os
-from os.path import abspath, basename, dirname, exists, isdir, join
+from os.path import abspath, basename, dirname, exists, isdir, join, relpath
 import shutil
 import subprocess
 import sys
@@ -339,7 +339,6 @@ class SshController(object):
         #    config['auth']['password'] = password
             
         config['auth']['hostname'] = hostname
-        
         return config
         
     def close(self):
@@ -405,13 +404,30 @@ class SshController(object):
                 
                 if isinstance(src, str):
                     if isdir(src):
+                        rdst = "%s/%s" % (dst, basename(src))
                         if mkdir:
-                            fp.write('mkdir "%s/%s"\n' % (dst, basename(src)))
+                            fp.write('mkdir "%s"\n' % rdst)
                         
                         if is_windows:
                             fp.write('put -r "%s" "%s/%s"\n' % (src, dst, basename(src)))
                         else:
-                            fp.write('put -r "%s" "%s"\n' % (src, dst))
+                            # Some versions of OpenSSH work fine. Some don't. Will
+                            # have to do this the hard way instead...
+                            # ... https://bugzilla.mindrot.org/show_bug.cgi?id=2150
+                            
+                            first = True
+                            for d, _, files in os.walk(src):
+                                if first:
+                                    rd = rdst
+                                    first = False
+                                else:
+                                    rd = join(rdst, relpath(d, src))
+                                    fp.write('mkdir "%s"\n' % rd)
+                                
+                                for f in files:
+                                    lf = join(d, f)
+                                    rf = join(rd, f)
+                                    fp.write('put "%s" "%s"\n' % (lf, rf))
                     else:
                         if mkdir:
                             fp.write('mkdir "%s"\n' % dst)
