@@ -20,7 +20,7 @@ def get_hal_dirs(hal_dir):
     paths.append(join(hal_dir, 'include', 'HAL'))
     return paths
 
-def compare_header_dirs(python_object, header_dirs):
+def compare_header_dirs(python_objects, header_dirs):
     """
     Parses through cpp_dirs and matches c++ header objects to front-end objects in
     python_object and returns a summary of it's findings.
@@ -32,73 +32,85 @@ def compare_header_dirs(python_object, header_dirs):
     output["methods"] = list()
     output["classes"] = list()
 
-    #Get all header files in header_dirs
-    header_files = list()
-    for header_dir in header_dirs:
-        header_files.extend([os.path.join(header_dir, s) for s in os.listdir(header_dir)])
-
     #Get the .. not_implemented ignore flags in the docstring of python_object
-    children_to_ignore = parse_docstring(python_object.__doc__)
+    children_to_ignore = []
+    for python_object in python_objects:
+        children_to_ignore += parse_docstring(python_object.__doc__)
 
-    #For every header file
-    for header_file in header_files:
-
-        #Make sure it is a .hpp file
-        if os.path.splitext(header_file)[1] != ".hpp":
-            continue
-        
-        #For each class declaration
-        header = CppHeaderParser.CppHeader(header_file)
-        filename = os.path.basename(header_file)
-
-        #Scan classes
-        for c_class_name in header.classes:
-            c_class = header.classes[c_class_name]
-            #Do we ignore?
-            ignore_child = c_class["name"] in children_to_ignore
-
-            #Get the first python object and compare!
-            python_child = None
-            if hasattr(python_object, c_class["name"]):
-                python_child = getattr(python_object, c_class["name"])
-
-            class_output = compare_class(python_child, c_class, filename)
-
-            #Collect errors
-            output["ignored_errors"] += class_output["ignored_errors"]
-            if ignore_child:
-                output["ignored_errors"] += class_output["errors"]
-                class_output["ignored"] = True
-            else:
-                output["errors"] += class_output["errors"]
-            output["classes"].append(class_output)
-
-        #Scan methods
-        for c_method in header.functions:
-            #Do we ignore?
-            ignore_child = c_method["name"] in children_to_ignore
-
-            #Get the first python object and compare!
-            python_child = None
-            if hasattr(python_object, c_method["name"]):
-                python_child = getattr(python_object, c_method["name"])
-
-            method_output = compare_function(python_child, c_method, True, filename)
-
-            #Collect errors
-            output["ignored_errors"] += method_output["ignored_errors"]
-            if ignore_child:
-                output["ignored_errors"] += method_output["errors"]
-                method_output["ignored"] = True
-            else:
-                output["errors"] += method_output["errors"]
-            output["methods"].append(method_output)
-            
-        # Scan variables (TODO)
-        for c_variable in header.variables:
-            pass
+    #Get all header files in header_dirs
+    for header_dir in header_dirs:
+        for root, _, files in os.walk(header_dir):
+            for fname in files:
+                _process_header(os.path.join(root, fname), output, children_to_ignore, python_objects)
     
     return output
+
+def _process_header(header_file, output, children_to_ignore, python_objects):
+
+    #Make sure it is a .hpp file
+    if os.path.splitext(header_file)[1] not in [".hpp", ".h"]:
+        return
+    
+    #For each class declaration
+    header = CppHeaderParser.CppHeader(header_file)
+    filename = os.path.basename(header_file)
+
+    #Scan classes
+    for c_class_name in header.classes:
+        c_class = header.classes[c_class_name]
+        #Do we ignore?
+        ignore_child = c_class["name"] in children_to_ignore
+
+        #Get the first python object and compare!
+        python_child = None
+        for python_object in python_objects:
+            if hasattr(python_object, c_class["name"]):
+                python_child = getattr(python_object, c_class["name"])
+                break
+
+        class_output = compare_class(python_child, c_class, filename)
+
+        #Collect errors
+        output["ignored_errors"] += class_output["ignored_errors"]
+        if ignore_child:
+            output["ignored_errors"] += class_output["errors"]
+            class_output["ignored"] = True
+        else:
+            output["errors"] += len(class_output["errors"])
+        output["classes"].append(class_output)
+
+    #Scan methods
+    for c_method in header.functions:
+        #Do we ignore?
+        ignore_child = c_method["name"] in children_to_ignore
+
+        #Get the first python object and compare!
+        python_child = None
+        c_name = c_method["name"]
+        for python_object in python_objects:
+            if hasattr(python_object, c_name):
+                python_child = getattr(python_object, c_name)
+                break
+                
+            # Stupid talon special case...
+            elif c_name.startswith('c_') and hasattr(python_object, c_name[2:]):
+                python_child = getattr(python_object, c_name[2:])
+                break
+
+        method_output = compare_function(python_child, c_method, True, filename)
+
+        #Collect errors
+        output["ignored_errors"] += method_output["ignored_errors"]
+        if ignore_child:
+            output["ignored_errors"] += len(method_output["errors"])
+            method_output["ignored"] = True
+        else:
+            output["errors"] += len(method_output["errors"])
+        output["methods"].append(method_output)
+        
+    # Scan variables (TODO)
+    #for c_variable in header.variables:
+    #    pass
 
 def compare_class(python_object, c_object, filename):
     """
@@ -109,7 +121,7 @@ def compare_class(python_object, c_object, filename):
     output["filename"] = filename
     output["name"] = c_object["name"]
     output["present"] = python_object is not None
-    output["errors"] = 0
+    output["errors"] = []
     output["ignored_errors"] = 0
     output["ignored"] = False
 
@@ -139,7 +151,7 @@ def compare_class(python_object, c_object, filename):
         #Collect errors from subclass before saving it
         output["ignored_errors"] += subclass_output["ignored_errors"]
         if ignore_child:
-            output["ignored_errors"] += subclass_output["errors"]
+            output["ignored_errors"] += len(subclass_output["errors"])
             subclass_output["ignored"] = True
         else:
             output["errors"] += subclass_output["errors"]
@@ -168,7 +180,7 @@ def compare_class(python_object, c_object, filename):
         #Collect errors from the comparison
         output["ignored_errors"] += method_output["ignored_errors"]
         if ignore_child:
-            output["ignored_errors"] += method_output["errors"]
+            output["ignored_errors"] += len(method_output["errors"])
             method_output["ignored"] = True
         else:
             output["errors"] += method_output["errors"]
@@ -187,7 +199,7 @@ def compare_function(python_object, c_object, check_fndata, filename):
     output["filename"] = filename
     output["name"] = c_object["name"]
     output["present"] = python_object is not None
-    output["errors"] = 0
+    output["errors"] = []
     output["ignored_errors"] = 0
     output["ignored"] = False
 
@@ -202,20 +214,23 @@ def compare_function(python_object, c_object, check_fndata, filename):
     if output["present"]:
         if check_fndata:
             if not hasattr(python_object, 'fndata'):
-                output['errors'] += 1
+                output['errors'].append('fndata not found')
             else:
                 name, restype, params, out = python_object.fndata
                 if output['name'] != name:
-                    output['errors'] += 1
+                    err = 'name does not match! (py: %s, c: %s)' % (name, output['name'])
+                    output['errors'].append(err)
                 
                 if len(params) != len(output['parameters']):
-                    output['errors'] += 1
+                    err = 'expected %s params, got %s' % (len(params), len(output['parameters']))
+                    output['errors'].append(err)
         else:
             args, varargs, keywords, defaults = inspect.getargspec(python_object)
             if varargs is None and keywords is None:
                 args = [a for a in args if a != "self"]
                 if len(args) != len(output["parameters"]):
-                    output["errors"] += 1
+                    err = 'expected %s params, got %s' % (len(args), len(output['parameters']))
+                    output['errors'].append(err)
     
     return output
 
@@ -250,14 +265,14 @@ def _get_py_typeinfo(py_param):
     
     if hasattr(py_type_obj, "_type_"):
         # deal with char*
-        if py_type_obj._type_ == 'z':
+        if py_type_obj._type_ in ['z', 'P']:
             py_pointer = True
         py_type_name = translate_obj(py_type_obj._type_)
     else:
         py_type_name = type(py_type_obj).__name__
         if py_type_name == "type":
             py_type_name = py_type_obj.__name__
-            
+    
     return py_type_name, py_pointer
 
 def scan_c_end(python_object, summary):
@@ -300,7 +315,7 @@ def scan_c_end(python_object, summary):
             method_summary["present"] = c_object is not None
             method_summary["name"] = name
             method_summary["filename"] = fname
-            method_summary["errors"] = 0
+            method_summary["errors"] = []
             method_summary["ignored_errors"] = 0
             if not method_summary["present"]:
                 method_summary["errors"] += 1
@@ -320,10 +335,10 @@ def scan_c_end(python_object, summary):
                                                                c_object['returns_pointer'])
                     
                 if py_retpointer != c_retpointer:
-                    method_summary['errors'] += 1
+                    method_summary['errors'].append("mismatched return ptr")
                     
                 if py_rettype_name != c_rettype_name and c_rettype_name != "void":
-                    method_summary["errors"] += 1
+                    method_summary["errors"].append("mismatched return type")
                 
                 method_summary['returns'] = c_object['returns']
                 if c_object['returns_pointer']:
@@ -332,7 +347,8 @@ def scan_c_end(python_object, summary):
                 method_summary["parameters"] = c_object["parameters"]
 
                 if len(params) != len(c_object["parameters"]):
-                    method_summary["errors"] += abs(len(params) - len(c_object["parameters"]))
+                    err = 'expected %s params, got %s' % (len(params), len(c_object['parameters']))
+                    method_summary["errors"].append(err)
 
                 for i in range(min(len(params), len(c_object["parameters"]))):
 
@@ -359,15 +375,15 @@ def scan_c_end(python_object, summary):
                     py_type_name, py_pointer = _get_py_typeinfo(py_param)
 
                     if py_pointer != c_pointer:
-                        method_summary["errors"] += 1
+                        method_summary["errors"].append("mismatched pointer for '%s'" % c_param['name'])
                         continue
 
                     if py_type_name != c_type_name and c_type_name != "void":
-                        method_summary["errors"] += 1
+                        method_summary["errors"].append("mismatched type for '%s'" % c_param['name'])
                         continue
 
             #Collect errors from the comparison
-            output["errors"] += method_summary["errors"]
+            output["errors"] += len(method_summary["errors"])
 
             output["methods"].append(method_summary)
 
@@ -404,10 +420,11 @@ def translate_obj(obj):
     :param obj: A string name of a c type
     :returns The standard term for obj
     """
-    aliases = [["int32", "int", "i", "int32_t", "c_int"],
+    aliases = [["int32", "int", "i", "int32_t", "c_int", 'CTR_Code'],
                ["double", "d", "c_double"],
                ["float", "f", "c_float"],
                ["char", "z"],
+               ["void", "P"],
                ["int8", "int8_t", "c_int8", "b"],
                ["uint8", "uint8_t", "c_uint8", "B"],
                ["int16", "int16_t", "c_int16", "h", "c_short", "c_short_t", "short"],
@@ -450,8 +467,9 @@ def get_status_msg(summary):
         status_message.append("Not Present")
         status_color = "orange"
 
-    if summary["errors"] > 0:
-        status_message.append("{} Error(s)".format(summary["errors"]))
+    if len(summary["errors"]) > 0:
+        status_message.append("{} Error(s): {}".format(len(summary["errors"]),
+                                                       summary["errors"]))
         status_color = "red"
 
     if summary["ignored_errors"] > 0:
@@ -590,51 +608,56 @@ if __name__ == "__main__":
     sys.path.insert(0, join(dirname(__file__), '..', '..', '..', 'hal-base'))
     import hal
 
-    if len(sys.argv) == 1:
-        print("Usage: python hal_scanner.py wpilib_path")
+    if len(sys.argv) < 3:
+        print("Usage: python hal_scanner.py wpilib_path [all|c|py]")
         exit(1)
 
     hal_dir = sys.argv[1]
-
-    print("\n\n\n")
-    print(equals_bar + "==============" + equals_bar)
-    print(equals_bar + "Python HAL API" + equals_bar)
-    print(equals_bar + "==============" + equals_bar)
-    print()
-    print("This compares the HAL API, what is directly used by the python wpilib,\n"
-          "to the c++ API and reports errors and inconsistencies.")
-    print()
-    py_end_output = compare_header_dirs(hal, get_hal_dirs(hal_dir))
-
-    text_list = list()
-    for method in sort_by_fname(py_end_output["methods"]):
-        text_list.extend(stringize_method_summary(method))
-    for cls in sort_by_fname(py_end_output["classes"]):
-        text_list.extend(stringize_class_summary(cls))
-    print_list(text_list)
-
-    print("\n\n\n")
-    print(equals_bar + "=============" + equals_bar)
-    print(equals_bar + "C++ HAL Usage" + equals_bar)
-    print(equals_bar + "=============" + equals_bar)
-    print()
-    print("This checks the Python HAL's Usage of the C++ API, and reports errors for\n"
-          "incorrect C++ API Calls, which would cause segmentation faults. This should\n"
-          "be 100% correct, without errors.")
-    print()
-
+    check_type = sys.argv[2]
+    
+    py_end_output = compare_header_dirs([hal], get_hal_dirs(hal_dir))
     c_end_output = scan_c_end(hal, py_end_output)
+    
+    if check_type in ['all', 'c']:
+        print("\n\n\n")
+        print(equals_bar + "=================" + equals_bar)
+        print(equals_bar + "HAL C Definitions" + equals_bar)
+        print(equals_bar + "=================" + equals_bar)
+        print()
+        print("For each HAL function defined in a C/C++ header file, check")
+        print("to see if there is a defined python function.")
+        print()
+        
+        text_list = list()
+        for method in sort_by_fname(py_end_output["methods"]):
+            text_list.extend(stringize_method_summary(method))
+        for cls in sort_by_fname(py_end_output["classes"]):
+            text_list.extend(stringize_class_summary(cls))
+        print_list(text_list)
 
-    text_list = list()
-    for method in sort_by_fname(c_end_output["methods"]):
-        text_list.extend(stringize_method_summary(method))
-    for cls in sort_by_fname(c_end_output["classes"]):
-        text_list.extend(stringize_class_summary(cls))
-    print_list(text_list)
+    if check_type in ['all', 'py']:
+        print("\n\n\n")
+        print(equals_bar + "======================" + equals_bar)
+        print(equals_bar + "Python HAL definitions" + equals_bar)
+        print(equals_bar + "======================" + equals_bar)
+        print()
+        print("For each Python definition of a HAL function, check its method signature")
+        print("against the C API and verify that it is correct.")
+        print()
+        print("This output should be 100% correct, as errors here can potentially")
+        print("cause segfaults.")
+        print()
+        
+        text_list = list()
+        for method in sort_by_fname(c_end_output["methods"]):
+            text_list.extend(stringize_method_summary(method))
+        for cls in sort_by_fname(c_end_output["classes"]):
+            text_list.extend(stringize_class_summary(cls))
+        print_list(text_list)
     
     # Print errors at the end, so we don't have to move the terminal
     print()
-    print("Python API: {} Errors, {} Ignored errors".format(py_end_output["errors"], py_end_output["ignored_errors"]))
-    print("HAL API:    {} Errors, {} Ignored errors".format(c_end_output["errors"], c_end_output["ignored_errors"]))
+    print("C++ API: {} Errors, {} Ignored errors".format(py_end_output["errors"], py_end_output["ignored_errors"]))
+    print("{} API:    {} Errors, {} Ignored errors".format(c_end_output['name'], c_end_output["errors"], c_end_output["ignored_errors"]))
     print()
     
