@@ -34,8 +34,8 @@ def compare_header_dirs(python_object, header_dirs):
 
     #Get all header files in header_dirs
     header_files = list()
-    for dir in header_dirs:
-        header_files.extend([os.path.join(dir, s) for s in os.listdir(dir)])
+    for header_dir in header_dirs:
+        header_files.extend([os.path.join(header_dir, s) for s in os.listdir(header_dir)])
 
     #Get the .. not_implemented ignore flags in the docstring of python_object
     children_to_ignore = parse_docstring(python_object.__doc__)
@@ -46,9 +46,10 @@ def compare_header_dirs(python_object, header_dirs):
         #Make sure it is a .hpp file
         if os.path.splitext(header_file)[1] != ".hpp":
             continue
-
+        
         #For each class declaration
         header = CppHeaderParser.CppHeader(header_file)
+        filename = os.path.basename(header_file)
 
         #Scan classes
         for c_class_name in header.classes:
@@ -61,7 +62,7 @@ def compare_header_dirs(python_object, header_dirs):
             if hasattr(python_object, c_class["name"]):
                 python_child = getattr(python_object, c_class["name"])
 
-            class_output = compare_class(python_child, c_class)
+            class_output = compare_class(python_child, c_class, filename)
 
             #Collect errors
             output["ignored_errors"] += class_output["ignored_errors"]
@@ -82,7 +83,7 @@ def compare_header_dirs(python_object, header_dirs):
             if hasattr(python_object, c_method["name"]):
                 python_child = getattr(python_object, c_method["name"])
 
-            method_output = compare_function(python_child, c_method, True)
+            method_output = compare_function(python_child, c_method, True, filename)
 
             #Collect errors
             output["ignored_errors"] += method_output["ignored_errors"]
@@ -92,15 +93,20 @@ def compare_header_dirs(python_object, header_dirs):
             else:
                 output["errors"] += method_output["errors"]
             output["methods"].append(method_output)
+            
+        # Scan variables (TODO)
+        for c_variable in header.variables:
+            pass
     
     return output
 
-def compare_class(python_object, c_object):
+def compare_class(python_object, c_object, filename):
     """
     Compares python_object and c_object recursively, and returns a summary of the differences.
     """
     #Put together dictionary of info
     output = {}
+    output["filename"] = filename
     output["name"] = c_object["name"]
     output["present"] = python_object is not None
     output["errors"] = 0
@@ -128,7 +134,7 @@ def compare_class(python_object, c_object):
             python_subclass = getattr(python_object, python_subclass_name)
 
         #Compare the subclass
-        subclass_output = compare_class(python_subclass, c_subclass)
+        subclass_output = compare_class(python_subclass, c_subclass, filename)
 
         #Collect errors from subclass before saving it
         output["ignored_errors"] += subclass_output["ignored_errors"]
@@ -157,7 +163,7 @@ def compare_class(python_object, c_object):
             python_method = getattr(python_object, python_method_name)
 
         #Compare the method.
-        method_output = compare_function(python_method, c_method, False)
+        method_output = compare_function(python_method, c_method, False, filename)
 
         #Collect errors from the comparison
         output["ignored_errors"] += method_output["ignored_errors"]
@@ -171,13 +177,14 @@ def compare_class(python_object, c_object):
     return output
 
 
-def compare_function(python_object, c_object, check_fndata):
+def compare_function(python_object, c_object, check_fndata, filename):
     """
     Compares python_object and c_object, and returns a summary of the differences.
     """
     
     #Put together dictionary of front output info
     output = {}
+    output["filename"] = filename
     output["name"] = c_object["name"]
     output["present"] = python_object is not None
     output["errors"] = 0
@@ -278,19 +285,21 @@ def scan_c_end(python_object, summary):
 
             #Get fndata
             name, restype, params, out = obj.fndata
-
-
+            
             #Find c object
             c_object = None
+            fname = ''
             for m in summary["methods"]:
                 if m["name"] == name:
                     c_object = m
+                    fname = m['filename']
                     break
 
             #Put together dictionary of info
             method_summary = dict()
             method_summary["present"] = c_object is not None
             method_summary["name"] = name
+            method_summary["filename"] = fname
             method_summary["errors"] = 0
             method_summary["ignored_errors"] = 0
             if not method_summary["present"]:
@@ -539,7 +548,13 @@ def stringize_method_summary(summary):
     if 'returns' in summary:
         text = summary['returns'] + ' '
     text += summary["name"] + arguments + " " + status_message
-    return [{"text": text, "color": status_color}, ]
+    return [{"text": text, "color": status_color, 'filename': summary['filename']}, ]
+
+def stringize_text(text):
+    return {'text': text}
+
+def sort_by_fname(l):
+    return sorted(l, key=lambda i: i['filename'])
 
 def print_list(inp):
     """
@@ -547,12 +562,23 @@ def print_list(inp):
     Prints inp as colored text.
     """
     #For each
+    
+    last_filename = None
+    
     for text in inp:
-        if text["color"] == "green":
+        filename = text.get('filename')
+        if filename:
+            if last_filename != filename:
+                print("\n", filename)
+            
+            last_filename = filename
+        
+        color = text.get('color')
+        if color == "green":
             print(green_head + text["text"] + end_head)
-        elif text["color"] == "red":
+        elif color == "red":
             print(red_head + text["text"] + end_head)
-        elif text["color"] == "orange":
+        elif color == "orange":
             print(orange_head + text["text"] + end_head)
         else:
             print(text["text"])
@@ -568,6 +594,7 @@ if __name__ == "__main__":
         print("Usage: python hal_scanner.py wpilib_path")
         exit(1)
 
+    hal_dir = sys.argv[1]
 
     print("\n\n\n")
     print(equals_bar + "==============" + equals_bar)
@@ -577,12 +604,12 @@ if __name__ == "__main__":
     print("This compares the HAL API, what is directly used by the python wpilib,\n"
           "to the c++ API and reports errors and inconsistencies.")
     print()
-    py_end_output = compare_header_dirs(hal, get_hal_dirs(sys.argv[1]))
+    py_end_output = compare_header_dirs(hal, get_hal_dirs(hal_dir))
 
     text_list = list()
-    for method in py_end_output["methods"]:
+    for method in sort_by_fname(py_end_output["methods"]):
         text_list.extend(stringize_method_summary(method))
-    for cls in py_end_output["classes"]:
+    for cls in sort_by_fname(py_end_output["classes"]):
         text_list.extend(stringize_class_summary(cls))
     print_list(text_list)
 
@@ -599,9 +626,9 @@ if __name__ == "__main__":
     c_end_output = scan_c_end(hal, py_end_output)
 
     text_list = list()
-    for method in c_end_output["methods"]:
+    for method in sort_by_fname(c_end_output["methods"]):
         text_list.extend(stringize_method_summary(method))
-    for cls in c_end_output["classes"]:
+    for cls in sort_by_fname(c_end_output["classes"]):
         text_list.extend(stringize_class_summary(cls))
     print_list(text_list)
     
