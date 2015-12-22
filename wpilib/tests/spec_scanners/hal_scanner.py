@@ -321,7 +321,7 @@ def scan_c_end(python_object, summary):
             method_summary["errors"] = []
             method_summary["ignored_errors"] = 0
             if not method_summary["present"]:
-                method_summary["errors"] += 1
+                method_summary["errors"].append("missing c object")
             method_summary["ignored"] = False
             method_summary["parameters"] = list()
             
