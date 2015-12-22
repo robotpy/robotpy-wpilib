@@ -635,7 +635,7 @@ def stringize_method_to_hal(summary):
             ptrs.append(arg['name'])
         
     if len(ptrs):
-        text += ", out=['" + "', '".join(ptrs) + '"]'
+        text += ', out=["' + '", "'.join(ptrs) + '"]'
         
     text += ")"
     
