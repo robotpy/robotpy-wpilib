@@ -4,6 +4,9 @@ import sys
 import CppHeaderParser
 import inspect
 
+from argparse import ArgumentParser
+import argparse
+
 green_head = "\033[92m"
 red_head = "\033[91m"
 orange_head = "\033[93m"
@@ -414,28 +417,60 @@ def scan_c_end(python_object, summary):
 
     return output
 
+_translate_obj_aliases = [
+   ["int32", "int", "i", "int32_t", "c_int", 'CTR_Code'],
+   ["double", "d", "c_double"],
+   ["float", "f", "c_float"],
+   ["char", "z"],
+   ["void", "P"],
+   ["int8", "int8_t", "c_int8", "b"],
+   ["uint8", "uint8_t", "c_uint8", "B"],
+   ["int16", "int16_t", "c_int16", "h", "c_short", "c_short_t", "short"],
+   ["uint16", "uint16_t", "c_uint16", "H", "c_ushort", "c_ushort_t", "unsigned short"],
+   ["uint32", "uint", "u", "c_uint", "I", "uint32_t"],
+   ["uint64", "uint64_t", "c_uint64", "int64", "int64_t", "c_int64", "long", "l", "longlong", "c_long", "long_t"],
+   ["bool", "?"]
+]
+
 def translate_obj(obj):
     """
     Find the standard term for obj
     :param obj: A string name of a c type
     :returns The standard term for obj
     """
-    aliases = [["int32", "int", "i", "int32_t", "c_int", 'CTR_Code'],
-               ["double", "d", "c_double"],
-               ["float", "f", "c_float"],
-               ["char", "z"],
-               ["void", "P"],
-               ["int8", "int8_t", "c_int8", "b"],
-               ["uint8", "uint8_t", "c_uint8", "B"],
-               ["int16", "int16_t", "c_int16", "h", "c_short", "c_short_t", "short"],
-               ["uint16", "uint16_t", "c_uint16", "H", "c_ushort", "c_ushort_t", "unsigned short"],
-               ["uint32", "uint", "u", "c_uint", "I", "uint32_t"],
-               ["uint64", "uint64_t", "c_uint64", "int64", "int64_t", "c_int64", "long", "l", "longlong", "c_long", "long_t"],
-               ["bool", "?"]]
-    for alias in aliases:
+    
+    for alias in _translate_obj_aliases:
         if obj in alias:
             return alias[0]
     return obj
+
+_translate_c_aliases = {
+    'void': ('None', False),
+    'int64_t': ('C.c_int64', False),
+    'uint64_t': ('C.c_uint64', False),
+    'int32_t': ('C.c_int32', False),
+    'uint32_t': ('C.c_uint32', False),
+    'int8_t': ('C.c_int8', False),
+    'uint8_t': ('C.c_uint8', False),
+    'int': ('C.c_int', False),
+    'bool': ('C.c_bool', False),
+    'double': ('C.c_double', False),
+    'float': ('C.c_float', False),
+    'char': ('C.c_char', False) 
+}
+
+def __translate_c_aliases_ptrs():
+    ptrs = {}
+    for k, v in _translate_c_aliases.items():
+        ptrs['%s *' % k] = ('C.POINTER(%s)' % v[0], True)
+        
+    _translate_c_aliases.update(ptrs)
+
+__translate_c_aliases_ptrs()
+
+def translate_c_to_py(obj):
+    return _translate_c_aliases.get(obj, (obj, False))
+    
 
 def parse_docstring(docstring):
     '''
@@ -566,7 +601,55 @@ def stringize_method_summary(summary):
     if 'returns' in summary:
         text = summary['returns'] + ' '
     text += summary["name"] + arguments + " " + status_message
-    return [{"text": text, "color": status_color, 'filename': summary['filename']}, ]
+    ret = [{"text": text, "color": status_color, 'filename': summary['filename']}, ]
+    return ret
+
+def stringize_method_to_hal(summary):
+    
+    functype = '_RETFUNC'
+    retval = summary.get('returns')
+    params = summary['parameters'][:]
+    
+    if retval == 'CTR_Code':
+        functype = '_CTRFUNC'
+        params = params[1:]
+    elif len(params) and params[-1]['name'] == 'status':
+        functype = '_STATUSFUNC'
+        params.pop()
+    
+    text = summary['name'] + ' = ' + functype + '("' + summary['name'] + '"'
+    
+    if retval != 'CTR_Code':
+        if retval:
+            text += ', ' + translate_c_to_py(retval)[0]
+        else:
+            text += ', None'
+    
+    ptrs = []
+    
+    for arg in params:
+        argtype, is_ptr = translate_c_to_py(arg['type'])
+        text += ', ("' + arg['name'] + '", ' + argtype + ')'
+        
+        if is_ptr:
+            ptrs.append(arg['name'])
+        
+    if len(ptrs):
+        text += ", out=['" + "', '".join(ptrs) + '"]'
+        
+    text += ")"
+    
+    return [{'text': text, 'filename': summary['filename']}] 
+
+def stringize_method_to_halsim(summary):
+    
+    text = 'def ' + summary['name'] + '(' + \
+            ', '.join(arg['name'] for arg in summary['parameters']) + '):'
+    
+    text += '\n    assert False'
+    text += '\n'
+    
+    return [{'text': text, 'filename': summary['filename']}] 
 
 def stringize_text(text):
     return {'text': text}
@@ -607,18 +690,19 @@ if __name__ == "__main__":
     # Guarantee that this is being ran on the current source tree
     sys.path.insert(0, join(dirname(__file__), '..', '..', '..', 'hal-base'))
     import hal
-
-    if len(sys.argv) < 3:
-        print("Usage: python hal_scanner.py wpilib_path [all|c|py]")
-        exit(1)
-
-    hal_dir = sys.argv[1]
-    check_type = sys.argv[2]
     
-    py_end_output = compare_header_dirs([hal], get_hal_dirs(hal_dir))
+    parser = ArgumentParser()
+    parser.add_argument('hal_dir')
+    parser.add_argument('check_type', type=str, choices=['all', 'c', 'py'])
+    
+    parser.add_argument('--missing', type=str, choices=['c', 'pyhal', 'halsim'], default='c')
+    
+    args = parser.parse_args()
+ 
+    py_end_output = compare_header_dirs([hal], get_hal_dirs(args.hal_dir))
     c_end_output = scan_c_end(hal, py_end_output)
     
-    if check_type in ['all', 'c']:
+    if args.check_type in ['all', 'c']:
         print("\n\n\n")
         print(equals_bar + "=================" + equals_bar)
         print(equals_bar + "HAL C Definitions" + equals_bar)
@@ -630,12 +714,20 @@ if __name__ == "__main__":
         
         text_list = list()
         for method in sort_by_fname(py_end_output["methods"]):
-            text_list.extend(stringize_method_summary(method))
+            if method['present'] or args.missing == 'c':
+                text_list += stringize_method_summary(method)
+                
+            if not method['present']:
+                if args.missing == 'pyhal':
+                    text_list += stringize_method_to_hal(method)
+                if args.missing == 'halsim':
+                    text_list += stringize_method_to_halsim(method)
+        
         for cls in sort_by_fname(py_end_output["classes"]):
             text_list.extend(stringize_class_summary(cls))
         print_list(text_list)
 
-    if check_type in ['all', 'py']:
+    if args.check_type in ['all', 'py']:
         print("\n\n\n")
         print(equals_bar + "======================" + equals_bar)
         print(equals_bar + "Python HAL definitions" + equals_bar)
