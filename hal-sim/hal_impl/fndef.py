@@ -5,6 +5,7 @@
 
 import ctypes as C
 import inspect
+import os
 
 from . import functions as _dll
 
@@ -105,9 +106,20 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
              errcheck=None, handle_missing=False):
 
     # get func
-    fn = getattr(_dll, name)
+    try:
+        fn = getattr(_dll, name)
+    except AttributeError:
+        # only for use in the scanner
+        if os.environ.get('HAL_NOSTRICT'):
+            return
+        raise
 
-    fn_body = gen_func(fn, name, restype, params, out)
+    try:
+        fn_body = gen_func(fn, name, restype, params, out)
+    except AssertionError:
+        if os.environ.get('HAL_NOSTRICT'):
+            return
+        raise
     #print(fn_body)
 
     # exec:

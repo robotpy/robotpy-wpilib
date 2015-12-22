@@ -686,18 +686,28 @@ def print_list(inp):
 
 
 if __name__ == "__main__":
-
-    # Guarantee that this is being ran on the current source tree
-    sys.path.insert(0, join(dirname(__file__), '..', '..', '..', 'hal-base'))
-    import hal
     
     parser = ArgumentParser()
     parser.add_argument('hal_dir')
     parser.add_argument('check_type', type=str, choices=['all', 'c', 'py'])
     
+    parser.add_argument('--nostrict', action='store_true', default=False)
     parser.add_argument('--missing', type=str, choices=['c', 'pyhal', 'halsim'], default='c')
     
     args = parser.parse_args()
+    
+    if args.nostrict:
+        os.environ['HAL_NOSTRICT'] = '1'
+    
+    # Guarantee that this is being ran on the current source tree
+    sys.path.insert(0, join(dirname(__file__), '..', '..', '..', 'hal-base'))
+    try:
+        import hal
+    except AttributeError:
+        print("Note: you may want to specify --nostrict to avoid seeing this error")
+        print()
+        raise
+    
  
     py_end_output = compare_header_dirs([hal], get_hal_dirs(args.hal_dir))
     c_end_output = scan_c_end(hal, py_end_output)
