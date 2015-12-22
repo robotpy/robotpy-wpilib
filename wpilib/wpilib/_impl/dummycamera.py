@@ -1,3 +1,4 @@
+# novalidate
 import threading
 
 __all__ = ["USBCamera", "CameraServer"]

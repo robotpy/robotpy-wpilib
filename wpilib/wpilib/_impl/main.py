@@ -1,3 +1,4 @@
+# novalidate
 
 import argparse
 import inspect

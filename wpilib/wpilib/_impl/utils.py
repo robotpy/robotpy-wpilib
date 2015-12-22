@@ -1,3 +1,4 @@
+# novalidate
 
 import sys
 import inspect

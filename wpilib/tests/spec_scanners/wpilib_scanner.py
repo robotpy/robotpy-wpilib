@@ -20,8 +20,7 @@ arrowtab = "--> "
 
 def get_wpilib_dirs(wpilib_dir):
     paths = list()
-    paths.append(join(wpilib_dir, 'wpilibJavaDevices', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj'))
-    paths.append(join(wpilib_dir, 'wpilibJava', 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj'))
+    paths.append(join(wpilib_dir, 'src', 'athena', 'java', 'edu', 'wpi', 'first', 'wpilibj'))
     return paths
 
 def compare_folders(python_object, java_dirs):
