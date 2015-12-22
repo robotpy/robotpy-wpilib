@@ -9,9 +9,10 @@ setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')
 base_package = 'hal_impl'
 version_file = join(setup_dir, base_package, 'version.py')
-hal_version = 'jenkins-stable-2015.340-112-g4e46692'
+hal_version = 'jenkins-stable-2015.340-270-g9316933'
 hal_site = 'http://www.tortall.net/~robotpy/hal'
-hal_file = join(setup_dir, base_package, 'libHALAthena_shared.so')
+hal_base_file = 'libHALAthena.so'
+hal_file = join(setup_dir, base_package, hal_base_file)
 
 __version__ = "master"
 __hal_version__ = None
@@ -23,13 +24,13 @@ if exists(version_file):
 
 # Download the HAL if required
 if not exists(hal_file) or __hal_version__ != hal_version:
-    print("Downloading libHALAthena_shared.so")
+    print("Downloading", hal_base_file)
     def _reporthook(count, blocksize, totalsize):
         percent = int(count*blocksize*100/totalsize)
         sys.stdout.write("\r%02d%%" % percent)
         sys.stdout.flush()
 
-    urlretrieve("%s/%s/libHALAthena_shared.so" % (hal_site, hal_version),
+    urlretrieve("%s/%s/%s" % (hal_site, hal_version, hal_base_file),
                 hal_file, _reporthook)
 
 # Automatically generate a version.py based on the git version
@@ -70,7 +71,7 @@ setup(
     url='https://github.com/robotpy',
     keywords='frc first robotics hal can',
     packages=['hal_impl'],
-    package_data={'hal_impl': ['libHALAthena_shared.so']},
+    package_data={'hal_impl': [hal_base_file]},
     install_requires='robotpy-hal-base==' + version, # is this a bad idea?
     license="BSD License",
     classifiers=[

@@ -71,6 +71,11 @@ class HALUsageReporting:
     kResourceType_VictorSP = 50
     kResourceType_TalonSRX = 51
     kResourceType_CANTalonSRX = 52
+    kResourceType_ADXL362 = 53
+    kResourceType_ADXRS450 = 54
+    kResourceType_RevSPARK = 55
+    kResourceType_MindsensorsSD540 = 56
+    kResourceType_DigitalFilter = 57
 
     # enum tInstances
     kLanguage_LabVIEW = 1
@@ -83,6 +88,7 @@ class HALUsageReporting:
 
     kFramework_Iterative = 1
     kFramework_Simple = 2
+    kFramework_CommandControl = 3
 
     kRobotDrive_ArcadeStandard = 1
     kRobotDrive_ArcadeButtonSpin = 2

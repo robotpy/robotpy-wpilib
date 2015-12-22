@@ -21,7 +21,7 @@ class PowerDistributionPanel(SensorBase):
 
     def getVoltage(self):
         """
-            Query the voltage of the PDP
+            Query the input voltage of the PDP
 
             :returns: The voltage of the PDP in volts
             :rtype: float
@@ -46,7 +46,7 @@ class PowerDistributionPanel(SensorBase):
             :rtype: float
         """
         SensorBase.checkPDPChannel(channel)
-        return hal.getPDPChannelCurrent(channel, self.module)
+        return hal.getPDPChannelCurrent(self.module, channel)
     
     def getTotalCurrent(self):
         """

@@ -17,13 +17,17 @@ __all__ = ["MUTEX_ID", "MULTIWAIT_ID",
 
 
 # pthread opaque structures
-class _pthread_mutex_t(C.Structure):
+class _priority_mutex(C.Structure):
     pass
-MUTEX_ID = C.POINTER(_pthread_mutex_t)
+MUTEX_ID = C.POINTER(_priority_mutex)
 
-class _pthread_cond_t(C.Structure):
+class _priority_condition_variable(C.Structure):
     pass
-MULTIWAIT_ID = C.POINTER(_pthread_cond_t)
+MULTIWAIT_ID = C.POINTER(_priority_condition_variable)
+
+class _priority_condition_variable_native_handle(C.Structure):
+    pass
+NATIVE_MULTIWAIT_ID = C.POINTER(_priority_condition_variable_native_handle)
 
 
 #############################################################################

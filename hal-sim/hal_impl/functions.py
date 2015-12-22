@@ -116,6 +116,10 @@ def getPort(pin):
 def getPortWithModule(module, pin):
     return types.Port(pin, module)
 
+def freePort(port):
+    port.pin = None
+    port.module = None
+
 def _getHALErrorMessage(code):
     if code == 0:
         return ''
@@ -359,6 +363,9 @@ def initializeAnalogOutputPort(port, status):
     hal_data['analog_out'][port.pin]['initialized'] = True
     return types.AnalogPort(port)
 
+def freeAnalogOutputPort(analog_port):
+    hal_data['analog_out'][analog_port.pin]['initialized'] = False
+
 def setAnalogOutput(analog_port, voltage, status):
     status.value = 0
     hal_data['analog_out'][analog_port.pin]['output'] = voltage
@@ -374,6 +381,9 @@ def initializeAnalogInputPort(port, status):
     status.value = 0
     hal_data['analog_in'][port.pin]['initialized'] = True
     return types.AnalogPort(port)
+
+def freeAnalogInputPort(analog_port):
+    hal_data['analog_in'][analog_port.pin]['initialized'] = False
 
 def checkAnalogModule(module):
     return module == 1
@@ -640,6 +650,9 @@ def initializeDigitalPort(port, status):
     status.value = 0
     return types.DigitalPort(port)
 
+def freeDigitalPort(digital_port):
+    digital_port.pin = None
+
 def checkPWMChannel(digital_port):
     return digital_port.pin < kPwmPins
 
@@ -825,6 +838,21 @@ def isAnyPulsing(status):
             return True
     return False
     
+def setFilterSelect(digital_port, filter_idx, status):
+    status.value = 0
+    assert False # TODO
+
+def getFilterSelect(digital_port, status):
+    status.value = 0
+    assert False # TODO
+
+def setFilterPeriod(filter_idx, value, status):
+    status.value = 0
+    assert False # TODO
+
+def getFilterPeriod(filter_idx, status):
+    status.value = 0
+    assert False # TODO
 
 #
 # Counter
@@ -1061,6 +1089,38 @@ def spiGetHandle(port):
 
 def spiSetHandle(port, handle):
     assert False
+    
+def spiInitAccumulator(port,
+                       period, cmd, xfer_size, valid_mask, valid_value,
+                       data_shift, data_size, is_signed, big_endian, status):
+    assert False
+    
+def spiFreeAccumulator(port, status):
+    assert False
+    
+def spiResetAccumulator(port, status):
+    assert False
+
+def spiSetAccumulatorCenter(port, center, status):
+    assert False
+    
+def spiSetAccumulatorDeadband(port, deadband, status):
+    assert False
+    
+def spiGetAccumulatorLastValue(port, status):
+    assert False
+    
+def spiGetAccumulatorValue(port, status):
+    assert False
+    
+def spiGetAccumulatorCount(port, status):
+    assert False
+
+def spiGetAccumulatorAverage(port, status):
+    assert False
+    
+def spiGetAccumulatorOutput(port, status):
+    assert False
 
 #
 # i2c
@@ -1121,7 +1181,7 @@ def setInterruptUpSourceEdge(interrupt, rising_edge, falling_edge, status):
 # Notifier
 #############################################################################
 
-def initializeNotifier(processQueue, status):
+def initializeNotifier(processQueue, param, status):
     assert False # TODO
 
 def cleanNotifier(notifier, status):
@@ -1146,7 +1206,7 @@ def getPDPVoltage(module, status):
     status.value = 0
     return hal_data['pdp']['voltage']
 
-def getPDPChannelCurrent(channel, module, status):
+def getPDPChannelCurrent(module, channel, status):
     if channel < 0 or channel >= len(hal_data['pdp']['current']):
         status.value = CTR_InvalidParamValue
         return 0
@@ -1243,12 +1303,20 @@ def initializeSolenoidPort(port, status):
     hal_data['solenoid'][port.pin]['value'] = False 
     return types.SolenoidPort(port)
 
+def freeSolenoidPort(port):
+    port.pin = None
+
 def checkSolenoidModule(module):
     return module < 63
 
 def getSolenoid(solenoid_port, status):
     status.value = 0
     return hal_data['solenoid'][solenoid_port.pin]['value']
+
+def getAllSolenoids(solenoid_port, status):
+    status.value = 0
+    assert False
+    return 0
 
 def setSolenoid(solenoid_port, value, status):
     status.value = 0
@@ -1274,7 +1342,14 @@ def clearAllPCMStickyFaults_sol(solenoid_port, status):
 #############################################################################
 # TalonSRX
 #############################################################################
-def c_TalonSRX_Create(deviceNumber, controlPeriodMs):
+def c_TalonSRX_Create1(deviceNumber):
+    return c_TalonSRX_Create3(deviceNumber, 0, 0)
+
+def c_TalonSRX_Create2(deviceNumber, controlPeriodMs):
+    return c_TalonSRX_Create3(deviceNumber, 0, 0)
+
+def c_TalonSRX_Create3(deviceNumber, controlPeriodMs, enablePeriodMs):
+
     assert deviceNumber not in hal_data['CAN']
     
     hal_data['CAN'][deviceNumber] = data.NotifyDict({
@@ -1334,6 +1409,9 @@ def c_TalonSRX_Create(deviceNumber, controlPeriodMs):
 
 def c_TalonSRX_Destroy(handle):
     del hal_data['CAN'][handle.id]
+    
+def c_TalonSRX_Set(handle, value):
+    assert False
 
 def c_TalonSRX_SetParam(handle, paramEnum, value):
     hal_data['CAN'][handle.id]['params'][paramEnum] = value
@@ -1353,6 +1431,81 @@ def c_TalonSRX_GetParamResponseInt32(handle, paramEnum):
     assert paramEnum in params, "Parameter %s not set!" % constants.TalonSRXParam_tostr[paramEnum] # TODO: is this correct?
     return params[paramEnum]
 
+def c_TalonSRX_SetPgain(handle, slotIdx, gain):
+    assert False
+
+def c_TalonSRX_SetIgain(handle, slotIdx, gain):
+    assert False
+
+def c_TalonSRX_SetDgain(handle, slotIdx, gain):
+    assert False
+
+def c_TalonSRX_SetFgain(handle, slotIdx, gain):
+    assert False
+
+def c_TalonSRX_SetIzone(handle, slotIdx, zone):
+    assert False
+
+def c_TalonSRX_SetCloseLoopRampRate(handle, slotIdx, closeLoopRampRate):
+    assert False
+
+def c_TalonSRX_SetVoltageCompensationRate(handle, voltagePerMs):
+    assert False
+
+def c_TalonSRX_SetSensorPosition(handle, pos):
+    assert False
+
+def c_TalonSRX_SetForwardSoftLimit(handle, forwardLimit):
+    assert False
+
+def c_TalonSRX_SetReverseSoftLimit(handle, reverseLimit):
+    assert False
+
+def c_TalonSRX_SetForwardSoftEnable(handle, enable):
+    assert False
+
+def c_TalonSRX_SetReverseSoftEnable(handle, enable):
+    assert False
+
+def c_TalonSRX_GetPgain(handle, slotIdx):
+    assert False
+
+def c_TalonSRX_GetIgain(handle, slotIdx):
+    assert False
+
+def c_TalonSRX_GetDgain(handle, slotIdx):
+    assert False
+
+def c_TalonSRX_GetFgain(handle, slotIdx):
+    assert False
+
+def c_TalonSRX_GetIzone(handle, slotIdx):
+    assert False
+
+def c_TalonSRX_GetCloseLoopRampRate(handle, slotIdx):
+    assert False
+
+def c_TalonSRX_GetVoltageCompensationRate(handle):
+    assert False
+
+def c_TalonSRX_GetForwardSoftLimit(handle):
+    assert False
+
+def c_TalonSRX_GetReverseSoftLimit(handle):
+    assert False
+
+def c_TalonSRX_GetForwardSoftEnable(handle):
+    assert False
+
+def c_TalonSRX_GetReverseSoftEnable(handle):
+    assert False
+
+def c_TalonSRX_GetPulseWidthRiseToFallUs(handle):
+    assert False
+
+def c_TalonSRX_IsPulseWidthSensorPresent(handle):
+    assert False
+
 def c_TalonSRX_SetStatusFrameRate(handle, frameEnum, periodMs):
     pass
 
@@ -1363,6 +1516,27 @@ def c_TalonSRX_ClearStickyFaults(handle):
     hal_data['CAN'][handle.id]['stickyfault_revlim'] = 0
     hal_data['CAN'][handle.id]['stickyfault_forsoftlim'] = 0
     hal_data['CAN'][handle.id]['stickyfault_revsoftlim'] = 0
+    
+def c_TalonSRX_ChangeMotionControlFramePeriod(handle, periodMs):
+    assert False
+
+def c_TalonSRX_ClearMotionProfileTrajectories(handle):
+    assert False
+
+def c_TalonSRX_GetMotionProfileTopLevelBufferCount(handle):
+    assert False
+
+def c_TalonSRX_IsMotionProfileTopLevelBufferFull(handle):
+    assert False
+
+def c_TalonSRX_PushMotionProfileTrajectory(handle, targPos, targVel, profileSlotSelect, timeDurMs, velOnly, isLastPoint, zeroPos):
+    assert False
+
+def c_TalonSRX_ProcessMotionProfileBuffer(handle):
+    assert False
+
+def c_TalonSRX_GetMotionProfileStatus(handle):
+    assert False
 
 def c_TalonSRX_GetFault_OverTemp(handle):
     return hal_data['CAN'][handle.id]['fault_overtemp']
@@ -1474,6 +1648,51 @@ def c_TalonSRX_GetResetFlags(handle):
 
 def c_TalonSRX_GetFirmVers(handle):
     return hal_data['CAN'][handle.id]['firmware_version']
+
+def c_TalonSRX_GetPulseWidthPosition(handle):
+    assert False
+
+def c_TalonSRX_GetPulseWidthVelocity(handle):
+    assert False
+
+def c_TalonSRX_GetPulseWidthRiseToRiseUs(handle):
+    assert False
+
+def c_TalonSRX_GetActTraj_IsValid(handle):
+    assert False
+
+def c_TalonSRX_GetActTraj_ProfileSlotSelect(handle):
+    assert False
+
+def c_TalonSRX_GetActTraj_VelOnly(handle):
+    assert False
+
+def c_TalonSRX_GetActTraj_IsLast(handle):
+    assert False
+
+def c_TalonSRX_GetOutputType(handle):
+    assert False
+
+def c_TalonSRX_GetHasUnderrun(handle):
+    assert False
+
+def c_TalonSRX_GetIsUnderrun(handle):
+    assert False
+
+def c_TalonSRX_GetNextID(handle):
+    assert False
+
+def c_TalonSRX_GetBufferIsFull(handle):
+    assert False
+
+def c_TalonSRX_GetCount(handle):
+    assert False
+
+def c_TalonSRX_GetActTraj_Velocity(handle):
+    assert False
+
+def c_TalonSRX_GetActTraj_Position(handle):
+    assert False
 
 def c_TalonSRX_SetDemand(handle, param):
     hal_data['CAN'][handle.id]['value'] = param
