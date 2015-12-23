@@ -1,3 +1,4 @@
+# validated: 2015-12-23 DS c3c35c6 athena/java/edu/wpi/first/wpilibj/RobotDrive.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -137,9 +138,6 @@ class RobotDrive(MotorSafety):
             self.rearRightMotor = controllerClass(self.rearRightMotor)
             self.allocatedSpeedControllers.append(self.rearRightMotor)
 
-        # all motors start non-inverted
-        self.invertedMotors = [1]*self.kMaxNumberOfMotors
-
         # other defaults
         self.maxOutput = RobotDrive.kDefaultMaxOutput
         self.sensitivity = RobotDrive.kDefaultSensitivity
@@ -158,23 +156,33 @@ class RobotDrive(MotorSafety):
 
 
     def drive(self, outputMagnitude, curve):
-        """Drive the motors at "speed" and "curve".
-
-        The speed and curve are -1.0 to +1.0 values where 0.0 represents
-        stopped and not turning. The algorithm for adding in the direction
-        attempts to provide a constant turn radius for differing speeds.
-
+        """Drive the motors at "outputMagnitude" and "curve".
+        
+        Both outputMagnitude and curve are -1.0 to +1.0 values, where 0.0
+        represents stopped and not turning. ``curve < 0`` will turn left and ``curve > 0``
+        will turn right.
+        
+        The algorithm for steering provides a constant turn radius for any normal
+        speed range, both forward and backward. Increasing m_sensitivity causes
+        sharper turns for fixed values of curve.
+        
         This function will most likely be used in an autonomous routine.
-
-        :param outputMagnitude: The forward component of the output magnitude
-            to send to the motors.
-        :param curve: The rate of turn, constant for different forward speeds.
+        
+        :param outputMagnitude: The speed setting for the outside wheel in a turn,
+               forward or backwards, +1 to -1.
+        :param curve: The rate of turn, constant for different forward speeds. Set
+               ``curve < 0`` for left turn or ``curve > 0`` for right turn.
+               
+        Set ``curve = e^(-r/w)`` to get a turn radius r for wheelbase w of your robot.
+        Conversely, turn radius r = -ln(curve)*w for a given value of curve and
+        wheelbase w.
         """
         if not RobotDrive.kArcadeRatioCurve_Reported:
             hal.HALReport(hal.HALUsageReporting.kResourceType_RobotDrive,
                           self.getNumMotors(),
                           hal.HALUsageReporting.kRobotDrive_ArcadeRatioCurve)
             RobotDrive.kArcadeRatioCurve_Reported = True
+        
         if curve < 0:
             value = math.log(-curve)
             ratio = (value - self.sensitivity) / (value + self.sensitivity)
@@ -226,6 +234,12 @@ class RobotDrive(MotorSafety):
         :param squaredInputs: Setting this parameter to True decreases the
             sensitivity at lower speeds.  Defaults to True if unspecified.
         """
+        if not RobotDrive.kTank_Reported:
+            hal.HALReport(hal.HALUsageReporting.kResourceType_RobotDrive,
+                          self.getNumMotors(),
+                          hal.HALUsageReporting.kRobotDrive_Tank)
+            RobotDrive.kTank_Reported = True
+        
         # keyword arguments
         leftStick = kwargs.pop("leftStick", None)
         rightStick = kwargs.pop("rightStick", None)
@@ -275,13 +289,6 @@ class RobotDrive(MotorSafety):
         # default to squared inputs if unspecified
         if squaredInputs is None:
             squaredInputs = True
-
-        # usage reporting
-        if not RobotDrive.kTank_Reported:
-            hal.HALReport(hal.HALUsageReporting.kResourceType_RobotDrive,
-                          self.getNumMotors(),
-                          hal.HALUsageReporting.kRobotDrive_Tank)
-            RobotDrive.kTank_Reported = True
 
         # square the inputs (while preserving the sign) to increase fine
         # control while permitting full power
@@ -335,6 +342,13 @@ class RobotDrive(MotorSafety):
         :param squaredInputs: Setting this parameter to True decreases the
             sensitivity at lower speeds.  Defaults to True if unspecified.
         """
+        
+        if not RobotDrive.kArcadeStandard_Reported:
+            hal.HALReport(hal.HALUsageReporting.kResourceType_RobotDrive,
+                          self.getNumMotors(),
+                          hal.HALUsageReporting.kRobotDrive_ArcadeStandard)
+            RobotDrive.kArcadeStandard_Reported = True
+        
         # keyword arguments
         stick = kwargs.pop("stick", None)
         moveStick = kwargs.pop("moveStick", None)
@@ -384,12 +398,6 @@ class RobotDrive(MotorSafety):
             squaredInputs = True
 
         # local variables to hold the computed PWM values for the motors
-        if not RobotDrive.kArcadeStandard_Reported:
-            hal.HALReport(hal.HALUsageReporting.kResourceType_RobotDrive,
-                          self.getNumMotors(),
-                          hal.HALUsageReporting.kRobotDrive_ArcadeStandard)
-            RobotDrive.kArcadeStandard_Reported = True
-
         moveValue = RobotDrive.limit(moveValue)
         rotateValue = RobotDrive.limit(rotateValue)
 
@@ -447,6 +455,7 @@ class RobotDrive(MotorSafety):
                           self.getNumMotors(),
                           hal.HALUsageReporting.kRobotDrive_MecanumCartesian)
             RobotDrive.kMecanumCartesian_Reported = True
+        
         xIn = x
         yIn = y
         # Negate y for the joystick.
@@ -463,10 +472,10 @@ class RobotDrive(MotorSafety):
         RobotDrive.normalize(wheelSpeeds)
 
 
-        self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.invertedMotors[self.MotorType.kFrontLeft] * self.maxOutput, self.syncGroup)
-        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.invertedMotors[self.MotorType.kFrontRight] * self.maxOutput, self.syncGroup)
-        self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.invertedMotors[self.MotorType.kRearLeft] * self.maxOutput, self.syncGroup)
-        self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.invertedMotors[self.MotorType.kRearRight] * self.maxOutput, self.syncGroup)
+        self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.maxOutput, self.syncGroup)
+        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.maxOutput, self.syncGroup)
+        self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.maxOutput, self.syncGroup)
+        self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.maxOutput, self.syncGroup)
 
         if self.syncGroup != 0:
             CANJaguar.updateSyncGroup(self.syncGroup)
@@ -492,6 +501,7 @@ class RobotDrive(MotorSafety):
                           self.getNumMotors(),
                           hal.HALUsageReporting.kRobotDrive_MecanumPolar)
             RobotDrive.kMecanumPolar_Reported = True
+        
         # Normalized for full power along the Cartesian axes.
         magnitude = RobotDrive.limit(magnitude) * math.sqrt(2.0)
         # The rollers are at 45 degree angles.
@@ -507,11 +517,10 @@ class RobotDrive(MotorSafety):
 
         RobotDrive.normalize(wheelSpeeds)
 
-
-        self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.invertedMotors[self.MotorType.kFrontLeft] * self.maxOutput, self.syncGroup)
-        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.invertedMotors[self.MotorType.kFrontRight] * self.maxOutput, self.syncGroup)
-        self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.invertedMotors[self.MotorType.kRearLeft] * self.maxOutput, self.syncGroup)
-        self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.invertedMotors[self.MotorType.kRearRight] * self.maxOutput, self.syncGroup)
+        self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.maxOutput, self.syncGroup)
+        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.maxOutput, self.syncGroup)
+        self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.maxOutput, self.syncGroup)
+        self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.maxOutput, self.syncGroup)
 
         if self.syncGroup != 0:
             CANJaguar.updateSyncGroup(self.syncGroup)
@@ -549,12 +558,12 @@ class RobotDrive(MotorSafety):
         rightOutput = RobotDrive.limit(rightOutput) * self.maxOutput
 
         if self.frontLeftMotor is not None:
-            self.frontLeftMotor.set(leftOutput * self.invertedMotors[self.MotorType.kFrontLeft], self.syncGroup)
-        self.rearLeftMotor.set(leftOutput * self.invertedMotors[self.MotorType.kRearLeft], self.syncGroup)
+            self.frontLeftMotor.set(leftOutput, self.syncGroup)
+        self.rearLeftMotor.set(leftOutput, self.syncGroup)
 
         if self.frontRightMotor is not None:
-            self.frontRightMotor.set(-rightOutput * self.invertedMotors[self.MotorType.kFrontRight], self.syncGroup)
-        self.rearRightMotor.set(-rightOutput * self.invertedMotors[self.MotorType.kRearRight], self.syncGroup)
+            self.frontRightMotor.set(-rightOutput, self.syncGroup)
+        self.rearRightMotor.set(-rightOutput, self.syncGroup)
 
         if self.syncGroup != 0:
             CANJaguar.updateSyncGroup(self.syncGroup)
@@ -582,8 +591,9 @@ class RobotDrive(MotorSafety):
     @staticmethod
     def rotateVector(x, y, angle):
         """Rotate a vector in Cartesian space."""
-        cosA = math.cos(math.radians(angle))
-        sinA = math.sin(math.radians(angle))
+        angle = math.radians(angle)
+        cosA = math.cos(angle)
+        sinA = math.sin(angle)
         return (x * cosA - y * sinA), (x * sinA + y * cosA)
 
     def setInvertedMotor(self, motor, isInverted):
@@ -597,7 +607,16 @@ class RobotDrive(MotorSafety):
         :param motor: The motor index to invert.
         :param isInverted: True if the motor should be inverted when operated.
         """
-        self.invertedMotors[motor] = -1 if isInverted else 1
+        if motor == self.MotorType.kFrontLeft:
+            self.frontLeftMotor.setInverted(isInverted)
+        elif motor == self.MotorType.kFrontRight:
+            self.frontRightMotor.setInverted(isInverted)
+        elif motor == self.MotorType.kRearLeft:
+            self.rearLeftMotor.setInverted(isInverted)
+        elif motor == self.MotorType.kRearRight:
+            self.rearRightMotor.setInverted(isInverted)
+        else:
+            raise ValueError("Invalid motor type specified")
 
     def setSensitivity(self, sensitivity):
         """Set the turning sensitivity.
@@ -618,6 +637,23 @@ class RobotDrive(MotorSafety):
         """
         self.maxOutput = maxOutput
 
+    def setCANJaguarSyncGroup(self, syncGroup):
+        """
+        Set the number of the sync group for the motor controllers. If the motor controllers are :class:`CANJaguar`s,
+        then they will be added to this sync group, causing them to update their values at the same time.
+
+        :param syncGroup: The update group to add the motor controllers to.
+        """
+        self.syncGroup = syncGroup
+        
+    def free(self):
+        self._RobotDrive_finalizer()
+        self.frontLeftMotor = None
+        self.frontRightMotor = None
+        self.rearLeftMotor = None
+        self.rearRightMotor = None
+        self.allocatedSpeedControllers = list()
+        self.setSafetyEnabled(False)
 
     def getDescription(self):
         return "Robot Drive"
@@ -641,21 +677,4 @@ class RobotDrive(MotorSafety):
         if self.rearRightMotor is not None: motors += 1
         return motors
 
-    def setCANJaguarSyncGroup(self, syncGroup):
-        """
-        Set the number of the sync group for the motor controllers. If the motor controllers are :class:`CANJaguar`s,
-        then they will be added to this sync group, causing them to update their values at the same time.
-
-        :param syncGroup: The update group to add the motor controllers to.
-        """
-        self.syncGroup = syncGroup
-
-    def free(self):
-        self._RobotDrive_finalizer()
-        self.frontLeftMotor = None
-        self.frontRightMotor = None
-        self.rearLeftMotor = None
-        self.rearRightMotor = None
-        self.allocatedSpeedControllers = list()
-        self.setSafetyEnabled(False)
-
+    

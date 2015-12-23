@@ -154,6 +154,7 @@ def drive4(wpimock, halmock):
     m3 = MagicMock()
     m4 = MagicMock()
     drive = wpimock.RobotDrive(m1, m2, m3, m4)
+    drive._test_motors = [m1, m3, m2, m4] # ordered by MotorType
     m1.reset_mock()
     m2.reset_mock()
     m3.reset_mock()
@@ -453,18 +454,16 @@ def test_rotateVector(angle, wpimock):
 @pytest.mark.parametrize("motor", ["kFrontLeft", "kFrontRight",
                                    "kRearLeft", "kRearRight"])
 def test_setInvertedMotor(motor, drive4):
-    motor = getattr(drive4.MotorType, motor)
-    assert drive4.invertedMotors[motor] == 1 # initial state is not inverted
-    drive4.setInvertedMotor(motor, True)
-    assert drive4.invertedMotors[motor] == -1 # inverted
-    drive4.setInvertedMotor(motor, False)
-    assert drive4.invertedMotors[motor] == 1 # not inverted
-    # drive to make sure it took effect
-    drive4.setLeftRightMotorOutputs(0.2, 0.3)
-    drive4.frontLeftMotor.set.assert_called_once_with(0.2*drive4.invertedMotors[drive4.MotorType.kFrontLeft], 0)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.2*drive4.invertedMotors[drive4.MotorType.kRearLeft], 0)
-    drive4.frontRightMotor.set.assert_called_once_with(-0.3*drive4.invertedMotors[drive4.MotorType.kFrontRight], 0)
-    drive4.rearRightMotor.set.assert_called_once_with(-0.3*drive4.invertedMotors[drive4.MotorType.kRearRight], 0)
+    motor_idx = getattr(drive4.MotorType, motor)
+    motor_obj = drive4._test_motors[motor_idx]
+    
+    drive4.setInvertedMotor(motor_idx, True)
+    motor_obj.setInverted.assert_called_once_with(True)
+    motor_obj.reset_mock()
+    
+    drive4.setInvertedMotor(motor_idx, False)
+    motor_obj.setInverted.assert_called_once_with(False)
+    motor_obj.reset_mock()
 
 def test_setSensitivity(drive_lr):
     drive_lr.setSensitivity(0.1)
