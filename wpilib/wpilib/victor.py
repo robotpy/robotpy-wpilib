@@ -1,3 +1,4 @@
+# validated: 2015-12-23 DS 6d854af athena/java/edu/wpi/first/wpilibj/Victor.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -51,6 +52,7 @@ class Victor(SafePWM):
         self.setPeriodMultiplier(self.PeriodMultiplier.k2X)
         self.setRaw(self.centerPwm)
         self.setZeroLatch()
+        self.isInverted = False
 
         LiveWindow.addActuatorChannel("Victor", self.getChannel(), self)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Victor,
@@ -71,8 +73,24 @@ class Victor(SafePWM):
         :param syncGroup: The update group to add this set to, pending
             updateSyncGroup().  If 0, update immediately.
         """
-        self.setSpeed(speed)
+        self.setSpeed(-speed if self.isInverted else speed)
         self.feed()
+
+    def setInverted(self, isInverted):
+        """
+        Common interface for inverting direction of a speed controller.
+
+        :param isInverted: The state of inversion (True is inverted).
+        """
+        self.isInverted = isInverted
+
+    def getInverted(self):
+        """
+        Common interface for the inverting direction of a speed controller.
+
+        :returns: The state of inversion (True is inverted).
+        """
+        return self.isInverted
 
     def get(self):
         """Get the recently set value of the PWM.

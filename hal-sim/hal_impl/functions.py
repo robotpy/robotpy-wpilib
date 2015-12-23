@@ -310,6 +310,10 @@ def HALReport(resource, instanceNumber, context=0, feature=None):
     hur = constants.HALUsageReporting
     if resource ==  hur.kResourceType_Jaguar:
         hal_data['pwm'][instanceNumber]['type'] = 'jaguar'
+    elif resource == hur.kResourceType_MindsensorsSD540:
+        hal_data['pwm'][instanceNumber]['type'] = 'sd540'
+    elif resource == hur.kResourceType_RevSPARK:
+        hal_data['pwm'][instanceNumber]['type'] = 'spark'
     elif resource == hur.kResourceType_Talon:
         hal_data['pwm'][instanceNumber]['type'] = 'talon'
     elif resource == hur.kResourceType_TalonSRX:

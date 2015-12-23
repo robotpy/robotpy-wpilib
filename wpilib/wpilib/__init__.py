@@ -57,6 +57,7 @@ from .robotdrive import *
 from .robotstate import *
 from .safepwm import *
 from .samplerobot import *
+from .sd540 import *
 from .sendable import *
 from .sendablechooser import *
 from .sensorbase import *
@@ -64,6 +65,7 @@ from .servo import *
 from .smartdashboard import *
 from .solenoidbase import *
 from .solenoid import *
+from .spark import *
 from .spi import *
 from .talon import *
 from .talonsrx import *

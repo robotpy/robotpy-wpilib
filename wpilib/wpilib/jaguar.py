@@ -1,3 +1,4 @@
+# validated: 2015-12-23 DS 6d854af athena/java/edu/wpi/first/wpilibj/Jaguar.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -40,7 +41,8 @@ class Jaguar(SafePWM):
         self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
         self.setRaw(self.centerPwm)
         self.setZeroLatch()
-
+        self.isInverted = False
+        
         hal.HALReport(hal.HALUsageReporting.kResourceType_Jaguar,
                       self.getChannel())
         LiveWindow.addActuatorChannel("Jaguar", self.getChannel(), self)
@@ -60,8 +62,24 @@ class Jaguar(SafePWM):
         :param syncGroup: The update group to add this set() to, pending
             updateSyncGroup().  If 0, update immediately.
         """
-        self.setSpeed(speed)
+        self.setSpeed(-speed if self.isInverted else speed)
         self.feed()
+        
+    def setInverted(self, isInverted):
+        """
+        Common interface for inverting the direction of a speed controller.
+
+        :param isInverted: The state of inversion (True is inverted).
+        """
+        self.isInverted = isInverted
+
+    def getInverted(self):
+        """
+        Common interface for inverting the direction of a speed controller.
+
+        :returns: The state of inversion (True is inverted)
+        """
+        return self.isInverted
 
     def get(self):
         """Get the recently set value of the PWM.

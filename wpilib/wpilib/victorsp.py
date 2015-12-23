@@ -1,3 +1,4 @@
+# validated: 2015-12-23 DS 6d854af athena/java/edu/wpi/first/wpilibj/VictorSP.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

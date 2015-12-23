@@ -6,65 +6,23 @@ from .data import hal_data
 # dealing directly with HW values is annoying
 #
 
-def reverseJaguarPWM(value):
-    ''' :returns: value between -1 and 1'''
-    
-    max_pos_pwm = 1809
-    min_pos_pwm = 1006
-    pos_scale = 803
-    max_neg_pwm = 1004
-    min_neg_pwm = 196
-    neg_scale = 808
-    
-    return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
+rev_types = {
+    'jaguar':   (1809, 1006, 803, 1004, 196, 808),
+    'sd540':    (1548, 1000, 548, 998, 439, 559),
+    'spark':    (1502, 1000, 502, 998, 498, 500),
+    'talon':    (1536, 1012, 524, 1010, 488, 522),
+    'talonsrx': (1503, 1000, 503, 998, 496, 502),
+    'victor':   (1526, 1006, 520, 1004, 525, 479),
+    'victorsp': (1503, 1000, 503, 998, 496, 502),
+}
 
-def reverseTalonPWM(value):
-    ''' :returns: value between -1 and 1'''
-    
-    max_pos_pwm = 1536
-    min_pos_pwm = 1012
-    pos_scale = 524
-    max_neg_pwm = 1010
-    min_neg_pwm = 488
-    neg_scale = 522
-    
-    return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
-
-def reverseTalonSRXPWM(value):
-    ''' :returns: value between -1 and 1'''
-    
-    max_pos_pwm = 1503
-    min_pos_pwm = 1000
-    pos_scale = 503
-    max_neg_pwm = 998
-    min_neg_pwm = 496
-    neg_scale = 502
-    
-    return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
-
-def reverseVictorPWM(value):
-    ''' :returns: value between -1 and 1'''
-    
-    max_pos_pwm = 1526
-    min_pos_pwm = 1006
-    pos_scale = 520
-    max_neg_pwm = 1004
-    min_neg_pwm = 525
-    neg_scale = 479
-    
-    return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
-
-def reverseVictorSPPWM(value):
-    ''' :returns: value between -1 and 1'''
-    
-    max_pos_pwm = 1503
-    min_pos_pwm = 1000
-    pos_scale = 503
-    max_neg_pwm = 998
-    min_neg_pwm = 496
-    neg_scale = 502
-    
-    return rev_pwm(value, max_pos_pwm, min_pos_pwm, pos_scale, max_neg_pwm, min_neg_pwm, neg_scale)
+# Calculate these numbers via:
+#
+# f = wpilib.Spark(1)
+# print(', '.join(str(i) for i in [f.getMaxPositivePwm(), f.getMinPositivePwm(),
+#               f.getPositiveScaleFactor(), f.getMaxNegativePwm(),
+#               f.getMinNegativePwm(), f.getNegativeScaleFactor()]))
+#
 
 def reverseByType(defining_val , value=None):
     ''' 
@@ -87,16 +45,9 @@ def reverseByType(defining_val , value=None):
         type = hal_data['pwm'][defining_val]['type']
         trans_val = hal_data['pwm'][defining_val]['raw_value']
     
-    if type == 'jaguar':
-        return reverseJaguarPWM(trans_val)
-    elif type == 'talon':
-        return reverseTalonPWM(trans_val)
-    elif type == 'talonsrx':
-        return reverseTalonSRXPWM(trans_val)
-    elif type == 'victor':
-        return reverseVictorPWM(trans_val)
-    elif type == 'victorsp':
-        return reverseVictorSPPWM(trans_val)
+    vals = rev_types.get(type)
+    if vals:
+        return rev_pwm(trans_val, *vals)
     else:
         # hal may not have been reported to yet so just set this to zero
         if type != None:

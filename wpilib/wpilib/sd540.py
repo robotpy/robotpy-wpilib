@@ -1,4 +1,4 @@
-# validated: 2015-12-23 DS 6d854af athena/java/edu/wpi/first/wpilibj/Talon.java
+# validated: 2015-12-23 DS fa903dd athena/java/edu/wpi/first/wpilibj/SD540.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -11,46 +11,46 @@ import hal
 from .livewindow import LiveWindow
 from .safepwm import SafePWM
 
-__all__ = ["Talon"]
+__all__ = ["SD540"]
 
-class Talon(SafePWM):
+class SD540(SafePWM):
     """
-        Cross the Road Electronics (CTRE) Talon and Talon SR Speed Controller via PWM
-        
-        .. not_implemented: initTalon
+        Mindsensors SD540 Speed Controller
+           
+        .. not_implemented: initSD540
     """
 
     def __init__(self, channel):
-        """Constructor for a Talon (original or Talon SR)
+        """Constructor.
 
-        :param channel: The PWM channel that the Talon is attached to. 0-9 are on-board, 10-19 are on the MXP port
-        :type  channel: int
-
+        :param channel: The PWM channel that the SD540 is attached to. 0-9 are on-board, 10-19 are on the MXP port
+        
         .. note ::
-
-            The Talon uses the following bounds for PWM values. These values
-            should work reasonably well for most controllers, but if users
-            experience issues such as asymmetric behavior around the deadband
-            or inability to saturate the controller in either direction,
-            calibration is recommended.  The calibration procedure can be
-            found in the Talon User Manual available from CTRE.
-
-            - 2.037ms = full "forward"
-            - 1.539ms = the "high end" of the deadband range
-            - 1.513ms = center of the deadband range (off)
-            - 1.487ms = the "low end" of the deadband range
-            - 0.989ms = full "reverse"
+        
+           Note that the SD540 uses the following bounds for PWM values. These
+           values should work reasonably well for most controllers, but if users
+           experience issues such as asymmetric behavior around the deadband or
+           inability to saturate the controller in either direction, calibration is
+           recommended. The calibration procedure can be found in the SD540 User
+           Manual available from Mindsensors.
+           
+           - 2.05ms = full "forward"
+           - 1.55ms = the "high end" of the deadband range
+           - 1.50ms = center of the deadband range (off)
+           - 1.44ms = the "low end" of the deadband range
+           - .94ms = full "reverse"
+        
         """
         super().__init__(channel)
-        self.setBounds(2.037, 1.539, 1.513, 1.487, 0.989)
+        self.setBounds(2.05, 1.55, 1.50, 1.44, .94)
         self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
         self.setRaw(self.centerPwm)
         self.setZeroLatch()
         self.isInverted = False
 
-        LiveWindow.addActuatorChannel("Talon", self.getChannel(), self)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Talon,
+        hal.HALReport(hal.HALUsageReporting.kResourceType_MindsensorsSD540,
                       self.getChannel())
+        LiveWindow.addActuatorChannel("SD540", self.getChannel(), self)
 
     def free(self):
         LiveWindow.removeComponent(self)
@@ -69,7 +69,7 @@ class Talon(SafePWM):
         """
         self.setSpeed(-speed if self.isInverted else speed)
         self.feed()
-
+        
     def setInverted(self, isInverted):
         """
         Common interface for inverting the direction of a speed controller.

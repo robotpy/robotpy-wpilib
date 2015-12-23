@@ -6,7 +6,8 @@ import pytest
 
 
 @pytest.mark.parametrize('clsname, ',
-                         ['Jaguar', 'Talon', 'TalonSRX', 'Victor', 'VictorSP'])
+                         ['Jaguar', 'SD540', 'Spark', 'Talon',
+                          'TalonSRX', 'Victor', 'VictorSP'])
 def test_controller(wpilib, hal_data, hal_impl_pwm_helpers, clsname):
     
     # create object/helper function
@@ -20,6 +21,8 @@ def test_controller(wpilib, hal_data, hal_impl_pwm_helpers, clsname):
         
     # call set
     for i in [-1, -.9, -.7, -.3, 0, .3, .7, .9, 1]:
+        obj.setInverted(False)
+        assert obj.getInverted() == False
         obj.set(i)
         
         # validate that get returns the correct value
@@ -33,4 +36,12 @@ def test_controller(wpilib, hal_data, hal_impl_pwm_helpers, clsname):
         assert abs(hal_impl_pwm_helpers.reverseByType(clsname ,hal_data['pwm'][2]['raw_value']) - i) < 0.01
         assert abs(hal_impl_pwm_helpers.reverseByType(2) - i) < 0.01
         assert abs(hal_data['pwm'][2]['value'] - i) < 0.01
+        
+        # Make sure inversion works too
+        obj.setInverted(True)
+        assert obj.getInverted() == True
+        
+        obj.set(i)
+        assert abs(obj.get() + i) < 0.01
+        
     
