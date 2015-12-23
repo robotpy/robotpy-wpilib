@@ -1,3 +1,4 @@
+# validated: 2015-12-22 DS de39877 athena/java/edu/wpi/first/wpilibj/PWM.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -18,6 +19,7 @@ def _freePWM(port):
     hal.setPWM(port, 0)
     hal.freePWMChannel(port)
     hal.freeDIO(port)
+    hal.freeDigitalPort(port)
 
 class PWM(LiveWindowSendable):
     """Raw interface to PWM generation in the FPGA.

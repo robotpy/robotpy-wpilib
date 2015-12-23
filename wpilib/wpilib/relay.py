@@ -1,3 +1,4 @@
+# validated: 2015-12-22 DS de39877 athena/java/edu/wpi/first/wpilibj/Relay.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -82,8 +83,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         self.direction = direction
 
         self._initRelay()
-
-        LiveWindow.addActuatorChannel("Relay", self.channel, self)
+        
         self.set(self.Value.kOff)
 
         MotorSafety.__init__(self)
@@ -108,6 +108,8 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         self._port_finalizer = weakref.finalize(self, _freeRelay, self._port)
 
         self.setSafetyEnabled(False)
+        
+        LiveWindow.addActuatorChannel("Relay", self.channel, self)
 
     @property
     def port(self):
