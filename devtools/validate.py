@@ -54,6 +54,17 @@ def find_suggestions(fname):
             if splitext(f)[0].lower() == fname:
                 yield relpath(join(root, f), orig_root)
 
+def choose_suggestion(fname):
+    suggestions = list(find_suggestions(fname))
+    if suggestions:
+        print("Suggestions:")
+        for i, s in enumerate(suggestions):
+            print(" ", i, s)
+        
+        v = input("Use? [0-%s,n] " % i)
+        if v != 'n':
+            return suggestions[int(v)]
+
 class ValidationInfo:
     
     @staticmethod
@@ -230,16 +241,7 @@ def action_validate(args):
     
     # if there's no orig_filename specified, then raise an error
     if not orig_fname:
-        suggestions = list(find_suggestions(fname))
-        if suggestions:
-            print("Suggestions:")
-            for i, s in enumerate(suggestions):
-                print(" ", i, s)
-            
-            v = input("Use? [0-%s,n] " % i)
-            if v != 'n':
-                orig_fname = suggestions[int(v)]
-        
+        orig_fname = choose_suggestion(fname)
         if not orig_fname:
             raise ValueError("Error: must specify original filename")
     
@@ -258,7 +260,14 @@ def action_novalidate(args):
     
     print(fname)
     print(info.line)
-    
+
+
+def action_show_log(args):
+    '''Shows logs of file in original root'''
+    fname = choose_suggestion(args.filename)
+    if fname:
+       with chdir(orig_root):
+           os.system('git log --follow -p %s' % fname) 
     
 
 if __name__ == '__main__':
@@ -279,6 +288,9 @@ if __name__ == '__main__':
     
     sp = subparsers.add_parser('set-novalidate')
     sp.add_argument('filename')
+    
+    sp = subparsers.add_parser('show-log')
+    sp.add_argument('filename')
 
     args = parser.parse_args()
     
@@ -293,6 +305,9 @@ if __name__ == '__main__':
         
     elif args.action == 'set-novalidate':
         action_novalidate(args)
+        
+    elif args.action == 'show-log':
+        action_show_log(args)
         
     else:
         parser.error("Invalid action %s" % args.action)
