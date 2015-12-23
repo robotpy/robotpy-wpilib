@@ -46,8 +46,8 @@ class DriveTrain(Subsystem):
         self.leftEncoder = wpilib.Encoder(3, 4,
                                           reverseDirection=False,
                                           encodingType=wpilib.Encoder.EncodingType.k4X)
-        self.rightEncoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
-        self.leftEncoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceParameter.kDistance)
+        self.rightEncoder.setPIDSourceType(wpilib.Encoder.PIDSourceType.kDisplacement)
+        self.leftEncoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceType.kDisplacement)
 
         if robot.isReal():
             # Converts to feet

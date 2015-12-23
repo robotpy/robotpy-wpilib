@@ -13,7 +13,7 @@ import argparse
 from contextlib import contextmanager
 import os
 import posixpath
-from os.path import abspath, dirname, exists, join, normpath, relpath
+from os.path import abspath, basename, dirname, exists, join, normpath, relpath, splitext
 import sys
 import tempfile
 import time
@@ -45,6 +45,14 @@ def get_fname(root, fname):
         return abspath(fname)
     
     raise OSError('%s does not exist' % fname)
+
+def find_suggestions(fname):
+    fname = splitext(basename(fname))[0].lower()
+    
+    for root, _, files in os.walk(orig_root):
+        for f in files:
+            if splitext(f)[0].lower() == fname:
+                yield relpath(join(root, f), orig_root)
 
 class ValidationInfo:
     
@@ -173,22 +181,24 @@ def _action_show(fname, counts):
     
 
     info = get_info(fname)
+    path = relpath(fname, validation_root)
     
     if info is None:
-        status = 'N/A'
+        status = '-- '
         counts['unknown'] += 1
     elif info.novalidate:
-        status = 'OK'
+        status = 'OK '
         counts['good'] += 1
     else:
         if info.hash == info.orig_hash:
-            status = 'OK'
+            status = 'OK '
             counts['good'] += 1
         else:
-            status = "OLD (%s..%s)" % (info.hash, info.orig_hash)
+            status = "OLD"
+            path += ' (%s..%s)' % (info.hash, info.orig_hash)
             counts['outdated'] += 1
     
-    print('%s:' % relpath(fname, validation_root), status)
+    print('%s: %s' % (status, path))
     
 
 def action_diff(args):
@@ -220,7 +230,18 @@ def action_validate(args):
     
     # if there's no orig_filename specified, then raise an error
     if not orig_fname:
-        raise ValueError("Error: must specify original filename")
+        suggestions = list(find_suggestions(fname))
+        if suggestions:
+            print("Suggestions:")
+            for i, s in enumerate(suggestions):
+                print(" ", i, s)
+            
+            v = input("Use? [0-%s,n] " % i)
+            if v != 'n':
+                orig_fname = suggestions[int(v)]
+        
+        if not orig_fname:
+            raise ValueError("Error: must specify original filename")
     
     info = ValidationInfo.from_now(initials, orig_fname)
     

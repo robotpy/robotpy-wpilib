@@ -54,7 +54,7 @@ class Counter(SensorBase):
         kExternalDirection = 3
 
     EncodingType = CounterBase.EncodingType
-    PIDSourceParameter = PIDSource.PIDSourceParameter
+    PIDSourceType = PIDSource.PIDSourceType
     allocatedUpSource = False
     allocatedDownSource = False
 
@@ -128,7 +128,7 @@ class Counter(SensorBase):
 
         # save some variables
         self.distancePerPulse = 1.0 # distance of travel for each tick
-        self.pidSource = PIDSource.PIDSourceParameter.kDistance
+        self.pidSource = PIDSource.PIDSourceType.kDisplacement
 
         # create counter
         self._counter, self.index = hal.initializeCounter(mode)
@@ -581,10 +581,10 @@ class Counter(SensorBase):
         parameters.
 
         :param pidSource: An enum to select the parameter.
-        :type  pidSource: :class:`Counter.PIDSourceParameter`
+        :type  pidSource: :class:`Counter.PIDSourceType`
         """
-        if pidSource not in (self.PIDSourceParameter.kDistance,
-                             self.PIDSourceParameter.kRate):
+        if pidSource not in (self.PIDSourceType.kDisplacement,
+                             self.PIDSourceType.kRate):
             raise ValueError("Invalid pidSource argument '%s'" % pidSource)
         self.pidSource = pidSource
 
@@ -592,9 +592,9 @@ class Counter(SensorBase):
         return self.pidSource
 
     def pidGet(self):
-        if self.pidSource == self.PIDSourceParameter.kDistance:
+        if self.pidSource == self.PIDSourceType.kDisplacement:
             return self.getDistance()
-        elif self.pidSource == self.PIDSourceParameter.kRate:
+        elif self.pidSource == self.PIDSourceType.kRate:
             return self.getRate()
         else:
             return 0.0

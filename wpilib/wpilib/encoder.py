@@ -56,7 +56,7 @@ class Encoder(SensorBase):
         kResetOnRisingEdge = 3
 
     EncodingType = CounterBase.EncodingType
-    PIDSourceParameter = PIDSource.PIDSourceParameter
+    PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, *args, **kwargs):
         """Encoder constructor. Construct a Encoder given a and b channels
@@ -171,7 +171,7 @@ class Encoder(SensorBase):
         self.indexSource = indexSource
         self.encodingType = encodingType
         self.distancePerPulse = 1.0 # distance of travel for each encoder tick
-        self.pidSource = PIDSource.PIDSourceParameter.kDistance
+        self.pidSource = PIDSource.PIDSourceType.kDisplacement
         self._encoder = None
         self.counter = None
         self.index = 0
@@ -443,7 +443,7 @@ class Encoder(SensorBase):
         else:
             return 1
 
-    def setPIDSourceParameter(self, pidSource):
+    def setPIDSourceType(self, pidSource):
         """Set which parameter of the encoder you are using as a process
         control variable. The encoder class supports the rate and distance
         parameters.
@@ -453,15 +453,18 @@ class Encoder(SensorBase):
         if pidSource not in (0, 1):
             raise ValueError("invalid pidSource: %s" % pidSource)
         self.pidSource = pidSource
+        
+    def getPIDSourceType(self):
+        return self.pidSource
 
     def pidGet(self):
         """Implement the PIDSource interface.
 
          :returns: The current value of the selected source parameter.
         """
-        if self.pidSource == self.PIDSourceParameter.kDistance:
+        if self.pidSource == self.PIDSourceType.kDisplacement:
             return self.getDistance()
-        elif self.pidSource == self.PIDSourceParameter.kRate:
+        elif self.pidSource == self.PIDSourceType.kRate:
             return self.getRate()
         else:
             return 0.0

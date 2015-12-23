@@ -79,7 +79,7 @@ class Gyro(SensorBase):
 
         self.setDeadband(0.0)
 
-        self.pidSource = PIDSource.PIDSourceParameter.kAngle
+        self.pidSource = PIDSource.PIDSourceType.kDisplacement
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_Gyro,
                       self.analog.getChannel())
@@ -168,22 +168,25 @@ class Gyro(SensorBase):
         """
         if self.analog is None:
             return
-        deadband = int(volts * 1e9 / self.analog.getLSBWeight() *
+        deadband = int(volts * 1e9 / self.analog.getLSBWeight() * 
                        (1 << self.analog.getOversampleBits()))
         self.analog.setAccumulatorDeadband(deadband)
 
-    def setPIDSourceParameter(self, pidSource):
+    def setPIDSourceType(self, pidSource):
         """Set which parameter of the gyro you are using as a process
         control variable. The Gyro class supports the rate and angle
         parameters.
 
         :param pidSource: An enum to select the parameter.
-        :type  pidSource: :class:`.PIDSource.PIDSourceParameter`
+        :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
-        if pidSource not in (PIDSource.PIDSourceParameter.kRate,
-                             PIDSource.PIDSourceParameter.kAngle):
-            raise ValueError("Must be kRate or kAngle")
+        if pidSource not in (PIDSource.PIDSourceType.kDisplacement,
+                             PIDSource.PIDSourceType.kRate):
+            raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
+        
+    def getPIDSourceType(self):
+        return self.pidSource
 
     def pidGet(self):
         """Get the output of the gyro for use with PIDControllers
@@ -191,9 +194,9 @@ class Gyro(SensorBase):
         :returns: the current angle according to the gyro
         :rtype: float
         """
-        if self.pidSource == PIDSource.PIDSourceParameter.kRate:
+        if self.pidSource == PIDSource.PIDSourceType.kRate:
             return self.getRate()
-        elif self.pidSource == PIDSource.PIDSourceParameter.kAngle:
+        elif self.pidSource == PIDSource.PIDSourceType.kDisplacement:
             return self.getAngle()
         else:
             return 0.0

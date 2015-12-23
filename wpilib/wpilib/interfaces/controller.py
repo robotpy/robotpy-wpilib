@@ -1,3 +1,4 @@
+# validated: 2015-12-22 DS c3c35c6 shared/java/edu/wpi/first/wpilibj/Controller.java
 __all__ = ["Controller"]
 
 class Controller:

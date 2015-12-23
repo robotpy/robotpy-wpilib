@@ -83,10 +83,9 @@ def test_PIDOutput(wpilib):
     with pytest.raises(NotImplementedError):
         x.pidWrite(0.0)
 
-def test_PIDSource_PIDSourceParameter(wpilib):
-    assert hasattr(wpilib.interfaces.PIDSource.PIDSourceParameter, "kDistance")
-    assert hasattr(wpilib.interfaces.PIDSource.PIDSourceParameter, "kRate")
-    assert hasattr(wpilib.interfaces.PIDSource.PIDSourceParameter, "kAngle")
+def test_PIDSource_PIDSourceType(wpilib):
+    assert hasattr(wpilib.interfaces.PIDSource.PIDSourceType, "kDisplacement")
+    assert hasattr(wpilib.interfaces.PIDSource.PIDSourceType, "kRate")
 
 def test_PIDSource(wpilib):
     x = wpilib.interfaces.PIDSource()

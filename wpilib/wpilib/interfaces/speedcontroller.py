@@ -1,3 +1,4 @@
+# validated: 2015-12-22 DS 6d854af athena/java/edu/wpi/first/wpilibj/SpeedController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -27,6 +28,21 @@ class SpeedController(PIDOutput):
         :param syncGroup: The update group to add this set() to, pending
                           updateSyncGroup().  If 0 (or unspecified), update
                           immediately.
+        """
+        raise NotImplementedError
+    
+    def setInverted(self, isInverted):
+        """Common interface for inverting direction of a speed controller.
+        
+        :param isInverted: The state of inversion
+        """
+        raise NotImplementedError
+        
+    def getInverted(self):
+        """Common interface for determining if a speed controller is in the
+        inverted state or not.
+        
+        :returns: True if in inverted state
         """
         raise NotImplementedError
 
