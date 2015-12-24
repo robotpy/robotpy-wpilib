@@ -145,7 +145,7 @@ class CANTalon(LiveWindowSendable, MotorSafety):
 
         self.deviceNumber = deviceNumber
         # HAL bounds period to be within [1 ms,95 ms]
-        self._handle = hal.TalonSRX_Create(deviceNumber, controlPeriodMs)
+        self._handle = hal.TalonSRX_Create2(deviceNumber, controlPeriodMs)
         self._handle_finalizer = weakref.finalize(self, _freeCANTalon,
                                                   self._handle)
         self.controlEnabled = True
