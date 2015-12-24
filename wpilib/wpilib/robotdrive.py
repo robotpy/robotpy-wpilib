@@ -149,7 +149,7 @@ class RobotDrive(MotorSafety):
         self.setSafetyEnabled(True)
 
         #Setup Finalizer
-        self._RobotDrive_finalizer = weakref.finalize(self, _freeRobotDrive, self.allocatedSpeedControllers)
+        self.__finalizer = weakref.finalize(self, _freeRobotDrive, self.allocatedSpeedControllers)
 
         # start off not moving
         self.drive(0, 0)
@@ -647,7 +647,7 @@ class RobotDrive(MotorSafety):
         self.syncGroup = syncGroup
         
     def free(self):
-        self._RobotDrive_finalizer()
+        self.__finalizer()
         self.frontLeftMotor = None
         self.frontRightMotor = None
         self.rearLeftMotor = None

@@ -76,7 +76,9 @@ def test_relay_free(relay, hal, wpilib):
     #wasport = relay._port
     assert relay.port == relay._port
     relay.free()
-    assert relay.port is None
+    
+    with pytest.raises(ValueError):
+        _ = relay.port
     #hal.setRelayForward.assert_called_once_with(wasport, False)
     #hal.setRelayReverse.assert_called_once_with(wasport, False)
     #hal.freeDIO.assert_called_once_with(wasport)

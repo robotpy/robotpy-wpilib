@@ -60,8 +60,6 @@ class DigitalOutput(DigitalSource):
         :param value: True is on, off is False
         :type  value: bool
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         hal.setDIO(self.port, 1 if value else 0)
 
     def getChannel(self):
@@ -77,8 +75,6 @@ class DigitalOutput(DigitalSource):
         :param pulseLength: The length of the pulse.
         :type  pulseLength: float
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         hal.pulse(self.port, pulseLength)
 
     def isPulsing(self):
@@ -88,8 +84,6 @@ class DigitalOutput(DigitalSource):
         :returns: True if pulsing
         :rtype: bool
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         return hal.isPulsing(self.port)
 
     def setPWMRate(self, rate):

@@ -94,7 +94,7 @@ class PWM(LiveWindowSendable):
 
         hal.setPWM(self._port, 0)
 
-        self._pwm_finalizer = weakref.finalize(self, _freePWM, self._port)
+        self.__finalizer = weakref.finalize(self, _freePWM, self._port)
 
         self.eliminateDeadband = False
 
@@ -102,8 +102,8 @@ class PWM(LiveWindowSendable):
 
     @property
     def port(self):
-        if not self._pwm_finalizer.alive:
-            return None
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use channel after free() has been called")
         return self._port
 
     def free(self):
@@ -112,7 +112,7 @@ class PWM(LiveWindowSendable):
         Free the resource associated with the PWM channel and set the value
         to 0.
         """
-        self._pwm_finalizer()
+        self.__finalizer()
 
     def enableDeadbandElimination(self, eliminateDeadband):
         """Optionally eliminate the deadband from a speed controller.
@@ -265,8 +265,6 @@ class PWM(LiveWindowSendable):
         :param value: Raw PWM value.  Range 0 - 255.
         :type value: int
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         hal.setPWM(self.port, value)
 
     def getRaw(self):
@@ -277,8 +275,6 @@ class PWM(LiveWindowSendable):
         :returns: Raw PWM control value.  Range: 0 - 255.
         :rtype: int
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         return hal.getPWM(self.port)
 
     def setPeriodMultiplier(self, mult):
@@ -287,8 +283,6 @@ class PWM(LiveWindowSendable):
         :param mult: The period multiplier to apply to this channel
         :type mult: PWM.PeriodMultiplier
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         if mult == PWM.PeriodMultiplier.k4X:
             # Squelch 3 out of 4 outputs
             hal.setPWMPeriodScale(self.port, 3)
@@ -302,8 +296,6 @@ class PWM(LiveWindowSendable):
             raise ValueError("Invalid mult argument '%s'" % mult)
 
     def setZeroLatch(self):
-        if self.port is None:
-            raise ValueError("operation on freed port")
         hal.latchPWMZero(self.port)
 
     def getMaxPositivePwm(self):

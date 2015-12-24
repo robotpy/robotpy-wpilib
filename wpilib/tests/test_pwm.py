@@ -52,7 +52,10 @@ def test_pwm_create_all(wpilib):
 def test_pwm_free(pwm, pwm_data, wpilib):
     assert pwm.port == pwm._port
     pwm.free()
-    assert pwm.port is None
+    
+    with pytest.raises(ValueError):
+        _ = pwm.port
+    
     assert pwm_data['initialized'] == False
     
     # try to re-grab

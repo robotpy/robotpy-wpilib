@@ -105,7 +105,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
             raise IndexError("Relay channel %d is already allocated" % self.channel) from e
 
         self._port = hal.initializeDigitalPort(hal.getPort(self.channel))
-        self._port_finalizer = weakref.finalize(self, _freeRelay, self._port)
+        self.__finalizer = weakref.finalize(self, _freeRelay, self._port)
 
         self.setSafetyEnabled(False)
         
@@ -113,8 +113,8 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
 
     @property
     def port(self):
-        if not self._port_finalizer.alive:
-            return None
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use relay after free() has been called")
         return self._port
 
     def free(self):
@@ -127,7 +127,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
 
         LiveWindow.removeComponent(self)
 
-        self._port_finalizer()
+        self.__finalizer()
 
     def set(self, value):
         """Set the relay state.
@@ -145,8 +145,6 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         :param value: The state to set the relay.
         :type  value: :class:`Relay.Value`
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         if value == self.Value.kOff:
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kForward):
@@ -191,8 +189,6 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         :returns: The current state of the relay
         :rtype: :class:`Relay.Value`
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         if hal.getRelayForward(self.port):
             if hal.getRelayReverse(self.port):
                 return self.Value.kOn

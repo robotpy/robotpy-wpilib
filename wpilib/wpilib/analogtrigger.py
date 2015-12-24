@@ -47,7 +47,7 @@ class AnalogTrigger:
 
         port = hal.getPort(channel)
         self._port, self.index = hal.initializeAnalogTrigger(port)
-        self._analogtrigger_finalizer = \
+        self.__finalizer = \
                 weakref.finalize(self, _freeAnalogTrigger, self._port)
                 
         # Need this to free on unit test wpilib reset
@@ -58,13 +58,13 @@ class AnalogTrigger:
 
     @property
     def port(self):
-        if not self._analogtrigger_finalizer.alive:
-            return None
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use AnalogTrigger after free() has been called")
         return self._port
 
     def free(self):
         """Release the resources used by this object"""
-        self._analogtrigger_finalizer()
+        self.__finalizer()
 
     def setLimitsRaw(self, lower, upper):
         """Set the upper and lower limits of the analog trigger. The limits are
@@ -76,8 +76,7 @@ class AnalogTrigger:
         """
         if lower > upper:
             raise ValueError("Lower bound is greater than upper")
-        if self.port is None:
-            raise ValueError("operation on freed port")
+        
         hal.setAnalogTriggerLimitsRaw(self.port, lower, upper)
 
     def setLimitsVoltage(self, lower, upper):
@@ -89,8 +88,7 @@ class AnalogTrigger:
         """
         if lower > upper:
             raise ValueError("Lower bound is greater than upper")
-        if self.port is None:
-            raise ValueError("operation on freed port")
+        
         hal.setAnalogTriggerLimitsVoltage(self.port, float(lower), float(upper))
 
     def setAveraged(self, useAveragedValue):
@@ -100,8 +98,6 @@ class AnalogTrigger:
 
         :param useAveragedValue: True to use an averaged value, False otherwise
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         hal.setAnalogTriggerAveraged(self.port, useAveragedValue)
 
     def setFiltered(self, useFilteredValue):
@@ -112,8 +108,6 @@ class AnalogTrigger:
 
         :param useFilteredValue: True to use a filterd value, False otherwise
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         hal.setAnalogTriggerFiltered(self.port, useFilteredValue)
 
     def getIndex(self):
@@ -122,8 +116,6 @@ class AnalogTrigger:
 
         :returns: The index of the analog trigger.
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         return self.index
 
     def getInWindow(self):
@@ -132,8 +124,6 @@ class AnalogTrigger:
 
         :returns: The InWindow output of the analog trigger.
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         return hal.getAnalogTriggerInWindow(self.port)
 
     def getTriggerState(self):
@@ -143,8 +133,6 @@ class AnalogTrigger:
 
         :returns: The TriggerState output of the analog trigger.
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         return hal.getAnalogTriggerTriggerState(self.port)
 
     def createOutput(self, type):
@@ -155,6 +143,4 @@ class AnalogTrigger:
         :param type: An enum of the type of output object to create.
         :returns: An AnalogTriggerOutput object.
         """
-        if self.port is None:
-            raise ValueError("operation on freed port")
         return AnalogTriggerOutput(self, type)

@@ -84,6 +84,8 @@ def test_counter_free(wpilib, hal_data):
     assert hal_data["dio"][0]["initialized"]
     assert hal_data["dio"][1]["initialized"]
     ctr.free()
+    with pytest.raises(ValueError):
+        _ = ctr.counter
     assert not hal_data["counter"][0]["initialized"]
     assert not hal_data["dio"][0]["initialized"]
     assert not hal_data["dio"][1]["initialized"]

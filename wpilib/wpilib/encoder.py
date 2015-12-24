@@ -185,7 +185,7 @@ class Encoder(SensorBase):
                     bSource.getChannelForRouting(),
                     bSource.getAnalogTriggerForRouting(),
                     reverseDirection)
-            self._encoder_finalizer = \
+            self.__finalizer = \
                     weakref.finalize(self, _freeEncoder, self._encoder)
             self.setMaxPeriod(.5)
             self.encodingScale = 4
@@ -214,8 +214,8 @@ class Encoder(SensorBase):
 
     @property
     def encoder(self):
-        if not self._encoder_finalizer.alive:
-            return None
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use encoder after free() has been called")
         return self._encoder
 
     def getFPGAIndex(self):
@@ -249,7 +249,7 @@ class Encoder(SensorBase):
             self.counter.free()
             self.counter = None
         else:
-            self._encoder_finalizer()
+            self.__finalizer()
 
     def getRaw(self):
         """Gets the raw value from the encoder. The raw value is the actual
@@ -276,10 +276,8 @@ class Encoder(SensorBase):
         """
         if self.counter is not None:
             self.counter.reset()
-        elif self.encoder is not None:
-            hal.resetEncoder(self.encoder)
         else:
-            raise ValueError("operation on freed port")
+            hal.resetEncoder(self.encoder)
 
     def getPeriod(self):
         """Returns the period of the most recent pulse. Returns the period of
@@ -296,10 +294,8 @@ class Encoder(SensorBase):
         warnings.warn("use getRate instead", DeprecationWarning)
         if self.counter is not None:
             measuredPeriod = self.counter.getPeriod() / self.decodingScaleFactor()
-        elif self.encoder is not None:
-            measuredPeriod = hal.getEncoderPeriod(self.encoder)
         else:
-            raise ValueError("operation on freed port")
+            measuredPeriod = hal.getEncoderPeriod(self.encoder)
         return measuredPeriod
 
     def setMaxPeriod(self, maxPeriod):
@@ -315,10 +311,8 @@ class Encoder(SensorBase):
         """
         if self.counter is not None:
             self.counter.setMaxPeriod(maxPeriod * self.decodingScaleFactor())
-        elif self.encoder is not None:
-            hal.setEncoderMaxPeriod(self.encoder, maxPeriod)
         else:
-            raise ValueError("operation on freed port")
+            hal.setEncoderMaxPeriod(self.encoder, maxPeriod)
 
     def getStopped(self):
         """Determine if the encoder is stopped. Using the MaxPeriod value, a
@@ -330,10 +324,8 @@ class Encoder(SensorBase):
         """
         if self.counter is not None:
             return self.counter.getStopped()
-        elif self.encoder is not None:
-            return hal.getEncoderStopped(self.encoder)
         else:
-            raise ValueError("operation on freed port")
+            return hal.getEncoderStopped(self.encoder)
 
     def getDirection(self):
         """The last direction the encoder value changed.

@@ -27,16 +27,25 @@ class SPI:
 
         :param port: the physical SPI port
         """
-        self.port = port
+        self._port = port
         self.bitOrder = 0
         self.clockPolarity = 0
         self.dataOnTrailing = 0
 
-        hal.spiInitialize(self.port)
-        self._spi_finalizer = weakref.finalize(self, _freeSPI, self.port)
+        hal.spiInitialize(self._port)
+        self.__finalizer = weakref.finalize(self, _freeSPI, self._port)
 
         SPI.devices += 1
         hal.HALReport(hal.HALUsageReporting.kResourceType_SPI, SPI.devices)
+    
+    @property
+    def port(self):
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use SPI after free() has been called")
+        return self._port
+
+    def free(self):
+        self.__finalizer()
 
     def setClockRate(self, hz):
         """Configure the rate of the generated clock signal.

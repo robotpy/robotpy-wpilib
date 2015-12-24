@@ -51,19 +51,19 @@ class DigitalSource(InterruptableSensorBase):
         self._port = hal.initializeDigitalPort(hal.getPort(channel))
         hal.allocateDIO(self._port, True if input else False)
 
-        self._port_finalizer = weakref.finalize(self, _freeDigitalSource, self._port)
+        self.__finalizer = weakref.finalize(self, _freeDigitalSource, self._port)
 
     @property
     def port(self):
-        if not self._port_finalizer.alive:
-            return None
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use channel after free() has been called")
         return self._port
 
     def free(self):
         if self.channel is None:
             return
         DigitalSource.channels.free(self.channel)
-        self._port_finalizer()
+        self.__finalizer()
         self.channel = None
 
     def getChannelForRouting(self):

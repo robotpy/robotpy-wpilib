@@ -132,7 +132,7 @@ class Counter(SensorBase):
 
         # create counter
         self._counter, self.index = hal.initializeCounter(mode)
-        self._counter_finalizer = \
+        self.__finalizer = \
             weakref.finalize(self, _freeCounter, self._counter)
 
         self.setMaxPeriod(.5)
@@ -163,8 +163,8 @@ class Counter(SensorBase):
 
     @property
     def counter(self):
-        if not self._counter_finalizer.alive:
-            return None
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use counter after free() has been called")
         return self._counter
 
     def free(self):
@@ -172,7 +172,7 @@ class Counter(SensorBase):
         self.clearUpSource()
 
         self.clearDownSource()
-        self._counter_finalizer()
+        self.__finalizer()
 
     def getFPGAIndex(self):
         """
@@ -216,9 +216,6 @@ class Counter(SensorBase):
 
         #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
 
-        if self.counter is None:
-            raise ValueError("operation on freed port")
-
         argument_templates = [[("channel", int)],
                               [("source", HasAttribute("getChannelForRouting")), ],
                               [("analogTrigger", HasAttribute("createOutput"))],
@@ -260,8 +257,6 @@ class Counter(SensorBase):
         """
         if self.upSource is None:
             raise ValueError("Up Source must be set before setting the edge")
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterUpSourceEdge(self.counter, risingEdge, fallingEdge)
 
     def clearUpSource(self):
@@ -270,9 +265,6 @@ class Counter(SensorBase):
             self.upSource.free()
             self.allocatedUpSource = False
         self.upSource = None
-
-        if self.counter is None:
-            return
         hal.clearCounterUpSource(self.counter)
 
     def setDownSource(self, *args, **kwargs):
@@ -310,9 +302,6 @@ class Counter(SensorBase):
         """
 
         #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
-
-        if self.counter is None:
-            raise ValueError("operation on freed port")
 
         argument_templates = [[("channel", int)],
                               [("source", HasAttribute("getChannelForRouting")), ],
@@ -355,8 +344,7 @@ class Counter(SensorBase):
         """
         if self.downSource is None:
             raise ValueError("Down Source must be set before setting the edge")
-        if self.counter is None:
-            raise ValueError("operation on freed port")
+
         hal.setCounterDownSourceEdge(self.counter, risingEdge, fallingEdge)
 
     def clearDownSource(self):
@@ -375,8 +363,6 @@ class Counter(SensorBase):
         """Set standard up / down counting mode on this counter. Up and down
         counts are sourced independently from two inputs.
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterUpDownMode(self.counter)
 
     def setExternalDirectionMode(self):
@@ -384,8 +370,6 @@ class Counter(SensorBase):
         the Up counter input. The Down counter input represents the direction
         to count.
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterExternalDirectionMode(self.counter)
 
     def setSemiPeriodMode(self, highSemiPeriod):
@@ -395,8 +379,6 @@ class Counter(SensorBase):
         :param highSemiPeriod: True to count up on both rising and falling
         :type  highSemiPeriod: bool
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterSemiPeriodMode(self.counter, highSemiPeriod)
 
     def setPulseLengthMode(self, threshold):
@@ -408,8 +390,6 @@ class Counter(SensorBase):
             opposite direction. Units are seconds.
         :type  threshold: float, int
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterPulseLengthMode(self.counter, float(threshold))
 
     def get(self):
@@ -417,8 +397,6 @@ class Counter(SensorBase):
         may still be running, so it reflects the current value. Next time it
         is read, it might have a different value.
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         return hal.getCounter(self.counter)
 
     def getDistance(self):
@@ -435,8 +413,6 @@ class Counter(SensorBase):
         doesn't effect the running state of the counter, just sets the
         current value to zero.
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.resetCounter(self.counter)
 
     def setMaxPeriod(self, maxPeriod):
@@ -449,8 +425,6 @@ class Counter(SensorBase):
             considered moving in seconds.
         :type maxPeriod: float or int
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterMaxPeriod(self.counter, float(maxPeriod))
 
     def setUpdateWhenEmpty(self, enabled):
@@ -471,8 +445,6 @@ class Counter(SensorBase):
         :param enabled: True to continue updating
         :type  enabled: bool
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterUpdateWhenEmpty(self.counter, enabled)
 
     def getStopped(self):
@@ -486,8 +458,6 @@ class Counter(SensorBase):
             MaxPeriod value set by SetMaxPeriod.
         :rtype: bool
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         return hal.getCounterStopped(self.counter)
 
     def getDirection(self):
@@ -496,8 +466,6 @@ class Counter(SensorBase):
         :returns: The last direction the counter value changed.
         :rtype: bool
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         return hal.getCounterDirection(self.counter)
 
     def setReverseDirection(self, reverseDirection):
@@ -509,8 +477,6 @@ class Counter(SensorBase):
         :param reverseDirection: True if the value counted should be negated.
         :type  reverseDirection: bool 
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterReverseDirection(self.counter, reverseDirection)
 
     def getPeriod(self):
@@ -521,8 +487,6 @@ class Counter(SensorBase):
         :returns: The period of the last two pulses in units of seconds.
         :rtype: float
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         return hal.getCounterPeriod(self.counter)
 
     def getRate(self):
@@ -544,8 +508,6 @@ class Counter(SensorBase):
         :param samplesToAverage: The number of samples to average from 1 to 127.
         :type  samplesToAverage: int
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         hal.setCounterSamplesToAverage(self.counter, samplesToAverage)
 
     def getSamplesToAverage(self):
@@ -557,8 +519,6 @@ class Counter(SensorBase):
         :returns: The number of samples being averaged (from 1 to 127)
         :rtype: int
         """
-        if self.counter is None:
-            raise ValueError("operation on freed port")
         return hal.getCounterSamplesToAverage(self.counter)
 
     def setDistancePerPulse(self, distancePerPulse):

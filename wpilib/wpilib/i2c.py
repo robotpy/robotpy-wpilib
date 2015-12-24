@@ -29,13 +29,22 @@ class I2C:
         :param port: The I2C port the device is connected to.
         :param deviceAddress: The address of the device on the I2C bus.
         """
-        self.port = port
+        self._port = port
         self.deviceAddress = deviceAddress
 
-        hal.i2CInitialize(self.port)
-        self._i2c_finalizer = weakref.finalize(self, _freeI2C, self.port)
+        hal.i2CInitialize(self._port)
+        self.__finalizer = weakref.finalize(self, _freeI2C, self._port)
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_I2C, deviceAddress)
+    
+    @property
+    def port(self):
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use i2c port after free() has been called")
+        return self._port
+    
+    def free(self):
+        self.__finalizer()
 
     def transaction(self, dataToSend, receiveSize):
         """Generic transaction.

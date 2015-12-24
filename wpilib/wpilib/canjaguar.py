@@ -262,9 +262,9 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         self.requestMessage(_cj.LM_API_HWVER)
 
         # Establish finalizer
-        self._canjaguar_finalizer = weakref.finalize(self, _freeJaguar,
-                                                     self.deviceNumber,
-                                                     self.controlMode)
+        self.__finalizer = weakref.finalize(self, _freeJaguar,
+                                            self.deviceNumber,
+                                            self.controlMode)
         
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
@@ -313,7 +313,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         Cancel periodic messages to the Jaguar, effectively disabling it.
         No other methods should be called after this is called.
         """
-        self._canjaguar_finalizer()
+        self.__finalizer()
 
     def getDeviceNumber(self):
         """:returns: The CAN ID passed in the constructor
@@ -1211,10 +1211,10 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         self.controlModeVerified = False
 
         # Update the finalizer
-        self._canjaguar_finalizer.detach()
-        self._canjaguar_finalizer = weakref.finalize(self, _freeJaguar,
-                                                     self.deviceNumber,
-                                                     self.controlMode)
+        self.__finalizer.detach()
+        self.__finalizer = weakref.finalize(self, _freeJaguar,
+                                            self.deviceNumber,
+                                            self.controlMode)
 
     def getControlMode(self):
         """Get the active control mode from the Jaguar.

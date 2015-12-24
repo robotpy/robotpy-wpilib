@@ -146,7 +146,7 @@ class CANTalon(LiveWindowSendable, MotorSafety):
         self.deviceNumber = deviceNumber
         # HAL bounds period to be within [1 ms,95 ms]
         self._handle = hal.TalonSRX_Create2(deviceNumber, controlPeriodMs)
-        self._handle_finalizer = weakref.finalize(self, _freeCANTalon,
+        self.__finalizer = weakref.finalize(self, _freeCANTalon,
                                                   self._handle)
         self.controlEnabled = True
         self.profile = 0
@@ -163,13 +163,13 @@ class CANTalon(LiveWindowSendable, MotorSafety):
 
     @property
     def handle(self):
-        if not self._handle_finalizer.alive:
-            raise ValueError("operation on freed port")
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use CANTalonSRX after free() has been called")
         return self._handle
 
     def free(self):
         LiveWindow.removeComponent(self)
-        self._handle_finalizer()
+        self.__finalizer()
 
     def pidWrite(self, output):
         if self.getControlMode() == self.ControlMode.PercentVbus:
