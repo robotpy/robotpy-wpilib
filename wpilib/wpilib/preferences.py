@@ -1,3 +1,4 @@
+# novalidate
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -12,6 +13,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 __all__ = ["Preferences"]
+
+# TODO: This will need to be changed when pynetworktables is updated to 
+# the NetworkTables 3 protocol
 
 class Preferences:
     """Provides a relatively simple way to save important
