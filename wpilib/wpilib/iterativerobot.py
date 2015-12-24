@@ -1,7 +1,10 @@
+# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/IterativeRobot.java
+#----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
+#----------------------------------------------------------------------------
 
 import hal
 import logging
@@ -55,6 +58,10 @@ class IterativeRobot(RobotBase):
         The constructor initializes the instance variables for the robot to
         indicate the status of initialization for disabled, autonomous, and
         teleop code.
+        
+        .. warning:: If you override ``__init__`` in your robot class, you must call
+                     the base class constructor. This must be used to ensure that
+                     the communications code starts.
         """
         super().__init__()
         # set status for initialization of disabled, autonomous, and teleop code.
@@ -63,10 +70,6 @@ class IterativeRobot(RobotBase):
         self.teleopInitialized = False
         self.testInitialized = False
 
-    def prestart(self):
-        """Don't immediately say that the robot's ready to be enabled, see below"""
-        pass
-
     def startCompetition(self):
         """Provide an alternate "main loop" via startCompetition()."""
         hal.HALReport(hal.HALUsageReporting.kResourceType_Framework,
@@ -74,10 +77,7 @@ class IterativeRobot(RobotBase):
 
         self.robotInit()
 
-        #We call this now (not in prestart like default) so that the robot
-        #won't enable until the initialization has finished. This is useful
-        #because otherwise it's sometimes possible to enable the robot before
-        #the code is ready.
+        # Tell the DS that the robot is ready to be enabled
         hal.HALNetworkCommunicationObserveUserProgramStarting()
 
         # loop forever, calling the appropriate mode-dependent function

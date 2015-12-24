@@ -1,7 +1,10 @@
+# validated: 2015-12-24 DS 82d89d3 athena/java/edu/wpi/first/wpilibj/RobotBase.java
+#----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
+#----------------------------------------------------------------------------
 
 import hal
 import warnings
@@ -15,7 +18,7 @@ class RobotBase:
     """Implement a Robot Program framework.
     
     The RobotBase class is intended to be subclassed by a user creating a
-    robot program.  Overridden autonomous() and operatorControl() methods
+    robot program.  Overridden ``autonomous()`` and ``operatorControl()`` methods
     are called at the appropriate time as the match proceeds. In the current
     implementation, the Autonomous code will run to completion before the
     OperatorControl code could start. In the future the Autonomous code might
@@ -25,9 +28,11 @@ class RobotBase:
     Autonomous or Operator Control period starts. The constructor will
     run to completion before Autonomous is entered.
 
-    .. warning:: If you override __init__ in your robot class, you must call
+    .. warning:: If you override ``__init__`` in your robot class, you must call
                  the base class constructor. This must be used to ensure that
                  the communications code starts.
+                 
+    .. not_implemented: getBooleanProperty
     """
 
     def __init__(self):
@@ -50,17 +55,6 @@ class RobotBase:
             NetworkTable.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", False)
 
         self.__initialized = True
-
-    def prestart(self):
-        """
-        This hook is called right before :meth:`startCompetition`. By default, tell
-        the DS that the robot is now ready to be enabled. If you don't want the
-        robot to be enabled yet, you can override this method to do nothing.
-        If you do so, you will need to call hal.HALNetworkCommunicationObserveUserProgramStarting()
-        from your code when you are ready for the robot to be enabled.
-        """
-        hal.HALNetworkCommunicationObserveUserProgramStarting()
-
 
     def free(self):
         """Free the resources for a RobotBase class."""
@@ -144,7 +138,7 @@ class RobotBase:
     @staticmethod
     def initializeHardwareConfiguration():
         """Common initialization for all robot programs."""
-        hal.HALInitialize()
+        hal.HALInitialize() # FRCNetworkCommunicationReserve in Java
 
         from .driverstation import DriverStation
         from .robotstate import RobotState
@@ -160,7 +154,6 @@ class RobotBase:
 
         try:
             robot = robot_cls()
-            robot.prestart()
         except:
             from .driverstation import DriverStation
             DriverStation.reportError("ERROR Could not instantiate robot", True)

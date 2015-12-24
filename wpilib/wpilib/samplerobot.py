@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/SampleRobot.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -38,10 +39,6 @@ class SampleRobot(RobotBase):
     #: is recommended to use this instead of print statements.
     logger = logging.getLogger("robot")
 
-    def prestart(self):
-        """Don't immediately say that the robot's ready to be enabled, see below"""
-        pass
-
     def robotInit(self):
         """Robot-wide initialization code should go here.
 
@@ -51,6 +48,11 @@ class SampleRobot(RobotBase):
         
         .. note:: It is simpler to override this function instead of defining
                   a constructor for your robot class
+                  
+        .. warning:: the Driver Station "Robot Code" light and FMS "Robot Ready"
+                     indicators will be off until RobotInit() exits. Code in ``robotInit()`` that
+                     waits for enable will cause the robot to never indicate that the code is
+                     ready, causing the robot to be bypassed in a match.
         """
         self.logger.info("Default robotInit() method running, consider providing your own")
 
@@ -121,20 +123,18 @@ class SampleRobot(RobotBase):
         go back and wait for the robot to be enabled again.
         """
         hal.HALReport(hal.HALUsageReporting.kResourceType_Framework,
-                      hal.HALUsageReporting.kFramework_Simple)
+                      hal.HALUsageReporting.kFramework_Sample)
+
+        self.robotInit()
+        
+        # Tell the DS that the robot is ready to be enabled
+        hal.HALNetworkCommunicationObserveUserProgramStarting()
 
         self.robotMain()
             
         if hasattr(self, '_no_robot_main'):
             # first and one-time initialization
             LiveWindow.setEnabled(False)
-            self.robotInit()
-            
-            #We call this now (not in prestart like default) so that the robot
-            #won't enable until the initialization has finished. This is useful
-            #because otherwise it's sometimes possible to enable the robot before
-            #the code is ready.
-            hal.HALNetworkCommunicationObserveUserProgramStarting()
 
             while True:
                 if self.isDisabled():
