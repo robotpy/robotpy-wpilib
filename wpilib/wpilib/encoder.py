@@ -171,7 +171,7 @@ class Encoder(SensorBase):
         self.indexSource = indexSource
         self.encodingType = encodingType
         self.distancePerPulse = 1.0 # distance of travel for each encoder tick
-        self.pidSource = PIDSource.PIDSourceType.kDisplacement
+        self.pidSource = self.PIDSourceType.kDisplacement
         self._encoder = None
         self.counter = None
         self.index = 0
@@ -450,8 +450,9 @@ class Encoder(SensorBase):
 
         :param pidSource: An enum to select the parameter.
         """
-        if pidSource not in (0, 1):
-            raise ValueError("invalid pidSource: %s" % pidSource)
+        if pidSource not in (self.PIDSourceType.kDisplacement,
+                             self.PIDSourceType.kRate):
+            raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
         
     def getPIDSourceType(self):

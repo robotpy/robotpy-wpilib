@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/AnalogPotentiometer.java
 #----------------------------------------------------------------------------*/
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.                        */
 # Open Source Software - may be modified and shared by FRC teams. The code   */
@@ -8,6 +9,7 @@
 import hal
 
 from .analoginput import AnalogInput
+from .interfaces import PIDSource
 from .livewindowsendable import LiveWindowSendable
 
 __all__ = ["AnalogPotentiometer"]
@@ -22,6 +24,8 @@ class AnalogPotentiometer(LiveWindowSendable):
 
     .. not_implemented: initPot
     """
+    
+    PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel, fullRange=1.0, offset=0.0):
         """AnalogPotentiometer constructor.
@@ -48,6 +52,7 @@ class AnalogPotentiometer(LiveWindowSendable):
         self.fullRange = fullRange
         self.offset = offset
         self.init_analog_input = True
+        self.pidSource = self.PIDSourceType.kDisplacement
 
     def get(self):
         """Get the current reading of the potentiometer.
@@ -56,6 +61,20 @@ class AnalogPotentiometer(LiveWindowSendable):
         :rtype: float
         """
         return (self.analog_input.getVoltage() / hal.getUserVoltage5V()) * self.fullRange + self.offset
+    
+    def setPIDSourceType(self, pidSource):
+        """Set which parameter you are using as a process
+        control variable. 
+
+        :param pidSource: An enum to select the parameter.
+        :type  pidSource: :class:`.PIDSource.PIDSourceType`
+        """
+        if pidSource != self.PIDSourceType.kDisplacement:
+            raise ValueError("Only displacement PID is allowed for potentiometers.")
+        self.pidSource = pidSource
+        
+    def getPIDSourceType(self):
+        return self.pidSource
 
     def pidGet(self):
         """Implement the PIDSource interface.

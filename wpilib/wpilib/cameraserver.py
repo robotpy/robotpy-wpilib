@@ -1,3 +1,4 @@
+# novalidate
 import nivision
 import ctypes
 import logging

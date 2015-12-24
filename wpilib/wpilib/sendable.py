@@ -1,3 +1,5 @@
+# validated: 2015-12-24 DS 6d854af shared/java/edu/wpi/first/wpilibj/Sendable.java
+
 __all__ = ["Sendable"]
 
 class Sendable:

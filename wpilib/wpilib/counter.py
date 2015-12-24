@@ -128,7 +128,7 @@ class Counter(SensorBase):
 
         # save some variables
         self.distancePerPulse = 1.0 # distance of travel for each tick
-        self.pidSource = PIDSource.PIDSourceType.kDisplacement
+        self.pidSource = self.PIDSourceType.kDisplacement
 
         # create counter
         self._counter, self.index = hal.initializeCounter(mode)

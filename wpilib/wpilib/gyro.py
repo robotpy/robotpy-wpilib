@@ -34,6 +34,8 @@ class Gyro(SensorBase):
     kSamplesPerSecond = 50.0
     kCalibrationSampleTime = 5.0
     kDefaultVoltsPerDegreePerSecond = 0.007
+    
+    PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel):
         """Gyro constructor.
@@ -79,7 +81,7 @@ class Gyro(SensorBase):
 
         self.setDeadband(0.0)
 
-        self.pidSource = PIDSource.PIDSourceType.kDisplacement
+        self.pidSource = self.PIDSourceType.kDisplacement
 
         hal.HALReport(hal.HALUsageReporting.kResourceType_Gyro,
                       self.analog.getChannel())
@@ -180,8 +182,8 @@ class Gyro(SensorBase):
         :param pidSource: An enum to select the parameter.
         :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
-        if pidSource not in (PIDSource.PIDSourceType.kDisplacement,
-                             PIDSource.PIDSourceType.kRate):
+        if pidSource not in (self.PIDSourceType.kDisplacement,
+                             self.PIDSourceType.kRate):
             raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
         
@@ -194,9 +196,9 @@ class Gyro(SensorBase):
         :returns: the current angle according to the gyro
         :rtype: float
         """
-        if self.pidSource == PIDSource.PIDSourceType.kRate:
+        if self.pidSource == self.PIDSourceType.kRate:
             return self.getRate()
-        elif self.pidSource == PIDSource.PIDSourceType.kDisplacement:
+        elif self.pidSource == self.PIDSourceType.kDisplacement:
             return self.getAngle()
         else:
             return 0.0

@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/AnalogAccelerometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,6 +9,7 @@
 import hal
 
 from .analoginput import AnalogInput
+from .interfaces import PIDSource
 from .livewindow import LiveWindow
 from .livewindowsendable import LiveWindowSendable
 
@@ -22,6 +24,8 @@ class AnalogAccelerometer(LiveWindowSendable):
     
     .. not_implemented: initAccelerometer
     """
+    
+    PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel):
         """Create a new instance of Accelerometer from either an existing
@@ -34,6 +38,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         self.analogChannel = channel
         self.voltsPerG = 1.0
         self.zeroGVoltage = 2.5
+        self.pidSource = self.PIDSourceType.kDisplacement
         hal.HALReport(hal.HALUsageReporting.kResourceType_Accelerometer,
                       self.analogChannel.getChannel())
         LiveWindow.addSensorChannel("Accelerometer",
@@ -74,6 +79,18 @@ class AnalogAccelerometer(LiveWindowSendable):
         :type  zero: float
         """
         self.zeroGVoltage = zero
+        
+    def setPIDSourceType(self, pidSource):
+        """Set which parameter you are using as a process
+        control variable. 
+
+        :param pidSource: An enum to select the parameter.
+        :type  pidSource: :class:`.PIDSource.PIDSourceType`
+        """
+        self.pidSource = pidSource
+        
+    def getPIDSourceType(self):
+        return self.pidSource
 
     def pidGet(self):
         """Get the Acceleration for the PID Source parent.

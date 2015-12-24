@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/Ultrasonic.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -10,6 +11,7 @@ import threading
 import weakref
 
 from .counter import Counter
+from .interfaces import PIDSource
 from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 from .timer import Timer
@@ -46,6 +48,8 @@ class Ultrasonic(SensorBase):
     #: Max time (ms) between readings.
     kMaxUltrasonicTime = 0.1
     kSpeedOfSoundInchesPerSec = 1130.0 * 12.0
+    
+    PIDSourceType = PIDSource.PIDSourceType
 
     _static_mutex = threading.RLock()
     
@@ -112,6 +116,7 @@ class Ultrasonic(SensorBase):
         self.pingChannel = pingChannel
         self.echoChannel = echoChannel
         self.units = units
+        self.pidSource = self.PIDSourceType.kDisplacement
         self.enabled = True # make it available for round robin scheduling
 
         if Ultrasonic._thread is None or not Ultrasonic._thread.is_alive():
@@ -223,6 +228,20 @@ class Ultrasonic(SensorBase):
         :rtype: float
         """
         return self.getRangeInches() * 25.4
+    
+    def setPIDSourceType(self, pidSource):
+        """Set which parameter you are using as a process
+        control variable. 
+
+        :param pidSource: An enum to select the parameter.
+        :type  pidSource: :class:`.PIDSource.PIDSourceType`
+        """
+        if pidSource != self.PIDSourceType.kDisplacement:
+            raise ValueError("Only displacement PID is allowed for ultrasonics.")
+        self.pidSource = pidSource
+        
+    def getPIDSourceType(self):
+        return self.pidSource
 
     def pidGet(self):
         """Get the range in the current DistanceUnit (PIDSource interface).
@@ -230,9 +249,9 @@ class Ultrasonic(SensorBase):
         :returns: The range in DistanceUnit
         :rtype: float
         """
-        if self.units == Ultrasonic.Unit.kInches:
+        if self.units == self.Unit.kInches:
             return self.getRangeInches()
-        elif self.units == Ultrasonic.Unit.kMillimeters:
+        elif self.units == self.Unit.kMillimeters:
             return self.getRangeMM()
         else:
             return 0.0

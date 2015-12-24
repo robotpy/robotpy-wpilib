@@ -315,7 +315,7 @@ if __name__ == "__main__":
 
     output = compare_folders(wpilib, get_wpilib_dirs(sys.argv[1]))
     text_list = list()
-    for item in output["children"]:
+    for item in sorted(output["children"], key=lambda k: k['name']):
         text_list.extend(stringize_summary(item))
     print_list(text_list)
 

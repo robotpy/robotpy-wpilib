@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS 4b04073 athena/java/edu/wpi/first/wpilibj/DigitalSource.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -13,6 +14,10 @@ from .sensorbase import SensorBase
 from .interruptablesensorbase import InterruptableSensorBase
 
 __all__ = ["DigitalSource"]
+
+def _freeDigitalSource(port):
+    hal.freeDIO(port)
+    hal.freeDigitalPort(port)
 
 class DigitalSource(InterruptableSensorBase):
     """DigitalSource Interface. The DigitalSource represents all the possible
@@ -35,8 +40,7 @@ class DigitalSource(InterruptableSensorBase):
         super().__init__()
 
         self.channel = channel
-
-        # XXX: Replace with hal.checkDigitalChannel when implemented
+        
         SensorBase.checkDigitalChannel(channel)
 
         try:
@@ -47,7 +51,7 @@ class DigitalSource(InterruptableSensorBase):
         self._port = hal.initializeDigitalPort(hal.getPort(channel))
         hal.allocateDIO(self._port, True if input else False)
 
-        self._port_finalizer = weakref.finalize(self, hal.freeDIO, self._port)
+        self._port_finalizer = weakref.finalize(self, _freeDigitalSource, self._port)
 
     @property
     def port(self):

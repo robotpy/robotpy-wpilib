@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS c3c35c6 athena/java/edu/wpi/first/wpilibj/Joystick.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -337,7 +338,6 @@ class Joystick:
         :returns: A boolean that is true if the controller is an xbox controller.
         """
         return self.ds.getJoystickIsXbox(self.port)
-
 
     def getType(self):
         """

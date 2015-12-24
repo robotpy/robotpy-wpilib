@@ -1,3 +1,5 @@
+# novalidate
+
 import nivision
 import logging
 import re

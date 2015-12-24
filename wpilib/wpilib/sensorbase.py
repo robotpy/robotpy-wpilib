@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS 4b04073 athena/java/edu/wpi/first/wpilibj/SensorBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -67,8 +68,6 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
         :param moduleNumber: The solenoid module module number to check.
         """
         pass
-        #if hal.checkSolenoidModule(moduleNumber - 1) != 0:
-        #    print("Solenoid module %d is not present." % moduleNumber)
 
     @staticmethod
     def checkDigitalChannel(channel):

@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/Compressor.java
 import hal
 
 from .sensorbase import SensorBase
@@ -82,7 +83,7 @@ class Compressor(SensorBase):
                    mode otherwise normal operation of the compressor is disabled.
         :type  on: bool
         """
-        hal.setClosedLoopControl(self.pcm, on)
+        hal.setClosedLoopControl(self.pcm, True if on else False)
 
     def getClosedLoopControl(self):
         """Gets the current operating mode of the PCM.
