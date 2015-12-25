@@ -26,6 +26,8 @@ class DigitalSource(InterruptableSensorBase):
     then a digital input will be constructed and freed when finished for the
     source. The source can either be a digital input or analog trigger but
     not both.
+    
+    .. not_implemented: initDigitalPort
     """
 
     channels = Resource(SensorBase.kDigitalChannels)

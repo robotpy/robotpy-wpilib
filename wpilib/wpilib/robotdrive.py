@@ -38,6 +38,8 @@ class RobotDrive(MotorSafety):
     the drive function (intended for hand created drive code, such as
     autonomous) or with the Tank/Arcade functions intended to be used for
     Operator Control driving.
+    
+    .. not_implemented: setupMotorSafety
     """
 
     class MotorType:

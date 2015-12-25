@@ -1,3 +1,4 @@
+# validated: 2015-12-24 DS 375a195 athena/java/edu/wpi/first/wpilibj/AnalogInput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,6 +7,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import weakref
 
 from .livewindow import LiveWindow
 from .resource import Resource
@@ -13,6 +15,9 @@ from .sensorbase import SensorBase
 from .timer import Timer
 
 __all__ = ["AnalogInput"]
+
+def _freeAnalogInput(port):
+    hal.freeAnalogInputPort(port)
 
 class AnalogInput(SensorBase):
     """Analog input
@@ -49,17 +54,26 @@ class AnalogInput(SensorBase):
         self.accumulatorOffset = 0
 
         port = hal.getPort(channel)
-        self.port = hal.initializeAnalogInputPort(port)
+        self._port = hal.initializeAnalogInputPort(port)
 
         LiveWindow.addSensorChannel("AnalogInput", channel, self)
         hal.HALReport(hal.HALUsageReporting.kResourceType_AnalogChannel,
                       channel)
+        
+        self.__finalizer = weakref.finalize(self, _freeAnalogInput, self._port)
+        
+    @property
+    def port(self):
+        if not self.__finalizer.alive:
+            return None
+        return self._port
 
     def free(self):
         LiveWindow.removeComponent(self)
         if self.channel is None:
             return
         AnalogInput.channels.free(self.channel)
+        self.__finalizer()
         self.channel = None
         self.accumulatorOffset = 0
 
