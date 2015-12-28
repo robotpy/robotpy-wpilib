@@ -546,14 +546,18 @@ class RobotpyInstaller(object):
     opkg_cache = abspath(join(dirname(__file__), 'opkg_cache'))
     
     # opkg feed
-    opkg_feed = 'http://www.tortall.net/~robotpy/feeds/2014/'
-    opkg_arch = 'armv7a-vfp-neon'
+    opkg_feed = 'http://www.tortall.net/~robotpy/feeds/2016/'
+    opkg_arch = 'cortexa9-vfpv3'
     
     commands = [
         'install-robotpy',
         'download-robotpy',
         'install',
-        'download'
+        'download',
+        'install-pip',
+        'download-pip',
+        'install-opkg',
+        'download-opkg'
     ]
 
     def __init__(self):
@@ -563,15 +567,24 @@ class RobotpyInstaller(object):
         
         cfg_filename = abspath(join(dirname(__file__), '.installer_config'))
         self.ctrl = SshController(cfg_filename, username='admin', password='', allow_mitm=True)
-        
+        self.remote_commands = []
+
     def _get_opkg(self):
         return OpkgRepo(self.opkg_feed, self.opkg_arch, self.opkg_cache)
-    
+
+    def execute_remote(self):
+        if len(self.remote_commands) > 0:
+            self.ctrl.ssh(" && ".join(self.remote_commands))
+
     #
     # Commands
     #
 
-    def _create_rpy_options(self, options):
+    #
+    # RobotPy install commands
+    #
+
+    def _create_rpy_pip_options(self, options):
         # Construct an appropriate line to install
         options.requirement = []
         options.packages = ['wpilib',
@@ -593,7 +606,18 @@ class RobotpyInstaller(object):
             options.packages.append('robotpy-wpilib-utilities')
 
         return options
-    
+
+    def _create_rpy_opkg_options(self, options):
+        # Construct an appropriate line to install
+        options.requirement = []
+        options.packages = ['python3']
+        options.upgrade = True
+
+        options.force_reinstall = False
+        options.ignore_installed = False
+
+        return options
+
     def install_robotpy_opts(self, parser):
         parser.add_argument('--basever', default=None,
                             help='Install a specific version of WPILib et al')
@@ -608,62 +632,94 @@ class RobotpyInstaller(object):
             them. If the components are already installed on the robot, then they will
             be reinstalled.
         '''
-        
-        opkg = self._get_opkg()
-        
-        try:
-            pkg, fname = opkg.get_cached_pkg('python3')
-        except OpkgError as e:
-            raise Error(e)
-        
-        # Write out the install script
-        # -> we use a script because opkg doesn't have a good mechanism
-        #    to only install a package if it's not already installed
-        opkg_script_fname = join(self.opkg_cache, 'install_opkg.sh')
-        opkg_script = inspect.cleandoc('''
-            set -e
-            if ! opkg list-installed | grep -F '%(name)s - %(version)s'; then
-                opkg install opkg_cache/%(fname)s
-            else
-                echo "Python interpreter already installed, continuing..."
-            fi
-        ''')
-        
-        opkg_script %= {
-            'fname': basename(fname),
-            'name': pkg['Package'],
-            'version': pkg['Version']
-        }
-        
-        with open(opkg_script_fname, 'w', newline='\n') as fp:
-            fp.write(opkg_script)
-        
-        self.ctrl.poor_sync([fname, opkg_script_fname], 'opkg_cache')
-        extra_cmd = 'bash opkg_cache/install_opkg.sh'
-        
+        opkg_options = self._create_rpy_opkg_options(options)
+        self.install_opkg(opkg_options)
+
         # We always add --pre to install-robotpy, in case the user downloaded
         # a prerelease version. Never add --pre without user intervention
         # for download-robotpy, however
-        inst_options = self._create_rpy_options(options)
-        inst_options.pre = True
-        return self.install(inst_options, extra_cmd=extra_cmd)
-    
+        pip_options = self._create_rpy_pip_options(options)
+        pip_options.pre = True
+        return self.install_pip(pip_options)
+
     # These share the same options
     download_robotpy_opts = install_robotpy_opts
-    
+
     def download_robotpy(self, options):
         '''
             This will update the cached RobotPy packages to the newest versions available.
         '''
-        
+
+        self.download_opkg(self._create_rpy_opkg_options(options))
+
+        return self.download_pip(self._create_rpy_pip_options(options))
+
+    #
+    # OPKG install commands
+    #
+
+    def download_opkg_opts(self, parser):
+        parser.add_argument('packages', nargs='*',
+                            help="Packages to download")
+        parser.add_argument('--force-reinstall', action='store_true', default=False,
+                            help='When upgrading, reinstall all packages even if they are already up-to-date.')
+    install_opkg_opts = download_opkg_opts
+
+    def download_opkg(self, options):
+        """
+            Specify opkg package(s) to download, and store them in the cache
+        """
         opkg = self._get_opkg()
         opkg.update_packages()
-        opkg.download('python3')
-        
-        return self.download(self._create_rpy_options(options))
-    
-    
-    def download_opts(self, parser):
+        for package in options.packages:
+            return opkg.download(package)
+
+    def install_opkg(self, options):
+        opkg = self._get_opkg()
+
+        # Write out the install script
+        # -> we use a script because opkg doesn't have a good mechanism
+        #    to only install a package if it's not already installed
+        opkg_script_fname = join(self.opkg_cache, 'install_opkg.sh')
+        opkg_script = ""
+        opkg_files = []
+        for package in options.packages:
+
+            try:
+                pkg, fname = opkg.get_cached_pkg(package)
+            except OpkgError as e:
+                raise Error(e)
+
+            opkg_script_bit = inspect.cleandoc('''
+                set -e
+                if ! opkg list-installed | grep -F '%(name)s - %(version)s'; then
+                    opkg install %(options)s opkg_cache/%(fname)s
+                else
+                    echo "%(name)s already installed, continuing..."
+                fi
+            ''')
+
+            opkg_script_bit %= {
+                'fname': basename(fname),
+                'name': pkg['Package'],
+                'version': pkg['Version'],
+                'options': "--force-reinstall" if options.force_reinstall else ""
+            }
+            opkg_script += opkg_script_bit
+            opkg_files.append(fname)
+
+        with open(opkg_script_fname, 'w', newline='\n') as fp:
+            fp.write(opkg_script)
+        opkg_files.append(opkg_script_fname)
+
+        self.ctrl.poor_sync(opkg_files, 'opkg_cache')
+        self.remote_commands.append('bash opkg_cache/install_opkg.sh')
+
+    #
+    # Pip install commands
+    #
+
+    def download_pip_opts(self, parser):
         parser.add_argument('packages', nargs='*',
                             help="Packages to download/install, may be a local file")
         parser.add_argument('-r', '--requirement', action='append', default=[],
@@ -698,7 +754,7 @@ class RobotpyInstaller(object):
         
         return pip_args
     
-    def download(self, options):
+    def download_pip(self, options):
         '''
             Specify python package(s) to download, and store them in the cache
         '''
@@ -726,9 +782,9 @@ class RobotpyInstaller(object):
         return pip.main(pip_args)
     
     # These share the same options
-    install_opts = download_opts
+    install_pip_opts = download_pip_opts
     
-    def install(self, options, extra_cmd=None):
+    def install_pip(self, options):
         '''
             Copies python packages over to the roboRIO, and installs them. If the
             package already has been installed, it will not be upgraded. Use -U to
@@ -748,7 +804,7 @@ class RobotpyInstaller(object):
         
         cmd = "/usr/local/bin/pip3 install --no-index --find-links=pip_cache "
         cmd_args = []
-        
+
         # Is the user asking to install a file?
         if len(options.packages) == 1 and exists(options.packages[0]):
             pkg = options.packages[0]
@@ -759,20 +815,20 @@ class RobotpyInstaller(object):
             # .. this is inefficient
             print("Copying over the pip cache...")
             self.ctrl.poor_sync(self.pip_cache, 'pip_cache')
-            
+
             print("Running installation...")
             cmd_args = options.packages
         
-        cmd += ' '.join(self._process_pip_args(options) + cmd_args)  
-            
-        # This is here so we can execute the install-robotpy commands without
-        # a separate SSH connection.
-        if extra_cmd is not None:
-            cmd = extra_cmd + ' && ' + cmd
-            
-        self.ctrl.ssh(cmd)
+        cmd += ' '.join(self._process_pip_args(options) + cmd_args)
+        self.remote_commands.append(cmd)
         
         print("Done.")
+
+    # Backwards-compatibility aliases
+    install_opts = install_pip_opts
+    install = install_pip
+    download_opts = download_pip_opts
+    download = download_pip
 
 def main(args=None):
 
@@ -802,6 +858,7 @@ def main(args=None):
 
     try:
         retval = options.cmdobj(options)
+        installer.execute_remote()
     except ArgError as e:
         parser.error(str(e))
         retval = 1
