@@ -20,6 +20,7 @@ from .adxl345_i2c import *
 from .adxl345_spi import *
 from .analogaccelerometer import *
 from .analoginput import *
+from .analoggyro import *
 from .analogoutput import *
 from .analogpotentiometer import *
 from .analogtrigger import *
@@ -37,7 +38,7 @@ from .doublesolenoid import *
 from .driverstation import *
 from .encoder import *
 from .geartooth import *
-from .gyro import *
+from .gyrobase import *
 from .i2c import *
 from .interruptablesensorbase import *
 from .iterativerobot import *

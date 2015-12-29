@@ -15,10 +15,12 @@ class Gyro:
         """
         Calibrate the gyro by running for a number of samples and computing the
         center value. Then use the center value as the Accumulator center value for
-        subsequent measurements. It's important to make sure that the robot is not
-        moving while the centering calculations are in progress, this is typically
-        done when the robot is first turned on while it's sitting at rest before
-        the competition starts.
+        subsequent measurements.
+        
+        .. note:: It's important to make sure that the robot is not
+            moving while the centering calculations are in progress, this is typically
+            done when the robot is first turned on while it's sitting at rest before
+            the competition starts.
         """
         raise NotImplementedError
 

@@ -1,3 +1,4 @@
+# validated: 2015-12-28 DS 375a195 athena/java/edu/wpi/first/wpilibj/AnalogGyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,14 +9,14 @@
 import hal
 
 from .analoginput import AnalogInput
+from .gyrobase import GyroBase
 from .interfaces import PIDSource
 from .livewindow import LiveWindow
-from .sensorbase import SensorBase
 from .timer import Timer
 
-__all__ = ["Gyro"]
+__all__ = ["AnalogGyro"]
 
-class Gyro(SensorBase):
+class AnalogGyro(GyroBase):
     """Interface to a gyro device via an :class:`.AnalogInput`
     
     Use a rate gyro to return the robots heading relative to a starting
@@ -37,7 +38,7 @@ class Gyro(SensorBase):
     
     PIDSourceType = PIDSource.PIDSourceType
 
-    def __init__(self, channel):
+    def __init__(self, channel, center=None, offset=None):
         """Gyro constructor.
 
         Also initializes the gyro. Calibrate the gyro by running for a number
@@ -50,25 +51,53 @@ class Gyro(SensorBase):
 
         :param channel: The analog channel index or AnalogInput object that
             the gyro is connected to. Gyros can only be used on on-board channels 0-1.
+        :param center: Preset uncalibrated value to use as the accumulator center value
+        :type center: int
+        :param offset: Preset uncalibrated value to use as the gyro offset
+        :type offset: float
         """
         if not hasattr(channel, "initAccumulator"):
             channel = AnalogInput(channel)
+            self.channelAllocated = True
+        else:
+            self.channelAllocated = False
+            
         self.analog = channel
 
-        self.voltsPerDegreePerSecond = Gyro.kDefaultVoltsPerDegreePerSecond
-        self.analog.setAverageBits(Gyro.kAverageBits)
-        self.analog.setOversampleBits(Gyro.kOversampleBits)
-        sampleRate = Gyro.kSamplesPerSecond \
-                * (1 << (Gyro.kAverageBits + Gyro.kOversampleBits))
+        self.voltsPerDegreePerSecond = AnalogGyro.kDefaultVoltsPerDegreePerSecond
+        self.analog.setAverageBits(AnalogGyro.kAverageBits)
+        self.analog.setOversampleBits(AnalogGyro.kOversampleBits)
+        sampleRate = AnalogGyro.kSamplesPerSecond \
+                * (1 << (AnalogGyro.kAverageBits + AnalogGyro.kOversampleBits))
         AnalogInput.setGlobalSampleRate(sampleRate)
-        Timer.delay(1.0)
+        if not hal.HALIsSimulation():
+            Timer.delay(1.0)
+        
+        self.setDeadband(0.0)
 
+        self.setPIDSourceType(self.PIDSourceType.kDisplacement)
+        
+        hal.HALReport(hal.HALUsageReporting.kResourceType_Gyro,
+                      self.analog.getChannel())
+        LiveWindow.addSensorChannel("AnalogGyro", self.analog.getChannel(), self)
+        
+        if center is None or offset is None:
+            self.calibrate()
+        else:
+            self.center = int(center)
+            self.offset = float(offset)
+            self.analog.setAccumulatorCenter(self.center)
+            self.analog.resetAccumulator()
+            
+
+    def calibrate(self):
+        """:see: :meth:`.Gyro.calibrate`"""
         self.analog.initAccumulator()
         self.analog.resetAccumulator()
         
         # Only do this on a real robot
         if not hal.HALIsSimulation():
-            Timer.delay(Gyro.kCalibrationSampleTime)
+            Timer.delay(AnalogGyro.kCalibrationSampleTime)
 
         value, count = self.analog.getAccumulatorOutput()
 
@@ -78,47 +107,21 @@ class Gyro(SensorBase):
 
         self.analog.setAccumulatorCenter(self.center)
         self.analog.resetAccumulator()
-
-        self.setDeadband(0.0)
-
-        self.pidSource = self.PIDSourceType.kDisplacement
-
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Gyro,
-                      self.analog.getChannel())
-        LiveWindow.addSensorChannel("Gyro", self.analog.getChannel(), self)
-
+    
     def reset(self):
-        """Reset the gyro. Resets the gyro to a heading of zero. This can be
-        used if there is significant drift in the gyro and it needs to be
-        recalibrated after it has been running.
-        """
-        if self.analog is None:
-            return
-        self.analog.resetAccumulator()
+        """:see: :meth:`.Gyro.reset`"""
+        if self.analog is not None:
+            self.analog.resetAccumulator()
 
     def free(self):
-        """Delete (free) the accumulator and the analog components used for the
-        gyro.
-        """
+        """:see: :meth:`.Gyro.free`"""
         LiveWindow.removeComponent(self)
-        if self.analog is not None:
+        if self.analog is not None and self.channelAllocated:
             self.analog.free()
             self.analog = None
 
     def getAngle(self):
-        """Return the actual angle in degrees that the robot is currently
-        facing.
-
-        The angle is based on the current accumulator value corrected by the
-        oversampling rate, the gyro type and the A/D calibration values. The
-        angle is continuous, that is it will continue from 360 to 361 degrees. This allows
-        algorithms that wouldn't want to see a discontinuity in the gyro output
-        as it sweeps past from 360 to 0 on the second time around.
-
-        :returns: The current heading of the robot in degrees. This heading is
-                based on integration of the returned rate from the gyro.
-        :rtype: float
-        """
+        """:see: :meth:`.Gyro.getAngle`"""
         if self.analog is None:
             return 0.0
         value, count = self.analog.getAccumulatorOutput()
@@ -132,13 +135,7 @@ class Gyro(SensorBase):
                 / (AnalogInput.getGlobalSampleRate() * self.voltsPerDegreePerSecond))
 
     def getRate(self):
-        """Return the rate of rotation of the gyro
-
-        The rate is based on the most recent reading of the gyro analog value
-
-        :returns: the current rate in degrees per second
-        :rtype: float
-        """
+        """:see: :meth:`.Gyro.getRate`"""
         if self.analog is None:
             return 0.0
         else:
@@ -146,6 +143,22 @@ class Gyro(SensorBase):
                     * 1e-9
                     * self.analog.getLSBWeight()
                     / ((1 << self.analog.getOversampleBits()) * self.voltsPerDegreePerSecond))
+
+    def getOffset(self):
+        """Return the gyro offset value set during calibration to
+        use as a future preset
+        
+        :returns: the current offset value
+        """
+        return self.offset
+    
+    def getCenter(self):
+        """Return the gyro center value set during calibration to
+        use as a future preset
+        
+        :returns: the current center value
+        """
+        return self.center
 
     def setSensitivity(self, voltsPerDegreePerSecond):
         """Set the gyro sensitivity. This takes the number of
@@ -174,47 +187,5 @@ class Gyro(SensorBase):
                        (1 << self.analog.getOversampleBits()))
         self.analog.setAccumulatorDeadband(deadband)
 
-    def setPIDSourceType(self, pidSource):
-        """Set which parameter of the gyro you are using as a process
-        control variable. The Gyro class supports the rate and angle
-        parameters.
-
-        :param pidSource: An enum to select the parameter.
-        :type  pidSource: :class:`.PIDSource.PIDSourceType`
-        """
-        if pidSource not in (self.PIDSourceType.kDisplacement,
-                             self.PIDSourceType.kRate):
-            raise ValueError("Must be kRate or kDisplacement")
-        self.pidSource = pidSource
-        
-    def getPIDSourceType(self):
-        return self.pidSource
-
-    def pidGet(self):
-        """Get the output of the gyro for use with PIDControllers
-
-        :returns: the current angle according to the gyro
-        :rtype: float
-        """
-        if self.pidSource == self.PIDSourceType.kRate:
-            return self.getRate()
-        elif self.pidSource == self.PIDSourceType.kDisplacement:
-            return self.getAngle()
-        else:
-            return 0.0
-
-    # Live Window code, only does anything if live window is activated.
-
     def getSmartDashboardType(self):
-        return "Gyro"
-
-    def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Value", self.getAngle())
-
-    def startLiveWindowMode(self):
-        pass
-
-    def stopLiveWindowMode(self):
-        pass
+        return "AnalogGyro"
