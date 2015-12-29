@@ -23,6 +23,11 @@ def get_wpilib_dirs(wpilib_dir):
     paths.append(join(wpilib_dir, 'src', 'athena', 'java', 'edu', 'wpi', 'first', 'wpilibj'))
     return paths
 
+def get_python_attr(python_object, name):
+    for name in [name, '_' + name]:
+        if hasattr(python_object, name):
+            return getattr(python_object, name)
+
 def compare_folders(python_object, java_dirs):
     """
     Parses through java_dirs and matches java objects to objects in
@@ -63,9 +68,7 @@ def compare_folders(python_object, java_dirs):
             ignore_child = java_child.name in children_to_ignore
 
             #Get the first python object and compare!
-            python_child = None
-            if hasattr(python_object, java_child.name):
-                python_child = getattr(python_object, java_child.name)
+            python_child = get_python_attr(python_object, java_child.name)
 
             child_output = compare_object(python_child, java_child)
 
@@ -139,10 +142,8 @@ def compare_object(python_object, java_object):
             ignore_child = python_child_name in children_to_ignore
 
             #Try to get the child
-            python_child = None
-            if hasattr(python_object, python_child_name):
-                python_child = getattr(python_object, python_child_name)
-
+            python_child = get_python_attr(python_object, python_child_name)
+            
             #Compare the child and set our matches variable from it.
             child_output = compare_object(python_child, java_child)
 
