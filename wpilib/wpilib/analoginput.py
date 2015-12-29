@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 375a195 athena/java/edu/wpi/first/wpilibj/AnalogInput.java
+# validated: 2015-12-28 DS 375a195 athena/java/edu/wpi/first/wpilibj/AnalogInput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -9,6 +9,7 @@
 import hal
 import weakref
 
+from .interfaces import PIDSource
 from .livewindow import LiveWindow
 from .resource import Resource
 from .sensorbase import SensorBase
@@ -38,6 +39,8 @@ class AnalogInput(SensorBase):
     kAccumulatorSlot = 1
     kAccumulatorChannels = (0, 1)
     channels = Resource(SensorBase.kAnalogInputChannels)
+    
+    PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel):
         """Construct an analog channel.
@@ -52,6 +55,7 @@ class AnalogInput(SensorBase):
 
         self.channel = channel
         self.accumulatorOffset = 0
+        self.pidSource = self.PIDSourceType.kDisplacement
 
         port = hal.getPort(channel)
         self._port = hal.initializeAnalogInputPort(port)
@@ -304,6 +308,14 @@ class AnalogInput(SensorBase):
         :returns: Sample rate.
         """
         return hal.getAnalogSampleRate()
+    
+    def setPIDSourceType(self, pidSource):
+        """:see: :meth:`.PIDSource.setPIDSourceType`"""
+        self.pidSource = pidSource
+        
+    def getPIDSourceType(self):
+        """:see: :meth:`.PIDSource.getPIDSourceType`"""
+        return self.pidSource
 
     def pidGet(self):
         """Get the average voltage for use with PIDController
