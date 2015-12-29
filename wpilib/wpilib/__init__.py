@@ -31,6 +31,7 @@ from .cantalon import *
 from .compressor import *
 from .controllerpower import *
 from .counter import *
+from .digitalglitchfilter import *
 from .digitalinput import *
 from .digitaloutput import *
 from .digitalsource import *

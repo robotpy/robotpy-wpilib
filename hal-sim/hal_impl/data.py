@@ -268,9 +268,16 @@ def _reset_hal_data(hooks):
             'initialized':  OUT(False),
             'value':        IN(False), # technically both
             'pulse_length': OUT(None),
-            'is_input':     OUT(False)
+            'is_input':     OUT(False),
+            'filter_idx':   OUT(None), # is None or filter number
             
         }) for _ in range(26)],
+        
+        # Digital glitch filter:    
+        'filter': [NotifyDict({
+            'enabled': OUT(False),
+            'period': OUT(False),
+        }) for _ in range(3)],
         
         'encoder': [{
             'has_source':         IN(False),

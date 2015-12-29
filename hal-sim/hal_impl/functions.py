@@ -843,20 +843,43 @@ def isAnyPulsing(status):
     return False
     
 def setFilterSelect(digital_port, filter_idx, status):
+    if filter_idx < 0 or filter_idx > 3:
+        status.value = PARAMETER_OUT_OF_RANGE
+        return
+    
+    if filter_idx == 0:
+        filter_idx = hal_data['dio'][digital_port.pin]['filter_idx']
+        hal_data['dio'][digital_port.pin]['filter_idx'] = None
+        hal_data['filter'][filter_idx]['enabled'] = False
+    else:
+        filter_idx = filter_idx - 1
+        hal_data['filter'][filter_idx]['enabled'] = True
+        hal_data['dio'][digital_port.pin]['filter_idx'] = filter_idx
     status.value = 0
-    assert False # TODO
 
 def getFilterSelect(digital_port, status):
     status.value = 0
-    assert False # TODO
+    filter_idx = hal_data['dio'][digital_port.pin]['filter_idx']
+    if filter_idx is None:
+        return 0
+    else:
+        return filter_idx + 1 # really?
 
 def setFilterPeriod(filter_idx, value, status):
+    if filter_idx < 0 or filter_idx > 2:
+        status.value = PARAMETER_OUT_OF_RANGE
+        return
+    
     status.value = 0
-    assert False # TODO
+    hal_data['filter'][filter_idx]['period'] = value
 
 def getFilterPeriod(filter_idx, status):
+    if filter_idx < 0 or filter_idx > 2:
+        status.value = PARAMETER_OUT_OF_RANGE
+        return
+    
     status.value = 0
-    assert False # TODO
+    return hal_data['filter'][filter_idx]['period']
 
 #
 # Counter
