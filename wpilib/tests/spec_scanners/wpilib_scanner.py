@@ -312,11 +312,16 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         print("Usage: python wpilib_scanner.py wpilibj_path")
         exit(1)
+    
+    cls = None
+    if len(sys.argv) == 3:
+        cls = sys.argv[2]
 
     output = compare_folders(wpilib, get_wpilib_dirs(sys.argv[1]))
     text_list = list()
     for item in sorted(output["children"], key=lambda k: k['name']):
-        text_list.extend(stringize_summary(item))
+        if cls is None or cls == item['name']:
+            text_list.extend(stringize_summary(item))
     print_list(text_list)
 
     print("\n{} Errors, {} Ignored errors ".format(output["errors"], output["ignored_errors"]))
