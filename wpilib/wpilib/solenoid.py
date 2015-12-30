@@ -89,7 +89,7 @@ class Solenoid(SolenoidBase):
         
     @property
     def port(self):
-        if self._port is None:
+        if not self.__finalizer.alive:
             raise ValueError("Cannot use channel after free() has been called")
         return self._port
 
