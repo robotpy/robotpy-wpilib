@@ -1,3 +1,4 @@
+# validated: 2015-12-29 DS 6d854af athena/java/edu/wpi/first/wpilibj/DriverStation.java
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
@@ -72,7 +73,7 @@ class DriverStation:
         self.joystickAxes = []
         self.joystickPOVs = []
         self.joystickButtons = []
-        for i in range(self.kJoystickPorts):
+        for _ in range(self.kJoystickPorts):
             self.joystickAxes.append([0]*hal.kMaxJoystickAxes)
             self.joystickPOVs.append([0]*hal.kMaxJoystickPOVs)
             self.joystickButtons.append(hal.HALJoystickButtons())
@@ -215,7 +216,7 @@ class DriverStation:
 
             if pov >= len(joystickPOVs):
                 self._reportJoystickUnpluggedError("WARNING: Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick))
-                return 0.0
+                return -1
             return joystickPOVs[pov]
 
     def getStickPOVCount(self, stick):
@@ -286,14 +287,15 @@ class DriverStation:
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
-
-        # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
-        if 1 > self.joystickButtons[stick].count and 1 > self.joystickAxes[stick].length:
-            self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
-                                               "plugged in.\n".format(stick))
-            return False
-
-        return hal.HALJoystickIsXbox(stick) == 1
+        
+        with self.mutex:
+            # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
+            if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
+                self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
+                                                   "plugged in.\n".format(stick))
+                return False
+    
+        return hal.HALGetJoystickIsXbox(stick) == 1
 
     def getJoystickType(self, stick):
         """
@@ -305,14 +307,15 @@ class DriverStation:
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
-
-        # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
-        if 1 > self.joystickButtons[stick].count and 1 > self.joystickAxes[stick].length:
-            self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
-                                               "plugged in.\n".format(stick))
-            return False
-
-        return hal.HALJoystickType(stick)
+        
+        with self.mutex:
+            # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
+            if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
+                self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
+                                                   "plugged in.\n".format(stick))
+                return False
+    
+        return hal.HALGetJoystickType(stick)
 
     def getJoystickName(self, stick):
         """
@@ -325,13 +328,14 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
-        if 1 > self.joystickButtons[stick].count and 1 > self.joystickAxes[stick].length:
-            self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
-                                               "plugged in.\n".format(stick))
-            return False
+        with self.mutex:
+            # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
+            if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
+                self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
+                                                   "plugged in.\n".format(stick))
+                return False
 
-        return hal.HALJoystickName(stick)
+        return hal.HALGetJoystickName(stick)
 
     def isEnabled(self):
         """Gets a value indicating whether the Driver Station requires the

@@ -12,6 +12,13 @@ def dsmock(wpimock, halmock):
     halmock.reset_mock()
     return myds
 
+@pytest.fixture(scope="function")
+def ds(wpilib, hal_data):
+    with patch("wpilib.driverstation.threading") as mockthread:
+        myds = wpilib.DriverStation.getInstance()
+    return myds
+
+
 #
 # Tests
 #
@@ -145,6 +152,17 @@ def test_getStickButton_limits(dsmock):
     with pytest.raises(IndexError):
         dsmock.getStickButton(dsmock.kJoystickPorts, 1)
 
+def test_getJoystickIsXbox(ds, hal_data):
+    hal_data['joysticks'][0]['isXbox'] = True
+    assert ds.getJoystickIsXbox(0)
+    
+    hal_data['joysticks'][1]['isXbox'] = False
+    assert not ds.getJoystickIsXbox(1)
+
+def test_getJoystickName(ds, hal_data):
+    hal_data['joysticks'][0]['name'] = 'bob'
+    assert ds.getJoystickName(0) == 'bob'
+
 def test_isEnabled(dsmock, halmock):
     halmock.HALGetControlWord.return_value.enabled = 1
     assert dsmock.isEnabled()
@@ -205,11 +223,18 @@ def test_getLocation(alliance, dsmock, halmock):
     halmock.HALGetAllianceStation.return_value = alliance
     assert dsmock.getLocation() == result
 
-def test_isFMSAttached(dsmock, halmock):
+def test_isFMSAttached_mock(dsmock, halmock):
     halmock.HALGetControlWord.return_value.fmsAttached = 1
     assert dsmock.isFMSAttached()
     halmock.HALGetControlWord.return_value.fmsAttached = 0
     assert not dsmock.isFMSAttached()
+    
+def test_isFMSAttached(ds, hal_data):
+    hal_data['control']['fms_attached'] = True
+    assert ds.isFMSAttached()
+    
+    hal_data['control']['fms_attached'] = False
+    assert not ds.isFMSAttached()
 
 def test_getMatchTime(dsmock, halmock):
     assert dsmock.getMatchTime() == halmock.HALGetMatchTime.return_value
