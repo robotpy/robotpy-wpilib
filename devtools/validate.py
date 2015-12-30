@@ -77,17 +77,6 @@ def git_log(fname, rev_range=None):
                 os.unlink(tname)
             pass
 
-'''
-        os.system('git log --follow -p %s' % (excluded_commits(), fname))
-
-        os.system('git log --follow -p %s..%s %s' % (info.hash,
-                                                        info.orig_hash,
-                                                        excluded_commits(),
-                                                        normpath(info.orig_fname)))
-
-    os.system('cat %s | git log -p --stdin --no-walk %s' % (tname, fname))
-'''
-
 @contextmanager
 def chdir(path):
     orig_path = os.getcwd()
