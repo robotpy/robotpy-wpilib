@@ -1,3 +1,4 @@
+# validated: 2015-12-30 DS de39877 athena/java/edu/wpi/first/wpilibj/DoubleSolenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -105,6 +106,7 @@ class DoubleSolenoid(SolenoidBase):
         LiveWindow.removeComponent(self)
         self.allocated.free(self.forwardChannel)
         self.allocated.free(self.reverseChannel)
+        super().free()
 
     def set(self, value):
         """Set the value of a solenoid.

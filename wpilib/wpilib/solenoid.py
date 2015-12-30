@@ -1,3 +1,4 @@
+# validated: 2015-12-30 DS c3c35c6 athena/java/edu/wpi/first/wpilibj/Solenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,6 +7,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import weakref
 import warnings
 
 from .livewindow import LiveWindow
@@ -13,6 +15,10 @@ from .sensorbase import SensorBase
 from .solenoidbase import SolenoidBase
 
 __all__ = ["Solenoid"]
+
+def _freeSolenoid(modulePort, solenoidPort):
+    hal.freeSolenoidPort(solenoidPort)
+    hal.freePort(modulePort)
 
 class Solenoid(SolenoidBase):
     """Solenoid class for running high voltage Digital Output.
@@ -71,17 +77,30 @@ class Solenoid(SolenoidBase):
         except IndexError as e:
             raise IndexError("Solenoid channel %d on module %d is already allocated" % (channel, moduleNumber)) from e
 
-        self.port = self.ports[channel]
+        modulePort = hal.getPortWithModule(moduleNumber, channel)
+        self._port = hal.initializeSolenoidPort(modulePort)
 
         LiveWindow.addActuatorModuleChannel("Solenoid", moduleNumber, channel,
                                             self)
         hal.HALReport(hal.HALUsageReporting.kResourceType_Solenoid, channel,
                       moduleNumber)
+        
+        self.__finalizer = weakref.finalize(self, _freeSolenoid, modulePort, self._port)
+        
+    @property
+    def port(self):
+        if self._port is None:
+            raise ValueError("Cannot use channel after free() has been called")
+        return self._port
 
     def free(self):
         """Mark the solenoid as freed."""
-        self.allocated.free(self.channel)
         LiveWindow.removeComponent(self)
+        self.allocated.free(self.channel)
+        
+        self.__finalizer()
+        self._port = None
+        
         super().free()
 
     def set(self, on):
@@ -90,8 +109,7 @@ class Solenoid(SolenoidBase):
         :param on: Turn the solenoid output off or on.
         :type on: bool
         """
-        with self.mutex:
-            hal.setSolenoid(self.port, on)
+        hal.setSolenoid(self.port, on)
 
     def get(self):
         """Read the current value of the solenoid.
@@ -99,8 +117,7 @@ class Solenoid(SolenoidBase):
         :returns: The current value of the solenoid.
         :rtype: bool
         """
-        with self.mutex:
-            return hal.getSolenoid(self.port)
+        return hal.getSolenoid(self.port)
 
     def isBlackListed(self):
         """

@@ -1331,6 +1331,7 @@ def initializeSolenoidPort(port, status):
     return types.SolenoidPort(port)
 
 def freeSolenoidPort(port):
+    # sigh: it would be nice if all the solenoids weren't always initialized
     port.pin = None
 
 def checkSolenoidModule(module):
@@ -1342,8 +1343,10 @@ def getSolenoid(solenoid_port, status):
 
 def getAllSolenoids(solenoid_port, status):
     status.value = 0
-    assert False
-    return 0
+    value = 0
+    for i, s in enumerate(hal_data['solenoid']):
+        value |= (1 if s['value'] else 0) << i
+    return value
 
 def setSolenoid(solenoid_port, value, status):
     status.value = 0

@@ -1,3 +1,4 @@
+# validated: 2015-12-30 DS 906fe65 athena/java/edu/wpi/first/wpilibj/SolenoidBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -71,10 +72,7 @@ class SolenoidBase(SensorBase):
         :returns: The current value of all 8 solenoids on this module.
         """
         with self.mutex:
-            value = 0
-            for i in range(SensorBase.kSolenoidChannels):
-                value |= (1 if hal.getSolenoid(self.ports[i]) else 0) << i
-            return value
+            return hal.getAllSolenoids(self.ports[0])
 
     def getPCMSolenoidBlackList(self):
         """
