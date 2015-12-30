@@ -1,3 +1,5 @@
+# validated: 2015-12-30 DS 4b04073 athena/java/edu/wpi/first/wpilibj/SPI.java
+
 import hal
 import weakref
 
@@ -155,3 +157,86 @@ class SPI:
         :returns: data received from the device
         """
         return hal.spiTransaction(self.port, dataToSend)
+    
+    
+    def initAccumulator(self, period, cmd, xfer_size,
+                        valid_mask, valid_value,
+                        data_shift, data_size,
+                        is_signed, big_endian):
+        """Initialize the accumulator.
+        
+        :param period: Time between reads
+        :param cmd: SPI command to send to request data
+        :param xfer_size: SPI transfer size, in bytes
+        :param valid_mask: Mask to apply to received data for validity checking
+        :param valid_data: After valid_mask is applied, required matching value for
+                           validity checking
+        @param data_shift: Bit shift to apply to received data to get actual data
+                          value
+        @param data_size: Size (in bits) of data field
+        @param is_signed: Is data field signed?
+        @param big_endian: Is device big endian?
+        """
+        hal.spiInitAccumulator(self.port, int(period*1.0e6), cmd,
+                               xfer_size, valid_mask, valid_value, data_shift,
+                               data_size, is_signed, big_endian)
+
+    def freeAccumulator(self):
+        """Frees the accumulator."""
+        hal.spiFreeAccumulator(self.port)
+
+    def resetAccumulator(self):
+        """Resets the accumulator to zero."""
+        hal.spiResetAccumulator(self.port)
+
+    def setAccumulatorCenter(self, center):
+        """Set the center value of the accumulator.
+        
+        The center value is subtracted from each value before it is added to the accumulator. This
+        is used for the center value of devices like gyros and accelerometers to make integration work
+        and to take the device offset into account when integrating.
+        """
+        hal.spiSetAccumulatorCenter(self.port, center)
+
+    def setAccumulatorDeadband(self, deadband):
+        """Set the accumulator's deadband."""
+        hal.spiSetAccumulatorDeadband(self.port, deadband)
+
+    def getAccumulatorLastValue(self):
+        """Read the last value read by the accumulator engine."""
+
+        return hal.spiGetAccumulatorLastValue(self.port);
+
+    def getAccumulatorValue(self):
+        """Read the accumulated value.
+        
+        :returns: The 64-bit value accumulated since the last Reset().
+        """
+        return hal.spiGetAccumulatorValue(self.port)
+    
+    def getAccumulatorCount(self):
+        """Read the number of accumulated values.
+        
+        Read the count of the accumulated values since the accumulator was last Reset().
+        
+        :returns: The number of times samples from the channel were accumulated.
+        """
+        return hal.spiGetAccumulatorCount(self.port)
+    
+    def getAccumulatorAverage(self):
+        """Read the average of the accumulated value.
+        
+        :returns: The accumulated average value (value / count).
+        """
+        return hal.spiGetAccumulatorAverage(self.port)
+    
+    def getAccumulatorOutput(self):
+        """Read the accumulated value and the number of accumulated values atomically.
+        
+        This function reads the value and count atomically.
+        This can be used for averaging.
+        
+        :returns: tuple of (value, count)
+        """
+        return hal.spiGetAccumulatorOutput(self.port)    
+ 
