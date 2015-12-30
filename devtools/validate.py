@@ -27,6 +27,66 @@ orig_root = abspath(join(dirname(__file__), '..', '..', 'allwpilib', 'wpilibj', 
 # Files that are being validated 
 validation_root = abspath(join(dirname(__file__), '..', 'wpilib', 'wpilib')) 
 
+exclude_commits_file = abspath(join(dirname(__file__), 'exclude_commits'))
+
+# git log option to exclude commits
+def excluded_commits():
+    exclude_commits = []
+    
+    if exists(exclude_commits_file):
+        with open(exclude_commits_file) as fp:
+            for line in fp:
+                line = line.split()
+                if line:
+                    exclude_commits.append('commit %s' % line[0].strip())
+                    
+    
+    return exclude_commits
+
+
+def git_log(fname, rev_range=None):
+    '''
+        Executes git log for a particular file, excluding particular commits that aren't
+        particularly useful to see
+    '''
+    
+    if rev_range:
+        endl = (rev_range, fname)
+        end = '%s %s' % (rev_range, fname)
+    else:
+        endl = (fname,)
+        end = fname
+    
+    tname = None
+    excluded = excluded_commits()
+    
+    if len(excluded) == 0:
+        os.system('git log --follow -p %s' % end)
+    else:
+        # read all the commits in, filtering out the excluded commits
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', delete=False) as fp:
+                tname = fp.name
+                fp.write('\n'.join(excluded))
+            
+            cmd = "git log --follow -p -z --color %s | grep -vzf %s | tr -d '\\000' | less -FRX" % (end, tname)
+            os.system(cmd)
+            
+        finally:
+            if tname is not None:
+                os.unlink(tname)
+            pass
+
+'''
+        os.system('git log --follow -p %s' % (excluded_commits(), fname))
+
+        os.system('git log --follow -p %s..%s %s' % (info.hash,
+                                                        info.orig_hash,
+                                                        excluded_commits(),
+                                                        normpath(info.orig_fname)))
+
+    os.system('cat %s | git log -p --stdin --no-walk %s' % (tname, fname))
+'''
 
 @contextmanager
 def chdir(path):
@@ -218,8 +278,11 @@ def action_diff(args):
     if info is None:
         raise OSError("No validation information found for %s" % args.filename)
     
-    with chdir(orig_root):
-        os.system('git log --follow -p %s..%s %s' % (info.hash, info.orig_hash, normpath(info.orig_fname)))
+    with chdir(orig_root): 
+        git_log(normpath(info.orig_fname),
+                '%s..%s' % (info.hash, info.orig_hash))
+        
+        
 
 def action_validate(args):
 
@@ -267,7 +330,7 @@ def action_show_log(args):
     fname = choose_suggestion(args.filename)
     if fname:
        with chdir(orig_root):
-           os.system('git log --follow -p %s' % fname) 
+           git_log(fname)
     
 
 if __name__ == '__main__':
