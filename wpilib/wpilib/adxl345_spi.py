@@ -158,27 +158,9 @@ class ADXL345_SPI(SensorBase):
     def getSmartDashboardType(self):
         return "3AxisAccelerometer"
 
-    def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return self.table
-
     def updateTable(self):
         if self.table is not None:
             self.table.putNumber("X", self.getX())
             self.table.putNumber("Y", self.getY())
             self.table.putNumber("Z", self.getZ())
 
-    def startLiveWindowMode(self):
-        """
-        ADXL345_SPI doesn't have to do anything special when entering the LiveWindow.
-        """
-        pass
-
-    def stopLiveWindowMode(self):
-        """
-        ADXL345_SPI doesn't have to do anything special when exiting the LiveWindow.
-        """
-        pass
