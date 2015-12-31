@@ -9,6 +9,7 @@ class CommandGroupName(CommandGroup):
     """
 
     def __init__(self, robot, name=None):
+        super().__init__(name)
         # Add Commands here:
         # e.g. addSequential(Command1(robot))
         #      addSequential(Command2(robot))
@@ -25,5 +26,4 @@ class CommandGroupName(CommandGroup):
         # e.g. if Command1 requires chassis, and Command2 requires arm,
         # a CommandGroup containing them would require both the chassis and the
         # arm.
-        super().__init__(name)
         self.robot = robot

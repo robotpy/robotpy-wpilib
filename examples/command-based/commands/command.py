@@ -7,9 +7,9 @@ class CommandName(Command):
 
     def __init__(self, robot, name=None, timeout=None):
         """This is the constructor of the command, use this to declare subsystem dependencies"""
-        #Use self.requires() here to declare subsystem dependencies
-        #eg. self.requires(chassis)
         super().__init__(name, timeout)
+        #Use self.requires() here to declare subsystem dependencies
+        #eg. self.requires(robot.chassis)
         self.robot = robot
 
     def initialize(self):

@@ -1,15 +1,14 @@
 
 from wpilib.command import Command
-from .example_subsystem import ExampleSubsystem
 
 
 class ExampleCommand(Command):
 
     def __init__(self, robot, name=None, timeout=None):
         """The Command's constructor"""
-        #Signal that we require ExampleSubsystem
-        self.requires(ExampleSubsystem)
         super().__init__(name, timeout)
+        #Signal that we require ExampleSubsystem
+        self.requires(robot.example_subsystem)
         self.robot = robot
 
     def initialize(self):

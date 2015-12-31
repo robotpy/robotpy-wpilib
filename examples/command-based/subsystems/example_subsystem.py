@@ -2,7 +2,9 @@
 from wpilib.command import Subsystem
 
 
-class SubsystemName(Subsystem):
+#This is a template Subsystem, SubsystemName should, of course, be replaced
+# with the name of your desired Subsystem
+class ExampleSubsystem(Subsystem):
 
     #Put methods for controlling this subsystem here.
     # Call these from Commands.
