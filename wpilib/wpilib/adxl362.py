@@ -1,4 +1,4 @@
-# validated: 2015-12-31 DS 6d854af athena/java/edu/wpi/first/wpilibj/ADXL345_SPI.java
+# validated: 2015-12-31 DS 9e18330 athena/java/edu/wpi/first/wpilibj/ADXL362.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,38 +8,39 @@
 
 import hal
 
+from .driverstation import DriverStation
 from .interfaces import Accelerometer
 from .spi import SPI
 from .sensorbase import SensorBase
 from .livewindow import LiveWindow
 
-__all__ = ["ADXL345_SPI"]
+__all__ = ["ADXL362"]
 
-class ADXL345_SPI(SensorBase):
+class ADXL362(SensorBase):
     """
-        ADXL345 accelerometer device via spi
+        ADXL362 SPI Accelerometer.
+    
+        This class allows access to an Analog Devices ADXL362 3-axis accelerometer.
         
         .. not_implemented: init
     """
     
+    kRegWrite = 0x0A
+    kRegRead = 0x0B
+     
+    kPartIdRegister = 0x02
+    kDataRegister = 0x0E
+    kFilterCtlRegister = 0x2C
     kPowerCtlRegister = 0x2D
-    kDataFormatRegister = 0x31
-    kDataRegister = 0x32
-    kGsPerLSB = 0.00390625
-
-    kAddress_Read = 0x80
-    kAddress_MultiByte = 0x40
-
-    kPowerCtl_Link = 0x20
-    kPowerCtl_AutoSleep = 0x10
-    kPowerCtl_Measure = 0x08
-    kPowerCtl_Sleep = 0x04
-
-    kDataFormat_SelfTest = 0x80
-    kDataFormat_SPI = 0x40
-    kDataFormat_IntInvert = 0x20
-    kDataFormat_FullRes = 0x08
-    kDataFormat_Justify = 0x04
+    
+    kFilterCtl_Range2G = 0x00
+    kFilterCtl_Range4G = 0x40
+    kFilterCtl_Range8G = 0x80
+    kFilterCtl_ODR_100Hz = 0x03
+    
+    kPowerCtl_UltraLowNoise = 0x20
+    kPowerCtl_AutoSleep = 0x04
+    kPowerCtl_Measure = 0x02
 
     Range = Accelerometer.Range
 
@@ -56,21 +57,31 @@ class ADXL345_SPI(SensorBase):
         :param range: The range (+ or -) that the accelerometer will measure.
         """
         self.spi = SPI(port)
-        self.spi.setClockRate(500000)
+        self.spi.setClockRate(3000000)
         self.spi.setMSBFirst()
         self.spi.setSampleDataOnFalling()
         self.spi.setClockActiveLow()
-        self.spi.setChipSelectActiveHigh()
+        self.spi.setChipSelectActiveLow()
 
-        # Turn on the measurements
-        self.spi.write([self.kPowerCtlRegister, self.kPowerCtl_Measure])
-
+        # Validate the part ID
+        data = [self.kRegRead, self.kPartIdRegister, 0]
+        data = self.spi.transaction(data)
+        if data[2] != 0xF2:
+            DriverStation.reportError("could not find ADXL362 on SPI port " + port, False)
+            self.spi.free()
+            self.spi = None
+            return
+    
         self.setRange(range)
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_ADXL345,
-                      hal.HALUsageReporting.kADXL345_SPI)
+        # Turn on the measurements
+        self.spi.write([self.kRegWrite, self.kPowerCtlRegister,
+                        self.kPowerCtl_Measure | self.kPowerCtl_UltraLowNoise])
 
-        LiveWindow.addSensor("ADXL345_SPI", port, self)
+        hal.HALReport(hal.HALUsageReporting.kResourceType_ADXL362,
+                      port)
+
+        LiveWindow.addSensor("ADXL362", port, self)
 
     def free(self):
         LiveWindow.removeComponent(self)
@@ -84,21 +95,24 @@ class ADXL345_SPI(SensorBase):
 
         :param range: The maximum acceleration, positive or negative, that
                       the accelerometer will measure.
-        :type  range: :class:`ADXL345_SPI.Range`
+        :type  range: :class:`ADXL362.Range`
         """
         if range == self.Range.k2G:
             value = 0
+            self.gsPerLSB = 0.001
         elif range == self.Range.k4G:
             value = 1
-        elif range == self.Range.k8G:
+            self.gsPerLSB = 0.002
+        # 16G not supported; treat as 8G
+        elif range == self.Range.k8G or \
+             range == self.Range.k16G:
             value = 2
-        elif range == self.Range.k16G:
-            value = 3
+            self.gsPerLSB = 0x004
         else:
             raise ValueError("Invalid range argument '%s'" % range)
 
-        self.spi.write([self.kDataFormatRegister,
-                        self.kDataFormat_FullRes | value])
+        self.spi.write([self.kRegWrite, self.kFilterCtlRegister,
+                        self.kFilterCtl_ODR_100Hz | value])
 
     def getX(self):
         """Get the x axis acceleration
@@ -125,25 +139,30 @@ class ADXL345_SPI(SensorBase):
         """Get the acceleration of one axis in Gs.
 
         :param axis: The axis to read from.
-        :returns: An object containing the acceleration measured on each axis of the ADXL345 in Gs.
+        :returns: An object containing the acceleration measured on each axis in Gs.
         """
-        data = [(self.kAddress_Read | self.kAddress_MultiByte |
-                 self.kDataRegister) + axis, 0, 0]
+        if self.spi is None:
+            return 0.0
+        
+        data = [self.kRegRead,
+                self.kDataRegister + axis, 0, 0]
         data = self.spi.transaction(data)
         # Sensor is little endian... swap bytes
         rawAccel = (data[2] << 8) | data[1]
-        return rawAccel * self.kGsPerLSB
+        return rawAccel * self.gsPerLSB
 
     def getAccelerations(self):
         """Get the acceleration of all axes in Gs.
 
-        :returns: X,Y,Z tuple of acceleration measured on all axes of the
-                  ADXL345 in Gs.
+        :returns: X,Y,Z tuple of acceleration measured on all axes in Gs.
         """
+        if self.spi is None:
+            return 0.0, 0.0, 0.0
+        
         # Select the data address.
-        data = [0] * 7
-        data[0] = (self.kAddress_Read | self.kAddress_MultiByte |
-                   self.kDataRegister)
+        data = [0] * 8
+        data[0] = self.kRegRead
+        data[1] = self.kDataRegister
         data = self.spi.transaction(data)
 
         # Sensor is little endian... swap bytes
@@ -151,9 +170,9 @@ class ADXL345_SPI(SensorBase):
         for i in range(3):
             rawData.append((data[i*2+2] << 8) | data[i*2+1])
 
-        return (rawData[0] * self.kGsPerLSB,
-                rawData[1] * self.kGsPerLSB,
-                rawData[2] * self.kGsPerLSB)
+        return (rawData[0] * self.gsPerLSB,
+                rawData[1] * self.gsPerLSB,
+                rawData[2] * self.gsPerLSB)
 
     # Live Window code, only does anything if live window is activated.
 

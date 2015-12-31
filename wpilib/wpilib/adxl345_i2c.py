@@ -1,3 +1,4 @@
+# validated: 2015-12-31 DS 6d854af athena/java/edu/wpi/first/wpilibj/ADXL345_I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -63,6 +64,7 @@ class ADXL345_I2C(SensorBase):
 
     def free(self):
         LiveWindow.removeComponent(self)
+        self.i2c.free()
         super().free()
 
     # Accelerometer interface

@@ -18,6 +18,7 @@
 
 from .adxl345_i2c import *
 from .adxl345_spi import *
+from .adxl362 import *
 from .analogaccelerometer import *
 from .analoginput import *
 from .analoggyro import *
