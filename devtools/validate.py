@@ -11,6 +11,7 @@
 
 import argparse
 from contextlib import contextmanager
+import inspect
 import os
 import posixpath
 from os.path import abspath, basename, dirname, exists, join, normpath, relpath, splitext
@@ -65,11 +66,24 @@ def git_log(fname, rev_range=None):
     else:
         # read all the commits in, filtering out the excluded commits
         try:
+            # grep -z isn't portable, so do it in python
+            pycontents = inspect.cleandoc("""
+                commits = ['%s']
+                
+                import sys
+                for t in sys.stdin.read().split('\\0'):
+                    for c in commits:
+                        if c in t:
+                            break
+                    else:
+                        sys.stdout.write(t)
+            """) % ("','".join(excluded))
+            
             with tempfile.NamedTemporaryFile(mode='w', delete=False) as fp:
                 tname = fp.name
-                fp.write('\n'.join(excluded))
+                fp.write(pycontents)
             
-            cmd = "git log --follow -p -z --color %s | grep -vzf %s | tr -d '\\000' | less -FRX" % (end, tname)
+            cmd = "git log --follow -p -z --color %s | python3 %s | tr -d '\\000' | less -FRX" % (end, tname)
             os.system(cmd)
             
         finally:
