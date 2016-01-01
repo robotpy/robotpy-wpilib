@@ -47,7 +47,7 @@ class DriveTrain(Subsystem):
                                           reverseDirection=False,
                                           encodingType=wpilib.Encoder.EncodingType.k4X)
         self.rightEncoder.setPIDSourceType(wpilib.Encoder.PIDSourceType.kDisplacement)
-        self.leftEncoder.setPIDSourceParameter(wpilib.Encoder.PIDSourceType.kDisplacement)
+        self.leftEncoder.setPIDSourceType(wpilib.Encoder.PIDSourceType.kDisplacement)
 
         if robot.isReal():
             # Converts to feet
@@ -65,7 +65,7 @@ class DriveTrain(Subsystem):
         # -> the original pacgoat example is at channel 2, but that was before WPILib
         #    moved to zero-based indexing. You need to change the gyro channel in
         #    /usr/share/frcsim/models/PacGoat/robots/PacGoat.SDF, from 2 to 0. 
-        self.gyro = wpilib.Gyro(0)
+        self.gyro = wpilib.AnalogGyro(0)
         if robot.isReal():
             # TODO: Handle more gracefully
             self.gyro.setSensitivity(0.007)

@@ -2,8 +2,9 @@
 import wpilib
 from wpilib import command
 
-from subsystems import ExampleSubsystem
-from commands import ExampleCommand
+from subsystems.example_subsystem import ExampleSubsystem
+from commands.example_command import ExampleCommand
+from oi import OI
 
 
 class MyRobot(wpilib.IterativeRobot):
@@ -16,7 +17,7 @@ class MyRobot(wpilib.IterativeRobot):
         This function is called upon program startup and
         should be used for any initialization code.
         """
-        self.oi = None
+        self.oi = OI(self)
         #Create the command used for the autonomous period
         self.autonomous_command = ExampleCommand(self)
 

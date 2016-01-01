@@ -1,7 +1,7 @@
 
 import wpilib
 from wpilib import buttons
-from .example_command import ExampleCommand
+from commands.example_command import ExampleCommand
 
 
 class OI:
