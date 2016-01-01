@@ -85,7 +85,8 @@ class ADXL362(SensorBase):
 
     def free(self):
         LiveWindow.removeComponent(self)
-        self.spi.free()
+        if self.spi:
+            self.spi.free()
         super().free()
 
     # Accelerometer interface
