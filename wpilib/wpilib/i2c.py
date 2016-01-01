@@ -1,3 +1,4 @@
+# validated: 2016-01-01 DS 4b04073 athena/java/edu/wpi/first/wpilibj/I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
