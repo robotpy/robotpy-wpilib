@@ -41,12 +41,12 @@ class Shooter(Subsystem):
         """No default command."""
         pass
 
-    def extend_both(self):
+    def extendBoth(self):
         """Extend both solenoids to shoot."""
         self.piston1.set(wpilib.DoubleSolenoid.Value.kForward)
         self.piston2.set(wpilib.DoubleSolenoid.Value.kForward)
 
-    def retract_both(self):
+    def retractBoth(self):
         """Retract both solenoids to prepare to shoot."""
         self.piston1.set(wpilib.DoubleSolenoid.Value.kReverse)
         self.piston2.set(wpilib.DoubleSolenoid.Value.kReverse)
