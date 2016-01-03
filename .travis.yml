@@ -7,6 +7,8 @@ install:
 # command to run tests
 script:
   - wpilib/tests/run_tests.sh
+git:
+  depth: 200
 notifications:
   irc:
     channels:
