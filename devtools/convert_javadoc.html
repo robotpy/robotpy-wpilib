@@ -1,0 +1,63 @@
+<!DOCTYPE html> 
+<html>
+<head>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+  In:
+  <textarea id="inbox" rows="10" cols="100"></textarea><p>
+  Out:
+  <textarea id="outbox" rows="10" cols="100"></textarea>
+  <script>
+  
+    function process(txt) {
+      
+      var lines =  txt.split(/\r?\n/);
+      for (i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          
+          line = line.trim();
+          
+          line = line.replace("/*", "").replace("*/", "");
+          line = line.replace(/@param\W+(\w+?)\W+/, ':param $1: ');
+          line = line.replace("@returns", ":returns:").replace("@return", ":returns:")
+          
+          if (line.startsWith("*"))
+            line = line.slice(1);
+            
+          if (line == "<p>")
+            line = "";
+            
+          line = line.trim();
+          
+          lines[i] = line;
+      }
+      
+      
+      
+      // remove empty lines at the beginning and end
+      /*while (lines.length > 0 && lines[0] == "") {
+        lines = lines.splice(0, 1);
+      }*/
+      
+      var text = lines.join('\r\n');
+      // remove start/ending whitespace
+      text = text.replace(/^\s+|\s+$/g, '');
+      
+      
+      return '"""' + text + '\r\n"""';
+    }
+    
+    function xfer() {
+      $('#outbox').val(process($('#inbox').val()));
+    }
+  
+    $(function() {
+      $('#inbox').on('input propertychange paste', xfer);
+    });
+    
+    xfer();
+    
+  </script>
+</body>
+</html>
