@@ -124,6 +124,8 @@ class SPI:
         on the MISO input during the transfer into the receive FIFO.
 
         :param dataToSend: Data to send (bytes)
+        
+        :returns: Number of bytes written
         """
         hal.spiWrite(self.port, dataToSend)
 
