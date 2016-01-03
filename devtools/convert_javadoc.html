@@ -33,19 +33,19 @@
           lines[i] = line;
       }
       
-      
-      
-      // remove empty lines at the beginning and end
-      /*while (lines.length > 0 && lines[0] == "") {
-        lines = lines.splice(0, 1);
-      }*/
-      
       var text = lines.join('\r\n');
       // remove start/ending whitespace
       text = text.replace(/^\s+|\s+$/g, '');
       
+      text = '"""' + text + '\r\n"""';
       
-      return '"""' + text + '\r\n"""';
+      // indent all
+      lines =  text.split(/\r?\n/);
+      for (i = 0; i < lines.length; i++)
+        if (i != 0)
+          lines[i] = '        ' + lines[i];
+      
+      return lines.join('\r\n');
     }
     
     function xfer() {
