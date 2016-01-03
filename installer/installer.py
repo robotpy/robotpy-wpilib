@@ -665,7 +665,7 @@ class RobotpyInstaller(object):
     
     def download_opts(self, parser):
         parser.add_argument('packages', nargs='*',
-                            help="Packages to download")
+                            help="Packages to download/install, may be a local file")
         parser.add_argument('-r', '--requirement', action='append', default=[],
                             help='Install from the given requirements file. This option can be used multiple times.')
         parser.add_argument('--pre', action='store_true', default=False, 
@@ -746,21 +746,30 @@ class RobotpyInstaller(object):
         if len(options.requirement) != 0:
             raise NotImplementedError()
         
-        # copy the pip cache over
-        # .. this is inefficient
-        print("Copying over the pip cache...")
-        self.ctrl.poor_sync(self.pip_cache, 'pip_cache')
-        
-        print("Running installation...")
         cmd = "/usr/local/bin/pip3 install --no-index --find-links=pip_cache "
+        cmd_args = []
         
-        cmd += ' '.join(self._process_pip_args(options) + options.packages)
+        # Is the user asking to install a file?
+        if len(options.packages) == 1 and exists(options.packages[0]):
+            pkg = options.packages[0]
+            self.ctrl.sftp(pkg, 'pip_cache', mkdir=False)
+            cmd_args = ['pip_cache/' + basename(pkg)]
+        else:
+            # copy the pip cache over
+            # .. this is inefficient
+            print("Copying over the pip cache...")
+            self.ctrl.poor_sync(self.pip_cache, 'pip_cache')
+            
+            print("Running installation...")
+            cmd_args = options.packages
         
+        cmd += ' '.join(self._process_pip_args(options) + cmd_args)  
+            
         # This is here so we can execute the install-robotpy commands without
         # a separate SSH connection.
         if extra_cmd is not None:
             cmd = extra_cmd + ' && ' + cmd
-        
+            
         self.ctrl.ssh(cmd)
         
         print("Done.")
