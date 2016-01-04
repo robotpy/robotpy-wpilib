@@ -353,6 +353,7 @@ def spiWrite(port, data_to_send):
     rv = _spiWrite(port, buffer, send_size)
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
+    return rv
 
 _spiRead = _RETFUNC("spiRead", C.c_int32, ("port", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 @hal_wrapper

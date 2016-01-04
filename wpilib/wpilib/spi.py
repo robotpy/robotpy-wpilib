@@ -127,7 +127,7 @@ class SPI:
         
         :returns: Number of bytes written
         """
-        hal.spiWrite(self.port, dataToSend)
+        return hal.spiWrite(self.port, dataToSend)
 
     def read(self, initiate, size):
         """Read a word from the receive FIFO.
