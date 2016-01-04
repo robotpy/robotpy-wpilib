@@ -224,7 +224,8 @@ class AnalogInput(SensorBase):
         sampleTime = 1.0 / AnalogInput.getGlobalSampleRate()
         overSamples = 1 << self.getOversampleBits()
         averageSamples = 1 << self.getAverageBits()
-        Timer.delay(sampleTime * overSamples * averageSamples)
+        if not hal.HALIsSimulation():
+            Timer.delay(sampleTime * overSamples * averageSamples)
 
     def setAccumulatorCenter(self, center):
         """Set the center value of the accumulator.
