@@ -22,6 +22,7 @@ import getpass
 import hashlib
 import inspect
 import os
+import string
 from os.path import abspath, basename, dirname, exists, isdir, join, relpath
 import shutil
 import subprocess
@@ -30,7 +31,7 @@ import tempfile
 
 from collections import OrderedDict
 from distutils.version import LooseVersion
-from urllib.request import urlopen, urlretrieve
+from urllib.request import urlretrieve
 
 
 is_windows = hasattr(sys, 'getwindowsversion')
@@ -52,55 +53,66 @@ class OpkgError(Exception):
 class OpkgRepo(object):
     '''Simplistic OPkg Manager'''
     
-    def __init__(self, feedurl, arch, opkg_cache):
-        self.pkgs = {}
-        
-        self.feedurl = feedurl
+    def __init__(self, opkg_cache):
+        self.feeds = []
         self.opkg_cache = opkg_cache
-        self.db_fname = join(opkg_cache, 'Packages')
-        self.arch = arch
-        
         if not exists(self.opkg_cache):
             os.makedirs(self.opkg_cache)
-        
-        if exists(self.db_fname):
-            with open(self.db_fname, 'r') as fp:
-                self._read_pkgs(fp.readlines())
+        self.pkg_dbs = join(self.opkg_cache, 'Packages')
+        if not exists(self.pkg_dbs):
+            os.makedirs(self.pkg_dbs)
+
+    def add_feed(self, url, arch):
+        # Snippet from https://gist.github.com/seanh/93666
+        valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+        safe_url = ''.join(c for c in url if c in valid_chars)
+        safe_url = safe_url.replace(' ','_')
+        feed = {
+            "url": url,
+            "arch": arch,
+            "db_fname": join(self.pkg_dbs, safe_url),
+            "pkgs": OrderedDict()
+        }
+        if exists(feed["db_fname"]):
+            self.load_package_db(feed)
+        self.feeds.append(feed)
         
     def update_packages(self):
-        pkgurl = self.feedurl + '/Packages'
-        r = urlopen(pkgurl)
-        self._read_pkgs(line.decode('utf-8').strip() for line in r.readlines())
-        self.save()
-    
-    def _read_pkgs(self, lines):
+        for feed in self.feeds:
+            pkgurl = feed["url"] + '/Packages'
+            urlretrieve(pkgurl, feed["db_fname"])
+            self.load_package_db(feed)
+
+    def load_package_db(self, feed):
     
         # dictionary of lists of packages sorted by version
         pkg = OrderedDict()
-    
-        for line in lines:
-            line = line.strip()
-            if len(line) == 0:
-                self._add_pkg(pkg)
-                pkg = OrderedDict()
-            else:
-                k, v = [i.strip() for i in line.split(':', 1)]
-                if k == 'Version':
-                    v = LooseVersion(v)
-                pkg[k] = v            
+        with open(feed["db_fname"], 'r') as fp:
+            for line in fp.readlines():
+                line = line.strip()
+                if len(line) == 0:
+                    self._add_pkg(pkg, feed)
+                    pkg = OrderedDict()
+                else:
+                    if ":" in line:
+                        k, v = [i.strip() for i in line.split(':', 1)]
+                        if k == 'Version':
+                            v = LooseVersion(v)
+                        pkg[k] = v
              
-        self._add_pkg(pkg)
+        self._add_pkg(pkg, feed)
             
         # Finally, make sure all the packages are sorted by version
-        for pkglist in self.pkgs.values():
+        for pkglist in feed["pkgs"].values():
             pkglist.sort(key=lambda p: p['Version'])
     
-    def _add_pkg(self, pkg):
-        if len(pkg) == 0 or pkg.get('Architecture', None) != self.arch:
+    def _add_pkg(self, pkg, feed):
+        if len(pkg) == 0 or pkg.get('Architecture', None) != feed["arch"]:
             return
-        
+        # Add download url and fname
+        pkg['url'] = "/".join((feed["url"], pkg['Filename']))
         # Only retain one version of a package
-        pkgs = self.pkgs.setdefault(pkg['Package'], [])
+        pkgs = feed["pkgs"].setdefault(pkg['Package'], [])
         for old_pkg in pkgs:
             if old_pkg['Version'] == pkg['Version']:
                 old_pkg.clear()
@@ -110,10 +122,10 @@ class OpkgRepo(object):
             pkgs.append(pkg)
     
     def get_pkginfo(self, name):
-        try:
-            return self.pkgs[name][-1]
-        except KeyError:
-            raise OpkgError("Package '%s' is not in the package list (have you downloaded it yet?)" % name)
+        for feed in self.feeds:
+            if name in feed["pkgs"]:
+                return feed["pkgs"][name][-1]
+        raise OpkgError("Package '%s' is not in the package list (have you downloaded it yet?)" % name)
         
     def _get_pkg_fname(self, pkg):
         return join(self.opkg_cache, basename(pkg['Filename']))
@@ -130,6 +142,21 @@ class OpkgRepo(object):
             raise OpkgError('Cached package for %s md5sum does not match' % name)
         
         return pkg, fname
+
+    def resolve_pkg_deps(self, packages):
+        new_pkglist = []
+        while len(packages) > 0:
+            pkg_name = packages.pop()
+            if pkg_name in new_pkglist:
+                continue
+            info = self.get_pkginfo(pkg_name)
+            if "Depends" in info:
+                for dep in info["Depends"].split(","):
+                    dep = dep.strip().split(" ", 1)[0]
+                    if dep not in new_pkglist:
+                        packages.append(dep)
+            new_pkglist.append(pkg_name)
+        return reversed(new_pkglist)
         
     def download(self, name):
         
@@ -140,29 +167,20 @@ class OpkgRepo(object):
         if not exists(fname) or not md5sum(fname) == pkg['MD5Sum']:
         
             # Get it
-            print(pkg['Filename'])
+            print("Downloading " + pkg['Filename'])
             
             def _reporthook(count, blocksize, totalsize):
                 percent = int(count*blocksize*100/totalsize)
                 sys.stdout.write("\r%02d%%" % percent)
                 sys.stdout.flush()
             
-            urlretrieve('%s/%s' % (self.feedurl, pkg['Filename']),
-                        fname, _reporthook)
-        
+            urlretrieve(pkg["url"], fname, _reporthook)
+            print('')
         # Validate it
         if md5sum(fname) != pkg['MD5Sum']:
             raise OpkgError('Downloaded package for %s md5sum does not match' % name)
         
         return fname
-        
-    def save(self):
-        with open(self.db_fname, 'w') as fp:
-            for pkglist in self.pkgs.values():
-                for pkg in pkglist:
-                    for kv in pkg.items():
-                        fp.write('%s: %s\n' % kv)
-                    fp.write('\n')
 
 
 def ssh_exec_pass(password, args, capture_output=False, suppress_known_hosts=False):
@@ -570,7 +588,10 @@ class RobotpyInstaller(object):
         self.remote_commands = []
 
     def _get_opkg(self):
-        return OpkgRepo(self.opkg_feed, self.opkg_arch, self.opkg_cache)
+        opkg = OpkgRepo(self.opkg_cache)
+        opkg.add_feed('http://www.tortall.net/~robotpy/feeds/2016/', 'cortexa9-vfpv3')
+        opkg.add_feed("http://download.ni.com/ni-linux-rt/feeds/2015/arm/ipk/cortexa9-vfpv3", 'cortexa9-vfpv3')
+        return opkg
 
     def execute_remote(self):
         if len(self.remote_commands) > 0:
@@ -671,8 +692,9 @@ class RobotpyInstaller(object):
         """
         opkg = self._get_opkg()
         opkg.update_packages()
-        for package in options.packages:
-            return opkg.download(package)
+        package_list = opkg.resolve_pkg_deps(options.packages)
+        for package in package_list:
+            opkg.download(package)
 
     def install_opkg(self, options):
         opkg = self._get_opkg()
@@ -683,7 +705,8 @@ class RobotpyInstaller(object):
         opkg_script_fname = join(self.opkg_cache, 'install_opkg.sh')
         opkg_script = ""
         opkg_files = []
-        for package in options.packages:
+        package_list = opkg.resolve_pkg_deps(options.packages)
+        for package in package_list:
 
             try:
                 pkg, fname = opkg.get_cached_pkg(package)
@@ -705,7 +728,7 @@ class RobotpyInstaller(object):
                 'version': pkg['Version'],
                 'options': "--force-reinstall" if options.force_reinstall else ""
             }
-            opkg_script += opkg_script_bit
+            opkg_script += "\n" + opkg_script_bit
             opkg_files.append(fname)
 
         with open(opkg_script_fname, 'w', newline='\n') as fp:
