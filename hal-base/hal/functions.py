@@ -88,7 +88,7 @@ def getHALErrorMessage(code):
 
 getFPGAVersion = _STATUSFUNC("getFPGAVersion", C.c_uint16)
 getFPGARevision = _STATUSFUNC("getFPGARevision", C.c_uint32)
-getFPGATime = _STATUSFUNC("getFPGATime", C.c_uint32)
+getFPGATime = _STATUSFUNC("getFPGATime", C.c_uint64)
 
 getFPGAButton = _STATUSFUNC("getFPGAButton", C.c_bool)
 
@@ -469,7 +469,7 @@ setInterruptUpSourceEdge = _STATUSFUNC("setInterruptUpSourceEdge", None, ("inter
 # Notifier
 #############################################################################
 
-_NotifierProcessQueueFunction = C.CFUNCTYPE(None, C.c_uint32, C.c_void_p)
+_NotifierProcessQueueFunction = C.CFUNCTYPE(None, C.c_uint64, C.c_void_p)
 _notifierProcessQueueFunctions = {}
 
 _initializeNotifier = _STATUSFUNC("initializeNotifier", Notifier_ptr, ("processQueue", _NotifierProcessQueueFunction), ('param', C.c_void_p))
@@ -495,7 +495,9 @@ def cleanNotifier(notifier):
     # remove reference to process queue function
     _notifierProcessQueueFunctions.pop(notifier, None)
 
-updateNotifierAlarm = _STATUSFUNC("updateNotifierAlarm", None, ("notifier", Notifier_ptr), ("triggerTime", C.c_uint32))
+getNotifierParam = _STATUSFUNC("getNotifierParam", C.c_void_p, ("notifier", Notifier_ptr))
+updateNotifierAlarm = _STATUSFUNC("updateNotifierAlarm", None, ("notifier", Notifier_ptr), ("triggerTime", C.c_uint64))
+stopNotifierAlarm = _STATUSFUNC("stopNotifierAlarm", None, ("notifier", Notifier_ptr))
 
 #############################################################################
 # PDP

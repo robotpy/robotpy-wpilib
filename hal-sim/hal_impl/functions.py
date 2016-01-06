@@ -1213,10 +1213,15 @@ def initializeNotifier(processQueue, param, status):
 
 def cleanNotifier(notifier, status):
     assert False # TODO
+    
+def getNotifierParam(notifier, status):
+    assert False # TODO
 
 def updateNotifierAlarm(notifier, triggerTime, status):
     assert False # TODO
 
+def stopNotifierAlarm(notifier, status):
+    assert False # TODO
 
 #############################################################################
 # PDP
