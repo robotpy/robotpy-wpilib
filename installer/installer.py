@@ -53,23 +53,23 @@ class OpkgError(Exception):
 class OpkgRepo(object):
     '''Simplistic OPkg Manager'''
     
-    def __init__(self, opkg_cache):
+    def __init__(self, opkg_cache, arch):
         self.feeds = []
         self.opkg_cache = opkg_cache
+        self.arch = arch
         if not exists(self.opkg_cache):
             os.makedirs(self.opkg_cache)
         self.pkg_dbs = join(self.opkg_cache, 'Packages')
         if not exists(self.pkg_dbs):
             os.makedirs(self.pkg_dbs)
 
-    def add_feed(self, url, arch):
+    def add_feed(self, url):
         # Snippet from https://gist.github.com/seanh/93666
         valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
         safe_url = ''.join(c for c in url if c in valid_chars)
         safe_url = safe_url.replace(' ','_')
         feed = {
             "url": url,
-            "arch": arch,
             "db_fname": join(self.pkg_dbs, safe_url),
             "pkgs": OrderedDict()
         }
@@ -107,7 +107,7 @@ class OpkgRepo(object):
             pkglist.sort(key=lambda p: p['Version'])
     
     def _add_pkg(self, pkg, feed):
-        if len(pkg) == 0 or pkg.get('Architecture', None) != feed["arch"]:
+        if len(pkg) == 0 or pkg.get('Architecture', None) != self.arch:
             return
         # Add download url and fname
         pkg['url'] = "/".join((feed["url"], pkg['Filename']))
@@ -564,7 +564,6 @@ class RobotpyInstaller(object):
     opkg_cache = abspath(join(dirname(__file__), 'opkg_cache'))
     
     # opkg feed
-    opkg_feed = 'http://www.tortall.net/~robotpy/feeds/2016/'
     opkg_arch = 'cortexa9-vfpv3'
     
     commands = [
@@ -588,9 +587,9 @@ class RobotpyInstaller(object):
         self.remote_commands = []
 
     def _get_opkg(self):
-        opkg = OpkgRepo(self.opkg_cache)
-        opkg.add_feed('http://www.tortall.net/~robotpy/feeds/2016/', 'cortexa9-vfpv3')
-        opkg.add_feed("http://download.ni.com/ni-linux-rt/feeds/2015/arm/ipk/cortexa9-vfpv3", 'cortexa9-vfpv3')
+        opkg = OpkgRepo(self.opkg_cache, self.opkg_arch)
+        opkg.add_feed('http://www.tortall.net/~robotpy/feeds/2016/')
+        opkg.add_feed("http://download.ni.com/ni-linux-rt/feeds/2015/arm/ipk/cortexa9-vfpv3")
         return opkg
 
     def execute_remote(self):
