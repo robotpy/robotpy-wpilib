@@ -48,3 +48,4 @@ parsetab.py
 
 # Downloaded libHALAthena
 /hal-roborio/hal_impl/libHALAthena.so
+/wpilib/tests/__hal__

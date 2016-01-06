@@ -9,7 +9,7 @@ setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')
 base_package = 'hal_impl'
 version_file = join(setup_dir, base_package, 'version.py')
-hal_version = 'jenkins-stable-2015.340-270-g9316933'
+hal_version = 'jenkins-beta-2015.304-58-g0e9f07d'
 hal_site = 'http://www.tortall.net/~robotpy/hal'
 hal_base_file = 'libHALAthena.so'
 hal_file = join(setup_dir, base_package, hal_base_file)
@@ -61,26 +61,28 @@ if not exists(version_file) or __version__ != version or __hal_version__ != hal_
 with open(join(setup_dir, 'README.rst'), 'r') as readme_file:
     long_description = readme_file.read()
 
-setup(
-    name='robotpy-hal-roborio',
-    version=version,
-    description='WPILib HAL layer for roboRIO platform',
-    long_description=long_description,
-    author='Peter Johnson, Dustin Spicuzza',
-    author_email='robotpy@googlegroups.com',
-    url='https://github.com/robotpy',
-    keywords='frc first robotics hal can',
-    packages=['hal_impl'],
-    package_data={'hal_impl': [hal_base_file]},
-    install_requires='robotpy-hal-base==' + version, # is this a bad idea?
-    license="BSD License",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "Intended Audience :: Education",
-        "License :: OSI Approved :: BSD License",
-        "Operating System :: POSIX :: Linux",
-        "Programming Language :: Python :: 3.4",
-        "Topic :: Scientific/Engineering"
-    ]
-    )
+if __name__ == '__main__':
+    setup(
+        name='robotpy-hal-roborio',
+        version=version,
+        description='WPILib HAL layer for roboRIO platform',
+        long_description=long_description,
+        author='Peter Johnson, Dustin Spicuzza',
+        author_email='robotpy@googlegroups.com',
+        url='https://github.com/robotpy',
+        keywords='frc first robotics hal can',
+        packages=['hal_impl'],
+        package_data={'hal_impl': [hal_base_file]},
+        install_requires='robotpy-hal-base==' + version, # is this a bad idea?
+        license="BSD License",
+        classifiers=[
+            "Development Status :: 5 - Production/Stable",
+            "Intended Audience :: Developers",
+            "Intended Audience :: Education",
+            "License :: OSI Approved :: BSD License",
+            "Operating System :: POSIX :: Linux",
+            "Programming Language :: Python :: 3.4",
+            "Programming Language :: Python :: 3.5",
+            "Topic :: Scientific/Engineering"
+        ]
+        )

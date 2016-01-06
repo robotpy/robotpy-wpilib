@@ -259,6 +259,9 @@ def _get_py_typeinfo(py_param):
     if py_param.__class__.__name__ == "PyCPointerType":
         py_pointer = True
         py_type_obj = py_param._type_
+    elif py_param.__class__.__name__ == "PyCFuncPtrType":
+        py_pointer = True
+        py_type_obj = py_param
     elif hasattr(py_param, "fake_pointer"):
         py_pointer = True
         py_type_obj = py_param
@@ -377,13 +380,25 @@ def scan_c_end(python_object, summary):
                     c_type_name, c_pointer = _get_c_typeinfo(c_type_obj, c_pointer)
                     py_type_name, py_pointer = _get_py_typeinfo(py_param)
 
-                    if py_pointer != c_pointer:
-                        method_summary["errors"].append("mismatched pointer for '%s'" % c_param['name'])
-                        continue
+                    # TODO: function pointers are weird
+                    if py_type_name == 'PyCFuncPtrType':
+                        if 'function' in c_type_name.lower():
+                            continue
+                        
+                        if c_pointer == True:
+                            # TODO: need deeper validation, but.. hard
+                            continue
 
-                    if py_type_name != c_type_name and c_type_name != "void":
-                        method_summary["errors"].append("mismatched type for '%s'" % c_param['name'])
-                        continue
+                        method_summary['errors'].append("mismatched function pointer for '%s'" % c_param['name'])
+
+                    else:
+                        if py_pointer != c_pointer:
+                            method_summary["errors"].append("mismatched pointer for '%s'" % c_param['name'])
+                            continue
+                        
+                        if py_type_name != c_type_name and c_type_name != "void":
+                            method_summary["errors"].append("mismatched type for '%s'" % c_param['name'])
+                            continue
 
             #Collect errors from the comparison
             output["errors"] += len(method_summary["errors"])
@@ -428,7 +443,7 @@ _translate_obj_aliases = [
    ["int16", "int16_t", "c_int16", "h", "c_short", "c_short_t", "short"],
    ["uint16", "uint16_t", "c_uint16", "H", "c_ushort", "c_ushort_t", "unsigned short"],
    ["uint32", "uint", "u", "c_uint", "I", "uint32_t"],
-   ["uint64", "uint64_t", "c_uint64", "int64", "int64_t", "c_int64", "long", "l", "longlong", "c_long", "long_t"],
+   ["uint64", "uint64_t", "c_uint64", "int64", "int64_t", "c_int64", "long", "l", "L", "longlong", "c_long", "long_t"],
    ["bool", "?"]
 ]
 
