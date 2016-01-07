@@ -30,6 +30,8 @@ validation_root = abspath(join(dirname(__file__), '..', 'wpilib', 'wpilib'))
 
 exclude_commits_file = abspath(join(dirname(__file__), 'exclude_commits'))
 
+invalid_hash = 'DOES_NOT_EXIST'
+
 # git log option to exclude commits
 def excluded_commits():
     exclude_commits = []
@@ -131,7 +133,7 @@ def choose_suggestion(fname):
 class ValidationInfo:
     
     @staticmethod
-    def from_line(line):
+    def from_line(py_fname, line):
         line = line.strip()
         if line.startswith('# novalidate'):
             return ValidationInfo(novalidate=True)
@@ -143,7 +145,8 @@ class ValidationInfo:
         return ValidationInfo(date=s[2],
                               initials=s[3],
                               hash=s[4],
-                              orig_fname=s[5])
+                              orig_fname=s[5],
+                              py_fname=py_fname)
     
     @staticmethod
     def from_now(initials, orig_fname):
@@ -160,13 +163,18 @@ class ValidationInfo:
         self.initials = kwargs.get('initials')
         self.hash = kwargs.get('hash')
         self.orig_fname = kwargs.get('orig_fname')
+        self.py_fname = kwargs.get('py_fname')
         
     
     @property
     def orig_hash(self):
         if not hasattr(self, '_orig_hash'):
             with chdir(orig_root):
-                self._orig_hash = str(sh.git('log', '-n1', '--pretty=%h', normpath(self.orig_fname), _tty_out=False)).strip()
+                fpath = normpath(self.orig_fname)
+                if not exists(fpath):
+                    self._orig_hash = invalid_hash
+                else:
+                    self._orig_hash = str(sh.git('log', '-n1', '--pretty=%h', fpath, _tty_out=False)).strip()
         
         return self._orig_hash
     
@@ -224,7 +232,7 @@ def get_info(fname):
         for line in fp:
             if line.startswith('# validated') or \
                line.startswith('# novalidate'):
-                return ValidationInfo.from_line(line)
+                return ValidationInfo.from_line(fname, line)
 
 #
 # Actions
@@ -267,6 +275,9 @@ def _action_show(fname, counts):
         if info.hash == info.orig_hash:
             status = 'OK '
             counts['good'] += 1
+        elif info.orig_hash == invalid_hash:
+            status = 'ERR'
+            counts['unknown'] += 1
         else:
             status = "OLD"
             path += ' (%s..%s)' % (info.hash, info.orig_hash)
@@ -281,10 +292,18 @@ def action_diff(args):
     if info is None:
         raise OSError("No validation information found for %s" % args.filename)
     
+    if info.orig_hash == invalid_hash:
+        update_src(info)
+    
     with chdir(orig_root): 
         git_log(normpath(info.orig_fname),
                 '%s..%s' % (info.hash, info.orig_hash))
-        
+    
+    if info.orig_hash != info.hash:
+        print()
+        if input("Validate file? [y/n]").lower() in ['y', 'yes']:
+            args.orig_fname = None
+            action_validate(args)
         
 
 def action_validate(args):
@@ -334,7 +353,27 @@ def action_show_log(args):
     if fname:
        with chdir(orig_root):
            git_log(fname)
-    
+
+def update_src(info):
+    print(info.orig_fname, "no longer exists, choose another?")
+    info.orig_fname = choose_suggestion(relpath(info.py_fname, validation_root))
+    if info.orig_fname is not None:
+        set_info(info.py_fname, info)
+        if hasattr(info, '_orig_hash'):
+            delattr(info, '_orig_hash')
+
+def action_update_src(args):
+    '''Update the source of a file if it's renamed'''
+    fname = get_fname(validation_root, args.filename)
+    info = get_info(fname)
+    if info is None:
+        print(fname, "not validated, no source to update")
+    elif info.orig_hash != invalid_hash:
+        print("Update not required for", fname)
+    else:
+        update_src(info)
+        
+             
 
 if __name__ == '__main__':
     
@@ -343,6 +382,7 @@ if __name__ == '__main__':
     
     sp = subparsers.add_parser('diff')
     sp.add_argument('filename')
+    sp.add_argument('--initials', default=None)
     
     sp = subparsers.add_parser('show')
     sp.add_argument('filename', nargs='?')
@@ -356,6 +396,9 @@ if __name__ == '__main__':
     sp.add_argument('filename')
     
     sp = subparsers.add_parser('show-log')
+    sp.add_argument('filename')
+    
+    sp = subparsers.add_parser('update-src')
     sp.add_argument('filename')
 
     args = parser.parse_args()
@@ -374,6 +417,9 @@ if __name__ == '__main__':
         
     elif args.action == 'show-log':
         action_show_log(args)
+        
+    elif args.action == 'update-src':
+        action_update_src(args)
         
     else:
         parser.error("Invalid action %s" % args.action)
