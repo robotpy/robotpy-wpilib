@@ -373,7 +373,7 @@ class SshController(object):
         print("Robot setup (hit enter for default value):")
         hostname = ''
         while hostname == '':
-            hostname = input('Robot hostname (like roborio-XXX.local, or an IP address): ')
+            hostname = input('Robot hostname (like roborio-XXX-frc.local, or an IP address): ')
         
         #username = input('Username [%s]: ' % self._username)
         #password = getpass.getpass('Password [%s]: ' % self._password)
