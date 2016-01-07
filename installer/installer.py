@@ -299,7 +299,10 @@ class SshController(object):
     # Defaults, actual values come from config file
     _hostname = ''
     
-    win_bins = abspath(join(dirname(__file__), 'win32'))
+    _win_bins = abspath(join(dirname(__file__), 'win32'))
+    
+    _plink_url = 'http://the.earth.li/~sgtatham/putty/latest/x86/plink.exe'
+    _psftp_url = 'http://the.earth.li/~sgtatham/putty/latest/x86/psftp.exe'
     
     def __init__(self, cfg_filename, username, password, allow_mitm=False):
         self.cfg_filename = cfg_filename
@@ -322,7 +325,30 @@ class SshController(object):
     def hostname(self):
         self._init_cfg()
         return self._hostname
-
+    
+    @property
+    def win_bins(self):
+        self.ensure_win_bins()
+        return self._win_bins
+    
+    def ensure_win_bins(self):
+        '''Makes sure the right Windows binaries are present'''
+        
+        if not is_windows:
+            return
+        
+        if not exists(self._win_bins):
+            os.mkdir(self._win_bins)
+            
+        psftp = join(self._win_bins, 'psftp.exe')
+        plink = join(self._win_bins, 'plink.exe')
+            
+        if not exists(psftp):
+            _urlretrieve(self._psftp_url, psftp)
+        
+        if not exists(plink):
+            _urlretrieve(self._plink_url, plink)
+    
     def _init_cfg(self):
 
         if self.cfg is not None:
@@ -693,6 +719,10 @@ class RobotpyInstaller(object):
         """
             Specify opkg package(s) to download, and store them in the cache
         """
+        
+        # Don't leave windows users stranded
+        self.ctrl.ensure_win_bins()
+        
         opkg = self._get_opkg()
         opkg.update_packages()
         package_list = opkg.resolve_pkg_deps(options.packages)
@@ -785,6 +815,8 @@ class RobotpyInstaller(object):
         '''
             Specify python package(s) to download, and store them in the cache
         '''
+        
+        self.ctrl.ensure_win_bins()
         
         try:
             import pip
