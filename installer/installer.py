@@ -64,6 +64,8 @@ class OpkgError(Exception):
 class OpkgRepo(object):
     '''Simplistic OPkg Manager'''
     
+    sys_packages = ['libc6']
+    
     def __init__(self, opkg_cache, arch):
         self.feeds = []
         self.opkg_cache = opkg_cache
@@ -121,7 +123,9 @@ class OpkgRepo(object):
         if len(pkg) == 0 or pkg.get('Architecture', None) != self.arch:
             return
         # Add download url and fname
-        pkg['url'] = "/".join((feed["url"], pkg['Filename']))
+        if 'Filename' in pkg:
+            pkg['url'] = "/".join((feed["url"], pkg['Filename']))
+        
         # Only retain one version of a package
         pkgs = feed["pkgs"].setdefault(pkg['Package'], [])
         for old_pkg in pkgs:
@@ -164,7 +168,7 @@ class OpkgRepo(object):
             if "Depends" in info:
                 for dep in info["Depends"].split(","):
                     dep = dep.strip().split(" ", 1)[0]
-                    if dep not in new_pkglist:
+                    if dep not in self.sys_packages and dep not in new_pkglist:
                         packages.append(dep)
             new_pkglist.append(pkg_name)
         return reversed(new_pkglist)
