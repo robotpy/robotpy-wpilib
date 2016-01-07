@@ -46,6 +46,17 @@ def md5sum(fname):
             buf = fp.read(65536)
     return md5.hexdigest()
 
+def _urlretrieve(url, fname):
+    # Get it
+    print("Downloading", url)
+    
+    def _reporthook(count, blocksize, totalsize):
+        percent = min(int(count*blocksize*100/totalsize), 100)
+        sys.stdout.write("\r%02d%%" % percent)
+        sys.stdout.flush()
+    
+    urlretrieve(url, fname, _reporthook)
+    sys.stdout.write('\n')
 
 class OpkgError(Exception):
     pass
@@ -80,7 +91,7 @@ class OpkgRepo(object):
     def update_packages(self):
         for feed in self.feeds:
             pkgurl = feed["url"] + '/Packages'
-            urlretrieve(pkgurl, feed["db_fname"])
+            _urlretrieve(pkgurl, feed['db_fname'])
             self.load_package_db(feed)
 
     def load_package_db(self, feed):
@@ -165,23 +176,12 @@ class OpkgRepo(object):
         
         # Only download it if necessary
         if not exists(fname) or not md5sum(fname) == pkg['MD5Sum']:
-        
-            # Get it
-            print("Downloading " + pkg['Filename'])
-            
-            def _reporthook(count, blocksize, totalsize):
-                percent = int(count*blocksize*100/totalsize)
-                sys.stdout.write("\r%02d%%" % percent)
-                sys.stdout.flush()
-            
-            urlretrieve(pkg["url"], fname, _reporthook)
-            print('')
+            _urlretrieve(pkg['url'], fname)
         # Validate it
         if md5sum(fname) != pkg['MD5Sum']:
             raise OpkgError('Downloaded package for %s md5sum does not match' % name)
         
         return fname
-
 
 def ssh_exec_pass(password, args, capture_output=False, suppress_known_hosts=False):
     '''
@@ -734,6 +734,7 @@ class RobotpyInstaller(object):
             fp.write(opkg_script)
         opkg_files.append(opkg_script_fname)
 
+        print("Copying over the opkg cache...")
         self.ctrl.poor_sync(opkg_files, 'opkg_cache')
         self.remote_commands.append('bash opkg_cache/install_opkg.sh')
 
