@@ -49,13 +49,17 @@ class ADXL362(SensorBase):
         kY = 0x02
         kZ = 0x04
 
-    def __init__(self, port, range):
-        """Constructor. Use this when the device is the first/only device on
-        the bus
-
-        :param port: The SPI port that the accelerometer is connected to
+    def __init__(self, range, port=None):
+        """Constructor.
+        
         :param range: The range (+ or -) that the accelerometer will measure.
+        :type range: :class:`.ADXL362.Range`
+        :param port: The SPI port that the accelerometer is connected to
+        :type port: :class:`.SPI.Port`
         """
+        if port is None:
+            port = SPI.Port.kOnboardCS1
+        
         self.spi = SPI(port)
         self.spi.setClockRate(3000000)
         self.spi.setMSBFirst()

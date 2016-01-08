@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 4b04073 athena/java/edu/wpi/first/wpilibj/SensorBase.java
+# validated: 2016-01-07 DS 6faa51f shared/java/edu/wpi/first/wpilibj/SensorBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

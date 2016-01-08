@@ -28,6 +28,7 @@ class SPI:
         """Constructor
 
         :param port: the physical SPI port
+        :type port: :class:`.SPI.Port`
         """
         self._port = port
         self.bitOrder = 0

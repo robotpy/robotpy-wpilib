@@ -1,4 +1,4 @@
-# validated: 2015-12-29 DS 842aba9 athena/java/edu/wpi/first/wpilibj/Ultrasonic.java
+# validated: 2016-01-07 DS 887f220 athena/java/edu/wpi/first/wpilibj/Ultrasonic.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -160,22 +160,20 @@ class Ultrasonic(SensorBase):
             Ultrasonic.automaticEnabled = enabling
 
         if enabling:
-            # enabling automatic mode.
-            # Clear all the counters so no data is valid
+            # Clear all the counters so no data is valid. No synchronization is
+            # needed because the background task is stopped.
             for u in Ultrasonic.sensors:
                 if u is not None:
                     u.counter.reset()
             # Start round robin task
             Ultrasonic._thread.start()
         else:
-            # disabling automatic mode. Wait for background task to stop
-            # running.
-            while Ultrasonic._thread.is_alive():
-                # wait just a little longer than the ping time for
-                # round-robin to stop
-                Timer.delay(.15)
-            # clear all the counters (data now invalid) since automatic mode
-            # is stopped
+            # Wait for background task to stop running
+            Ultrasonic._thread.join()
+            
+            # Clear all the counters (data now invalid) since automatic mode is
+            # disabled. No synchronization is needed because the background task is
+            # stopped.
             for u in Ultrasonic.sensors:
                 if u is not None:
                     u.counter.reset()

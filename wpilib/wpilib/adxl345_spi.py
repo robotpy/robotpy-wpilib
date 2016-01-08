@@ -53,7 +53,9 @@ class ADXL345_SPI(SensorBase):
         the bus
 
         :param port: The SPI port that the accelerometer is connected to
+        :type port: :class:`.SPI.Port`
         :param range: The range (+ or -) that the accelerometer will measure.
+        :type range: :class:`.ADXL345_SPI.Range`
         """
         self.spi = SPI(port)
         self.spi.setClockRate(500000)

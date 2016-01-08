@@ -1,4 +1,4 @@
-# validated: 2015-12-31 DS 6d854af athena/java/edu/wpi/first/wpilibj/ADXL345_I2C.java
+# validated: 2016-01-07 DS 376fc6b athena/java/edu/wpi/first/wpilibj/ADXL345_I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -44,13 +44,19 @@ class ADXL345_I2C(SensorBase):
         kY = 0x02
         kZ = 0x04
 
-    def __init__(self, port, range):
+    def __init__(self, port, range, address=None):
         """Constructor.
 
         :param port: The I2C port the accelerometer is attached to.
+        :type port: :class:`.I2C.Port`
         :param range: The range (+ or -) that the accelerometer will measure.
+        :type range: :class:`.ADXL345_I2C.Range`
+        :param address: the I2C address of the accelerometer (0x1D or 0x53)
         """
-        self.i2c = I2C(port, self.kAddress)
+        if address is None:
+            address = self.kAddress
+        
+        self.i2c = I2C(port, address)
 
         # Turn on the measurements
         self.i2c.write(self.kPowerCtlRegister, self.kPowerCtl_Measure)

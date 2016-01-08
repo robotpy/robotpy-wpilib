@@ -1,4 +1,4 @@
-# validated: 2015-12-28 DS 375a195 athena/java/edu/wpi/first/wpilibj/AnalogGyro.java
+# validated: 2016-01-07 DS 628811e athena/java/edu/wpi/first/wpilibj/AnalogGyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -187,5 +187,3 @@ class AnalogGyro(GyroBase):
                        (1 << self.analog.getOversampleBits()))
         self.analog.setAccumulatorDeadband(deadband)
 
-    def getSmartDashboardType(self):
-        return "AnalogGyro"

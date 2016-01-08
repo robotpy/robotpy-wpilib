@@ -1,4 +1,4 @@
-# validated: 2016-01-01 DS 9e18330 athena/java/edu/wpi/first/wpilibj/ADXRS450_Gyro.java
+# validated: 2016-01-07 DS 628811e athena/java/edu/wpi/first/wpilibj/ADXRS450_Gyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2015. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -42,6 +42,15 @@ class ADXRS450_Gyro(GyroBase):
     kSNLowRegister = 0x10
 
     def __init__(self, port=None):
+        """
+            Constructor.
+        
+            :param port: The SPI port that the gyro is connected to
+            :type port: :class:`.SPI.Port`
+        """
+        
+        if port is None:
+            port = SPI.Port.kOnboardCS0
         
         self.spi = SPI(port)
         self.spi.setClockRate(3000000)
@@ -123,6 +132,3 @@ class ADXRS450_Gyro(GyroBase):
             return 0.0
         else:
             return self.spi.getAccumulatorLastValue() * self.kDegreePerSecondPerLSB
-
-    def getSmartDashboardType(self):
-        return "ADXRS450_Gyro"

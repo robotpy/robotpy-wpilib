@@ -28,7 +28,7 @@ class AnalogAccelerometer(LiveWindowSendable):
     PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel):
-        """Create a new instance of Accelerometer from either an existing
+        """Constructor. Create a new instance of Accelerometer from either an existing
         AnalogChannel or from an analog channel port index.
 
         :param channel: port index or an already initialized :class:`.AnalogInput`
