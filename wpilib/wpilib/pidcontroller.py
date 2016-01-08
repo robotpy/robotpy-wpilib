@@ -21,14 +21,6 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["PIDController"]
 
-class _PIDSourceWrapper(PIDSource):
-    
-    def __init__(self, fn):
-        self.pidGet = fn
-    
-    def getPIDSourceType(self):
-        return self.PIDSourceType.kDisplacement
-
 class PIDController(LiveWindowSendable):
     """Can be used to control devices via a PID Control Loop.
 
@@ -106,8 +98,7 @@ class PIDController(LiveWindowSendable):
         self.pidInput = results.pop("source")
         self.period = results.pop("period", PIDController.kDefaultPeriod)
         
-        if not hasattr(self.pidInput, 'pidGet'):
-            self.pidInput = _PIDSourceWrapper(self.pidInput)
+        self.pidInput = PIDSource.from_obj_or_callable(self.pidInput)
         
         if hasattr(self.pidOutput, 'pidWrite'):
             self.pidOutput = self.pidOutput.pidWrite

@@ -8,11 +8,35 @@
 
 __all__ = ["PIDSource"]
 
+
 class PIDSource:
     """This interface allows for :class:`.PIDController` to automatically read from this
     object.
     """
-
+    
+    @staticmethod
+    def from_obj_or_callable(objc):
+        """
+            Utility method that gets a PIDSource object
+        
+            :param objc: An object that implements the PIDSource interface, or
+                         a callable
+                         
+            :returns: an object that implements the PIDSource interface 
+        """
+        
+        # This isn't pythonic, but will cause errors to happen earlier
+        if not hasattr(objc, 'pidGet'):
+            if not callable(objc):
+                raise TypeError("%s must be callable or ")
+            return _PIDSourceWrapper(objc)
+        
+        if not hasattr(objc, 'getPIDSourceType'):
+            raise TypeError("%s does not have getPIDSourceType method" % objc)
+            
+        return objc
+    
+        
     class PIDSourceType:
         """A description for the type of output value to provide to a
         :class:`.PIDController`"""
@@ -42,3 +66,11 @@ class PIDSource:
         :returns: the result to use in PIDController
         """
         raise NotImplementedError
+
+class _PIDSourceWrapper(PIDSource):
+    
+    def __init__(self, fn):
+        self.pidGet = fn
+    
+    def getPIDSourceType(self):
+        return self.PIDSourceType.kDisplacement
