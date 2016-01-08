@@ -33,18 +33,30 @@ exclude_commits_file = abspath(join(dirname(__file__), 'exclude_commits'))
 invalid_hash = 'DOES_NOT_EXIST'
 
 # git log option to exclude commits
+_exclude_commits = None
+
 def excluded_commits():
-    exclude_commits = []
+    global _exclude_commits
     
-    if exists(exclude_commits_file):
-        with open(exclude_commits_file) as fp:
-            for line in fp:
-                line = line.split()
-                if line:
-                    exclude_commits.append('commit %s' % line[0].strip())
+    if _exclude_commits is None:
+        _exclude_commits = []
+        
+        if exists(exclude_commits_file):
+            with open(exclude_commits_file) as fp:
+                for line in fp:
+                    line = line.split()
+                    if line:
+                        _exclude_commits.append(line[0].strip())
                     
+    return _exclude_commits
+
+def is_excluded(commit, excl):
+    # ugh
+    for e in excl:
+        if e.startswith(commit):
+            return True
     
-    return exclude_commits
+    return False
 
 
 def git_log(fname, rev_range=None):
@@ -61,7 +73,7 @@ def git_log(fname, rev_range=None):
         end = fname
     
     tname = None
-    excluded = excluded_commits()
+    excluded = ['commit %s' % i for i in excluded_commits()]
     
     if len(excluded) == 0:
         os.system('git log --follow -p %s' % end)
@@ -164,7 +176,9 @@ class ValidationInfo:
         self.hash = kwargs.get('hash')
         self.orig_fname = kwargs.get('orig_fname')
         self.py_fname = kwargs.get('py_fname')
-        
+    
+    def is_up_to_date(self):
+        return self.orig_hash == self.hash
     
     @property
     def orig_hash(self):
@@ -174,7 +188,15 @@ class ValidationInfo:
                 if not exists(fpath):
                     self._orig_hash = invalid_hash
                 else:
-                    self._orig_hash = str(sh.git('log', '-n1', '--pretty=%h', fpath, _tty_out=False)).strip()
+                    # Return the first commit that isn't excluded
+                    excl = excluded_commits()
+                    for commit in sh.git('log', '--follow', '--pretty=%h', fpath, _tty_out=False, _iter=True):
+                        commit = commit.strip()
+                        if commit.startswith(self.hash) or not is_excluded(commit, excl):
+                            self._orig_hash = commit
+                            break
+                    else:
+                        self._orig_hash = invalid_hash
         
         return self._orig_hash
     
@@ -272,7 +294,7 @@ def _action_show(fname, counts):
         status = 'OK '
         counts['good'] += 1
     else:
-        if info.hash == info.orig_hash:
+        if info.is_up_to_date():
             status = 'OK '
             counts['good'] += 1
         elif info.orig_hash == invalid_hash:
@@ -299,7 +321,7 @@ def action_diff(args):
         git_log(normpath(info.orig_fname),
                 '%s..%s' % (info.hash, info.orig_hash))
     
-    if info.orig_hash != info.hash:
+    if not info.is_up_to_date():
         print()
         if input("Validate file? [y/n]").lower() in ['y', 'yes']:
             args.orig_fname = None
