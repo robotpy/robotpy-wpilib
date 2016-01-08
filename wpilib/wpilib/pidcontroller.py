@@ -1,4 +1,4 @@
-# validated: 2016-01-02 DS 6d854af shared/java/edu/wpi/first/wpilibj/PIDController.java
+# validated: 2016-01-07 DS 99b6000 shared/java/edu/wpi/first/wpilibj/PIDController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -15,6 +15,7 @@ import hal
 from .interfaces import PIDSource
 from .livewindowsendable import LiveWindowSendable
 from .resource import Resource
+from .timer import Timer
 from ._impl.timertask import TimerTask
 from ._impl.utils import match_arglist, HasAttribute
 
@@ -46,11 +47,12 @@ class PIDController(LiveWindowSendable):
     # specifications to use.
     def PercentageTolerance_onTarget(self, percentage):
         with self.mutex:
-            return (abs(self.getAvgError()) < percentage / 100
+            return self.isAvgErrorValid() and \
+                    (abs(self.getAvgError()) < percentage / 100.0
                     * (self.maximumInput - self.minimumInput))
 
     def AbsoluteTolerance_onTarget(self, value):
-        return abs(self.getAvgError()) < value
+        return self.isAvgErrorValid() and abs(self.getAvgError()) < value
 
     def __init__(self, *args, **kwargs):
         """Allocate a PID object with the given constants for P, I, D, and F
@@ -116,10 +118,11 @@ class PIDController(LiveWindowSendable):
         self.minimumInput = 0.0     # minimum input - limit setpoint to this
         self.continuous = False     # do the endpoints wrap around? eg. Absolute encoder
         self.enabled = False        #is the pid controller enabled
-        self.prevInput = 0.0        # the prior sensor input (used to compute velocity)
+        self.prevInput = 0.0        # the prior error (used to compute velocity)
         self.totalError = 0.0       #the sum of the errors for use in the integral calc
         self.buf = deque(maxlen=1)
         self.setpoint = 0.0
+        self.prevSetpoint = 0.0
         self.error = 0.0
         self.result = 0.0
 
@@ -127,6 +130,9 @@ class PIDController(LiveWindowSendable):
 
         self.pid_task = TimerTask('PIDTask%d' % PIDController.instances, self.period, self._calculate)
         self.pid_task.start()
+        
+        self.setpointTimer = Timer()
+        self.setpointTimer.start()
         
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
@@ -182,7 +188,7 @@ class PIDController(LiveWindowSendable):
                         
                     self.result = self.P * self.totalError + \
                         self.D * self.error + \
-                        self.setpoint * self.F
+                        self.calculateFeedForward()
 
                 else:
 
@@ -198,10 +204,10 @@ class PIDController(LiveWindowSendable):
 
                     self.result = self.P * self.error + \
                             self.I * self.totalError + \
-                            self.D * (self.error - self.prevInput) + \
-                            self.setpoint * self.F
+                            self.D * (self.error - self.prevError) + \
+                            self.calculateFeedForward()
                             
-                self.prevInput = input
+                self.prevError = self.error
 
                 if self.result > self.maximumOutput:
                     self.result = self.maximumOutput
@@ -213,6 +219,29 @@ class PIDController(LiveWindowSendable):
                 self.buf.append(self.error)
 
             pidOutput(result)
+            
+    def calculateFeedForward(self):
+        """Calculate the feed forward term
+        
+        Both of the provided feed forward calculations are velocity feed forwards.
+        If a different feed forward calculation is desired, the user can override
+        this function and provide his or her own. This function  does no
+        synchronization because the PIDController class only calls it in
+        synchronized code, so be careful if calling it oneself.
+        
+        If a velocity PID controller is being used, the F term should be set to 1
+        over the maximum setpoint for the output. If a position PID controller is
+        being used, the F term should be set to 1 over the maximum speed for the
+        output measured in setpoint units per this controller's update period (see
+        the default period in this class's constructor).
+        """
+        if self.pidInput.getPIDSourceType() == self.PIDSourceType.kRate:
+            return self.F * self.getSetpoint()
+        else:
+            temp = self.F * self.getDeltaSetpoint()
+            self.prevSetpoint = self.setpoint
+            self.setpointTimer.reset()
+            return temp
 
     def setPID(self, p, i, d, f=0.0):
         """Set the PID Controller gain parameters.
@@ -345,6 +374,14 @@ class PIDController(LiveWindowSendable):
         """
         with self.mutex:
             return self.setpoint
+        
+    def getDeltaSetpoint(self):
+        """Returns the change in setpoint over time of the PIDController
+        
+        :returns: the change in setpoint over time
+        """
+        with self.mutex:
+            return (self.setpoint - self.prevSetpoint) / self.setpointTimer.get()
 
     def getError(self):
         """Returns the current difference of the input from the setpoint.
@@ -383,6 +420,15 @@ class PIDController(LiveWindowSendable):
                 return 0
             else:
                 return sum(self.buf) / l
+            
+    def isAvgErrorValid(self):
+        """Returns whether or not any values have been collected. If no values
+        have been collected, getAvgError is 0, which is invalid.
+        
+        :returns: True if :meth:`getAvgError` is currently valid.
+        """
+        with self.mutex:
+            return len(self.buf) != 0
 
     def setTolerance(self, percent):
         """Set the percentage error which is considered tolerable for use with
@@ -475,7 +521,7 @@ class PIDController(LiveWindowSendable):
         controller."""
         with self.mutex:
             self.disable()
-            self.prevInput = 0
+            self.prevError = 0
             self.totalError = 0
             self.result = 0
 
