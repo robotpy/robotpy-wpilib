@@ -40,6 +40,7 @@ from .digitalsource import *
 from .doublesolenoid import *
 from .driverstation import *
 from .encoder import *
+from .filter import *
 from .geartooth import *
 from .gyrobase import *
 from .i2c import *
@@ -47,6 +48,7 @@ from .interruptablesensorbase import *
 from .iterativerobot import *
 from .jaguar import *
 from .joystick import *
+from .lineardigitalfilter import *
 from .livewindow import *
 from .livewindowsendable import *
 from .motorsafety import *
