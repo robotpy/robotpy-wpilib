@@ -4,13 +4,13 @@
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 </head>
 <body>
-  In:
+  In: (docstring contents, may be followed by a function declaration without a { character)<br/>
   <textarea id="inbox" rows="10" cols="100"></textarea><p>
-  Out:
+  Out: python docstring, optionally with a function definition<br/>
   <textarea id="outbox" rows="10" cols="100"></textarea>
   <script>
   
-    function process(txt) {
+    function processDoc(txt) {
       
       var lines =  txt.split(/\r?\n/);
       for (i = 0; i < lines.length; i++) {
@@ -37,7 +37,7 @@
       // remove start/ending whitespace
       text = text.replace(/^\s+|\s+$/g, '');
       
-      text = '"""' + text + '\r\n"""';
+      text = '"""' + text;
       
       // indent all
       lines =  text.split(/\r?\n/);
@@ -45,7 +45,27 @@
         if (i != 0)
           lines[i] = '        ' + lines[i];
       
+      if (lines.length > 1)
+        lines.push('        ');
+            
+      lines[lines.length -1] = lines[lines.length -1] + '"""';
       return lines.join('\r\n');
+    }
+    
+    function process(txt) {
+      // try to find a function definition
+      var s = txt.split(/(.*)(public|protected|private|static|final|synchronized|abstract|default|native\s+)+\s+[\w\<\>\[\]]+\s+(\w+)\s*\(([^\)]*)\)/);
+      var t = processDoc(s[0]);
+      
+      // add the function definition in if present
+      if (s.length > 1) {
+        if (s[4] != "")
+          s[4] = ", " + s[4];
+        
+        t = "def " + s[3] + "(self" + s[4] +
+            "):\n        " + t;
+      }
+      return t;
     }
     
     function xfer() {
