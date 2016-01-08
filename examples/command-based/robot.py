@@ -9,15 +9,15 @@ from oi import OI
 
 class MyRobot(wpilib.IterativeRobot):
 
-    example_subsystem = ExampleSubsystem()
-    oi = None
-
     def robotInit(self):
         """
         This function is called upon program startup and
         should be used for any initialization code.
         """
+        # Create operator interface
         self.oi = OI(self)
+        # Create subsystems
+        self.example_subsystem = ExampleSubsystem(self)
         #Create the command used for the autonomous period
         self.autonomous_command = ExampleCommand(self)
 

@@ -6,12 +6,13 @@ from wpilib.command import PIDSubsystem
 #name of your desired PIDSubsystem
 class PIDSubsystemName(PIDSubsystem):
 
-    def __init__(self, p, i, d, period=None, f=0.0, name=None):
+    def __init__(self, robot, p, i, d, period=None, f=0.0, name=None):
         # Use these to get going:
         # setSetpoint() -  Sets where the PID controller should move the system
         #                  to
         # enable() - Enables the PID controller.
         super().__init__(p, i, d, period, f, name)
+        self.robot = robot
 
     def initDefaultCommand(self):
         #Set the default command for a subsystem here.
