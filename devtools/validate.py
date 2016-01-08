@@ -192,7 +192,8 @@ class ValidationInfo:
                     excl = excluded_commits()
                     for commit in sh.git('log', '--follow', '--pretty=%h', fpath, _tty_out=False, _iter=True):
                         commit = commit.strip()
-                        if commit.startswith(self.hash) or not is_excluded(commit, excl):
+                        if (self.hash is not None and commit.startswith(self.hash)) or \
+                           not is_excluded(commit, excl):
                             self._orig_hash = commit
                             break
                     else:
