@@ -820,7 +820,7 @@ def setDIO(digital_port, value, status):
 
 def getDIO(digital_port, status):
     status.value = 0
-    return 1 if hal_data['dio'][digital_port.pin]['value'] else 0
+    return bool(hal_data['dio'][digital_port.pin]['value'])
 
 def getDIODirection(digital_port, status):
     status.value = 0
