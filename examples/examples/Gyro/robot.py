@@ -19,7 +19,7 @@ class MyRobot(wpilib.SampleRobot):
         self.rightRearMotorChannel = 2
     
         self.angleSetpoint = 0.0;
-        self.pGain = .006; #propotional turning constant
+        self.pGain = 1; #propotional turning constant
     
         #gyro calibration constant, may need to be adjusted; 
         #gyro value of 360 is set to correspond to one full revolution
