@@ -24,7 +24,7 @@ EXAMPLES="
 	examples/GettingStarted/
 	examples/MecanumDrive/
 	examples/MotorControl/
-	
+	examples/Gyro/
 	examples/QuickVision/
 	examples/TankDrive/
 "
