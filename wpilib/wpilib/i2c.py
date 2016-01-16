@@ -134,7 +134,7 @@ class I2C:
         """
         if count < 1:
             raise ValueError("count must be at least 1, %s given" % count)
-        hal.i2CRead(self.port, self.deviceAddress, count)
+        return hal.i2CRead(self.port, self.deviceAddress, count)
 
     def broadcast(self, registerAddress, data):
         """Send a broadcast write to all devices on the I2C bus.

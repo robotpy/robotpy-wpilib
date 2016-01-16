@@ -358,7 +358,7 @@ def spiWrite(port, data_to_send):
 _spiRead = _RETFUNC("spiRead", C.c_int32, ("port", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 @hal_wrapper
 def spiRead(port, count):
-    buffer = C.c_uint8 * count
+    buffer = (C.c_uint8 * count)()
     rv = _spiRead(port, buffer, count)
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
@@ -398,7 +398,7 @@ _i2CTransaction = _RETFUNC("i2CTransaction", C.c_int32, ("port", C.c_uint8), ("d
 def i2CTransaction(port, device_address, data_to_send, receive_size):
     send_size = len(data_to_send)
     send_buffer = (C.c_uint8 * send_size)(*data_to_send)
-    recv_buffer = C.c_uint8 * receive_size
+    recv_buffer = (C.c_uint8 * receive_size)()
     rv = _i2CTransaction(port, device_address, send_buffer, send_size, recv_buffer, receive_size)
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
@@ -416,7 +416,7 @@ def i2CWrite(port, device_address, data_to_send):
 _i2CRead = _RETFUNC("i2CRead", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 @hal_wrapper
 def i2CRead(port, device_address, count):
-    buffer = C.c_uint8 * count
+    buffer = (C.c_uint8 * count)()
     rv = _i2CRead(port, device_address, buffer, count)
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
