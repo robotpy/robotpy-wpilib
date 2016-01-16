@@ -111,29 +111,29 @@ class I2C:
     def read(self, registerAddress, count):
         """Execute a read transaction with the device.
 
-        Read 1 to 7 bytes from a device. Most I2C devices will auto-increment
-        the register pointer internally allowing you to read up to 7
+        Read bytes from a device. Most I2C devices will auto-increment
+        the register pointer internally allowing you to read
         consecutive registers on a device in a single transaction.
 
         :param registerAddress: The register to read first in the transaction.
-        :param count: The number of bytes to read in the transaction. [1..7]
+        :param count: The number of bytes to read in the transaction.
         :returns: The data read from the device.
         """
-        if count < 1 or count > 7:
-            raise ValueError("count must be between 1 and 7")
+        if count < 1:
+            raise ValueError("count must be at least 1, %s given" % count)
         return self.transaction([registerAddress], count)
 
     def readOnly(self, count):
         """Execute a read only transaction with the device.
 
-        Read 1 to 7 bytes from a device. This method does not write any data
+        Read bytes from a device. This method does not write any data
         to prompt the device.
 
-        :param count: The number of bytes to read in the transaction. [1..7]
+        :param count: The number of bytes to read in the transaction.
         :returns: The data read from the device.
         """
-        if count < 1 or count > 7:
-            raise ValueError("count must be between 1 and 7")
+        if count < 1:
+            raise ValueError("count must be at least 1, %s given" % count)
         hal.i2CRead(self.port, self.deviceAddress, count)
 
     def broadcast(self, registerAddress, data):
