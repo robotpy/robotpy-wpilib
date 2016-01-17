@@ -290,113 +290,82 @@ class SshExecError(Error):
 # Arguments to pass to SSH to allow a man in the middle attack
 mitm_args = ['-oStrictHostKeyChecking=no', '-oUserKnownHostsFile=/dev/null']
 
+def ssh_from_cfg(cfg_filename, username, password, hostname=None, allow_mitm=False):
+    
+    dirty = True
+    cfg = configparser.ConfigParser()
+    cfg.setdefault('auth', {})
+    
+    if exists(cfg_filename):
+        cfg.read(cfg_filename)
+        dirty = False
+        
+    if hostname is not None:
+        dirty = True
+        cfg['auth']['hostname'] = hostname
+   
+    hostname = cfg['auth'].get('hostname')
+    
+    if not hostname:
+        dirty = True
+        
+        print("Robot setup (hit enter for default value):")
+        while not hostname:
+            hostname = input('Robot hostname (like roborio-XXX-frc.local, or an IP address): ')
+
+        cfg['auth']['hostname'] = hostname
+
+    if dirty:
+        with open(cfg_filename, 'w') as fp:
+            cfg.write(fp)
+            
+    print("Connecting to robot via SSH at", hostname)
+            
+    return SshController(hostname, username, password,
+                         allow_mitm)
+
+
+def ensure_win_bins():
+    '''Makes sure the right Windows binaries are present'''
+    
+    if not is_windows:
+        return
+        
+    _win_bins = abspath(join(dirname(__file__), 'win32'))
+    _plink_url = 'http://the.earth.li/~sgtatham/putty/latest/x86/plink.exe'
+    _psftp_url = 'http://the.earth.li/~sgtatham/putty/latest/x86/psftp.exe'
+    
+    if not exists(_win_bins):
+        os.mkdir(_win_bins)
+        
+    psftp = join(_win_bins, 'psftp.exe')
+    plink = join(_win_bins, 'plink.exe')
+        
+    if not exists(psftp):
+        _urlretrieve(_psftp_url, psftp)
+    
+    if not exists(plink):
+        _urlretrieve(_plink_url, plink)
+
 class SshController(object):
     '''
         Use this to transfer files and execute commands on a RoboRIO in a
         cross platform manner
     '''
-    
-    # Defaults, actual values come from config file
-    _hostname = ''
-    
-    _win_bins = abspath(join(dirname(__file__), 'win32'))
-    
-    _plink_url = 'http://the.earth.li/~sgtatham/putty/latest/x86/plink.exe'
-    _psftp_url = 'http://the.earth.li/~sgtatham/putty/latest/x86/psftp.exe'
-    
-    def __init__(self, cfg_filename, username, password, allow_mitm=False):
-        self.cfg_filename = cfg_filename
-        self.cfg = None
-        self.config_to_write = None
-        self.dirty = False
-        self._username = username
-        self._password = password
+   
+    def __init__(self, hostname, username, password, allow_mitm=False):
+        self.username = username
+        self.password = password
         self._allow_mitm = allow_mitm
-        
-    @property
-    def username(self):
-        return self._username
-    
-    @property
-    def password(self):
-        return self._password
-    
-    @property
-    def hostname(self):
-        self._init_cfg()
-        return self._hostname
+        self.hostname = hostname
     
     @property
     def win_bins(self):
-        self.ensure_win_bins()
+        ensure_win_bins()
         return self._win_bins
-    
-    def ensure_win_bins(self):
-        '''Makes sure the right Windows binaries are present'''
-        
-        if not is_windows:
-            return
-        
-        if not exists(self._win_bins):
-            os.mkdir(self._win_bins)
-            
-        psftp = join(self._win_bins, 'psftp.exe')
-        plink = join(self._win_bins, 'plink.exe')
-            
-        if not exists(psftp):
-            _urlretrieve(self._psftp_url, psftp)
-        
-        if not exists(plink):
-            _urlretrieve(self._plink_url, plink)
-    
-    def _init_cfg(self):
-
-        if self.cfg is not None:
-            return
-        
-        self.cfg_initialized = True
-
-        if not exists(self.cfg_filename):
-            self.cfg = self._do_config()
-            self.dirty = True
-        else:
-            self.cfg = configparser.ConfigParser()
-            self.cfg.read(self.cfg_filename)
-        
-        try:
-            self._hostname = self.cfg['auth']['hostname']
-        except KeyError:
-            raise Error("Error reading %s; delete it and try again" % self.cfg_filename)
-    
-    def _do_config(self):
-        
-        print("Robot setup (hit enter for default value):")
-        hostname = ''
-        while hostname == '':
-            hostname = input('Robot hostname (like roborio-XXX-frc.local, or an IP address): ')
-        
-        #username = input('Username [%s]: ' % self._username)
-        #password = getpass.getpass('Password [%s]: ' % self._password)
-        
-        config = configparser.ConfigParser()
-        config['auth'] = {}
-        
-        #if username != '' and username != self._username:
-        #    config['auth']['username'] = username
-        #if password != '' and password != self._password:
-        #    config['auth']['password'] = password
-            
-        config['auth']['hostname'] = hostname
-        return config
-        
-    def close(self):
-        '''Only call this on success'''
-        if self.dirty:
-            with open(self.cfg_filename, 'w') as fp:
-                self.cfg.write(fp)
         
     #
-    # This sucks. We should be using paramiko here... 
+    # This sucks. We should be using paramiko here... but we cannot
     #
     
     def ssh(self, *args, get_output=False):
@@ -590,6 +559,8 @@ class RobotpyInstaller(object):
         Logic for installing RobotPy
     '''
     
+    cfg_filename = abspath(join(dirname(__file__), '.installer_config'))
+    
     pip_cache = abspath(join(dirname(__file__), 'pip_cache'))
     opkg_cache = abspath(join(dirname(__file__), 'opkg_cache'))
     
@@ -612,8 +583,8 @@ class RobotpyInstaller(object):
         if not exists(self.pip_cache):
             os.makedirs(self.pip_cache)
         
-        cfg_filename = abspath(join(dirname(__file__), '.installer_config'))
-        self.ctrl = SshController(cfg_filename, username='admin', password='', allow_mitm=True)
+        self._ctrl = None
+        self._hostname = None
         self.remote_commands = []
 
     def _get_opkg(self):
@@ -621,6 +592,20 @@ class RobotpyInstaller(object):
         opkg.add_feed('http://www.tortall.net/~robotpy/feeds/2016/')
         opkg.add_feed("http://download.ni.com/ni-linux-rt/feeds/2015/arm/ipk/cortexa9-vfpv3")
         return opkg
+
+    def set_hostname(self, hostname):
+        if self._ctrl is not None:
+            raise ValueError("internal error: too late")
+        self._hostname = hostname
+
+    @property
+    def ctrl(self):
+        if self._ctrl is None:
+            self._ctrl = ssh_from_cfg(self.cfg_filename,
+                                      username='admin', password='',
+                                      hostname=self._hostname,
+                                      allow_mitm=True)
+        return self._ctrl
 
     def execute_remote(self):
         if len(self.remote_commands) > 0:
@@ -721,7 +706,7 @@ class RobotpyInstaller(object):
         """
         
         # Don't leave windows users stranded
-        self.ctrl.ensure_win_bins()
+        ensure_win_bins()
         
         opkg = self._get_opkg()
         opkg.update_packages()
@@ -816,7 +801,7 @@ class RobotpyInstaller(object):
             Specify python package(s) to download, and store them in the cache
         '''
         
-        self.ctrl.ensure_win_bins()
+        ensure_win_bins()
         
         try:
             import pip
@@ -905,15 +890,22 @@ def main(args=None):
     subparser = parser.add_subparsers(dest='command', help="Commands")
     subparser.required = True
     
+    # shared options
+    shared = argparse.ArgumentParser(add_help=False)
+    shared.add_argument('--robot', default=None, help='Specify the robot hostname')
+    
     # Setup various options
     for command in installer.commands:
         fn = getattr(installer, command.replace('-', '_'))
         opt_fn = getattr(installer, command.replace('-', '_') + '_opts')
-        cmdparser = subparser.add_parser(command, help=inspect.getdoc(fn))
+        cmdparser = subparser.add_parser(command, help=inspect.getdoc(fn),
+                                         parents=[shared])
         opt_fn(cmdparser)
         cmdparser.set_defaults(cmdobj=fn)
-        
+    
     options = parser.parse_args(args)
+    if options.robot:
+        installer.set_hostname(options.robot)
 
     try:
         retval = options.cmdobj(options)
@@ -932,14 +924,8 @@ def main(args=None):
     elif retval is False:
         retval = 1
     
-    # finally.. write the config out
-    if retval == 0:
-        installer.ctrl.close()
-    
     return retval
 
-
 if __name__ == '__main__':
-
     retval = main()    
     exit(retval)
