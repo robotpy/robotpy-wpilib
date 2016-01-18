@@ -13,6 +13,7 @@ from .counterbase import *
 from .generichid import *
 from .gyro import *
 from .namedsendable import *
+from .pidinterface import *
 from .pidoutput import *
 from .pidsource import *
 from .potentiometer import *
