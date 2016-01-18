@@ -1,3 +1,4 @@
+# validated: 2016-01-17 DS b3b03c4 athena/java/edu/wpi/first/wpilibj/Counter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,14 +7,12 @@
 #----------------------------------------------------------------------------
 
 import hal
-import warnings
 import weakref
 
 from .interfaces.counterbase import CounterBase
 from .interfaces.pidsource import PIDSource
 from .analogtriggeroutput import AnalogTriggerOutput
 from .digitalinput import DigitalInput
-from .livewindow import LiveWindow
 from .sensorbase import SensorBase
 from ._impl.utils import match_arglist, HasAttribute
 
@@ -97,6 +96,7 @@ class Counter(SensorBase):
             Either k1X or k2X to indicate 1X or 2X decoding. 4X decoding
             is not supported by Counter; use `Encoder` instead.  Defaults
             to k1X if unspecified.  Only used when two sources are specified.
+        :type encodingType: :class:`.Counter.EncodingType`
         """
 
         source_identifier = [int, HasAttribute("getChannelForRouting"), HasAttribute("createOutput")]
@@ -568,9 +568,3 @@ class Counter(SensorBase):
         table = self.getTable()
         if table is not None:
             table.putNumber("Value", self.get())
-
-    def startLiveWindowMode(self):
-        pass
-
-    def stopLiveWindowMode(self):
-        pass
