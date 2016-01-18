@@ -51,8 +51,10 @@ IRC
 During the FRC Build Season, some RobotPy developers may be able to be reached on
 **#robotpy** channel on `Freenode <http://freenode.net/irc_servers.shtml>`_. 
 
-.. note:: the channel is not very active, but if you stick around long enough
+.. note:: the channel is not very active, but if you stick around for a day or two
           someone will probably answer your question -- think in terms of email
           response time
+          
+          The channel tends to be most active between 11pm and 1am EST.
 
 
