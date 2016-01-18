@@ -172,22 +172,23 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
         """
         
         #: Disables the soft position limits and only uses
-        #: the limit switches to limit rotation.  See `getForwardLimitOK`
-        #: and `getReverseLimitOK`.
+        #: the limit switches to limit rotation.  See :meth:`.getForwardLimitOK`
+        #: and :meth:`.getReverseLimitOK`.
         SwitchInputsOnly = 0
         
         #: Enables the soft position limits on the Jaguar.
         #: These will be used in addition to the limit switches. This does
         #: not disable the behavior of the limit switch input.
-        #: See `configSoftPositionLimits`.
+        #: See :meth:`.configSoftPositionLimits`.
         SoftPositionLimits = 1
 
     def __init__(self, deviceNumber):
         """Constructor for the CANJaguar device.
         
         By default the device is configured in Percent mode.
-        The control mode can be changed by calling one of the control modes.
-
+        The control mode can be changed by calling one of the control mode
+        functions.
+        
         :param deviceNumber: The address of the Jaguar on the CAN bus.
         """
         MotorSafety.__init__(self)
@@ -1219,7 +1220,7 @@ class CANJaguar(LiveWindowSendable, MotorSafety):
     def getControlMode(self):
         """Get the active control mode from the Jaguar.
 
-        Ask the Jagaur what mode it is in.
+        Ask the Jaguar what mode it is in.
 
         :return ControlMode: that the Jag is in.
         """
