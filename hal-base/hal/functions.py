@@ -6,7 +6,7 @@ from .exceptions import HALError
 from .constants import *
 
 from hal_impl.types import *
-from hal_impl.fndef import _RETFUNC, _VAR, _dll
+from hal_impl.fndef import _RETFUNC, _THUNKFUNC, _VAR, _dll
 from hal_impl import __hal_simulation__
 
 def hal_wrapper(f):
@@ -20,7 +20,7 @@ def hal_wrapper(f):
     return f
 
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
-                handle_missing=False):
+                handle_missing=False, _inner_func=_RETFUNC):
     realparams = list(params)
     realparams.append(("status", C.POINTER(C.c_int32)))
     if restype is not None and out is not None:
@@ -31,8 +31,8 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
             return tuple(out)
     else:
         errcheck = None
-    _inner = _RETFUNC(name, restype, *realparams, out=out, library=library,
-                      errcheck=errcheck, handle_missing=handle_missing)
+    _inner = _inner_func(name, restype, *realparams, out=out, library=library,
+                        errcheck=errcheck, handle_missing=handle_missing)
     def outer(*args, **kwargs):
         status = C.c_int32(0)
         rv = _inner(*args, status=status, **kwargs)
@@ -48,6 +48,9 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
     if hasattr(_inner, 'fndata'):
         outer.fndata = _inner.fndata
     return outer
+
+def _TSTATUSFUNC(*a, **k):
+    return _STATUSFUNC(_inner_func=_THUNKFUNC, *a, **k)
 
 def _CTRFUNC_errcheck(result, func, args):
     if result != 0:
@@ -331,9 +334,9 @@ setEncoderIndexSource = _STATUSFUNC("setEncoderIndexSource", None, ("encoder", E
 
 getLoopTiming = _STATUSFUNC("getLoopTiming", C.c_uint16)
 
-spiInitialize = _STATUSFUNC("spiInitialize", None, ("port", C.c_uint8))
+spiInitialize = _TSTATUSFUNC("spiInitialize", None, ("port", C.c_uint8))
 
-_spiTransaction = _RETFUNC("spiTransaction", C.c_int32, ("port", C.c_uint8),
+_spiTransaction = _THUNKFUNC("spiTransaction", C.c_int32, ("port", C.c_uint8),
                            ("data_to_send", C.POINTER(C.c_uint8)), ("data_received", C.POINTER(C.c_uint8)), ("size", C.c_uint8))
 @hal_wrapper
 def spiTransaction(port, data_to_send):
@@ -345,7 +348,7 @@ def spiTransaction(port, data_to_send):
         raise IOError(_os.strerror(C.get_errno()))
     return recv_buffer[:rv]
 
-_spiWrite = _RETFUNC("spiWrite", C.c_int32, ("port", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
+_spiWrite = _THUNKFUNC("spiWrite", C.c_int32, ("port", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
 @hal_wrapper
 def spiWrite(port, data_to_send):
     send_size = len(data_to_send)
@@ -355,7 +358,7 @@ def spiWrite(port, data_to_send):
         raise IOError(_os.strerror(C.get_errno()))
     return rv
 
-_spiRead = _RETFUNC("spiRead", C.c_int32, ("port", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
+_spiRead = _THUNKFUNC("spiRead", C.c_int32, ("port", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 @hal_wrapper
 def spiRead(port, count):
     buffer = (C.c_uint8 * count)()
@@ -364,34 +367,34 @@ def spiRead(port, count):
         raise IOError(_os.strerror(C.get_errno()))
     return [x for x in buffer]
 
-spiClose = _RETFUNC("spiClose", None, ("port", C.c_uint8))
-spiSetSpeed = _RETFUNC("spiSetSpeed", None, ("port", C.c_uint8), ("speed", C.c_uint32))
-#spiSetBitsPerWord = _RETFUNC("spiSetBitsPerWord", None, ("port", C.c_uint8), ("bpw", C.c_uint8))
-spiSetOpts = _RETFUNC("spiSetOpts", None, ("port", C.c_uint8), ("msb_first", C.c_int), ("sample_on_trailing", C.c_int), ("clk_idle_high", C.c_int))
-spiSetChipSelectActiveHigh = _STATUSFUNC("spiSetChipSelectActiveHigh", None, ("port", C.c_uint8))
-spiSetChipSelectActiveLow = _STATUSFUNC("spiSetChipSelectActiveLow", None, ("port", C.c_uint8))
-spiGetHandle = _RETFUNC("spiGetHandle", C.c_int32, ("port", C.c_uint8));
-spiSetHandle = _RETFUNC("spiSetHandle", None, ("port", C.c_uint8), ("handle", C.c_int32))
+spiClose = _THUNKFUNC("spiClose", None, ("port", C.c_uint8))
+spiSetSpeed = _THUNKFUNC("spiSetSpeed", None, ("port", C.c_uint8), ("speed", C.c_uint32))
+#spiSetBitsPerWord = _THUNKFUNC("spiSetBitsPerWord", None, ("port", C.c_uint8), ("bpw", C.c_uint8))
+spiSetOpts = _THUNKFUNC("spiSetOpts", None, ("port", C.c_uint8), ("msb_first", C.c_int), ("sample_on_trailing", C.c_int), ("clk_idle_high", C.c_int))
+spiSetChipSelectActiveHigh = _TSTATUSFUNC("spiSetChipSelectActiveHigh", None, ("port", C.c_uint8))
+spiSetChipSelectActiveLow = _TSTATUSFUNC("spiSetChipSelectActiveLow", None, ("port", C.c_uint8))
+spiGetHandle = _THUNKFUNC("spiGetHandle", C.c_int32, ("port", C.c_uint8));
+spiSetHandle = _THUNKFUNC("spiSetHandle", None, ("port", C.c_uint8), ("handle", C.c_int32))
 
-spiInitAccumulator = _STATUSFUNC('spiInitAccumulator', None, ("port", C.c_uint8),
+spiInitAccumulator = _TSTATUSFUNC('spiInitAccumulator', None, ("port", C.c_uint8),
                                  ('period', C.c_uint32), ('cmd', C.c_uint32), ('xfer_size', C.c_uint8),
                                  ('valid_mask', C.c_uint32), ('valid_value', C.c_uint32), ('data_shift', C.c_uint8),
                                  ('data_size', C.c_uint8), ('is_signed', C.c_bool), ('big_endian', C.c_bool))
-spiFreeAccumulator = _STATUSFUNC('spiFreeAccumulator', None, ("port", C.c_uint8))
-spiResetAccumulator = _STATUSFUNC('spiResetAccumulator', None, ("port", C.c_uint8))
-spiSetAccumulatorCenter = _STATUSFUNC('spiSetAccumulatorCenter', None, ("port", C.c_uint8), ('center', C.c_int32))
-spiSetAccumulatorDeadband = _STATUSFUNC('spiSetAccumulatorDeadband', None, ("port", C.c_uint8), ('deadband', C.c_int32))
-spiGetAccumulatorLastValue = _STATUSFUNC('spiGetAccumulatorLastValue', C.c_int32, ("port", C.c_uint8))
-spiGetAccumulatorValue = _STATUSFUNC('spiGetAccumulatorValue', C.c_int64, ("port", C.c_uint8))
-spiGetAccumulatorCount = _STATUSFUNC('spiGetAccumulatorCount', C.c_uint32, ("port", C.c_uint8)) 
-spiGetAccumulatorAverage = _STATUSFUNC('spiGetAccumulatorAverage', C.c_double, ("port", C.c_uint8)) 
-spiGetAccumulatorOutput = _STATUSFUNC('spiGetAccumulatorOutput', None, ("port", C.c_uint8), ('value', C.POINTER(C.c_int64)), ('count', C.POINTER(C.c_uint32)), out=['value', 'count'])
+spiFreeAccumulator = _TSTATUSFUNC('spiFreeAccumulator', None, ("port", C.c_uint8))
+spiResetAccumulator = _TSTATUSFUNC('spiResetAccumulator', None, ("port", C.c_uint8))
+spiSetAccumulatorCenter = _TSTATUSFUNC('spiSetAccumulatorCenter', None, ("port", C.c_uint8), ('center', C.c_int32))
+spiSetAccumulatorDeadband = _TSTATUSFUNC('spiSetAccumulatorDeadband', None, ("port", C.c_uint8), ('deadband', C.c_int32))
+spiGetAccumulatorLastValue = _TSTATUSFUNC('spiGetAccumulatorLastValue', C.c_int32, ("port", C.c_uint8))
+spiGetAccumulatorValue = _TSTATUSFUNC('spiGetAccumulatorValue', C.c_int64, ("port", C.c_uint8))
+spiGetAccumulatorCount = _TSTATUSFUNC('spiGetAccumulatorCount', C.c_uint32, ("port", C.c_uint8)) 
+spiGetAccumulatorAverage = _TSTATUSFUNC('spiGetAccumulatorAverage', C.c_double, ("port", C.c_uint8)) 
+spiGetAccumulatorOutput = _TSTATUSFUNC('spiGetAccumulatorOutput', None, ("port", C.c_uint8), ('value', C.POINTER(C.c_int64)), ('count', C.POINTER(C.c_uint32)), out=['value', 'count'])
 
 
 
-i2CInitialize = _STATUSFUNC("i2CInitialize", None, ("port", C.c_uint8))
+i2CInitialize = _TSTATUSFUNC("i2CInitialize", None, ("port", C.c_uint8))
 
-_i2CTransaction = _RETFUNC("i2CTransaction", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8),
+_i2CTransaction = _THUNKFUNC("i2CTransaction", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8),
                            ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8),
                            ("data_received", C.POINTER(C.c_uint8)), ("receive_size", C.c_uint8))
 @hal_wrapper
@@ -404,7 +407,7 @@ def i2CTransaction(port, device_address, data_to_send, receive_size):
         raise IOError(_os.strerror(C.get_errno()))
     return [x for x in recv_buffer]
 
-_i2CWrite = _RETFUNC("i2CWrite", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
+_i2CWrite = _THUNKFUNC("i2CWrite", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
 @hal_wrapper
 def i2CWrite(port, device_address, data_to_send):
     send_size = len(data_to_send)
@@ -413,7 +416,7 @@ def i2CWrite(port, device_address, data_to_send):
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
 
-_i2CRead = _RETFUNC("i2CRead", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
+_i2CRead = _THUNKFUNC("i2CRead", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_uint8))
 @hal_wrapper
 def i2CRead(port, device_address, count):
     buffer = (C.c_uint8 * count)()
@@ -422,7 +425,7 @@ def i2CRead(port, device_address, count):
         raise IOError(_os.strerror(C.get_errno()))
     return [x for x in buffer]
 
-i2CClose = _RETFUNC("i2CClose", None, ("port", C.c_uint8))
+i2CClose = _THUNKFUNC("i2CClose", None, ("port", C.c_uint8))
 
 #############################################################################
 # Interrupts

@@ -1,0 +1,70 @@
+
+import pytest
+
+class I2CSimulator:
+    '''
+        An object similar to this can be passed to the I2C constructor as
+        'simPort' and it will get called when I2C HAL calls are made
+    '''
+    
+    def i2CInitialize(self, port, status):
+        self.initialized = port
+        status.value = 0 
+    
+    def i2CTransaction(self, port, device_address, data_to_send, send_size, data_received, receive_size):
+        assert device_address == 0x42
+        assert list(data_to_send) == [1,2]
+        data_received[:] = [2, 1]
+        return 2
+    
+    def i2CWrite(self, port, device_address, data_to_send, send_size):
+        assert device_address == 0x42
+        
+        if data_to_send[0] == 3:
+            assert list(data_to_send) == [3,4]
+            self.written = True
+        else: # bulk
+            assert list(data_to_send) == [5, 6, 7]
+            self.bulkWritten = True
+        
+        return 1
+    
+    def i2CRead(self, port,  device_address, buffer, count):
+        assert device_address == 0x42
+        buffer[:] = [0x24]*count
+        return count
+    
+    def i2CClose(self, port):
+        self.closed = port
+
+
+def test_i2c(wpilib):
+    
+    sim = I2CSimulator()
+    port = wpilib.I2C.Port.kMXP
+    
+    i2c = wpilib.I2C(port, 0x42, sim)
+    assert sim.initialized == port
+    
+    assert i2c.transaction([1,2], 2) == [2, 1]
+    
+    print(i2c.write(3,4))
+    assert i2c.write(3, 4) == False
+    assert sim.written is True
+    
+    assert i2c.writeBulk([5,6,7]) == False
+    assert sim.bulkWritten is True
+    
+    assert i2c.readOnly(7) == [0x24]*7
+    
+    with pytest.raises(NotImplementedError):
+        i2c.broadcast(1,2)
+    
+    # TODO: test verifySensor
+    
+    i2c.free()
+    assert sim.closed == port
+    
+    with pytest.raises(ValueError):
+        i2c.port
+    

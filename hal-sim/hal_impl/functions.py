@@ -1081,7 +1081,13 @@ def getLoopTiming(status):
     return hal_data['pwm_loop_timing']
 
 #
-# SPI
+# SPI: These functions should never get called, pass a simPort object
+#      to the SPI implementation instead
+#
+#      The simPort object should implement all of the SPI functions below
+#
+# TODO: change WPILib HAL impl to take an object, then we can implement
+#       the simport stuff at the HAL layer instead
 #
 
 def spiInitialize(port, status):
@@ -1150,7 +1156,13 @@ def spiGetAccumulatorOutput(port, status):
     assert False
 
 #
-# i2c
+# i2c: These functions should never get called, pass a simPort object
+#      to the i2c implementation instead.
+#
+#      The simPort object should implement all of the i2c functions below
+#
+# TODO: change WPILib HAL impl to take an object, then we can implement
+#       the simport stuff at the HAL layer instead
 #
 
 def i2CInitialize(port, status):

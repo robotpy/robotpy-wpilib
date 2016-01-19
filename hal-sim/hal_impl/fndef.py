@@ -59,7 +59,7 @@ def gen_check(pname, ptype):
         return None
 
 
-def gen_func(f, name, restype, params, out):
+def gen_func(f, name, restype, params, out, _thunk):
 
     args = []
     callargs = []
@@ -68,12 +68,15 @@ def gen_func(f, name, restype, params, out):
     if out is None:
         out = []
 
+    # not actually a check, unpacks the first arg
+    if _thunk:
+        checks.append('_dll, %s = %s' % (params[0][0], params[0][0]))
+
     # Generate a check for each parameter
     for param in params:
         pname, ptype = param[:2]
 
         if pname not in out:
-
             check = gen_check(pname, ptype)
             
             if check is not None:
@@ -103,7 +106,7 @@ def gen_func(f, name, restype, params, out):
 
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
-             errcheck=None, handle_missing=False):
+             errcheck=None, handle_missing=False, _thunk=False):
 
     # get func
     try:
@@ -115,25 +118,37 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
         raise
 
     try:
-        fn_body = gen_func(fn, name, restype, params, out)
+        fn_body = gen_func(fn, name, restype, params, out, _thunk)
     except AssertionError:
         if os.environ.get('HAL_NOSTRICT'):
             return
         raise
-    #print(fn_body)
-
+    
     # exec:
     # TODO: give it a filename?
-    locals = {'_dll': _dll}
-    exec(fn_body, locals)
+    if _thunk:
+        elocals = {}
+    else:
+        elocals = {'_dll': _dll}
+        
+    exec(fn_body, elocals)
 
     # return the created func
-    retfunc = locals[name]
+    retfunc = elocals[name]
     
     # Store function definition data for API validation
     retfunc.fndata = (name, restype, params, out)
     return retfunc
 
+def _THUNKFUNC(*a, **k):
+    '''This is the same as _RETFUNC, except that in simulation mode you should
+       call _THUNKFUNC defined functions with a tuple of (simPort, param),
+       allowing the API to implement objects where there are none
+       
+       The simPort object will be called with the normal function signature of
+       the API call.
+    '''
+    return _RETFUNC(_thunk=True, *a, **k)
 
 def _VAR(name, type, library=_dll):
     '''These are always constants, so it's ok to return a value'''

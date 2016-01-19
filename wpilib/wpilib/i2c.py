@@ -24,13 +24,28 @@ class I2C:
         kOnboard = 0
         kMXP = 1
 
-    def __init__(self, port, deviceAddress):
+    def __init__(self, port, deviceAddress, simPort=None):
         """Constructor.
 
         :param port: The I2C port the device is connected to.
         :param deviceAddress: The address of the device on the I2C bus.
+        :param simPort: This must be an object that implements all of
+                        the i2c* functions from hal_impl that you use.
+                        See ``test_i2c.py`` for an example.
         """
-        self._port = port
+        
+        if hal.HALIsSimulation():
+            if simPort is None:
+                raise ValueError("You will need to use a mock for this i2c port, or provide a simPort implementation")
+            
+            # Just check for basic functionality
+            assert hasattr(simPort, 'i2CInitialize')
+            assert hasattr(simPort, 'i2CClose')
+            
+            self._port = (simPort, port)
+        else:
+            self._port = port
+            
         self.deviceAddress = deviceAddress
 
         hal.i2CInitialize(self._port)

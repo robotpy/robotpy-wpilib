@@ -30,5 +30,9 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
             raise NotImplementedError
     return func
 
+# Thunkfunc is specialized in simulation, but the same as _RETFUNC
+# outside of simulation
+_THUNKFUNC = _RETFUNC
+
 def _VAR(name, type, library=_dll):
     return type.in_dll(library, name)

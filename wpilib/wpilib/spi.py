@@ -24,13 +24,28 @@ class SPI:
     def _reset():
         SPI.devices = 0
 
-    def __init__(self, port):
+    def __init__(self, port, simPort=None):
         """Constructor
 
         :param port: the physical SPI port
         :type port: :class:`.SPI.Port`
+        :param simPort: This must be an object that implements all of
+                        the spi* functions from hal_impl that you use.
+                        See ``test_spi.py`` for an example.
         """
-        self._port = port
+        
+        if hal.HALIsSimulation():
+            if simPort is None:
+                raise ValueError("You will need to use a mock for this SPI port, or provide a simPort implementation")
+            
+            # Just check for basic functionality
+            assert hasattr(simPort, 'spiInitialize')
+            assert hasattr(simPort, 'spiClose')
+            
+            self._port = (simPort, port)
+        else:
+            self._port = port
+        
         self.bitOrder = 0
         self.clockPolarity = 0
         self.dataOnTrailing = 0
