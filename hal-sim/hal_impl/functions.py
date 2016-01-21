@@ -213,7 +213,9 @@ def getFPGAButton(status):
     return hal_data['fpga_button']
 
 def HALSetErrorData(errors, errorsLength, wait_ms):
-    logger.warn(errors.decode('utf-8').strip())
+    # the only thing that calls this is DriverStation.ReportError
+    # and it logs by default now
+    #logger.warn(errors.decode('utf-8').strip())
     hal_data['error_data'] = errors
 
 def HALGetControlWord():

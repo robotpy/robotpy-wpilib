@@ -15,6 +15,9 @@ from .timer import Timer
 
 __all__ = ["DriverStation"]
 
+import logging
+logger = logging.getLogger('wpilib.ds')
+
 JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL = 1.0
 
 class DriverStation:
@@ -502,10 +505,15 @@ class DriverStation:
             if exc is not None:
                 stackstr += '  ' + traceback.format_exc().lstrip(trc)
             errorString += ':\n' + stackstr
-        #print(errorString, file=sys.stderr)
+            
+            logger.exception(error)
+        else:
+            logger.error(errorString)
+        
         controlWord = hal.HALGetControlWord()
         if controlWord.dsAttached != 0:
             hal.HALSetErrorData(errorString, 0)
+            
 
     def InDisabled(self, entering):
         """Only to be used to tell the Driver Station what code you claim to

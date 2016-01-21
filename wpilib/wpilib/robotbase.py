@@ -181,10 +181,10 @@ class RobotBase:
             logger.info("Exiting because of keyboard interrupt")
             return True
         except:
+            logger.warn("Robots don't quit!")
             from .driverstation import DriverStation
             DriverStation.reportError("ERROR Unhandled exception", True)
-            logger.warn("Robots don't quit!")
-            logger.exception("---> The startCompetition() method (or methods called by it) should have handled the exception.")
+            logger.error("---> The startCompetition() method (or methods called by it) should have handled the exception.")
             return False
         else:
             # startCompetition never returns unless exception occurs....
