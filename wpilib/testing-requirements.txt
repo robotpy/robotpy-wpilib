@@ -2,7 +2,7 @@
 -e ../hal-base
 -e ../hal-sim
 
-pytest
+pytest>=2.8
 coverage
 pyfrc
 CppHeaderParser
