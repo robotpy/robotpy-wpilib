@@ -1,12 +1,10 @@
 
 import pytest
 
-class SPISimulator:
-    
-    def spiInitialize(self, port, status):
-        self.port = port
-        status.value = 0
-        self.initialized = port
+import hal
+from hal_impl.spi_helpers import SPISimBase
+
+class SPISimulator(SPISimBase):
     
     def spiTransaction(self, port, data_to_send, data_received, size):
         assert port == self.port
@@ -32,12 +30,6 @@ class SPISimulator:
     def spiClose(self, port):
         self.closed = True
     
-    def spiSetSpeed(self, port, speed):
-        assert False
-    
-    def spiSetOpts(self, port, msb_first, sample_on_trailing, clk_idle_high):
-        assert False
-    
     def spiSetChipSelectActiveHigh(self, port, status):
         assert port == self.port
         status.value = 0
@@ -47,18 +39,7 @@ class SPISimulator:
         assert port == self.port
         status.value = 0
         self.set_active_low = True
-    
-    def spiGetHandle(self, port):
-        assert False
-    
-    def spiSetHandle(self, port, handle):
-        assert False
-        
-    def spiInitAccumulator(self, port,
-                           period, cmd, xfer_size, valid_mask, valid_value,
-                           data_shift, data_size, is_signed, big_endian, status):
-        assert False
-        
+
     def spiFreeAccumulator(self, port, status):
         status.value = 0
         self.acc_freed = True
@@ -66,12 +47,6 @@ class SPISimulator:
     def spiResetAccumulator(self, port, status):
         status.value = 0
         self.acc_reset = True
-    
-    def spiSetAccumulatorCenter(self, port, center, status):
-        assert False
-        
-    def spiSetAccumulatorDeadband(self, port, deadband, status):
-        assert False
         
     def spiGetAccumulatorLastValue(self, port, status):
         assert port == self.port
@@ -104,7 +79,7 @@ def test_spi(wpilib):
     port = wpilib.SPI.Port.kMXP
     
     spi = wpilib.SPI(port, sim)
-    assert sim.initialized == port
+    assert sim.port == port
     
     spi.setChipSelectActiveHigh()
     assert sim.set_active_high == True
@@ -139,5 +114,16 @@ def test_spi(wpilib):
     
     with pytest.raises(ValueError):
         spi.port
+    
+
+def test_adxrs450(wpilib, hal_data):
+    
+    gyro = wpilib.ADXRS450_Gyro()
+    
+    hal_data['robot']['adxrs450_spi_0_angle'] = 10
+    assert abs(gyro.getAngle() - 10) < 0.001
+    
+    hal_data['robot']['adxrs450_spi_0_rate'] = 5
+    assert abs(gyro.getRate() - 5) < 0.001
     
     

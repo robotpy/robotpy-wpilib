@@ -168,12 +168,30 @@ def _reset_hal_data(hooks):
 
         # built-in accelerometer on roboRIO
         'accelerometer': {
-            'has_source': IN(False),
-            'active':   OUT(False),
-            'range':    OUT(0),
+            'has_source': IN(False),        # built-in accelerometer only
+            'active':   OUT(False),         # built-in accelerometer only
+            'range':    OUT(0),             # built-in accelerometer only
+            
+            # These should be used by other simulation components when 
+            # appropriate
             'x':        IN(0),
             'y':        IN(0),
             'z':        IN(0),
+        },
+              
+        # Generic robot information to be used by sim components when
+        # appropriate... some components can add custom data here.
+        #
+        # The way this works is that each device will define its own key(s)
+        # here, and that you set the values that it's expecting. Refer to the
+        # sim device's documentation to figure out the right key.
+        #
+        # By convention, it should be devicename_bus_port_thing, such as
+        # "adxrs450_i2c_0_angle"
+        #
+        # Sim devices should read these values with defaults of 0, as they may
+        # not exist.
+        'robot': {
         },
 
         # global for all

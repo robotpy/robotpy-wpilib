@@ -1,6 +1,7 @@
 # validated: 2015-12-30 DS 4b04073 athena/java/edu/wpi/first/wpilibj/SPI.java
 
 import hal
+import warnings
 import weakref
 
 __all__ = ["SPI"]
@@ -36,7 +37,12 @@ class SPI:
         
         if hal.HALIsSimulation():
             if simPort is None:
-                raise ValueError("You will need to use a mock for this SPI port, or provide a simPort implementation")
+                # If you want more functionality, implement your own mock
+                from hal_impl.spi_helpers import SPISimBase
+                simPort = SPISimBase()
+                
+                msg = "Using stub simulator for SPI port %s" % port
+                warnings.warn(msg)
             
             # Just check for basic functionality
             assert hasattr(simPort, 'spiInitialize')

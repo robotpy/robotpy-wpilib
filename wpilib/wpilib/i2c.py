@@ -7,6 +7,7 @@
 #----------------------------------------------------------------------------
 
 import hal
+import warnings
 import weakref
 
 __all__ = ["I2C"]
@@ -36,7 +37,12 @@ class I2C:
         
         if hal.HALIsSimulation():
             if simPort is None:
-                raise ValueError("You will need to use a mock for this i2c port, or provide a simPort implementation")
+                # If you want more functionality, implement your own mock
+                from hal_impl.i2c_helpers import I2CSimBase
+                simPort = I2CSimBase()
+                
+                msg = "Using stub simulator for I2C port %s" % port
+                warnings.warn(msg)
             
             # Just check for basic functionality
             assert hasattr(simPort, 'i2CInitialize')

@@ -13,6 +13,7 @@ from .gyrobase import GyroBase
 from .livewindow import LiveWindow
 from .spi import SPI
 from .timer import Timer
+    
 
 class ADXRS450_Gyro(GyroBase):
     """
@@ -52,7 +53,12 @@ class ADXRS450_Gyro(GyroBase):
         if port is None:
             port = SPI.Port.kOnboardCS0
         
-        self.spi = SPI(port)
+        simPort = None
+        if hal.HALIsSimulation():
+            from hal_impl.spi_helpers import ADXRS450_Gyro_Sim
+            simPort = ADXRS450_Gyro_Sim(self)
+        
+        self.spi = SPI(port, simPort=simPort)
         self.spi.setClockRate(3000000)
         self.spi.setMSBFirst()
         self.spi.setSampleDataOnRising()
@@ -60,10 +66,10 @@ class ADXRS450_Gyro(GyroBase):
         self.spi.setChipSelectActiveLow()
 
         # Validate the part ID
-        if (self.readRegister(self.kPIDRegister) & 0xff00) != 0x5200:
+        if (self._readRegister(self.kPIDRegister) & 0xff00) != 0x5200:
             self.spi.free()
             self.spi = None
-            DriverStation.reportError("could not find ADXRS450 gyro on SPI port " + port, False)
+            DriverStation.reportError("could not find ADXRS450 gyro on SPI port %s" % port, False)
             return
         
         self.spi.initAccumulator(self.kSamplePeriod, 0x20000000, 4, 0x0c000000, 0x04000000,
@@ -78,17 +84,19 @@ class ADXRS450_Gyro(GyroBase):
         if self.spi is None:
             return
         
-        Timer.delay(0.1)
+        if not hal.HALIsSimulation():
+            Timer.delay(0.1)
 
         self.spi.setAccumulatorCenter(0)
         self.spi.resetAccumulator()
         
-        Timer.delay(self.kCalibrationSampleTime)
+        if not hal.HALIsSimulation():
+            Timer.delay(self.kCalibrationSampleTime)
         
         self.spi.setAccumulatorCenter(int(self.spi.getAccumulatorAverage()))
         self.spi.resetAccumulator()
 
-    def calcParity(self, v):
+    def _calcParity(self, v):
         parity = False
         while v != 0:
             parity = not parity
@@ -97,7 +105,7 @@ class ADXRS450_Gyro(GyroBase):
     
     def _readRegister(self, reg):
         cmdhi = 0x8000 | (reg << 1)
-        parity = self.calcParity(cmdhi)
+        parity = self._calcParity(cmdhi)
     
         data = [cmdhi >> 8,
                 cmdhi & 0xff,
@@ -132,3 +140,4 @@ class ADXRS450_Gyro(GyroBase):
             return 0.0
         else:
             return self.spi.getAccumulatorLastValue() * self.kDegreePerSecondPerLSB
+

@@ -1,15 +1,14 @@
 
 import pytest
 
-class I2CSimulator:
+import hal
+from hal_impl.i2c_helpers import I2CSimBase
+
+class I2CSimulator(I2CSimBase):
     '''
         An object similar to this can be passed to the I2C constructor as
         'simPort' and it will get called when I2C HAL calls are made
     '''
-    
-    def i2CInitialize(self, port, status):
-        self.initialized = port
-        status.value = 0 
     
     def i2CTransaction(self, port, device_address, data_to_send, send_size, data_received, receive_size):
         assert device_address == 0x42
@@ -44,7 +43,7 @@ def test_i2c(wpilib):
     port = wpilib.I2C.Port.kMXP
     
     i2c = wpilib.I2C(port, 0x42, sim)
-    assert sim.initialized == port
+    assert sim.port == port
     
     assert i2c.transaction([1,2], 2) == [2, 1]
     

@@ -1084,7 +1084,8 @@ def getLoopTiming(status):
 
 #
 # SPI: These functions should never get called, pass a simPort object
-#      to the SPI implementation instead
+#      to the SPI implementation instead. See spi_helpers.py for an
+#      example.
 #
 #      The simPort object should implement all of the SPI functions below
 #
@@ -1159,7 +1160,8 @@ def spiGetAccumulatorOutput(port, status):
 
 #
 # i2c: These functions should never get called, pass a simPort object
-#      to the i2c implementation instead.
+#      to the i2c implementation instead. See i2c_helpers.py for an
+#      example.
 #
 #      The simPort object should implement all of the i2c functions below
 #
