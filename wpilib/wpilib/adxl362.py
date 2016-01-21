@@ -103,15 +103,15 @@ class ADXL362(SensorBase):
         :type  range: :class:`ADXL362.Range`
         """
         if range == self.Range.k2G:
-            value = 0
+            value = self.kFilterCtl_Range2G
             self.gsPerLSB = 0.001
         elif range == self.Range.k4G:
-            value = 1
+            value = self.kFilterCtl_Range4G
             self.gsPerLSB = 0.002
         # 16G not supported; treat as 8G
         elif range == self.Range.k8G or \
              range == self.Range.k16G:
-            value = 2
+            value = self.kFilterCtl_Range8G
             self.gsPerLSB = 0x004
         else:
             raise ValueError("Invalid range argument '%s'" % range)
