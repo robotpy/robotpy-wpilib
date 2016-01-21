@@ -347,6 +347,8 @@ def ensure_win_bins():
     if not exists(plink):
         _urlretrieve(_plink_url, plink)
 
+    return _win_bins
+
 class SshController(object):
     '''
         Use this to transfer files and execute commands on a RoboRIO in a
@@ -361,7 +363,8 @@ class SshController(object):
     
     @property
     def win_bins(self):
-        ensure_win_bins()
+        if not hasattr(self, '_win_bins'):
+            self._win_bins = ensure_win_bins()
         return self._win_bins
         
     #
