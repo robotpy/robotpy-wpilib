@@ -108,8 +108,8 @@ class PIDController(LiveWindowSendable):
         self.maximumInput = 0.0     # maximum input - limit setpoint to this
         self.minimumInput = 0.0     # minimum input - limit setpoint to this
         self.continuous = False     # do the endpoints wrap around? eg. Absolute encoder
-        self.enabled = False        #is the pid controller enabled
-        self.prevInput = 0.0        # the prior error (used to compute velocity)
+        self.enabled = False        # is the pid controller enabled
+        self.prevError = 0.0        # the prior error (used to compute velocity)
         self.totalError = 0.0       #the sum of the errors for use in the integral calc
         self.buf = deque(maxlen=1)
         self.setpoint = 0.0
