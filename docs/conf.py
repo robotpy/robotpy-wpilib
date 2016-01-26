@@ -66,7 +66,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'RobotPy WPILib'
-copyright = '2014, RobotPy development team'
+copyright = '2014-2016, RobotPy development team'
 
 
 # The version info for the project you're documenting, acts as replacement for

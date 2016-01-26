@@ -26,6 +26,8 @@ Contents
    getting_started
    guide/index
 
+   hw
+
    wpilib
    wpilib.buttons
    wpilib.command
