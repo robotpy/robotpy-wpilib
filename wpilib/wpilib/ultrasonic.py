@@ -13,6 +13,7 @@ import weakref
 from .counter import Counter
 from .interfaces import PIDSource
 from .livewindow import LiveWindow
+from .resource import Resource
 from .sensorbase import SensorBase
 from .timer import Timer
 
@@ -107,30 +108,39 @@ class Ultrasonic(SensorBase):
         :param units: The units returned in either kInches or kMillimeters
         """
         # Convert to DigitalInput and DigitalOutput if necessary
+        self.pingAllocated = False
+        self.echoAllocated = False
+        
         if not hasattr(pingChannel, 'channel'):
             from .digitaloutput import DigitalOutput
             pingChannel = DigitalOutput(pingChannel)
+            self.pingAllocated = True
+            
         if not hasattr(echoChannel, 'channel'):
             from .digitalinput import DigitalInput
             echoChannel = DigitalInput(echoChannel)
+            self.echoAllocated = True
+            
         self.pingChannel = pingChannel
         self.echoChannel = echoChannel
         self.units = units
         self.pidSource = self.PIDSourceType.kDisplacement
         self.enabled = True # make it available for round robin scheduling
-
-        if Ultrasonic._thread is None or not Ultrasonic._thread.is_alive():
-            Ultrasonic._thread = threading.Thread(
-                    target=Ultrasonic.ultrasonicChecker,
-                    name="ultrasonicChecker")
-            Ultrasonic.daemon = True
-
+        
         # set up counter for this sensor
         self.counter = Counter(self.echoChannel)
         self.counter.setMaxPeriod(1.0)
         self.counter.setSemiPeriodMode(True)
         self.counter.reset()
+        
+        isAutomatic = Ultrasonic.isAutomaticMode()
+        self.setAutomaticMode(False)
+        
         Ultrasonic.sensors.add(self)
+        if isAutomatic:
+            self.setAutomaticMode(True)
+        
+        Resource._add_global_resource(self)
 
         Ultrasonic.instances += 1
         hal.HALReport(hal.HALUsageReporting.kResourceType_Ultrasonic,
@@ -138,6 +148,29 @@ class Ultrasonic(SensorBase):
         LiveWindow.addSensor("Ultrasonic", self.echoChannel.getChannel(), self)
 
     def free(self):
+        isAutomatic = Ultrasonic.isAutomaticMode()
+        self.setAutomaticMode(False)
+            
+        try:
+            Ultrasonic.sensors.remove(self)
+        except ValueError:
+            pass
+        
+        if isAutomatic and len(Ultrasonic.sensors):
+            self.setAutomaticMode(True)
+        
+        if self.pingAllocated and self.pingChannel:
+            self.pingChannel.free()
+            self.pingChannel = None
+            
+        if self.echoAllocated and self.echoChannel:
+            self.echoChannel.free()
+            self.echoChannel = None
+        
+        if self.counter != None:
+            self.counter.free()
+            self.counter = None
+        
         LiveWindow.removeComponent(self)
         super().free()
 
@@ -149,13 +182,15 @@ class Ultrasonic(SensorBase):
             Set to true if round robin scheduling should start for all the
             ultrasonic sensors. This scheduling method assures that the
             sensors are non-interfering because no two sensors fire at the
-            same time. If another scheduling algorithm is preffered, it
+            same time. If another scheduling algorithm is preferred, it
             can be implemented by pinging the sensors manually and waiting
             for the results to come back.
         :type enabling: bool
         """
-        if enabling and Ultrasonic.isAutomaticMode():
+        enabling = bool(enabling)
+        if enabling == Ultrasonic.isAutomaticMode():
             return # ignore the case of no change
+        
         with Ultrasonic._static_mutex:
             Ultrasonic.automaticEnabled = enabling
 
@@ -165,11 +200,17 @@ class Ultrasonic(SensorBase):
             for u in Ultrasonic.sensors:
                 if u is not None:
                     u.counter.reset()
+            
             # Start round robin task
+            Ultrasonic._thread = threading.Thread(
+                    target=Ultrasonic.ultrasonicChecker,
+                    name="ultrasonicChecker")
+            Ultrasonic.daemon = True
             Ultrasonic._thread.start()
         else:
             # Wait for background task to stop running
             Ultrasonic._thread.join()
+            Ultrasonic._thread = None
             
             # Clear all the counters (data now invalid) since automatic mode is
             # disabled. No synchronization is needed because the background task is
