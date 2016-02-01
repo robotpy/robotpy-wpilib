@@ -149,6 +149,7 @@ class CANTalon(LiveWindowSendable, MotorSafety):
         self.__finalizer = weakref.finalize(self, _freeCANTalon,
                                                   self._handle)
         self.controlEnabled = True
+        self.isInverted = False
         self.profile = 0
         self.setPoint = 0.0
         self.setProfile(self.profile)
@@ -200,6 +201,7 @@ class CANTalon(LiveWindowSendable, MotorSafety):
         if not self.controlEnabled:
             return
         self.setPoint = outputValue
+        outputValue = -outputValue if self.isInverted else outputValue
         if self.controlMode == self.ControlMode.PercentVbus:
             if outputValue > 1:
                 outputValue = 1
@@ -264,6 +266,22 @@ class CANTalon(LiveWindowSendable, MotorSafety):
             return float(hal.TalonSRX_GetSensorPosition(self.handle))
         else: # PercentVbus
             return hal.TalonSRX_GetAppliedThrottle(self.handle) / 1023.0
+
+    def setInverted(self, isInverted):
+        """
+        Common interface for inverting direction of a speed controller.
+
+        :param isInverted: The state of inversion (True is inverted).
+        """
+        self.isInverted = isInverted
+
+    def getInverted(self):
+        """
+        Common interface for the inverting direction of a speed controller.
+
+        :returns: The state of inversion (True is inverted).
+        """
+        return self.isInverted
 
     def getEncPosition(self):
         """
