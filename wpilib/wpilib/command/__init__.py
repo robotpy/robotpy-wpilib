@@ -12,7 +12,7 @@
     documentation available. If you need more information, for examples,
     tutorials, and other detailed information on programming your robot
     using this pattern, we recommend that you consult the Java version of the
-    `FRC Control System documentation <https://wpilib.screenstepslive.com/s/3120/m/7952/c/44956>`_
+    `FRC Control System documentation <http://wpilib.screenstepslive.com/s/4485/m/13809/c/88893>`_
 """
 
 from .command import *
