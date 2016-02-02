@@ -153,7 +153,7 @@ class Ultrasonic(SensorBase):
             
         try:
             Ultrasonic.sensors.remove(self)
-        except ValueError:
+        except (KeyError, ValueError):
             pass
         
         if isAutomatic and len(Ultrasonic.sensors):
