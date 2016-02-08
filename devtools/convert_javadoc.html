@@ -7,8 +7,13 @@
   In: (docstring contents, may be followed by a function declaration without a { character)<br/>
   <textarea id="inbox" rows="10" cols="100"></textarea><p>
   Out: python docstring, optionally with a function definition<br/>
-  <textarea id="outbox" rows="10" cols="100"></textarea>
+  <textarea id="outbox" rows="10" cols="100"></textarea><p>
+  Out: sphinx variable doc<br/>
+  <textarea id="sphinxbox" rows="10" cols="100"></textarea>
   <script>
+  
+    var indent = '        ';
+    var indentRe = new RegExp(indent, "g");
   
     function processDoc(txt) {
       
@@ -37,19 +42,24 @@
       // remove start/ending whitespace
       text = text.replace(/^\s+|\s+$/g, '');
       
-      text = '"""' + text;
       
       // indent all
       lines =  text.split(/\r?\n/);
       for (i = 0; i < lines.length; i++)
         if (i != 0)
-          lines[i] = '        ' + lines[i];
+          lines[i] = indent + lines[i];
+      
+      var sphinx = '#: ' + lines.join('\r\n').replace(indentRe, indent + '#: ')
       
       if (lines.length > 1)
-        lines.push('        ');
+        lines.push(indent);
             
       lines[lines.length -1] = lines[lines.length -1] + '"""';
-      return lines.join('\r\n');
+      
+      var ret = ['"""' + lines.join('\r\n'),
+                 sphinx];
+      
+      return ret;
     }
     
     function process(txt) {
@@ -62,14 +72,16 @@
         if (s[4] != "")
           s[4] = ", " + s[4];
         
-        t = "def " + s[3] + "(self" + s[4] +
-            "):\n        " + t;
+        t[0] = "def " + s[3] + "(self" + s[4] +
+            "):\n        " + t[0];
       }
       return t;
     }
     
     function xfer() {
-      $('#outbox').val(process($('#inbox').val()));
+      var txt = process($('#inbox').val());
+      $('#outbox').val(txt[0]);
+      $('#sphinxbox').val(txt[1]);
     }
   
     $(function() {
