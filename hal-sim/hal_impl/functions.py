@@ -1393,6 +1393,139 @@ def clearAllPCMStickyFaults_sol(solenoid_port, status):
 #############################################################################
 # TalonSRX
 #############################################################################
+
+def __create_srx_param_map():
+    '''Defines the mappings between CANTalon dict items and raw parameter types'''
+    TalonSRXParam = constants.TalonSRXParam
+    return {
+        TalonSRXParam.eProfileParamSlot0_P :                    'profile0_p',
+        TalonSRXParam.eProfileParamSlot0_I :                    'profile0_i',
+        TalonSRXParam.eProfileParamSlot0_D :                    'profile0_d',
+        TalonSRXParam.eProfileParamSlot0_F :                    'profile0_f',
+        TalonSRXParam.eProfileParamSlot0_IZone :                'profile0_izone',
+        TalonSRXParam.eProfileParamSlot0_CloseLoopRampRate :    'profile0_closeloopramprate',
+        TalonSRXParam.eProfileParamSlot1_P :                    'profile1_p',
+        TalonSRXParam.eProfileParamSlot1_I :                    'profile1_i',
+        TalonSRXParam.eProfileParamSlot1_D :                    'profile1_d',
+        TalonSRXParam.eProfileParamSlot1_F :                    'profile1_f',
+        TalonSRXParam.eProfileParamSlot1_IZone :                'profile1_izone',
+        TalonSRXParam.eProfileParamSlot1_CloseLoopRampRate :    'profile1_closeloopramprate',
+        TalonSRXParam.eProfileParamSoftLimitForThreshold :      'soft_limit_for',
+        TalonSRXParam.eProfileParamSoftLimitRevThreshold :      'soft_limit_rev',
+        TalonSRXParam.eProfileParamSoftLimitForEnable :         'soft_limit_for_enable',
+        TalonSRXParam.eProfileParamSoftLimitRevEnable :         'soft_limit_rev_enable',
+        TalonSRXParam.eOnBoot_BrakeMode :                        'onboot_brake_mode',
+        TalonSRXParam.eOnBoot_LimitSwitch_Forward_NormallyClosed : 'onboot_limsw_for_normally_closed',
+        TalonSRXParam.eOnBoot_LimitSwitch_Reverse_NormallyClosed : 'onboot_limsw_rev_normally_closed',
+        TalonSRXParam.eOnBoot_LimitSwitch_Forward_Disable :     'onboot_limsw_for_disable',
+        TalonSRXParam.eOnBoot_LimitSwitch_Reverse_Disable :     'onboot_limsw_rev_disable',
+        TalonSRXParam.eFault_OverTemp :                         'fault_overtemp',
+        TalonSRXParam.eFault_UnderVoltage :                     'fault_undervoltage',
+        TalonSRXParam.eFault_ForLim :                           'fault_forlim',
+        TalonSRXParam.eFault_RevLim :                           'fault_revlim',
+        TalonSRXParam.eFault_HardwareFailure :                  'fault_hwfailure',
+        TalonSRXParam.eFault_ForSoftLim :                       'fault_forsoftlim',
+        TalonSRXParam.eFault_RevSoftLim :                       'fault_revsoftlim',
+        TalonSRXParam.eStckyFault_OverTemp :                    'stickyfault_overtemp',
+        TalonSRXParam.eStckyFault_UnderVoltage :                'stickyfault_undervoltage',
+        TalonSRXParam.eStckyFault_ForLim :                      'stickyfault_forlim',
+        TalonSRXParam.eStckyFault_RevLim :                      'stickyfault_revlim',
+        TalonSRXParam.eStckyFault_ForSoftLim :                  'stickyfault_forsoftlim',
+        TalonSRXParam.eStckyFault_RevSoftLim :                  'stickyfault_revsoftlim',
+        TalonSRXParam.eAppliedThrottle :                        'value',
+        TalonSRXParam.eCloseLoopErr :                           'closeloop_err',
+        TalonSRXParam.eFeedbackDeviceSelect :                   'feedback_device',
+        TalonSRXParam.eRevMotDuringCloseLoopEn :                'rev_motor_during_close_loop',
+        TalonSRXParam.eModeSelect :                             'mode_select',
+        TalonSRXParam.eProfileSlotSelect :                      'profile_slot_select',
+        TalonSRXParam.eRampThrottle :                           'ramp_throttle',
+        TalonSRXParam.eRevFeedbackSensor :                      'rev_feedback_sensor',
+        TalonSRXParam.eLimitSwitchEn :                          'limit_switch_en',
+        TalonSRXParam.eLimitSwitchClosedFor :                   'limit_switch_closed_for',
+        TalonSRXParam.eLimitSwitchClosedRev :                   'limit_switch_closed_rev',
+        TalonSRXParam.eSensorPosition :                         'ERR_DONT_USE_THIS',
+        TalonSRXParam.eSensorVelocity :                         'ERR_DONT_USE_THIS',
+        TalonSRXParam.eCurrent :                                'current',
+        TalonSRXParam.eBrakeIsEnabled :                         'brake_enabled',
+        TalonSRXParam.eEncPosition :                            'enc_position',
+        TalonSRXParam.eEncVel :                                 'enc_velocity',
+        TalonSRXParam.eEncIndexRiseEvents :                     'enc_index_rise_events',
+        TalonSRXParam.eQuadApin :                               'quad_apin',
+        TalonSRXParam.eQuadBpin :                               'quad_bpin',
+        TalonSRXParam.eQuadIdxpin :                             'quad_idxpin',
+        TalonSRXParam.eAnalogInWithOv :                         'analog_in_position',
+        TalonSRXParam.eAnalogInVel :                            'analog_in_velocity',
+        TalonSRXParam.eTemp :                                   'temp',
+        TalonSRXParam.eBatteryV :                               'battery',
+        TalonSRXParam.eResetCount :                             'reset_count',
+        TalonSRXParam.eResetFlags :                             'reset_flags',
+        TalonSRXParam.eFirmVers :                               'firmware_version',
+        TalonSRXParam.eSettingsChanged :                        'settings_changed',
+        TalonSRXParam.eQuadFilterEn :                           'quad_filter_en',
+        TalonSRXParam.ePidIaccum :                              'pid_iaccum',
+        #TalonSRXParam.eStatus1FrameRate : 94  # TALON_Status_1_General_10ms_t,
+        #TalonSRXParam.eStatus2FrameRate : 95  # TALON_Status_2_Feedback_20ms_t,
+        #TalonSRXParam.eStatus3FrameRate : 96  # TALON_Status_3_Enc_100ms_t,
+        #TalonSRXParam.eStatus4FrameRate : 97  # TALON_Status_4_AinTempVbat_100ms_t,
+        #TalonSRXParam.eStatus6FrameRate : 98  # TALON_Status_6_Eol_t,
+        #TalonSRXParam.eStatus7FrameRate : 99  # TALON_Status_7_Debug_200ms_t,
+        TalonSRXParam.eClearPositionOnIdx :                     'clear_position_on_idx',
+        
+        TalonSRXParam.ePeakPosOutput :                          'peak_pos_output',
+        TalonSRXParam.eNominalPosOutput :                       'nominal_pos_output',
+        TalonSRXParam.ePeakNegOutput :                          'peak_neg_output',
+        TalonSRXParam.eNominalNegOutput :                       'nominal_neg_output',
+        TalonSRXParam.eQuadIdxPolarity :                        'quad_idx_polarity',
+        #TalonSRXParam.eStatus8FrameRate : 109  # TALON_Status_8_PulseWid_100ms_t,
+        TalonSRXParam.eAllowPosOverflow :                       'allow_pos_overflow',
+        TalonSRXParam.eProfileParamSlot0_AllowableClosedLoopErr: 'profile0_allowable_closed_loop_err',
+        TalonSRXParam.eNumberPotTurns :                         'number_pot_turns',
+        TalonSRXParam.eNumberEncoderCPR :                       'number_encoder_cpr',
+        TalonSRXParam.ePwdPosition :                            'pulse_width_position',
+        TalonSRXParam.eAinPosition :                            'analog_in_position',
+        TalonSRXParam.eProfileParamVcompRate :                  'profile_vcomp_rate',
+        TalonSRXParam.eProfileParamSlot1_AllowableClosedLoopErr : 'profile1_allowable_closed_loop_err',
+        #TalonSRXParam.eStatus9FrameRate : 118  # TALON_Status_9_MotProfBuffer_100ms_t,
+        TalonSRXParam.eMotionProfileHasUnderrunErr :            'motion_profile_has_underrun',
+        #TalonSRXParam.eReserved120 : 120,
+        TalonSRXParam.eLegacyControlMode :                      'legacy_mode'
+    }
+
+def __create_srx_sensor_position_map():
+    '''Used to determine which dict value is returned based on the currently
+       selected feedback_device''' 
+    TalonSRXConst = constants.TalonSRXConst
+    return {
+        TalonSRXConst.kFeedbackDev_DigitalQuadEnc:              'enc_position',
+        TalonSRXConst.kFeedbackDev_AnalogPot:                   'analog_in_position',
+        TalonSRXConst.kFeedbackDev_AnalogEncoder:               'analog_in_position',
+        TalonSRXConst.kFeedbackDev_CountEveryRisingEdge:        'analog_in_position',
+        TalonSRXConst.kFeedbackDev_CountEveryFallingEdge:       'analog_in_position',
+        TalonSRXConst.kFeedbackDev_CtreMagEncoder_Relative:     'pulse_width_position',
+        TalonSRXConst.kFeedbackDev_CtreMagEncoder_Absolute:     'pulse_width_position',
+        TalonSRXConst.kFeedbackDev_PosIsPulseWidth:             'pulse_width_position',
+    }
+    
+def __create_srx_sensor_velocity_map():
+    '''Used to determine which dict value is returned based on the currently
+       selected feedback_device'''
+    TalonSRXConst = constants.TalonSRXConst
+    return {
+        TalonSRXConst.kFeedbackDev_DigitalQuadEnc:              'enc_velocity',
+        TalonSRXConst.kFeedbackDev_AnalogPot:                   'analog_in_velocity',
+        TalonSRXConst.kFeedbackDev_AnalogEncoder:               'analog_in_velocity',
+        TalonSRXConst.kFeedbackDev_CountEveryRisingEdge:        'analog_in_velocity',
+        TalonSRXConst.kFeedbackDev_CountEveryFallingEdge:       'analog_in_velocity',
+        TalonSRXConst.kFeedbackDev_CtreMagEncoder_Relative:     'pulse_width_velocity',
+        TalonSRXConst.kFeedbackDev_CtreMagEncoder_Absolute:     'pulse_width_velocity',
+        TalonSRXConst.kFeedbackDev_PosIsPulseWidth:             'pulse_width_velocity',
+    }
+
+_srx_param_map = __create_srx_param_map()
+_srx_pos_map = __create_srx_sensor_position_map()
+_srx_vel_map = __create_srx_sensor_velocity_map()
+
+
 def c_TalonSRX_Create1(deviceNumber):
     return c_TalonSRX_Create3(deviceNumber, 0, 0)
 
@@ -1403,56 +1536,35 @@ def c_TalonSRX_Create3(deviceNumber, controlPeriodMs, enablePeriodMs):
 
     assert deviceNumber not in hal_data['CAN']
     
+    # Initialize items based on their param type
     hal_data['CAN'][deviceNumber] = data.NotifyDict({
+        v: 0 for v in _srx_param_map.values()
+    })
+    
+    # Initialize non-zero items or items that don't have an associated parameter
+    hal_data['CAN'][deviceNumber].update({
         'type': 'talonsrx',
-        'value': 0,
-        'params': data.NotifyDict({}), # key is param, value is the value
-        'fault_overtemp': 0,
-        'fault_undervoltage': 0,
-        'fault_forlim': 0,
-        'fault_revlim': 0,
-        'fault_hwfailure': 0,
-        'fault_forsoftlim': 0,
-        'fault_revsoftlim': 0,
-        'stickyfault_overtemp': 0,
-        'stickyfault_undervoltage': 0,
-        'stickyfault_forlim': 0,
-        'stickyfault_revlim': 0,
-        'stickyfault_forsoftlim': 0,
-        'stickyfault_revsoftlim': 0,
-        'applied_throttle': 0,
-        'closeloop_err': 0,
-        'feedback_device_select': 0,
-        'mode_select': 0,
-        'limit_switch_en': 0,
-        'limit_switch_closed_for': 0,
-        'limit_switch_closed_rev': 0,
-        'sensor_position': 0,
-        'sensor_velocity': 0,
-        'current': 0,
-        'brake_enabled': 0,
-        'enc_position': 0,
-        'enc_velocity': 0,
-        'enc_index_rise_events': 0,
-        'quad_apin': 0,
-        'quad_bpin': 0,
-        'quad_idxpin': 0,
-        'analog_in_with_ov': 0,
-        'analog_in_vel': 0,
-        'temp': 0,
-        'battery': 0,
-        'reset_count': 0,
-        'reset_flags': 0,
-        'firmware_version': 0,
+        
         'override_limit_switch': 0,
-        
-        'feedback_device': None,
-        'rev_motor_during_close_loop': None,
         'override_braketype': None,
-        'profile_slot_select': None,
-        'ramp_throttle': None,
-        'rev_feedback_sensor': None
         
+        'pulse_width_velocity': 0,
+        'pulse_width_present': 0,
+        
+        'voltage_compensation_rate': 0,
+        
+        # Motion profile stuff
+        'mp_position': 0,
+        'mp_velocity': 0,
+        'mp_timeDurMs': 0,
+        'mp_profileSlotSelect': 0,
+        
+        'mp_flags': 0,
+        'mp_topBufferCnt': 0,
+        'mp_btmBufferCnt': 0,
+        'mp_topBufferRem': 0,
+        'mp_zeroPos': 0,
+        'mp_outputEnable': constants.TalonSRXConst.kMotionProfile_Disable
     })
     
     return types.TalonSRX(deviceNumber)
@@ -1462,100 +1574,132 @@ def c_TalonSRX_Destroy(handle):
     del hal_data['CAN'][handle.id]
     
 def c_TalonSRX_Set(handle, value):
-    assert False
+    hal_data['CAN'][handle.id]['value'] = int(value*1023)
 
 def c_TalonSRX_SetParam(handle, paramEnum, value):
-    hal_data['CAN'][handle.id]['params'][paramEnum] = value
+    hal_data['CAN'][handle.id][_srx_param_map[paramEnum]] = value
 
 def c_TalonSRX_RequestParam(handle, paramEnum):
-    params = hal_data['CAN'][handle.id]['params']
-    assert paramEnum in params, "Parameter %s not set!" % constants.TalonSRXParam_tostr[paramEnum] # TODO: is this correct?
-    return params[paramEnum]
+    return hal_data['CAN'][handle.id][_srx_param_map[paramEnum]]
 
 def c_TalonSRX_GetParamResponse(handle, paramEnum):
-    params = hal_data['CAN'][handle.id]['params']
-    assert paramEnum in params, "Parameter %s not set!" % constants.TalonSRXParam_tostr[paramEnum] # TODO: is this correct?
-    return params[paramEnum]
+    return hal_data['CAN'][handle.id][_srx_param_map[paramEnum]]
 
 def c_TalonSRX_GetParamResponseInt32(handle, paramEnum):
-    params = hal_data['CAN'][handle.id]['params']
-    assert paramEnum in params, "Parameter %s not set!" % constants.TalonSRXParam_tostr[paramEnum] # TODO: is this correct?
-    return params[paramEnum]
+    return int(hal_data['CAN'][handle.id][_srx_param_map[paramEnum]])
 
 def c_TalonSRX_SetPgain(handle, slotIdx, gain):
-    assert False
+    if slotIdx == 0:
+        hal_data['CAN'][handle.id]['profile0_p'] = gain
+    else:
+        hal_data['CAN'][handle.id]['profile1_p'] = gain
 
 def c_TalonSRX_SetIgain(handle, slotIdx, gain):
-    assert False
+    if slotIdx == 0:
+        hal_data['CAN'][handle.id]['profile0_i'] = gain
+    else:
+        hal_data['CAN'][handle.id]['profile1_i'] = gain
 
 def c_TalonSRX_SetDgain(handle, slotIdx, gain):
-    assert False
+    if slotIdx == 0:
+        hal_data['CAN'][handle.id]['profile0_d'] = gain
+    else:
+        hal_data['CAN'][handle.id]['profile1_d'] = gain
 
 def c_TalonSRX_SetFgain(handle, slotIdx, gain):
-    assert False
+    if slotIdx == 0:
+        hal_data['CAN'][handle.id]['profile0_f'] = gain
+    else:
+        hal_data['CAN'][handle.id]['profile1_f'] = gain
 
 def c_TalonSRX_SetIzone(handle, slotIdx, zone):
-    assert False
+    if slotIdx == 0:
+        hal_data['CAN'][handle.id]['profile0_izone'] = zone
+    else:
+        hal_data['CAN'][handle.id]['profile1_izone'] = zone
 
 def c_TalonSRX_SetCloseLoopRampRate(handle, slotIdx, closeLoopRampRate):
-    assert False
+    if slotIdx == 0:
+        hal_data['CAN'][handle.id]['profile0_closeloopramprate'] = closeLoopRampRate
+    else:
+        hal_data['CAN'][handle.id]['profile1_closeloopramprate'] = closeLoopRampRate
 
 def c_TalonSRX_SetVoltageCompensationRate(handle, voltagePerMs):
-    assert False
+    hal_data['CAN'][handle.id]['voltage_compensation_rate'] = voltagePerMs
 
 def c_TalonSRX_SetSensorPosition(handle, pos):
-    assert False
+    data = hal_data['CAN'][handle.id]
+    device_type = data['feedback_device']
+    data[_srx_pos_map[device_type]] = pos
 
 def c_TalonSRX_SetForwardSoftLimit(handle, forwardLimit):
-    assert False
+    hal_data['CAN'][handle.id]['soft_limit_for'] = forwardLimit 
 
 def c_TalonSRX_SetReverseSoftLimit(handle, reverseLimit):
-    assert False
+    hal_data['CAN'][handle.id]['soft_limit_rev'] = reverseLimit
 
 def c_TalonSRX_SetForwardSoftEnable(handle, enable):
-    assert False
+    hal_data['CAN'][handle.id]['soft_limit_for_enable'] = enable
 
 def c_TalonSRX_SetReverseSoftEnable(handle, enable):
-    assert False
+    hal_data['CAN'][handle.id]['soft_limit_rev_enable'] = enable
 
 def c_TalonSRX_GetPgain(handle, slotIdx):
-    assert False
+    if slotIdx == 0:
+        return hal_data['CAN'][handle.id]['profile0_p']
+    else:
+        return hal_data['CAN'][handle.id]['profile1_p']
 
 def c_TalonSRX_GetIgain(handle, slotIdx):
-    assert False
+    if slotIdx == 0:
+        return hal_data['CAN'][handle.id]['profile0_i']
+    else:
+        return hal_data['CAN'][handle.id]['profile1_i']
 
 def c_TalonSRX_GetDgain(handle, slotIdx):
-    assert False
+    if slotIdx == 0:
+        return hal_data['CAN'][handle.id]['profile0_d']
+    else:
+        return hal_data['CAN'][handle.id]['profile1_d']
 
 def c_TalonSRX_GetFgain(handle, slotIdx):
-    assert False
+    if slotIdx == 0:
+        return hal_data['CAN'][handle.id]['profile0_f']
+    else:
+        return hal_data['CAN'][handle.id]['profile1_f']
 
 def c_TalonSRX_GetIzone(handle, slotIdx):
-    assert False
+    if slotIdx == 0:
+        return hal_data['CAN'][handle.id]['profile0_izone']
+    else:
+        return hal_data['CAN'][handle.id]['profile1_izone']
 
 def c_TalonSRX_GetCloseLoopRampRate(handle, slotIdx):
-    assert False
+    if slotIdx == 0:
+        return hal_data['CAN'][handle.id]['profile0_closeloopramprate']
+    else:
+        return hal_data['CAN'][handle.id]['profile1_closeloopramprate']
 
 def c_TalonSRX_GetVoltageCompensationRate(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['voltage_compensation_rate']
 
 def c_TalonSRX_GetForwardSoftLimit(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['soft_limit_for']
 
 def c_TalonSRX_GetReverseSoftLimit(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['soft_limit_rev']
 
 def c_TalonSRX_GetForwardSoftEnable(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['soft_limit_for_enable']
 
 def c_TalonSRX_GetReverseSoftEnable(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['soft_limit_rev_enable']
 
 def c_TalonSRX_GetPulseWidthRiseToFallUs(handle):
     assert False
 
 def c_TalonSRX_IsPulseWidthSensorPresent(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['pulse_width_present']
 
 def c_TalonSRX_SetStatusFrameRate(handle, frameEnum, periodMs):
     pass
@@ -1569,25 +1713,51 @@ def c_TalonSRX_ClearStickyFaults(handle):
     hal_data['CAN'][handle.id]['stickyfault_revsoftlim'] = 0
     
 def c_TalonSRX_ChangeMotionControlFramePeriod(handle, periodMs):
-    assert False
+    pass
 
 def c_TalonSRX_ClearMotionProfileTrajectories(handle):
-    assert False
+    pass
 
 def c_TalonSRX_GetMotionProfileTopLevelBufferCount(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['mp_topBufferCnt']
 
 def c_TalonSRX_IsMotionProfileTopLevelBufferFull(handle):
-    assert False
+    return False
+
+_push_mp_mask = ~(constants.TalonSRXConst.kMotionProfileFlag_ActTraj_VelOnly | \
+                  constants.TalonSRXConst.kMotionProfileFlag_ActTraj_IsLast)
 
 def c_TalonSRX_PushMotionProfileTrajectory(handle, targPos, targVel, profileSlotSelect, timeDurMs, velOnly, isLastPoint, zeroPos):
-    assert False
+    data = hal_data['CAN'][handle.id]
+    data['mp_position'] = targPos
+    data['mp_velocity'] = targVel
+    data['mp_profileSlotSelect'] = profileSlotSelect
+    data['mp_timeDurMs'] = timeDurMs
+    data['mp_zeroPos'] = zeroPos
+    
+    flags = data['mp_flags']
+    flags &= _push_mp_mask
+    
+    if velOnly:
+        flags |= constants.TalonSRXConst.kMotionProfileFlag_ActTraj_VelOnly
+        
+    if isLastPoint:
+        flags |= constants.TalonSRXConst.kMotionProfileFlag_ActTraj_IsLast
 
 def c_TalonSRX_ProcessMotionProfileBuffer(handle):
-    assert False
+    pass
 
 def c_TalonSRX_GetMotionProfileStatus(handle):
-    assert False
+    data = hal_data['CAN'][handle.id]
+    
+    return (data['mp_flags'],
+            data['mp_profileSlotSelect'],
+            data['mp_position'],
+            data['mp_velocity'],
+            data['mp_topBufferRem'],
+            data['mp_topBufferCnt'],
+            data['mp_btmBufferCnt'],
+            data['mp_outputEnable'])
 
 def c_TalonSRX_GetFault_OverTemp(handle):
     return hal_data['CAN'][handle.id]['fault_overtemp']
@@ -1629,13 +1799,13 @@ def c_TalonSRX_GetStckyFault_RevSoftLim(handle):
     return hal_data['CAN'][handle.id]['stickyfault_revsoftlim']
 
 def c_TalonSRX_GetAppliedThrottle(handle):
-    return hal_data['CAN'][handle.id]['applied_throttle']
+    return hal_data['CAN'][handle.id]['value']
 
 def c_TalonSRX_GetCloseLoopErr(handle):
     return hal_data['CAN'][handle.id]['closeloop_err']
 
 def c_TalonSRX_GetFeedbackDeviceSelect(handle):
-    return hal_data['CAN'][handle.id]['feedback_device_select']
+    return hal_data['CAN'][handle.id]['feedback_device']
 
 def c_TalonSRX_GetModeSelect(handle):
     return hal_data['CAN'][handle.id]['mode_select']
@@ -1650,10 +1820,16 @@ def c_TalonSRX_GetLimitSwitchClosedRev(handle):
     return hal_data['CAN'][handle.id]['limit_switch_closed_rev']
 
 def c_TalonSRX_GetSensorPosition(handle):
-    return hal_data['CAN'][handle.id]['sensor_position']
+    # this returns different values depending on the feedback device selected
+    data = hal_data['CAN'][handle.id]
+    device_type = data['feedback_device']
+    return data[_srx_pos_map[device_type]]
 
 def c_TalonSRX_GetSensorVelocity(handle):
-    return hal_data['CAN'][handle.id]['sensor_velocity']
+    # this returns different values depending on the feedback device selected
+    data = hal_data['CAN'][handle.id]
+    device_type = data['feedback_device']
+    return data[_srx_vel_map[device_type]]
 
 def c_TalonSRX_GetCurrent(handle):
     return hal_data['CAN'][handle.id]['current']
@@ -1680,10 +1856,10 @@ def c_TalonSRX_GetQuadIdxpin(handle):
     return hal_data['CAN'][handle.id]['quad_idxpin']
 
 def c_TalonSRX_GetAnalogInWithOv(handle):
-    return hal_data['CAN'][handle.id]['analog_in_with_ov']
+    return hal_data['CAN'][handle.id]['analog_in_position']
 
 def c_TalonSRX_GetAnalogInVel(handle):
-    return hal_data['CAN'][handle.id]['analog_in_vel']
+    return hal_data['CAN'][handle.id]['analog_in_velocity']
 
 def c_TalonSRX_GetTemp(handle):
     return hal_data['CAN'][handle.id]['temp']
@@ -1701,34 +1877,39 @@ def c_TalonSRX_GetFirmVers(handle):
     return hal_data['CAN'][handle.id]['firmware_version']
 
 def c_TalonSRX_GetPulseWidthPosition(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['pulse_width_position']
 
 def c_TalonSRX_GetPulseWidthVelocity(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['pulse_width_velocity']
 
 def c_TalonSRX_GetPulseWidthRiseToRiseUs(handle):
     assert False
 
 def c_TalonSRX_GetActTraj_IsValid(handle):
-    assert False
-
+    flags = hal_data['CAN'][handle.id]['mp_flags']
+    return (flags & constants.TalonSRXConst.kMotionProfileFlag_ActTraj_IsValid) != 0
+    
 def c_TalonSRX_GetActTraj_ProfileSlotSelect(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['mp_profileSlotSelect']
 
 def c_TalonSRX_GetActTraj_VelOnly(handle):
-    assert False
+    flags = hal_data['CAN'][handle.id]['mp_flags']
+    return (flags & constants.TalonSRXConst.kMotionProfileFlag_ActTraj_VelOnly) != 0
 
 def c_TalonSRX_GetActTraj_IsLast(handle):
-    assert False
+    flags = hal_data['CAN'][handle.id]['mp_flags']
+    return (flags & constants.TalonSRXConst.kMotionProfileFlag_ActTraj_IsLast) != 0
 
 def c_TalonSRX_GetOutputType(handle):
     assert False
 
 def c_TalonSRX_GetHasUnderrun(handle):
-    assert False
+    flags = hal_data['CAN'][handle.id]['mp_flags']
+    return (flags & constants.TalonSRXConst.kMotionProfileFlag_HasUnderrun) != 0
 
 def c_TalonSRX_GetIsUnderrun(handle):
-    assert False
+    flags = hal_data['CAN'][handle.id]['mp_flags']
+    return (flags & constants.TalonSRXConst.kMotionProfileFlag_IsUnderrun) != 0
 
 def c_TalonSRX_GetNextID(handle):
     assert False
@@ -1740,10 +1921,10 @@ def c_TalonSRX_GetCount(handle):
     assert False
 
 def c_TalonSRX_GetActTraj_Velocity(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['mp_velocity']
 
 def c_TalonSRX_GetActTraj_Position(handle):
-    assert False
+    return hal_data['CAN'][handle.id]['mp_position']
 
 def c_TalonSRX_SetDemand(handle, param):
     hal_data['CAN'][handle.id]['value'] = param
