@@ -163,6 +163,7 @@ class TalonSRXConst:
     kMode_CurrentCloseLoop = 3
     kMode_VoltCompen = 4
     kMode_SlaveFollower = 5
+    kMode_MotionProfile = 6
     kMode_NoDrive = 15
 
     # limit switch enumerations
@@ -183,7 +184,14 @@ class TalonSRXConst:
     kFeedbackDev_AnalogEncoder = 3
     kFeedbackDev_CountEveryRisingEdge = 4
     kFeedbackDev_CountEveryFallingEdge = 5
+    kFeedbackDev_CtreMagEncoder_Relative = 6
+    kFeedbackDev_CtreMagEncoder_Absolute = 7
     kFeedbackDev_PosIsPulseWidth = 8
+    
+    # feedback device status enumerations
+    kFeedbackDevStatus_Unknown = 0
+    kFeedbackDevStatus_Present = 1
+    kFeedbackDevStatus_NotPresent = 2
 
     # ProfileSlotSelect enumerations
     kProfileSlotSelect_Slot0 = 0
@@ -194,6 +202,24 @@ class TalonSRXConst:
     kStatusFrame_Feedback = 1
     kStatusFrame_Encoder = 2
     kStatusFrame_AnalogTempVbat = 3
+    kStatusFrame_PulseWidth = 4
+    kStatusFrame_MotionProfile = 5
+    
+    # Motion Profile status bits
+    kMotionProfileFlag_ActTraj_IsValid = 0x1
+    kMotionProfileFlag_HasUnderrun = 0x2
+    kMotionProfileFlag_IsUnderrun = 0x4
+    kMotionProfileFlag_ActTraj_IsLast = 0x8
+    kMotionProfileFlag_ActTraj_VelOnly = 0x10
+    
+    # Motor output is neutral, Motion Profile Executer is not running.
+    kMotionProfile_Disable = 0
+    # Motor output is updated from Motion Profile Executer, MPE will
+    # process the buffered points.
+    kMotionProfile_Enable = 1
+    # Motor output is updated from Motion Profile Executer, MPE will
+    # stay processing current trajectory point.
+    kMotionProfile_Hold = 2
 
 class TalonSRXParam:
     # Signal enumeration for generic signal access
@@ -262,6 +288,34 @@ class TalonSRXParam:
     eSettingsChanged = 90
     eQuadFilterEn = 91
     ePidIaccum = 93
+    eStatus1FrameRate = 94  # TALON_Status_1_General_10ms_t
+    eStatus2FrameRate = 95  # TALON_Status_2_Feedback_20ms_t
+    eStatus3FrameRate = 96  # TALON_Status_3_Enc_100ms_t
+    eStatus4FrameRate = 97  # TALON_Status_4_AinTempVbat_100ms_t
+    eStatus6FrameRate = 98  # TALON_Status_6_Eol_t
+    eStatus7FrameRate = 99  # TALON_Status_7_Debug_200ms_t
+    eClearPositionOnIdx = 100
+    # reserved
+    # reserved
+    # reserved
+    ePeakPosOutput = 104
+    eNominalPosOutput = 105
+    ePeakNegOutput = 106
+    eNominalNegOutput = 107
+    eQuadIdxPolarity = 108
+    eStatus8FrameRate = 109  # TALON_Status_8_PulseWid_100ms_t
+    eAllowPosOverflow = 110
+    eProfileParamSlot0_AllowableClosedLoopErr = 111
+    eNumberPotTurns = 112
+    eNumberEncoderCPR = 113
+    ePwdPosition = 114
+    eAinPosition = 115
+    eProfileParamVcompRate = 116
+    eProfileParamSlot1_AllowableClosedLoopErr = 117
+    eStatus9FrameRate = 118  # TALON_Status_9_MotProfBuffer_100ms_t
+    eMotionProfileHasUnderrunErr = 119
+    eReserved120 = 120
+    eLegacyControlMode = 121
 
 TalonSRXParam_tostr = {getattr(TalonSRXParam, p): p for p in dir(TalonSRXParam) if not p.startswith('__')}
 
