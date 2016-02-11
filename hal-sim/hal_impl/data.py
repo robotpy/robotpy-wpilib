@@ -27,6 +27,7 @@ hal_in_data = {
 #: driver station related data has been updated
 hal_newdata_sem = None
 
+print("Data loaded")
 
 
 class NotifyDict(dict):

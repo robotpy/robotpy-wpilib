@@ -9,6 +9,20 @@ git_dir = join(setup_dir, '..', '.git')
 base_package = 'wpilib'
 version_file = join(setup_dir, base_package, 'version.py')
 
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    packages = [base_package]
+    ext_modules = []
+else:
+    packages = []
+    ext_modules = cythonize(['wpilib/*.py',
+                             'wpilib/_impl/*.py',
+                             'wpilib/buttons/*.py',
+                             'wpilib/command/*.py',
+                             'wpilib/interfaces/*.py'])
+
+
 # Automatically generate a version.py based on the git version
 if exists(git_dir):
     p = subprocess.Popen(["git", "describe", "--tags", "--long", "--dirty=-dirty"],
@@ -48,7 +62,8 @@ setup(
     author_email='robotpy@googlegroups.com',
     url='https://github.com/robotpy/robotpy-wpilib',
     keywords='frc first robotics wpilib',
-    packages=find_packages(),
+    packages=packages,
+    ext_modules=ext_modules,
     install_requires=['pynetworktables>=2015.2.1'],
     license="BSD License",
     classifiers=[

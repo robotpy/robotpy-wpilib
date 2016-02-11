@@ -9,6 +9,15 @@ git_dir = join(setup_dir, '..', '.git')
 base_package = 'hal'
 version_file = join(setup_dir, base_package, 'version.py')
 
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    packages = [base_package]
+    ext_modules = []
+else:
+    packages = []
+    ext_modules = cythonize('hal/*.py')
+
 # Automatically generate a version.py based on the git version
 if exists(git_dir):
     p = subprocess.Popen(["git", "describe", "--tags", "--long", "--dirty=-dirty"],
@@ -48,7 +57,8 @@ setup(
     author_email='robotpy@googlegroups.com',
     url='https://github.com/robotpy/robotpy-wpilib',
     keywords='frc first robotics hal can',
-    packages=['hal'],
+    packages=packages,
+    ext_modules=ext_modules,
     entry_points={'robotpy': [ 'run = hal.main:Main' ]},
     license="BSD License",
     classifiers=[
