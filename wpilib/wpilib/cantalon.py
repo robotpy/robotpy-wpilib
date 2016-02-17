@@ -1,3 +1,4 @@
+# validated: 2016-02-14 DS 99b2b65 athena/java/edu/wpi/first/wpilibj/CANTalon.java
 import hal
 import weakref
 
