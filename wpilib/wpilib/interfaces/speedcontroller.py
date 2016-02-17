@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS 6d854af athena/java/edu/wpi/first/wpilibj/SpeedController.java
+# validated: 2016-02-17 DS 952ebb1 athena/java/edu/wpi/first/wpilibj/SpeedController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -48,4 +48,10 @@ class SpeedController(PIDOutput):
 
     def disable(self):
         """Disable the speed controller."""
+        raise NotImplementedError
+    
+    def stopMotor(self):
+        """Stops motor movement. Motor can be moved again by calling set without having
+        to re-enable the motor.
+        """
         raise NotImplementedError

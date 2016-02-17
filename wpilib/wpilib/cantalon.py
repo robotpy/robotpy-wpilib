@@ -1,4 +1,4 @@
-# validated: 2016-02-14 DS 99b2b65 athena/java/edu/wpi/first/wpilibj/CANTalon.java
+# validated: 2016-02-17 DS 952ebb1 athena/java/edu/wpi/first/wpilibj/CANTalon.java
 import hal
 import weakref
 
@@ -346,6 +346,7 @@ class CANTalon(LiveWindowSendable, MotorSafety):
         self.minimumInput = 0
         self.maximumInput = 0
         self.controlEnabled = True
+        self.stopped = False
         self.isInverted = False
         self.profile = 0
         self.setPoint = 0.0
@@ -408,6 +409,11 @@ class CANTalon(LiveWindowSendable, MotorSafety):
         :param outputValue: The setpoint value, as described above.
         """
         self.feed()
+        
+        if self.stopped:
+            self.enableControl()
+            self.stopped = False
+            
         if not self.controlEnabled:
             return
         
@@ -1044,6 +1050,7 @@ class CANTalon(LiveWindowSendable, MotorSafety):
         Common interface for stopping a motor.
         """
         self.disableControl()
+        self.stopped = True
 
     def disable(self):
         self.disableControl()

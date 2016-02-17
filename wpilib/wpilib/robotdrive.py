@@ -1,4 +1,4 @@
-# validated: 2015-12-23 DS c3c35c6 athena/java/edu/wpi/first/wpilibj/RobotDrive.java
+# validated: 2016-02-17 DS 952ebb1 athena/java/edu/wpi/first/wpilibj/RobotDrive.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -662,13 +662,13 @@ class RobotDrive(MotorSafety):
 
     def stopMotor(self):
         if self.frontLeftMotor is not None:
-            self.frontLeftMotor.set(0.0)
+            self.frontLeftMotor.stopMotor()
         if self.frontRightMotor is not None:
-            self.frontRightMotor.set(0.0)
+            self.frontRightMotor.stopMotor()
         if self.rearLeftMotor is not None:
-            self.rearLeftMotor.set(0.0)
+            self.rearLeftMotor.stopMotor()
         if self.rearRightMotor is not None:
-            self.rearRightMotor.set(0.0)
+            self.rearRightMotor.stopMotor()
         self.feed()
 
     def getNumMotors(self):
