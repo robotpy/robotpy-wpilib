@@ -485,13 +485,13 @@ def test_getDescription(drive_lr):
 
 def test_stopMotor(drive_lr):
     drive_lr.stopMotor()
-    drive_lr.rearLeftMotor.set.assert_called_once_with(0.0)
-    drive_lr.rearRightMotor.set.assert_called_once_with(0.0)
+    drive_lr.rearLeftMotor.stopMotor.assert_called_once_with()
+    drive_lr.rearRightMotor.stopMotor.assert_called_once_with()
 
 def test_stopMotor_4(drive4):
     drive4.stopMotor()
-    drive4.frontLeftMotor.set.assert_called_once_with(0.0)
-    drive4.frontRightMotor.set.assert_called_once_with(0.0)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.0)
-    drive4.rearRightMotor.set.assert_called_once_with(0.0)
+    drive4.frontLeftMotor.stopMotor.assert_called_once_with()
+    drive4.frontRightMotor.stopMotor.assert_called_once_with()
+    drive4.rearLeftMotor.stopMotor.assert_called_once_with()
+    drive4.rearRightMotor.stopMotor.assert_called_once_with()
 
