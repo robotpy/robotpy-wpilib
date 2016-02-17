@@ -20,6 +20,13 @@ class I2C:
 
     This class is intended to be used by sensor (and other I2C device) drivers.
     It probably should not be used directly.
+    
+    Example usage::
+    
+        i2c = wpilib.I2C(wpilib.I2C.Port.kOnboard, 4)
+        
+        # Write bytes 'text', and receive 4 bytes in data
+        data = i2c.transaction(b'text', 4)
     """
     class Port:
         kOnboard = 0
@@ -74,11 +81,12 @@ class I2C:
         This is a lower-level interface to the I2C hardware giving you more
         control over each transaction.
 
-        :param dataToSend:
-            Data to send as part of the transaction.
-        :param receiveSize:
-            Number of bytes to read from the device. [0..7]
+        :param dataToSend: Data to send as part of the transaction.
+        :type dataToSend: iterable of bytes
+        :param receiveSize: Number of bytes to read from the device. [0..7]
+        :type receiveSize: int
         :returns: Data received from the device.
+        :rtype: iterable of bytes
         """
         return hal.i2CTransaction(self.port, self.deviceAddress,
                                   dataToSend, receiveSize)
@@ -121,7 +129,16 @@ class I2C:
         transaction is complete.
 
         :param data: The data to write to the device.
+        :type data: iterable of bytes
         :returns: Transfer Aborted... False for success, True for aborted.
+        
+        Usage::
+        
+            # send byte string
+            failed = spi.writeBulk(b'stuff')
+            
+            # send list of integers
+            failed = spi.write([0x01, 0x02])
         """
         try:
             hal.i2CWrite(self.port, self.deviceAddress, data)
@@ -139,6 +156,7 @@ class I2C:
         :param registerAddress: The register to read first in the transaction.
         :param count: The number of bytes to read in the transaction.
         :returns: The data read from the device.
+        :rtype: iterable of bytes
         """
         if count < 1:
             raise ValueError("count must be at least 1, %s given" % count)
@@ -152,6 +170,7 @@ class I2C:
 
         :param count: The number of bytes to read in the transaction.
         :returns: The data read from the device.
+        :rtype: iterable of bytes
         """
         if count < 1:
             raise ValueError("count must be at least 1, %s given" % count)

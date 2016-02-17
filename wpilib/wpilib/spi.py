@@ -10,7 +10,16 @@ def _freeSPI(port):
     hal.spiClose(port)
 
 class SPI:
-    """Represents a SPI bus port"""
+    """Represents a SPI bus port
+    
+    Example usage::
+    
+        spi = wpilib.SPI(wpilib.SPI.Port.kOnboardCS0)
+        
+        # Write bytes 'text', and receive something
+        data = spi.transaction(b'text')
+    
+    """
 
     class Port:
         kOnboardCS0 = 0
@@ -145,9 +154,18 @@ class SPI:
         If not running in output only mode, also saves the data received
         on the MISO input during the transfer into the receive FIFO.
 
-        :param dataToSend: Data to send (bytes)
+        :param dataToSend: Data to send
+        :type dataToSend: iterable of bytes
         
         :returns: Number of bytes written
+        
+        Usage::
+        
+            # send byte string
+            writeCount = spi.write(b'stuff')
+            
+            # send list of integers
+            writeCount = spi.write([0x01, 0x02])
         """
         return hal.spiWrite(self.port, dataToSend)
 
@@ -177,8 +195,17 @@ class SPI:
         """Perform a simultaneous read/write transaction with the device
 
         :param dataToSend: The data to be written out to the device
+        :type dataToSend: iterable of bytes
 
         :returns: data received from the device
+        
+        Usage::
+        
+            # send byte string
+            data = spi.transaction(b'stuff')
+            
+            # send list of integers
+            data = spi.transaction([0x01, 0x02])
         """
         return hal.spiTransaction(self.port, dataToSend)
     
@@ -195,11 +222,11 @@ class SPI:
         :param valid_mask: Mask to apply to received data for validity checking
         :param valid_data: After valid_mask is applied, required matching value for
                            validity checking
-        @param data_shift: Bit shift to apply to received data to get actual data
-                          value
-        @param data_size: Size (in bits) of data field
-        @param is_signed: Is data field signed?
-        @param big_endian: Is device big endian?
+        :param data_shift: Bit shift to apply to received data to get actual data
+                           value
+        :param data_size: Size (in bits) of data field
+        :param is_signed: Is data field signed?
+        :param big_endian: Is device big endian?
         """
         hal.spiInitAccumulator(self.port, int(period*1.0e6), cmd,
                                xfer_size, valid_mask, valid_value, data_shift,
