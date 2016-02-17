@@ -71,7 +71,10 @@ class Timer:
                      problems and possibly leave the robot unresponsive.
                      
         """
-        hal.delaySeconds(float(seconds))
+        seconds = float(seconds)
+        if seconds < 0:
+            raise ValueError("delay length must be non-negative")
+        hal.delaySeconds(seconds)
 
     def __init__(self):
         self.mutex = threading.RLock()
