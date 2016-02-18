@@ -44,6 +44,13 @@ class SPI:
                         See ``test_spi.py`` for an example.
         """
         
+        if port not in [self.Port.kOnboardCS0,
+                        self.Port.kOnboardCS1,
+                        self.Port.kOnboardCS2,
+                        self.Port.kOnboardCS3,
+                        self.Port.kMXP]:
+            raise ValueError("Invalid value '%s' for SPI port" % port)
+        
         if hal.HALIsSimulation():
             if simPort is None:
                 # If you want more functionality, implement your own mock

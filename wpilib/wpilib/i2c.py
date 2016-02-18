@@ -36,11 +36,14 @@ class I2C:
         """Constructor.
 
         :param port: The I2C port the device is connected to.
+        :type port: :class:`.I2C.Port`
         :param deviceAddress: The address of the device on the I2C bus.
         :param simPort: This must be an object that implements all of
                         the i2c* functions from hal_impl that you use.
                         See ``test_i2c.py`` for an example.
         """
+        if port not in [self.Port.kOnboard, self.Port.kMXP]:
+            raise ValueError("Invalid value '%s' for I2C port" % port)
         
         if hal.HALIsSimulation():
             if simPort is None:
