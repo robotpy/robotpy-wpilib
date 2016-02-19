@@ -79,7 +79,9 @@ class DriverStation:
         for _ in range(self.kJoystickPorts):
             self.joystickAxes.append([0]*hal.kMaxJoystickAxes)
             self.joystickPOVs.append([0]*hal.kMaxJoystickPOVs)
-            self.joystickButtons.append(hal.HALJoystickButtons())
+            jb = hal.HALJoystickButtons()
+            jb.buttons, jb.count = 0, 0
+            self.joystickButtons.append(jb)
 
         self.userInDisabled = False
         self.userInAutonomous = False

@@ -230,10 +230,10 @@ def test_isFMSAttached_mock(dsmock, halmock):
     assert not dsmock.isFMSAttached()
     
 def test_isFMSAttached(ds, hal_data):
-    hal_data['control']['fms_attached'] = True
+    hal_data['control']['fmsAttached'] = True
     assert ds.isFMSAttached()
     
-    hal_data['control']['fms_attached'] = False
+    hal_data['control']['fmsAttached'] = False
     assert not ds.isFMSAttached()
 
 def test_getMatchTime(dsmock, halmock):

@@ -110,14 +110,14 @@ _HALGetJoystickAxes = _RETFUNC("HALGetJoystickAxes", C.c_int, ("joystickNum", C.
 def HALGetJoystickAxes(joystickNum):
     axes = HALJoystickAxes()
     _HALGetJoystickAxes(joystickNum, axes)
-    return [x for x in axes.axes[0:axes.count]]
+    return axes.axes[0:axes.count]
 
 _HALGetJoystickPOVs = _RETFUNC("HALGetJoystickPOVs", C.c_int, ("joystickNum", C.c_uint8), ("povs", HALJoystickPOVs_ptr))
 @hal_wrapper
 def HALGetJoystickPOVs(joystickNum):
     povs = HALJoystickPOVs()
     _HALGetJoystickPOVs(joystickNum, povs)
-    return [x for x in povs.povs[0:povs.count]]
+    return povs.povs[0:povs.count]
 
 _HALGetJoystickButtons = _RETFUNC("HALGetJoystickButtons", C.c_int, ("joystickNum", C.c_uint8), ("buttons", HALJoystickButtons_ptr))
 @hal_wrapper
@@ -365,7 +365,7 @@ def spiRead(port, count):
     rv = _spiRead(port, buffer, count)
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
-    return [x for x in buffer]
+    return buffer[:]
 
 spiClose = _THUNKFUNC("spiClose", None, ("port", C.c_uint8))
 spiSetSpeed = _THUNKFUNC("spiSetSpeed", None, ("port", C.c_uint8), ("speed", C.c_uint32))
@@ -405,7 +405,7 @@ def i2CTransaction(port, device_address, data_to_send, receive_size):
     rv = _i2CTransaction(port, device_address, send_buffer, send_size, recv_buffer, receive_size)
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
-    return [x for x in recv_buffer]
+    return recv_buffer[:]
 
 _i2CWrite = _THUNKFUNC("i2CWrite", C.c_int32, ("port", C.c_uint8), ("device_address", C.c_uint8), ("data_to_send", C.POINTER(C.c_uint8)), ("send_size", C.c_uint8))
 @hal_wrapper
@@ -423,7 +423,7 @@ def i2CRead(port, device_address, count):
     rv = _i2CRead(port, device_address, buffer, count)
     if rv < 0:
         raise IOError(_os.strerror(C.get_errno()))
-    return [x for x in buffer]
+    return buffer[:]
 
 i2CClose = _THUNKFUNC("i2CClose", None, ("port", C.c_uint8))
 

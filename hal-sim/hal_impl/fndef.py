@@ -71,6 +71,11 @@ def gen_func(f, name, restype, params, out, _thunk):
     # not actually a check, unpacks the first arg
     if _thunk:
         checks.append('_dll, %s = %s' % (params[0][0], params[0][0]))
+        init = ''
+        fn_call = '_dll.%s' % name
+    else:
+        init = '_dll_%s = _dll.%s' % (name, name)
+        fn_call = '_dll_%s' % name
 
     # Generate a check for each parameter
     for param in params:
@@ -96,13 +101,15 @@ def gen_func(f, name, restype, params, out, _thunk):
     assert info.args == callargs, '%s != %s' % (info.args, args)
 
     # Create the function body to be exec'ed
+    # -> optimization: store the function first, instead of looking it up in _dll each time
     return inspect.cleandoc('''
+        %s
         def %s(%s):
             %s
-            return _dll.%s(%s)
-    ''') % (name, ', '.join(args),
+            return %s(%s)
+    ''') % (init, name, ', '.join(args),
             '\n    '.join(checks),
-            name, ', '.join(args))
+            fn_call, ', '.join(args))
 
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,

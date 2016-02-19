@@ -19,7 +19,7 @@ def set_autonomous(enabled):
         'autonomous': True,
         'test': False,
         'enabled': enabled,
-        'ds_attached': True
+        'dsAttached': True
     })
     
     if enabled:
@@ -37,7 +37,7 @@ def set_test_mode(enabled):
         'autonomous': False,
         'test': True,
         'enabled': enabled,
-        'ds_attached': True
+        'dsAttached': True
     })
     
     hal_data['time']['match_start'] = None
@@ -51,7 +51,7 @@ def set_teleop_mode(enabled):
         'autonomous': False,
         'test': False,
         'enabled': enabled,
-        'ds_attached': True
+        'dsAttached': True
     })
     
     if enabled:
@@ -69,7 +69,7 @@ def set_disabled():
         'autonomous': False,
         'test': False,
         'enabled': False,
-        'ds_attached': True
+        'dsAttached': True
     })
     
     hal_data['time']['match_start'] = None
@@ -83,7 +83,7 @@ def set_estop():
         'autonomous': False,
         'test': False,
         'enabled': False,
-        'ds_attached': True,
+        'dsAttached': True,
         'eStop': True
     })
     

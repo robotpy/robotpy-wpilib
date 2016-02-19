@@ -2,6 +2,7 @@
 from hal import constants
 from . import types
 
+import operator
 import threading
 
 from . import data
@@ -219,25 +220,36 @@ def HALSetErrorData(errors, errorsLength, wait_ms):
     hal_data['error_data'] = errors
 
 def HALGetControlWord():
-    return types.HALControlWord(hal_data['control'])
+    # profiling indicates it is faster to not have a constructor
+    word = types.HALControlWord()
+    word.__dict__.update(hal_data['control'])
+    return word
 
 def HALGetAllianceStation():
     return hal_data['alliance_station']
 
+# optimization
+_axes_list = list(range(-128, 128, 1))
+
 def HALGetJoystickAxes(joystickNum, axes):
     # we store as -1 to 1 for ease of use, so convert to -128 to 127 here
-    axes.axes = [int(a*128) if a < 0 else int(a*127) for a in hal_data['joysticks'][joystickNum]['axes']]
+    #axes.axes = [int(a*128) if a < 0 else int(a*127) for a in hal_data['joysticks'][joystickNum]['axes']]
+    axes.axes = [_axes_list[int(a*128)+128] for a in hal_data['joysticks'][joystickNum]['axes']]
     axes.count = len(axes.axes)
 
 def HALGetJoystickPOVs(joystickNum, povs):
-    povs.povs = list(map(int, hal_data['joysticks'][joystickNum]['povs'][:]))
+    povs.povs = list(map(int, hal_data['joysticks'][joystickNum]['povs']))
     povs.count = len(povs.povs)
+
 
 def HALGetJoystickButtons(joystickNum, buttons):
     # buttons are stored as booleans for ease of use, convert to integer
     b = hal_data['joysticks'][joystickNum]['buttons']
-    buttons.buttons = sum(int(v) << i for i, v in enumerate(b[1:]))
-    buttons.count = len(b)-1
+    # profiled optimization
+    #buttons.buttons = sum(int(v) << i for i, v in enumerate(b[1:]))
+    l = len(b)-1
+    buttons.buttons = sum(map(operator.lshift, map(int, b[1:]), range(l)))
+    buttons.count = l
 
 def HALGetJoystickDescriptor(joystickNum, descriptor):
     stick = hal_data["joysticks"][joystickNum]

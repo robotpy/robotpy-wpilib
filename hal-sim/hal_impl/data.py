@@ -139,8 +139,8 @@ def _reset_hal_data(hooks):
             'autonomous':   OUT(False),
             'test':         OUT(False),
             'eStop':        OUT(False),
-            'fms_attached': IN(False),
-            'ds_attached':  OUT(False),
+            'fmsAttached': IN(False),
+            'dsAttached':  OUT(False),
         },
                      
         # key:   resource type

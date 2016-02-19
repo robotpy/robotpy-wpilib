@@ -50,43 +50,38 @@ MULTIWAIT_ID = fake_pointer(_MULTIWAIT_ID, "MULTIWAIT_ID")
 
 #############################################################################
 # HAL
+#
+# Profiling note: it seems to be faster to use __slots__ and to not have
+#                 constructors for things that are created often, and just
+#                 set the attributes externally. Python 3.4, linux
+#
 #############################################################################
 
 class HALControlWord:
-    def __init__(self, d={}):
-        self.enabled = d.get('enabled', False)
-        self.autonomous = d.get('autonomous', False)
-        self.test = d.get('test', False)
-        self.eStop = d.get('eStop', False)
-        self.fmsAttached = d.get('fms_attached',False)
-        self.dsAttached = d.get('ds_attached', False)
+    pass
 HALControlWord_ptr = fake_pointer(HALControlWord)
 
 class Port:
+    __slots__ = ['pin', 'module']
     def __init__(self, pin, module):
         self.pin = pin
         self.module = module
 Port_ptr = fake_pointer(Port)
 
 class HALJoystickAxes:
-    def __init__(self, axes=[]):
-        self.count = len(axes)
-        self.axes = axes[:]
+    __slots__ = ['count', 'axes']
 HALJoystickAxes_ptr = fake_pointer(HALJoystickAxes)
 
 class HALJoystickPOVs:
-    def __init__(self, povs=[]):
-        self.count = len(povs)
-        self.povs = povs
+    __slots__ = ['count', 'povs']
 HALJoystickPOVs_ptr = fake_pointer(HALJoystickPOVs)
 
 class HALJoystickButtons:
-    def __init__(self, buttons=0, count=0):
-        self.buttons = buttons
-        self.count = count
+    __slots__ = ['buttons', 'count']
 HALJoystickButtons_ptr = fake_pointer(HALJoystickButtons)
 
 class HALJoystickDescriptor:
+    __slots__ = ['isXbox', 'type', 'name', 'axisCount', 'buttonCount']
     def __init__(self, d={}):
         self.isXbox = d.get('isXbox', False)
         self.type = d.get('type', 0)
@@ -101,12 +96,14 @@ HALJoystickDescriptor_ptr = fake_pointer(HALJoystickDescriptor)
 
 # opaque analog port
 class AnalogPort:
+    __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
 AnalogPort_ptr = fake_pointer(AnalogPort)
 
 # opaque analog trigger
 class AnalogTrigger:
+    __slots__ = ['pin', 'index']
     def __init__(self, port, index):
         self.pin = port.pin
         self.index = index
@@ -118,6 +115,7 @@ AnalogTrigger_ptr = fake_pointer(AnalogTrigger)
 
 # opaque pcm
 class PCM:
+    __slots__ = ['pcmid']
     def __init__(self, pcmid):
         self.pcmid = pcmid
 PCM_ptr = fake_pointer(PCM)
@@ -129,24 +127,28 @@ PCM_ptr = fake_pointer(PCM)
 
 # opaque digital port
 class DigitalPort:
+    __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
 DigitalPort_ptr = fake_pointer(DigitalPort)
 
 # opaque PWM
 class PWM:
+    __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
 PWM_ptr = fake_pointer(PWM)
 
 # opaque counter
 class Counter:
+    __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
 Counter_ptr = fake_pointer(Counter)
 
 # opaque encoder
 class Encoder:
+    __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
 Encoder_ptr = fake_pointer(Encoder)
@@ -175,6 +177,7 @@ Notifier_ptr = fake_pointer(Notifier)
 
 # opaque SolenoidPort
 class SolenoidPort:
+    __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
 SolenoidPort_ptr = fake_pointer(SolenoidPort)
@@ -186,6 +189,7 @@ SolenoidPort_ptr = fake_pointer(SolenoidPort)
 
 # opaque TalonSRX
 class TalonSRX:
+    __slots__ = ['id']
     def __init__(self, deviceNumber):
         self.id = deviceNumber
 TalonSRX_ptr = fake_pointer(TalonSRX)
