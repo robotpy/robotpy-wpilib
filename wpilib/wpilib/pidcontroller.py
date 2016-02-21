@@ -7,6 +7,7 @@
 #----------------------------------------------------------------------------
 
 from collections import deque
+from itertools import islice
 import threading
 import warnings
 
@@ -471,7 +472,7 @@ class PIDController(LiveWindowSendable):
         :type bufLength: int
         """
         with self.mutex:
-            self.buf = deque(list(self.buf[:bufLength]), maxlen=bufLength)
+            self.buf = deque(list(islice(self.buf, bufLength)), maxlen=bufLength)
         
     def onTarget(self):
         """Return True if the error is within the percentage of the total input
