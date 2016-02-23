@@ -21,6 +21,7 @@ EXAMPLES="
 	
 	examples/CANTalon/
 	examples/CANTalonPID/
+	examples/CANTalonVelocityClosedLoop/
 	examples/GettingStarted/
 	examples/MecanumDrive/
 	examples/MotorControl/
