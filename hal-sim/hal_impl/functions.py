@@ -1553,6 +1553,8 @@ def c_TalonSRX_Create3(deviceNumber, controlPeriodMs, enablePeriodMs):
         
         'voltage_compensation_rate': 0,
         
+        'battery': 12.0,
+        
         # Motion profile stuff
         'mp_position': 0,
         'mp_velocity': 0,
