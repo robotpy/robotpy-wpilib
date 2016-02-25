@@ -22,17 +22,15 @@ EXAMPLES="
 	examples/CANTalon/
 	examples/CANTalonPID/
 	examples/CANTalonVelocityClosedLoop/
+	examples/GearsBot/
 	examples/GettingStarted/
 	examples/MecanumDrive/
 	examples/MotorControl/
 	examples/Gyro/
+	examples/pacgoat/
 	examples/QuickVision/
 	examples/TankDrive/
 "
-
-# Doesn't work right now:
-# - examples/GearsBot/
-# - examples/pacgoat/
 
 if [ -z "${NOPYFRC}" ]; then
 	for example in $EXAMPLES; do
