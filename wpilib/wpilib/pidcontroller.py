@@ -136,8 +136,8 @@ class PIDController(LiveWindowSendable):
     def free(self):
         """Free the PID object"""
         # TODO: is this useful in Python?  Should make TableListener weakref.
+        self.pid_task.cancel()
         with self.mutex:
-            self.pid_task.cancel()
             self.pidInput = None
             self.pidOutput = None
 
@@ -373,7 +373,13 @@ class PIDController(LiveWindowSendable):
         :returns: the change in setpoint over time
         """
         with self.mutex:
-            return (self.setpoint - self.prevSetpoint) / self.setpointTimer.get()
+            t = self.setpointTimer.get()
+            # During testing/simulation it is possible to get a divide by zero because
+            # the threads' calls aren't strictly aligned with the master clock.
+            if t:
+                return (self.setpoint - self.prevSetpoint) / t
+            else:
+                return 0.0
 
     def getError(self):
         """Returns the current difference of the input from the setpoint.
