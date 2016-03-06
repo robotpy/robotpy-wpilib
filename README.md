@@ -1,10 +1,16 @@
 RobotPy WPILib
 ==============
 
+WARNING: This library is not officially supported by FIRST and therefore should be advised not to be used in competitions.
+Since python is not supported, Control System Advisors and Field Technical Adivsors are not trained and not required to assist
+if a non official language is used on a robot during an official FIRST event.
+The officially supported languages can be found here: [FRC Control Systems](https://wpilib.screenstepslive.com/s/4485)
+This project can be used in any manner outside of an official FIRST Robotics Event.
+
 [![Build Status](https://travis-ci.org/robotpy/robotpy-wpilib.svg)](https://travis-ci.org/robotpy/robotpy-wpilib)
 
-This repository contains the source code for a 100% python implementation of WPILib, 
-the library used to interface with hardware for the FIRST Robotics Competition. 
+This repository contains the source code for a 100% python implementation of WPILib,
+the library used to interface with hardware for the FIRST Robotics Competition.
 Teams can use this library to write their robot code in Python, a powerful dynamic
 programming language.
 
@@ -43,5 +49,3 @@ amount of work on the pure python port of WPILib, and various useful tooling.
 Other contributors include:
 
 * Sam Rosenblum (@sarosenb, FRC Team 2423)
-
-
