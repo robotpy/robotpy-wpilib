@@ -17,6 +17,10 @@ robot code in Python, a powerful dynamic programming language.
 There is a lot of good documentation, but there's still room for improvement.
 We welcome contributions from others!
 
+.. note:: RobotPy is a community project and is not officially supported by
+          FIRST. Please see the `FAQ <http://robotpy.github.io/faq/>`_
+          for more information.
+
 Contents
 ~~~~~~~~
 
