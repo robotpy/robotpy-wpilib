@@ -13,6 +13,10 @@ class TimerTask(threading.Thread):
     
     def __init__(self, name, period, task_fn):
         super().__init__(name=name, daemon=True)
+        
+        if period <= 0:
+            raise ValueError("Invalid period %s" % period)
+        
         self.logger = logging.getLogger('wpilib.%s' % name)
         self.period = period
         self.task_fn = task_fn
@@ -39,8 +43,9 @@ class TimerTask(threading.Thread):
                 delay = wait_til - now
                 
                 if delay > 0:
-                    Timer.delay(wait_til - now)
+                    Timer.delay(delay)
                 else:
+                    wait_til = now
                     # only emit warning once per second
                     if now - self.last_warning > 1:
                         self.last_warning = now
