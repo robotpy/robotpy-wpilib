@@ -50,6 +50,7 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
         #List copies of the arguments
         args_copy = list(reversed(args))
         kwargs_copy = list(kwargs.copy())
+        kwarg_found = False
         results = dict()
         
         if err:
@@ -64,7 +65,8 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
                 kwargs_copy.remove(arg_name)
                 value = kwargs[arg_name]
                 match_type = 'keyword'
-            elif len(args_copy) > 0:
+                kwarg_found = True
+            elif not kwarg_found and len(args_copy) > 0:
                 value = args_copy.pop()
                 match_type = 'non-keyword'
             else:
