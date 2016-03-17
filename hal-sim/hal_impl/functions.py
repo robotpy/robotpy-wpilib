@@ -229,7 +229,7 @@ def HALGetAllianceStation():
     return hal_data['alliance_station']
 
 # optimization
-_axes_list = list(range(-128, 128, 1))
+_axes_list = list(range(-128, 0)) + [0] + list(range(0, 128, 1))
 
 def HALGetJoystickAxes(joystickNum, axes):
     # we store as -1 to 1 for ease of use, so convert to -128 to 127 here
