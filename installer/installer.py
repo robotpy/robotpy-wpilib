@@ -22,6 +22,7 @@ import getpass
 import hashlib
 import inspect
 import os
+import socket
 import string
 from os.path import abspath, basename, dirname, exists, isdir, join, relpath
 import shutil
@@ -290,7 +291,7 @@ class SshExecError(Error):
 # Arguments to pass to SSH to allow a man in the middle attack
 mitm_args = ['-oStrictHostKeyChecking=no', '-oUserKnownHostsFile=/dev/null']
 
-def ssh_from_cfg(cfg_filename, username, password, hostname=None, allow_mitm=False):
+def ssh_from_cfg(cfg_filename, username, password, hostname=None, allow_mitm=False, no_resolve=False):
     
     dirty = True
     cfg = configparser.ConfigParser()
@@ -319,8 +320,25 @@ def ssh_from_cfg(cfg_filename, username, password, hostname=None, allow_mitm=Fal
         with open(cfg_filename, 'w') as fp:
             cfg.write(fp)
             
-    print("Connecting to robot via SSH at", hostname)
+    
+    
+    if not no_resolve:
+        try:
+            print("Looking up hostname", hostname, '...')
+            addrs = socket.getaddrinfo(hostname, None)
+        except socket.gaierror as e:
+            raise Error("Could not find robot at %s" % hostname) from e
             
+        # pick the first address that is sock_stream
+        for _, t, _, _, (ip, _) in addrs:
+            if t == socket.SocketType.SOCK_STREAM:
+                print("-> Found %s at %s" % (hostname, ip))
+                print()
+                hostname = ip
+                break 
+    
+    print("Connecting to robot via SSH at", hostname)
+    
     return SshController(hostname, username, password,
                          allow_mitm)
 
