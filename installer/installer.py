@@ -331,7 +331,7 @@ def ssh_from_cfg(cfg_filename, username, password, hostname=None, allow_mitm=Fal
             
         # pick the first address that is sock_stream
         for _, t, _, _, (ip, _) in addrs:
-            if t == socket.SocketType.SOCK_STREAM:
+            if t == socket.SOCK_STREAM:
                 print("-> Found %s at %s" % (hostname, ip))
                 print()
                 hostname = ip
