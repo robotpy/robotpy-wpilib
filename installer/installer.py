@@ -32,6 +32,7 @@ import tempfile
 
 from collections import OrderedDict
 from distutils.version import LooseVersion
+from functools import reduce as _reduce
 from urllib.request import urlretrieve
 
 
@@ -146,6 +147,12 @@ class OpkgRepo(object):
     def _get_pkg_fname(self, pkg):
         return join(self.opkg_cache, basename(pkg['Filename']))
         
+    def _get_pkg_deps(self, name):
+        info = self.get_pkginfo(name)
+        if "Depends" in info:
+            return set([dep for dep in [dep.strip().split(" ", 1)[0] for dep in info["Depends"].split(",")] if dep not in self.sys_packages])
+        return set()
+        
     def get_cached_pkg(self, name):
         '''Returns the pkg, filename of a cached package'''
         pkg = self.get_pkginfo(name)
@@ -160,20 +167,54 @@ class OpkgRepo(object):
         return pkg, fname
 
     def resolve_pkg_deps(self, packages):
-        new_pkglist = []
-        while len(packages) > 0:
-            pkg_name = packages.pop()
-            if pkg_name in new_pkglist:
-                continue
-            info = self.get_pkginfo(pkg_name)
-            if "Depends" in info:
-                for dep in info["Depends"].split(","):
-                    dep = dep.strip().split(" ", 1)[0]
-                    if dep not in self.sys_packages and dep not in new_pkglist:
-                        packages.append(dep)
-            new_pkglist.append(pkg_name)
-        return reversed(new_pkglist)
+        '''Given a list of package(s) desired to be installed, topologically
+           sorts them by dependencies and returns an ordered list of packages'''
+          
+        pkgs = {}
+        packages = packages[:]
         
+        for pkg in packages:
+            if pkg in pkgs:
+                continue
+            deps =  self._get_pkg_deps(pkg)
+            pkgs[pkg] = deps
+            packages.extend(deps)
+        
+        retval = []
+        for results in self._toposort(pkgs):
+            retval.extend(results)
+            
+        return retval
+
+    def _toposort(self, data):
+        # Copied from https://bitbucket.org/ericvsmith/toposort/src/25b5894c4229cb888f77cf0c077c05e2464446ac/toposort.py?at=default
+        # -> Apache 2.0 license, Copyright 2014 True Blade Systems, Inc.
+        
+        # Special case empty input.
+        if len(data) == 0:
+            return
+
+        # Copy the input so as to leave it unmodified.
+        data = data.copy()
+
+        # Ignore self dependencies.
+        for k, v in data.items():
+            v.discard(k)
+        # Find all items that don't depend on anything.
+        extra_items_in_deps = _reduce(set.union, data.values()) - set(data.keys())
+        # Add empty dependences where needed.
+        data.update({item:set() for item in extra_items_in_deps})
+        while True:
+            ordered = set(item for item, dep in data.items() if len(dep) == 0)
+            if not ordered:
+                break
+            yield ordered
+            data = {item: (dep - ordered)
+                    for item, dep in data.items()
+                        if item not in ordered}
+        if len(data) != 0:
+            raise ValueError('Cyclic dependencies exist among these items: {}'.format(', '.join(repr(x) for x in data.items())))
+    
     def download(self, name):
         
         pkg = self.get_pkginfo(name)
@@ -610,7 +651,7 @@ class RobotpyInstaller(object):
 
     def _get_opkg(self):
         opkg = OpkgRepo(self.opkg_cache, self.opkg_arch)
-        opkg.add_feed('http://www.tortall.net/~robotpy/feeds/2016/')
+        opkg.add_feed('http://www.tortall.net/~robotpy/feeds/2016')
         opkg.add_feed("http://download.ni.com/ni-linux-rt/feeds/2015/arm/ipk/cortexa9-vfpv3")
         return opkg
 
@@ -745,8 +786,8 @@ class RobotpyInstaller(object):
         opkg_script = ""
         opkg_files = []
         package_list = opkg.resolve_pkg_deps(options.packages)
+        
         for package in package_list:
-
             try:
                 pkg, fname = opkg.get_cached_pkg(package)
             except OpkgError as e:
