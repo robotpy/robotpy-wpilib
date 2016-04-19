@@ -58,7 +58,7 @@ class CANTalon(LiveWindowSendable, MotorSafety):
     (similar to roboRIO 4X mode).  Analog position is 10 bits, meaning 1024
     ticks per rotation (0V => 3.3V).  Use :meth:`setFeedbackDevice` to select
     which sensor type you need.  Once you do that you can use
-    :meth:`getSensorPosition` and :meth:`getSensorVelocity`.  These signals
+    :meth:`getPosition` and :meth:`getSpeed`.  These signals
     are updated on CANBus every 20ms (by default).  If a relative sensor is
     selected, you can zero (or change the current value) using
     :meth:`setSensorPosition`.
