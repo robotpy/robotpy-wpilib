@@ -366,13 +366,22 @@ def ssh_from_cfg(cfg_filename, username, password, hostname=None, allow_mitm=Fal
     if not no_resolve:
         try:
             print("Looking up hostname", hostname, '...')
+            # addrs = [(family, socktype, proto, canonname, sockaddr)]
             addrs = socket.getaddrinfo(hostname, None)
         except socket.gaierror as e:
             raise Error("Could not find robot at %s" % hostname) from e
+
+        # Sort the address by family.
+        # Lucky for us, the family type is the first element of the tuple, and it's an enumerated type with
+        # AF_INET=2 (IPv4) and AF_INET6=23 (IPv6), so sorting them will provide us with the AF_INET address first.
+        addrs.sort()
             
         # pick the first address that is sock_stream
-        for _, t, _, _, (ip, _) in addrs:
-            if t == socket.SOCK_STREAM:
+        # AF_INET sockaddr tuple:  (address, port)
+        # AF_INET6 sockaddr tuple: (address, port, flow info, scope id)
+        for _, socktype, _, _, sockaddr in addrs:
+            if socktype == socket.SOCK_STREAM:
+                ip = sockaddr[0] # The address if the first tuple element for both AF_INET and AF_INET6
                 print("-> Found %s at %s" % (hostname, ip))
                 print()
                 hostname = ip
