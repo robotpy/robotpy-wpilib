@@ -73,8 +73,8 @@ If you want to use a beta version of RobotPy (if available, you can add the
 --pre argument to the download/install command listed above.
 
 
-Manual installation
--------------------
+Manual installation (release)
+-----------------------------
 
 .. warning:: This isn't recommended, so you're on your own if you go this route.
              
@@ -109,3 +109,15 @@ your RoboRIO.
 Upgrading requires you to run the same commands, but with the appropriate
 flags set to tell pip3/opkg to upgrade the packages for you.
 
+Manual Installation (developer)
+-------------------------------
+
+.. warning:: These instructions are only intended for those users wanting to deploy
+             a custom modified version of the RobotPy WPILib source code
+
+.. note:: These instructions assume you have cloned the git repository for robotpy-wpilib,
+          and made changes in that repository checkout.
+
+First, install python on the RoboRIO using one of the two methods above. To deploy
+your changes, you can run ``devtools/build_and_deploy.sh`` from the root of the
+git repository.
