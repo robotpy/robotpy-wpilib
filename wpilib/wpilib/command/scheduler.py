@@ -244,8 +244,8 @@ class Scheduler(Sendable):
             self.ids.clear()
             # Set the the running commands
             for command in self.commandTable:
-                self.commands.add(command.getName())
-                self.ids.add(id(command))
+                self.commands.append(command.getName())
+                self.ids.append(id(command))
             self.table.putValue("Names", self.commands)
             self.table.putValue("Ids", self.ids)
 
