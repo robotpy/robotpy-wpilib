@@ -340,7 +340,7 @@ class Preferences:
             except ImportError:
                 pass
 
-    def read(self):
+    def _read(self):
         """The internal method to read from a file. This will be called in its
         own thread when the preferences singleton is first created.
         """
