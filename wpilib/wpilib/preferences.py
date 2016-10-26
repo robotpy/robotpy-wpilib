@@ -363,7 +363,7 @@ class Preferences:
                         elif line[0] == '[':
                             continue # throw it away
                         else:
-                            name, value = line.partition('=')
+                            name, sep, value = line.partition('=')
                             name = name.strip()
                             value = value.strip()
 
