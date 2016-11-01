@@ -89,3 +89,96 @@ to your setup.py setup() invocation::
           entry_points={'robot_py': ['name_of_command = package.module:CommandClassName']},
           ... 
           )
+
+Updating RobotPy source code to match WPILib
+--------------------------------------------
+
+Every year, the WPILib team makes improvements to WPILib, so RobotPy needs to be
+updated to maintain compatibility. While this is largely a manual process, we
+use a tool called `git-source-track <https://github.com/virtuald/git-source-track>`_
+to assist with this process.
+
+.. note:: git-source-track only works on Linux/OSX at this time. If you're
+          interested in helping with the porting process and you use Windows,
+          file a github issue and we'll try to help you out.
+
+Using git-source-track
+~~~~~~~~~~~~~~~~~~~~~~
+
+First, you need to checkout the git repo for `allwpilib <https://github.com/wpilibsuite/allwpilib>`_
+and the RobotPy WPILib next to each other in the same directory like so:
+
+::
+    
+    allwpilib/
+    robotpy-wpilib/
+
+The way git-source-track works is it looks for a comment in the header of each
+tracked file that looks like this::
+    
+    # validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/Compressor.java
+    
+This stores when the file was validated to match the original source, initials
+of the person that did the validation, what commit it was validated against, and
+the path to the original source file.
+
+Finding differences
+~~~~~~~~~~~~~~~~~~~
+
+From the `robotpy-wpilib` directory, you can run ``git source-track`` and it
+will output all of the configured files and their status. The status codes
+include:
+
+* ``OK``: File is up to date, no changes required
+* ``OLD``: The tracked file has been updated, ```git source-track diff FILENAME`` can
+  be used to show all of the git log messages and associated diffs.
+* ``ERR``: The tracked file has moved or has been deleted
+* ``--``: The file is not currently being tracked
+
+Sometimes, commits are added to WPILib which only change comments, formatting,
+or mass file renames -- these don't change the semantic content of the file,
+so we can ignore those commits. When identified, those commits should be added
+to ``devtools/exclude_commits``.
+
+Looking at differences
+~~~~~~~~~~~~~~~~~~~~~~
+
+Once you've identified a file that needs to be updated, then you can run::
+    
+    git source-track diff FILENAME
+    
+This will output a verbose git log command that will show associated commit
+messages and the diff output associated with that commit for that specific file.
+Note that it will only show the change for that specific file, it will
+not show changes for other files (use ``git log -p COMMITHASH`` in the 
+original source directory if you want to see other changes).
+
+After running ``git source-track diff`` it will ask you if you want to validate
+the file. If no python-significant changes have been made, then you can answer
+'y' and the validation header will be updated.
+
+Adding new files
+~~~~~~~~~~~~~~~~
+
+Unfortunately, git-source-track doesn't currently have a mechanism that allows
+it to identify new files that need to be ported. We need to do that manually.
+
+Dealing with RobotPy-specific files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We don't need to track those files; ``git source-track set-notrack FILENAME``
+takes care of it.
+
+After you finish porting the changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Once you've finished making the appropriate changes to the python code, then
+you should update the validation header in the source file. Thankfully,
+there's a command to do this::
+    
+    git source-track set-valid FILENAME
+    
+It will store the current date and the tracked git commit.
+
+Additionally, if you answer 'y' after running ``git source-track diff FILENAME``,
+then it will update the validation header in the file.
