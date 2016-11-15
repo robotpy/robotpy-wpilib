@@ -419,7 +419,7 @@ def ensure_win_bins():
 
 class SshController(object):
     '''
-        Use this to transfer files and execute commands on a RoboRIO in a
+        Use this to transfer files and execute commands on a roboRIO in a
         cross platform manner
     '''
    

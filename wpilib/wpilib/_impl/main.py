@@ -60,7 +60,7 @@ def run(robot_class, **kwargs):
         
         This function loads available entry points, parses arguments, and
         sets things up specific to RobotPy so that the robot can run. This
-        function is used whether the code is running on the RoboRIO or
+        function is used whether the code is running on the roboRIO or
         a simulation.
         
         :param robot_class: A class that inherits from :class:`.RobotBase`

@@ -34,7 +34,7 @@ distributions, and from Mac OSX also. Here's how you do it:
 * `Download RobotPy from github <https://github.com/robotpy/robotpy-wpilib/releases>`_
 * `Make sure Python 3.4 is installed <https://www.python.org/downloads/>`_
 
-Unzip the RobotPy zipfile somewhere on your computer (not on the RoboRIO),
+Unzip the RobotPy zipfile somewhere on your computer (not on the roboRIO),
 and there should be an installer.py there. Open up a command line, change
 directory to the installer location, and run this::
 
@@ -80,10 +80,10 @@ Manual installation (release)
              
 If you really want to do this, it's not so bad, but then you lose out on
 the benefits of the automated installer -- in particular, this method requires
-internet access to install the files on the RoboRIO in case you need to reimage
-your RoboRIO.
+internet access to install the files on the roboRIO in case you need to reimage
+your roboRIO.
 
-* Connect your RoboRIO to the internet
+* Connect your roboRIO to the internet
 * SSH in, and copy the following to /etc/opkg/robotpy.conf::
 
     src/gz robotpy http://www.tortall.net/~robotpy/feeds/2014
@@ -96,7 +96,7 @@ your RoboRIO.
 
     pip3 install pynivision robotpy-hal-roborio wpilib
 
-.. note:: When powered off, your RoboRIO does not keep track of the correct
+.. note:: When powered off, your roboRIO does not keep track of the correct
           date, and as a result pip may fail with an SSL related error message.
           To set the date, you can either:
 
@@ -118,6 +118,6 @@ Manual Installation (developer)
 .. note:: These instructions assume you have cloned the git repository for robotpy-wpilib,
           and made changes in that repository checkout.
 
-First, install python on the RoboRIO using one of the two methods above. To deploy
+First, install python on the roboRIO using one of the two methods above. To deploy
 your changes, you can run ``devtools/build_and_deploy.sh`` from the root of the
 git repository.

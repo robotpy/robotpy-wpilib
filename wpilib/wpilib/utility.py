@@ -1,6 +1,6 @@
-# validated: 2015-12-22 DS 6d854af athena/java/edu/wpi/first/wpilibj/Utility.java
+# validated: 2016-11-15 DV 7a402b4 athena/java/edu/wpi/first/wpilibj/Utility.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -45,7 +45,7 @@ class Utility:
 
     @staticmethod
     def getUserButton():
-        """Get the state of the "USER" button on the RoboRIO.
+        """Get the state of the "USER" button on the roboRIO.
 
         :returns: True if the button is currently pressed down
         :rtype: bool
