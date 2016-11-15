@@ -4,7 +4,6 @@ import io
 import os
 from os.path import abspath, dirname, exists, join
 import shutil
-import urllib.request
 import zipfile
 
 import pytest
@@ -31,18 +30,17 @@ def _download_hal_includes():
             if hal_version == hal_setup.hal_version:
                 return
             
-        # Nope, gotta download a new include zip
+        # Nope, gotta download a new distribution
         shutil.rmtree(hal_dir)
     
-    # Download the include zipfile 
-    url = "%s/%s/%s" % (hal_setup.hal_site,
-                        hal_setup.hal_version,
-                        'include.zip')
-    response = urllib.request.urlopen(url)
+    # Download the hal zipfile
+    hal_download_zip = hal_setup.hal_download_zip
+    if hal_download_zip is None:
+        hal_download_zip = hal_setup.download_halzip()
     
     os.mkdir(hal_dir)
     
-    with zipfile.ZipFile(io.BytesIO(response.read())) as z:
+    with zipfile.ZipFile(hal_download_zip) as z:
         z.extractall(hal_dir)
         
     # write the version to a file

@@ -1,18 +1,34 @@
 #!/usr/bin/env python3
 
+import atexit
 from os.path import dirname, exists, join
-import sys, subprocess
+import shutil
+import subprocess
+import sys
+from urllib.request import urlretrieve, urlcleanup
+
 from setuptools import setup
-from urllib.request import urlretrieve
 
 setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')
 base_package = 'hal_impl'
 version_file = join(setup_dir, base_package, 'version.py')
-hal_version = 'jenkins-release-2016.413'
-hal_site = 'http://www.tortall.net/~robotpy/hal'
-hal_base_file = 'libHALAthena.so'
-hal_file = join(setup_dir, base_package, hal_base_file)
+hal_version = '2017.1.1-beta-2-20161115003331-29-g1f724d5'
+
+#
+# Code for downloading/extracting HAL shared library files
+# - Used by wpilib tests
+#
+
+hal_site = 'http://first.wpi.edu/FRC/roborio/maven/development/edu/wpi/first/wpilib/athena-runtime'
+hal_zip = 'athena-runtime-%s.zip' % hal_version
+
+hal_base_files = [
+    'libHALAthena.so',
+    'libwpiutil.so',
+]
+
+hal_files = [join(setup_dir, base_package, f) for f in hal_base_files]
 
 __version__ = "master"
 __hal_version__ = None
@@ -22,16 +38,31 @@ if exists(version_file):
     with open(version_file, 'r') as fp:
         exec(fp.read(), globals())
 
-# Download the HAL if required
-if not exists(hal_file) or __hal_version__ != hal_version:
-    print("Downloading", hal_base_file)
+def download_halzip():
+    print("Downloading", hal_zip)
+    
     def _reporthook(count, blocksize, totalsize):
         percent = int(count*blocksize*100/totalsize)
         sys.stdout.write("\r%02d%%" % percent)
         sys.stdout.flush()
 
-    urlretrieve("%s/%s/%s" % (hal_site, hal_version, hal_base_file),
-                hal_file, _reporthook)
+    filename, headers = urlretrieve("%s/%s/%s" % (hal_site, hal_version, hal_zip),
+                                    reporthook=_reporthook)
+    atexit.register(urlcleanup)
+    return filename
+
+hal_download_zip = None
+
+# Download the HAL if required
+if not all(map(exists, hal_files)) or __hal_version__ != hal_version:
+    import zipfile
+    
+    hal_download_zip = download_halzip()
+    with zipfile.ZipFile(hal_download_zip) as z:
+        for bf, f in zip(hal_base_files, hal_files):
+            with z.open(join('lib', bf), 'r') as zfp:
+                with open(f, 'wb') as fp:
+                    shutil.copyfileobj(zfp, fp)
 
 # Automatically generate a version.py based on the git version
 if exists(git_dir):
@@ -72,7 +103,7 @@ if __name__ == '__main__':
         url='https://github.com/robotpy',
         keywords='frc first robotics hal can',
         packages=['hal_impl'],
-        package_data={'hal_impl': [hal_base_file]},
+        package_data={'hal_impl': hal_base_files},
         install_requires='robotpy-hal-base==' + version, # is this a bad idea?
         license="BSD License",
         classifiers=[
