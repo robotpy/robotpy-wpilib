@@ -48,6 +48,7 @@ parsetab.py
 
 # Downloaded libHALAthena
 /hal-roborio/hal_impl/libHALAthena.so
+/hal-roborio/hal_impl/libwpiutil.so
 /wpilib/tests/__hal__
 
 # deploy files
