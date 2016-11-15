@@ -39,8 +39,8 @@ On the robot (manual)
 If you don't have (or don't want) to install pyfrc, running code manually is pretty simple too. 
 
 1. Make sure you have RobotPy installed on the robot
-2. Use scp or sftp (Filezilla is a great GUI product to use for this) to copy your robot code to the RoboRIO
-3. ssh into the RoboRIO, and run your robot code manually
+2. Use scp or sftp (Filezilla is a great GUI product to use for this) to copy your robot code to the roboRIO
+3. ssh into the roboRIO, and run your robot code manually
 
 ::
 

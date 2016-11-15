@@ -23,7 +23,7 @@ external packages, so use them at your own risk.
           reinstall them on your robot in the case you need to reimage it.
 
           If you choose to install packages manually via pip, keep in mind that
-          when powered off, your RoboRIO does not keep track of the correct
+          when powered off, your roboRIO does not keep track of the correct
           date, and as a result pip may fail with an SSL related error message.
           To set the date, you can either:
 

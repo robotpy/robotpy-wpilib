@@ -6,7 +6,7 @@ dedicated to developing python-related projects for the FIRST Robotics
 Competition.
 
 This package contains the binary packages and source code required to install
-a python interpreter on your RoboRIO and the necessary libraries required to
+a python interpreter on your roboRIO and the necessary libraries required to
 use WPILib to control your FIRST Robotics Competition robot.
 
 If you want to install robotpy packages on your laptop, check out the pyfrc

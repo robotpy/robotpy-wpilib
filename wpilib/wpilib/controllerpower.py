@@ -11,7 +11,7 @@ import hal
 __all__ = ['ControllerPower']
 
 class ControllerPower:
-    """Provides access to power levels on the RoboRIO"""
+    """Provides access to power levels on the roboRIO"""
 
     @staticmethod
     def getInputVoltage():

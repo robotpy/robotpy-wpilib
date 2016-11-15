@@ -1,6 +1,6 @@
-# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/BuiltInAccelerometer.java
+# validated: 2016-11-15 DV 7a402b4 athena/java/edu/wpi/first/wpilibj/BuiltInAccelerometer.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2014. All Rights Reserved.
+# Copyright (c) FIRST 2014-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.
 #----------------------------------------------------------------------------
@@ -16,7 +16,7 @@ __all__ = ["BuiltInAccelerometer"]
 class BuiltInAccelerometer(LiveWindowSendable):
     """Built-in accelerometer device
 
-    This class allows access to the RoboRIO's internal accelerometer.
+    This class allows access to the roboRIO's internal accelerometer.
     """
 
     Range = Accelerometer.Range
@@ -61,7 +61,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
 
     def getX(self):
         """
-           :returns: The acceleration of the RoboRIO along the X axis in
+           :returns: The acceleration of the roboRIO along the X axis in
                      g-forces
            :rtype: float
         """
@@ -69,7 +69,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
 
     def getY(self):
         """
-           :returns: The acceleration of the RoboRIO along the Y axis in
+           :returns: The acceleration of the roboRIO along the Y axis in
                      g-forces
            :rtype: float
         """
@@ -77,7 +77,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
 
     def getZ(self):
         """
-           :returns: The acceleration of the RoboRIO along the Z axis in
+           :returns: The acceleration of the roboRIO along the Z axis in
                      g-forces
            :rtype: float
         """
