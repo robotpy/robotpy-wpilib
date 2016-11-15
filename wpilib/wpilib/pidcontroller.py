@@ -1,6 +1,6 @@
-# validated: 2016-01-07 DS 99b6000 shared/java/edu/wpi/first/wpilibj/PIDController.java
+# validated: 2016-11-15 AA 776cb91 shared/java/edu/wpi/first/wpilibj/PIDController.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -28,6 +28,9 @@ class PIDController(LiveWindowSendable):
     Creates a separate thread which reads the given :class:`.PIDSource` and takes
     care of the integral calculations, as well as writing the given
     :class:`.PIDOutput`.
+
+    This feedback controller runs in discrete time, so time deltas are not used
+    in the integral and derivative calculations. Therefore, the sample rate affects the controller's behavior for a
     """
     kDefaultPeriod = .05
     instances = 0
@@ -156,22 +159,14 @@ class PIDController(LiveWindowSendable):
         if enabled:
             with self.mutex:
                 input = pidInput.pidGet()
-                self.error = self.setpoint - input
-                if self.continuous:
-                    if abs(self.error) > ((self.maximumInput - self.minimumInput) / 2.0):
-                        if self.error > 0:
-                            self.error = self.error \
-                                    - self.maximumInput + self.minimumInput
-                        else:
-                            self.error = self.error \
-                                    + self.maximumInput - self.minimumInput
-                                    
+                self.error = self.getContinuousError(self.setpoint - input)
+
                 if self.pidInput.getPIDSourceType() == self.PIDSourceType.kRate:
                     if self.P != 0:
-                        potentialPGain = (self.totalError + self.error) * self.P;
+                        potentialPGain = (self.totalError + self.error) * self.P
                         if potentialPGain < self.maximumOutput:
                             if potentialPGain > self.minimumOutput:
-                                self.totalError += self.error;
+                                self.totalError += self.error
                             else:
                                 self.totalError = self.minimumOutput / self.P
                         
@@ -337,7 +332,7 @@ class PIDController(LiveWindowSendable):
             self.maximumOutput = maximumOutput
 
     def setSetpoint(self, setpoint):
-        """Set the setpoint for the PIDController.
+        """Set the setpoint for the PIDController Clears the queue for GetAvgError().
 
         :param setpoint: the desired setpoint
         """
@@ -354,6 +349,7 @@ class PIDController(LiveWindowSendable):
             self.setpoint = newsetpoint
             
             self.buf.clear()
+            self.totalError = 0
 
         table = self.getTable()
         if table is not None:
@@ -388,7 +384,7 @@ class PIDController(LiveWindowSendable):
         """
         with self.mutex:
             #return self.error
-            return self.getSetpoint() - self.pidInput()
+            return self.getContinuousError(self.getSetpoint() - self.pidInput())
         
     def setPIDSourceType(self, pidSourceType):
         """Sets what type of input the PID controller will use
@@ -558,6 +554,23 @@ class PIDController(LiveWindowSendable):
             table.putNumber("setpoint", self.getSetpoint())
             table.putBoolean("enabled", self.isEnable())
             table.addTableListener(self.valueChanged, False)
+
+    def getContinuousError(self, error):
+        """
+        Wraps error around for continuous inputs. The original error is
+        returned if continuous mode is disabled. This is an unsynchronized
+        function.
+
+        :param error: The current error of the PID controller.
+        :return: Error for continuous inputs.
+        """
+        if self.continuous:
+            if abs(error) > (self.maximumInput - self.minimumInput) / 2:
+                if error > 0:
+                    return error - (self.maximumInput - self.minimumInput)
+                else:
+                    return error + (self.maximumInput - self.minimumInput)
+        return error
 
     def startLiveWindowMode(self):
         self.disable()
