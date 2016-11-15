@@ -30,7 +30,8 @@ class PIDController(LiveWindowSendable):
     :class:`.PIDOutput`.
 
     This feedback controller runs in discrete time, so time deltas are not used
-    in the integral and derivative calculations. Therefore, the sample rate affects the controller's behavior for a
+    in the integral and derivative calculations. Therefore, the sample rate affects
+    the controller's behavior for a given set of PID constants.
     """
     kDefaultPeriod = .05
     instances = 0
