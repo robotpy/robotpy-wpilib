@@ -1,4 +1,4 @@
-# validated: 2016-02-17 DS 952ebb1 athena/java/edu/wpi/first/wpilibj/SpeedController.java
+# validated: 2016-11-15 AA 9e99df1 shared/java/edu/wpi/first/wpilibj/SpeedController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -21,13 +21,10 @@ class SpeedController(PIDOutput):
         """
         raise NotImplementedError
 
-    def set(self, speed, syncGroup=0):
+    def set(self, speed):
         """Common interface for setting the speed of a speed controller.
 
         :param speed: The speed to set.  Value should be between -1.0 and 1.0.
-        :param syncGroup: The update group to add this set() to, pending
-                          updateSyncGroup().  If 0 (or unspecified), update
-                          immediately.
         """
         raise NotImplementedError
     
