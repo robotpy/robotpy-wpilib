@@ -163,6 +163,15 @@ Adding new files
 Unfortunately, git-source-track doesn't currently have a mechanism that allows
 it to identify new files that need to be ported. We need to do that manually.
 
+Converting javadocs to docstrings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is an HTML page in devtools called ``convert_javadoc.html`` that you can
+use. The way it works is you copy a Java docstring in the top box (you can also
+paste in a  function definition too) and it will output a python docstring in
+the bottom box. When adding new APIs that have documentation, this tool is
+invaluable -- feel free to improve it though!
+
 Dealing with RobotPy-specific files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -182,3 +191,4 @@ It will store the current date and the tracked git commit.
 
 Additionally, if you answer 'y' after running ``git source-track diff FILENAME``,
 then it will update the validation header in the file.
+
