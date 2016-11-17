@@ -4,7 +4,6 @@ import sys
 import CppHeaderParser
 import inspect
 
-from argparse import ArgumentParser
 import argparse
 
 green_head = "\033[92m"
@@ -23,7 +22,33 @@ def get_hal_dirs(hal_dir):
     paths.append(join(hal_dir, 'include', 'HAL'))
     return paths
 
-def compare_header_dirs(python_objects, header_dirs):
+def index_py_funcs(python_objects):
+    '''
+        Collect python functions and create an index to them by c_name
+    '''
+    return [(pymod, index_py_obj(pymod)) for pymod in python_objects]
+        
+def index_py_obj(py_obj):
+    functions = {}
+    classes = {}
+    
+    for name, obj in inspect.getmembers(py_obj):
+        if inspect.isclass(obj):
+            classes[name] = obj
+        else:
+            fndata = getattr(obj, 'fndata', None)
+            if fndata is not None:
+                # check for conflicts
+                existing = functions.get(fndata.c_name)
+                if existing is not None:
+                    raise ValueError("Error: name %s is used twice (%s; %s)" % (fndata, existing))
+                
+                functions[fndata.c_name] = (obj, fndata)
+        
+    return {'functions': functions, 'classes': classes}
+    
+
+def compare_header_dirs(python_objects, header_dirs, filter_h=None):
     """
     Parses through cpp_dirs and matches c++ header objects to front-end objects in
     python_object and returns a summary of it's findings.
@@ -37,13 +62,15 @@ def compare_header_dirs(python_objects, header_dirs):
 
     #Get the .. not_implemented ignore flags in the docstring of python_object
     children_to_ignore = []
-    for python_object in python_objects:
+    for python_object, _ in python_objects:
         children_to_ignore += parse_docstring(python_object.__doc__)
 
     #Get all header files in header_dirs
     for header_dir in header_dirs:
         for root, _, files in os.walk(header_dir):
             for fname in files:
+                if filter_h and fname != filter_h:
+                    continue
                 _process_header(os.path.join(root, fname), output, children_to_ignore, python_objects)
     
     return output
@@ -66,9 +93,9 @@ def _process_header(header_file, output, children_to_ignore, python_objects):
 
         #Get the first python object and compare!
         python_child = None
-        for python_object in python_objects:
-            if hasattr(python_object, c_class["name"]):
-                python_child = getattr(python_object, c_class["name"])
+        for _, idx in python_objects:
+            python_child = idx['classes'].get(c_class["name"])
+            if python_child is not None:
                 break
 
         class_output = compare_class(python_child, c_class, filename)
@@ -89,18 +116,20 @@ def _process_header(header_file, output, children_to_ignore, python_objects):
 
         #Get the first python object and compare!
         python_child = None
+        fndata = None
         c_name = c_method["name"]
-        for python_object in python_objects:
-            if hasattr(python_object, c_name):
-                python_child = getattr(python_object, c_name)
+        for _, idx in python_objects:
+            python_child = idx['functions'].get(c_name)
+            if python_child is not None:
+                python_child, fndata = python_child
                 break
-                
-            # Stupid talon special case...
-            elif c_name.startswith('c_') and hasattr(python_object, c_name[2:]):
-                python_child = getattr(python_object, c_name[2:])
-                break
+        else:
+            for pymod, _ in python_objects:
+                python_child = getattr(pymod, c_name, None)
+                if python_child is not None:
+                    break
 
-        method_output = compare_function(python_child, c_method, True, filename)
+        method_output = compare_function(python_child, fndata, c_method, True, filename)
 
         #Collect errors
         output["ignored_errors"] += method_output["ignored_errors"]
@@ -178,7 +207,7 @@ def compare_class(python_object, c_object, filename):
             python_method = getattr(python_object, python_method_name)
 
         #Compare the method.
-        method_output = compare_function(python_method, c_method, False, filename)
+        method_output = compare_function(python_method, None, c_method, False, filename)
 
         #Collect errors from the comparison
         output["ignored_errors"] += method_output["ignored_errors"]
@@ -192,7 +221,7 @@ def compare_class(python_object, c_object, filename):
     return output
 
 
-def compare_function(python_object, c_object, check_fndata, filename):
+def compare_function(python_object, fndata, c_object, check_fndata, filename):
     """
     Compares python_object and c_object, and returns a summary of the differences.
     """
@@ -220,19 +249,19 @@ def compare_function(python_object, c_object, check_fndata, filename):
     #Check if the corresponding python object has enough arguments to match
     if output["present"]:
         if check_fndata:
-            if not hasattr(python_object, 'fndata'):
+            fndata = getattr(python_object, 'fndata', None)
+            if fndata is None:
                 output['errors'].append('fndata not found')
             else:
-                name, restype, params, out = python_object.fndata
-                if output['name'] != name:
-                    err = 'name does not match! (py: %s, c: %s)' % (name, output['name'])
+                if output['name'] != fndata.c_name:
+                    err = 'name does not match! (py: %s/%s, c: %s)' % (fndata.c_name, fndata.name, output['name'])
                     output['errors'].append(err)
                 
-                if len(params) != len(output['parameters']):
-                    err = 'expected %s params, got %s' % (len(params), len(output['parameters']))
+                if len(fndata.params) != len(output['parameters']):
+                    err = 'expected %s params, got %s' % (len(fndata.params), len(output['parameters']))
                     output['errors'].append(err)
         else:
-            args, varargs, keywords, defaults = inspect.getargspec(python_object)
+            args, varargs, keywords, _ = inspect.getargspec(python_object)
             if varargs is None and keywords is None:
                 args = [a for a in args if a != "self"]
                 if len(args) != len(output["parameters"]):
@@ -285,12 +314,20 @@ def _get_py_typeinfo(py_param):
     
     return py_type_name, py_pointer
 
-def scan_c_end(python_object, summary):
+def scan_c_end(python_objects, summary):
     """
     Scans python_object for c function calls and compares them to the specifications in summary
     :param python_object: The python object to scan for c function calls
     :param summary: The output of compare_header_dirs for python_object
     """
+    
+    return [_scan_c_end(python_object, idx, summary) \
+                for python_object, idx in python_objects]
+
+def _scan_c_end(python_object, idx, summary):
+
+    if idx is None:
+        idx = index_py_obj(python_object)
 
     output = dict()
     output["errors"] = 0
@@ -304,135 +341,133 @@ def scan_c_end(python_object, summary):
     if not output["present"]:
         return output
 
-    #Get the module class
-    for name, obj in inspect.getmembers(python_object):
-        if hasattr(obj, "fndata"):
+    # Scan functions
+    for _, (_, fndata) in idx['functions'].items():
 
-            #Get fndata
-            name, restype, params, out = obj.fndata
+        #Find c object
+        c_object = None
+        fname = ''
+        for m in summary["methods"]:
+            if m["name"] == fndata.c_name:
+                c_object = m
+                fname = m['filename']
+                break
+
+        #Put together dictionary of info
+        method_summary = dict()
+        method_summary["present"] = c_object is not None
+        method_summary["name"] = fndata.c_name
+        method_summary["filename"] = fname
+        method_summary["errors"] = []
+        method_summary["ignored_errors"] = 0
+        if not method_summary["present"]:
+            method_summary["errors"].append("missing c object")
+        method_summary["ignored"] = False
+        method_summary["parameters"] = list()
+        
+        if method_summary["present"]:
             
-            #Find c object
-            c_object = None
-            fname = ''
-            for m in summary["methods"]:
-                if m["name"] == name:
-                    c_object = m
-                    fname = m['filename']
-                    break
-
-            #Put together dictionary of info
-            method_summary = dict()
-            method_summary["present"] = c_object is not None
-            method_summary["name"] = name
-            method_summary["filename"] = fname
-            method_summary["errors"] = []
-            method_summary["ignored_errors"] = 0
-            if not method_summary["present"]:
-                method_summary["errors"].append("missing c object")
-            method_summary["ignored"] = False
-            method_summary["parameters"] = list()
-            
-            if method_summary["present"]:
-                
-                # check the return type to see if it matches
-                if restype is None:
-                    py_rettype_name = 'void'
-                    py_retpointer = False
-                else:
-                    py_rettype_name, py_retpointer = _get_py_typeinfo(restype)
-                    
-                c_rettype_name, c_retpointer = _get_c_typeinfo(c_object['returns'],
-                                                               c_object['returns_pointer'])
-                    
-                if py_retpointer != c_retpointer:
-                    method_summary['errors'].append("mismatched return ptr")
-                    
-                if py_rettype_name != c_rettype_name and c_rettype_name != "void":
-                    method_summary["errors"].append("mismatched return type")
-                
-                method_summary['returns'] = c_object['returns']
-                if c_object['returns_pointer']:
-                    method_summary['returns'] += ' *'
-                
-                method_summary["parameters"] = c_object["parameters"]
-
-                if len(params) != len(c_object["parameters"]):
-                    err = 'expected %s params, got %s' % (len(params), len(c_object['parameters']))
-                    method_summary["errors"].append(err)
-
-                for i in range(min(len(params), len(c_object["parameters"]))):
-
-                    c_param = c_object["parameters"][i]
-                    py_param = params[i][1]
-                    c_pointer = False
-                    py_pointer = False
-                    c_type_obj = None
-                    c_type_name = ""
-                    py_type_name = ""
-
-                    #Check for pointers
-                    if c_param["pointer"] != 0:
-                        c_pointer = True
-                    else:
-                        c_pointer = False
-
-                    if "raw_type" in c_param:
-                        c_type_obj = c_param["raw_type"]
-                    else:
-                        c_type_obj = c_param["type"]
-
-                    c_type_name, c_pointer = _get_c_typeinfo(c_type_obj, c_pointer)
-                    py_type_name, py_pointer = _get_py_typeinfo(py_param)
-
-                    # TODO: function pointers are weird
-                    if py_type_name == 'PyCFuncPtrType':
-                        if 'function' in c_type_name.lower():
-                            continue
-                        
-                        if c_pointer == True:
-                            # TODO: need deeper validation, but.. hard
-                            continue
-
-                        method_summary['errors'].append("mismatched function pointer for '%s'" % c_param['name'])
-
-                    else:
-                        if py_pointer != c_pointer:
-                            method_summary["errors"].append("mismatched pointer for '%s'" % c_param['name'])
-                            continue
-                        
-                        if py_type_name != c_type_name and c_type_name != "void":
-                            method_summary["errors"].append("mismatched type for '%s'" % c_param['name'])
-                            continue
-
-            #Collect errors from the comparison
-            output["errors"] += len(method_summary["errors"])
-
-            output["methods"].append(method_summary)
-
-        if inspect.isclass(obj):
-            #Find c object
-            c_object = None
-            for m in summary["classes"]:
-                if m["name"] == name:
-                    c_object = m
-                    break
-
-            class_summary = scan_c_end(obj, c_object)
-
-            if not class_summary["contains_methods"]:
-                continue
-
-            output["containes_methods"] = True
-
-            #Collect errors from the comparison
-            output["ignored_errors"] += class_summary["ignored_errors"]
-            if class_summary["present"]:
-                output["ignored_errors"] += class_summary["errors"]
-                class_summary["ignored"] = True
+            # check the return type to see if it matches
+            if fndata.restype is None:
+                py_rettype_name = 'void'
+                py_retpointer = False
             else:
-                output["errors"] += class_summary["errors"]
+                py_rettype_name, py_retpointer = _get_py_typeinfo(fndata.restype)
+                
+            c_rettype_name, c_retpointer = _get_c_typeinfo(c_object['returns'],
+                                                           c_object['returns_pointer'])
+                
+            if py_retpointer != c_retpointer:
+                method_summary['errors'].append("mismatched return ptr")
+                
+            if py_rettype_name != c_rettype_name and c_rettype_name != "void":
+                method_summary["errors"].append("mismatched return type")
+            
+            method_summary['returns'] = c_object['returns']
+            if c_object['returns_pointer']:
+                method_summary['returns'] += ' *'
+            
+            method_summary["parameters"] = c_object["parameters"]
 
-            output["classes"].append(class_summary)
+            if len(fndata.params) != len(c_object["parameters"]):
+                err = 'expected %s params, got %s' % (len(fndata.params), len(c_object['parameters']))
+                method_summary["errors"].append(err)
+
+            for i in range(min(len(fndata.params), len(c_object["parameters"]))):
+
+                c_param = c_object["parameters"][i]
+                py_param = fndata.params[i][1]
+                c_pointer = False
+                py_pointer = False
+                c_type_obj = None
+                c_type_name = ""
+                py_type_name = ""
+
+                #Check for pointers
+                if c_param["pointer"] != 0:
+                    c_pointer = True
+                else:
+                    c_pointer = False
+
+                if "raw_type" in c_param:
+                    c_type_obj = c_param["raw_type"]
+                else:
+                    c_type_obj = c_param["type"]
+
+                c_type_name, c_pointer = _get_c_typeinfo(c_type_obj, c_pointer)
+                py_type_name, py_pointer = _get_py_typeinfo(py_param)
+
+                # TODO: function pointers are weird
+                if py_type_name == 'PyCFuncPtrType':
+                    if 'function' in c_type_name.lower():
+                        continue
+                    
+                    if c_pointer == True:
+                        # TODO: need deeper validation, but.. hard
+                        continue
+
+                    method_summary['errors'].append("mismatched function pointer for '%s'" % c_param['name'])
+
+                else:
+                    if py_pointer != c_pointer:
+                        method_summary["errors"].append("mismatched pointer for '%s'" % c_param['name'])
+                        continue
+                    
+                    if py_type_name != c_type_name and c_type_name != "void":
+                        method_summary["errors"].append("mismatched type for '%s'" % c_param['name'])
+                        continue
+
+        #Collect errors from the comparison
+        output["errors"] += len(method_summary["errors"])
+
+        output["methods"].append(method_summary)
+
+    # Scan classes
+    for cname, cls in idx['classes'].items():
+        
+        #Find c object
+        c_object = None
+        for m in summary["classes"]:
+            if m["name"] == cname:
+                c_object = m
+                break
+
+        class_summary = _scan_c_end(cls, None, c_object)
+
+        if not class_summary["contains_methods"]:
+            continue
+
+        output["containes_methods"] = True
+
+        #Collect errors from the comparison
+        output["ignored_errors"] += class_summary["ignored_errors"]
+        if class_summary["present"]:
+            output["ignored_errors"] += class_summary["errors"]
+            class_summary["ignored"] = True
+        else:
+            output["errors"] += class_summary["errors"]
+
+        output["classes"].append(class_summary)
 
     return output
 
@@ -624,9 +659,17 @@ def stringize_method_summary(summary):
     ret = [{"text": text, "color": status_color, 'filename': summary['filename']}, ]
     return ret
 
+def c_fn_name_to_py(n):
+    # returns name, c_name
+    if n.startswith('HAL_'):
+        return n[4].lower() + n[5:], None
+    else:
+        return n, n
+
 def stringize_method_to_hal(summary):
     
     functype = '_RETFUNC'
+    name, c_name = c_fn_name_to_py(summary['name'])
     retval = summary.get('returns')
     params = summary['parameters'][:]
     
@@ -637,7 +680,7 @@ def stringize_method_to_hal(summary):
         functype = '_STATUSFUNC'
         params.pop()
     
-    text = summary['name'] + ' = ' + functype + '("' + summary['name'] + '"'
+    text = name + ' = ' + functype + '("' + name + '"'
     
     if retval != 'CTR_Code':
         if retval:
@@ -656,14 +699,19 @@ def stringize_method_to_hal(summary):
         
     if len(ptrs):
         text += ', out=["' + '", "'.join(ptrs) + '"]'
-        
+    
+    if c_name:
+        text += ', c_name="%s"' % c_name
+    
     text += ")"
     
     return [{'text': text, 'filename': summary['filename']}] 
 
 def stringize_method_to_halsim(summary):
     
-    text = 'def ' + summary['name'] + '(' + \
+    name, _ = c_fn_name_to_py(summary['name'])
+    
+    text = 'def ' + name + '(' + \
             ', '.join(arg['name'] for arg in summary['parameters']) + '):'
     
     text += '\n    assert False'
@@ -707,12 +755,15 @@ def print_list(inp):
 
 if __name__ == "__main__":
     
-    parser = ArgumentParser()
+    parser = argparse.ArgumentParser()
     parser.add_argument('hal_dir')
     parser.add_argument('check_type', type=str, choices=['all', 'c', 'py'])
+    parser.add_argument('filter', type=str, default=None, nargs='?',
+                        help="Only process this filename")
     
     parser.add_argument('--nostrict', action='store_true', default=False)
-    parser.add_argument('--missing', type=str, choices=['c', 'pyhal', 'halsim'], default='c')
+    parser.add_argument('--stubs', type=str, choices=['no', 'pyhal', 'halsim'], default='no',
+                        help="Use pyhal/halsim to generate stubs")
     
     args = parser.parse_args()
     
@@ -728,9 +779,11 @@ if __name__ == "__main__":
         print()
         raise
     
+    python_objects = index_py_funcs([hal])
  
-    py_end_output = compare_header_dirs([hal], get_hal_dirs(args.hal_dir))
-    c_end_output = scan_c_end(hal, py_end_output)
+    py_end_output = compare_header_dirs(python_objects, get_hal_dirs(args.hal_dir), args.filter)
+    # TODO: eventually support multiple objects...
+    c_end_output = scan_c_end(python_objects, py_end_output)[0]
     
     if args.check_type in ['all', 'c']:
         print("\n\n\n")
@@ -744,13 +797,13 @@ if __name__ == "__main__":
         
         text_list = list()
         for method in sort_by_fname(py_end_output["methods"]):
-            if method['present'] or args.missing == 'c':
+            if method['present'] or args.stubs == 'no':
                 text_list += stringize_method_summary(method)
                 
             if not method['present']:
-                if args.missing == 'pyhal':
+                if args.stubs == 'pyhal':
                     text_list += stringize_method_to_hal(method)
-                if args.missing == 'halsim':
+                if args.stubs == 'halsim':
                     text_list += stringize_method_to_halsim(method)
         
         for cls in sort_by_fname(py_end_output["classes"]):
