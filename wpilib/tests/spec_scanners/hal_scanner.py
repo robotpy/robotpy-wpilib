@@ -209,6 +209,10 @@ def compare_function(python_object, c_object, check_fndata, filename):
     #Get all parameters
     output["parameters"] = c_object["parameters"][:]
     
+    # Elide void parameters
+    if len(output["parameters"]) == 1 and output["parameters"][0]["raw_type"] == "void": 
+        output["parameters"] = []
+    
     #And the return value
     output['returns'] = c_object['returns']
     output['returns_pointer'] = True if c_object['returns_pointer'] else False
