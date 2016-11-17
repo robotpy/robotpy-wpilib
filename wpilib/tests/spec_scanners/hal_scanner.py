@@ -448,7 +448,7 @@ _translate_obj_aliases = [
    ["uint16", "uint16_t", "c_uint16", "H", "c_ushort", "c_ushort_t", "unsigned short"],
    ["uint32", "uint", "u", "c_uint", "I", "uint32_t"],
    ["uint64", "uint64_t", "c_uint64", "int64", "int64_t", "c_int64", "long", "l", "L", "longlong", "c_long", "long_t"],
-   ["bool", "?"]
+   ["bool", "?", "HAL_Bool"]
 ]
 
 def translate_obj(obj):
@@ -475,7 +475,8 @@ _translate_c_aliases = {
     'bool': ('C.c_bool', False),
     'double': ('C.c_double', False),
     'float': ('C.c_float', False),
-    'char': ('C.c_char', False) 
+    'char': ('C.c_char', False),
+    'HAL_Bool': ('C.c_bool', False), 
 }
 
 def __translate_c_aliases_ptrs():
