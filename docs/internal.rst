@@ -192,3 +192,14 @@ It will store the current date and the tracked git commit.
 Additionally, if you answer 'y' after running ``git source-track diff FILENAME``,
 then it will update the validation header in the file.
 
+HAL Changes
+~~~~~~~~~~~
+
+If there are changes to the HAL, we have some scripts that should be able to
+help out here.
+
+* ``devtools/hal_fix.sh``: This detects errors in the HAL,
+  and if you pass it the ``--stubs`` argument it can print out the correct 
+  HAL definitions or a python stub. Use ``--help`` for more information.
+
+
