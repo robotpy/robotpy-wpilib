@@ -3,6 +3,7 @@
 # This is the start of an alternative implementation around the hal implementation
 #
 
+import collections
 import ctypes as C
 import inspect
 import os
@@ -10,6 +11,14 @@ import os
 from . import functions as _dll
 
 __all__ = ["_dll", "_RETFUNC", "_VAR"]
+
+FuncData = collections.namedtuple('FuncData', [
+    'name',         # internal name
+    'c_name',       # c name (used for validation)
+    'restype',      # return type
+    'params',       # list of [(name, type), ..]
+    'out'           # output parameters, same form as params
+])
 
 def gen_check(pname, ptype):
     
@@ -113,7 +122,8 @@ def gen_func(f, name, restype, params, out, _thunk):
 
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
-             errcheck=None, handle_missing=False, _thunk=False):
+             errcheck=None, handle_missing=False, _thunk=False,
+             c_name=None):
 
     # get func
     try:
@@ -143,8 +153,11 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
     # return the created func
     retfunc = elocals[name]
     
+    if c_name is None:
+        c_name = 'HAL_%s%s' % (name[0].upper(), name[1:])
+    
     # Store function definition data for API validation
-    retfunc.fndata = (name, restype, params, out)
+    retfunc.fndata = FuncData(name, c_name, restype, params, out)
     return retfunc
 
 def _THUNKFUNC(*a, **k):
