@@ -7,7 +7,7 @@ __all__ = ["_dll", "_RETFUNC", "_VAR"]
 _dll = C.CDLL(os.path.join(os.path.dirname(sys.modules['hal_impl'].__file__), "libHALAthena.so"), use_errno=True)
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
-             errcheck=None, handle_missing=False):
+             errcheck=None, handle_missing=False, c_name=None):
     prototype = C.CFUNCTYPE(restype, *tuple(param[1] for param in params))
     paramflags = []
     for param in params:
@@ -19,6 +19,11 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
             paramflags.append((dir, param[0], param[2]))
         else:
             paramflags.append((dir, param[0]))
+        
+    # Note: keep in sync with hal-sim implementation
+    if c_name is None:
+        c_name = 'HAL_%s%s' % (name[0].upper(), name[1:])
+            
     try:
         func = prototype((name, library), tuple(paramflags))
         if errcheck is not None:

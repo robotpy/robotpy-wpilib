@@ -20,7 +20,7 @@ def hal_wrapper(f):
     return f
 
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
-                handle_missing=False, _inner_func=_RETFUNC):
+                handle_missing=False, _inner_func=_RETFUNC, c_name=None):
     realparams = list(params)
     realparams.append(("status", C.POINTER(C.c_int32)))
     if restype is not None and out is not None:
@@ -32,7 +32,7 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
     else:
         errcheck = None
     _inner = _inner_func(name, restype, *realparams, out=out, library=library,
-                        errcheck=errcheck, handle_missing=handle_missing)
+                        errcheck=errcheck, handle_missing=handle_missing, c_name=None)
     def outer(*args, **kwargs):
         status = C.c_int32(0)
         rv = _inner(*args, status=status, **kwargs)
@@ -59,7 +59,8 @@ def _CTRFUNC_errcheck(result, func, args):
 
 def _CTRFUNC(name, *params, out=None, library=_dll, handle_missing=False):
     return _RETFUNC(name, C.c_int, ("handle", TalonSRX_ptr), *params, out=out, library=library,
-                    handle_missing=handle_missing, errcheck=_CTRFUNC_errcheck)
+                    handle_missing=handle_missing, errcheck=_CTRFUNC_errcheck,
+                    c_name='c_%s' % name)
 
 #############################################################################
 # Semaphore.hpp
