@@ -510,7 +510,8 @@ class SshController(object):
                                     first = False
                                 else:
                                     rd = join(rdst, relpath(d, src))
-                                    fp.write('mkdir "%s"\n' % rd)
+                                    if mkdir:
+                                        fp.write('mkdir "%s"\n' % rd)
                                 
                                 for f in files:
                                     lf = join(d, f)
