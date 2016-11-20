@@ -1,16 +1,16 @@
-# validated: 2016-01-09 AG b62b606 shared/java/edu/wpi/first/wpilibj/command/StartCommand.java
+# validated: 2016-11-20 KC b78f580d476f shared/java/edu/wpi/first/wpilibj/command/StartCommand.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
 
-from .command import Command
+from .instantcommand import InstantCommand
 
 __all__ = ["StartCommand"]
 
-class StartCommand(Command):
+class StartCommand(InstantCommand):
     """A StartCommand will call the start() method of another command when it
     is initialized and will finish immediately.
     """
@@ -26,6 +26,3 @@ class StartCommand(Command):
 
     def initialize(self):
         self.commandToFork.start()
-
-    def isFinished(self):
-        return True
