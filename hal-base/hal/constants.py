@@ -6,15 +6,9 @@
 # HAL
 #############################################################################
 
-kHALAllianceStationID_red1 = 0
-kHALAllianceStationID_red2 = 1
-kHALAllianceStationID_red3 = 2
-kHALAllianceStationID_blue1 = 3
-kHALAllianceStationID_blue2 = 4
-kHALAllianceStationID_blue3 = 5
-
-kMaxJoystickAxes = 12
-kMaxJoystickPOVs = 12
+class RuntimeType:
+    Athena = 0
+    Mock = 1
 
 class HALUsageReporting:
     # enum tResourceType
@@ -76,12 +70,14 @@ class HALUsageReporting:
     kResourceType_RevSPARK = 55
     kResourceType_MindsensorsSD540 = 56
     kResourceType_DigitalFilter = 57
+    kResourceType_ADIS16448 = 58
 
     # enum tInstances
     kLanguage_LabVIEW = 1
     kLanguage_CPlusPlus = 2
     kLanguage_Java = 3
     kLanguage_Python = 4
+    kLanguage_DotNet = 5
 
     kCANPlugin_BlackJagBridge = 1
     kCANPlugin_2CAN = 2
@@ -121,7 +117,7 @@ class HALUsageReporting:
     kSmartDashboard_Instance = 1
 
 #############################################################################
-# Accelerometer
+# Accelerometer.h
 #############################################################################
 
 class AccelerometerRange:
@@ -130,7 +126,7 @@ class AccelerometerRange:
     kRange_8G = 2
 
 #############################################################################
-# Analog
+# AnalogTrigger.h
 #############################################################################
 
 class AnalogTriggerType:
@@ -140,182 +136,42 @@ class AnalogTriggerType:
     kFallingPulse = 3
 
 #############################################################################
-# Digital
+# Counter.h
 #############################################################################
 
-class Mode:
+class CounterMode:
     kTwoPulse = 0
     kSemiperiod = 1
     kPulseLength = 2
     kExternalDirection = 3
 
 #############################################################################
-# TalonSRX
+# DriverStation.h
 #############################################################################
 
-class TalonSRXConst:
-    kDefaultControlPeriodMs = 10
+class AllianceStationID:
+    kRed1 = 0
+    kRed2 = 1
+    kRed3 = 2
+    kBlue1 = 3
+    kBlue2 = 4
+    kBlue3 = 5
 
-    # mode select enumerations
-    kMode_DutyCycle = 0
-    kMode_PositionCloseLoop = 1
-    kMode_VelocityCloseLoop = 2
-    kMode_CurrentCloseLoop = 3
-    kMode_VoltCompen = 4
-    kMode_SlaveFollower = 5
-    kMode_MotionProfile = 6
-    kMode_NoDrive = 15
+kMaxJoystickAxes = 12
+kMaxJoystickPOVs = 12
 
-    # limit switch enumerations
-    kLimitSwitchOverride_UseDefaultsFromFlash = 1
-    kLimitSwitchOverride_DisableFwd_DisableRev = 4
-    kLimitSwitchOverride_DisableFwd_EnableRev = 5
-    kLimitSwitchOverride_EnableFwd_DisableRev = 6
-    kLimitSwitchOverride_EnableFwd_EnableRev = 7
+#############################################################################
+# Encoder.h
+#############################################################################
 
-    # brake override enumerations
-    kBrakeOverride_UseDefaultsFromFlash = 0
-    kBrakeOverride_OverrideCoast = 1
-    kBrakeOverride_OverrideBrake = 2
-
-    # feedback device enumerations
-    kFeedbackDev_DigitalQuadEnc = 0
-    kFeedbackDev_AnalogPot = 2
-    kFeedbackDev_AnalogEncoder = 3
-    kFeedbackDev_CountEveryRisingEdge = 4
-    kFeedbackDev_CountEveryFallingEdge = 5
-    kFeedbackDev_CtreMagEncoder_Relative = 6
-    kFeedbackDev_CtreMagEncoder_Absolute = 7
-    kFeedbackDev_PosIsPulseWidth = 8
+class EncoderIndexingType:
+    kResetWhileHigh = 0
+    kResetWhileLow = 1
+    kResetOnFallingEdge = 2
+    kResetOnRisingEdge = 3
     
-    # feedback device status enumerations
-    kFeedbackDevStatus_Unknown = 0
-    kFeedbackDevStatus_Present = 1
-    kFeedbackDevStatus_NotPresent = 2
-
-    # ProfileSlotSelect enumerations
-    kProfileSlotSelect_Slot0 = 0
-    kProfileSlotSelect_Slot1 = 1
-
-    # status frame rate types
-    kStatusFrame_General = 0
-    kStatusFrame_Feedback = 1
-    kStatusFrame_Encoder = 2
-    kStatusFrame_AnalogTempVbat = 3
-    kStatusFrame_PulseWidth = 4
-    kStatusFrame_MotionProfile = 5
-    
-    # Motion Profile status bits
-    kMotionProfileFlag_ActTraj_IsValid = 0x1
-    kMotionProfileFlag_HasUnderrun = 0x2
-    kMotionProfileFlag_IsUnderrun = 0x4
-    kMotionProfileFlag_ActTraj_IsLast = 0x8
-    kMotionProfileFlag_ActTraj_VelOnly = 0x10
-    
-    # Motor output is neutral, Motion Profile Executer is not running.
-    kMotionProfile_Disable = 0
-    # Motor output is updated from Motion Profile Executer, MPE will
-    # process the buffered points.
-    kMotionProfile_Enable = 1
-    # Motor output is updated from Motion Profile Executer, MPE will
-    # stay processing current trajectory point.
-    kMotionProfile_Hold = 2
-
-class TalonSRXParam:
-    # Signal enumeration for generic signal access
-    eProfileParamSlot0_P = 1
-    eProfileParamSlot0_I = 2
-    eProfileParamSlot0_D = 3
-    eProfileParamSlot0_F = 4
-    eProfileParamSlot0_IZone = 5
-    eProfileParamSlot0_CloseLoopRampRate = 6
-    eProfileParamSlot1_P = 11
-    eProfileParamSlot1_I = 12
-    eProfileParamSlot1_D = 13
-    eProfileParamSlot1_F = 14
-    eProfileParamSlot1_IZone = 15
-    eProfileParamSlot1_CloseLoopRampRate = 16
-    eProfileParamSoftLimitForThreshold = 21
-    eProfileParamSoftLimitRevThreshold = 22
-    eProfileParamSoftLimitForEnable = 23
-    eProfileParamSoftLimitRevEnable = 24
-    eOnBoot_BrakeMode = 31
-    eOnBoot_LimitSwitch_Forward_NormallyClosed = 32
-    eOnBoot_LimitSwitch_Reverse_NormallyClosed = 33
-    eOnBoot_LimitSwitch_Forward_Disable = 34
-    eOnBoot_LimitSwitch_Reverse_Disable = 35
-    eFault_OverTemp = 41
-    eFault_UnderVoltage = 42
-    eFault_ForLim = 43
-    eFault_RevLim = 44
-    eFault_HardwareFailure = 45
-    eFault_ForSoftLim = 46
-    eFault_RevSoftLim = 47
-    eStckyFault_OverTemp = 48
-    eStckyFault_UnderVoltage = 49
-    eStckyFault_ForLim = 50
-    eStckyFault_RevLim = 51
-    eStckyFault_ForSoftLim = 52
-    eStckyFault_RevSoftLim = 53
-    eAppliedThrottle = 61
-    eCloseLoopErr = 62
-    eFeedbackDeviceSelect = 63
-    eRevMotDuringCloseLoopEn = 64
-    eModeSelect = 65
-    eProfileSlotSelect = 66
-    eRampThrottle = 67
-    eRevFeedbackSensor = 68
-    eLimitSwitchEn = 69
-    eLimitSwitchClosedFor = 70
-    eLimitSwitchClosedRev = 71
-    eSensorPosition = 73
-    eSensorVelocity = 74
-    eCurrent = 75
-    eBrakeIsEnabled = 76
-    eEncPosition = 77
-    eEncVel = 78
-    eEncIndexRiseEvents = 79
-    eQuadApin = 80
-    eQuadBpin = 81
-    eQuadIdxpin = 82
-    eAnalogInWithOv = 83
-    eAnalogInVel = 84
-    eTemp = 85
-    eBatteryV = 86
-    eResetCount = 87
-    eResetFlags = 88
-    eFirmVers = 89
-    eSettingsChanged = 90
-    eQuadFilterEn = 91
-    ePidIaccum = 93
-    eStatus1FrameRate = 94  # TALON_Status_1_General_10ms_t
-    eStatus2FrameRate = 95  # TALON_Status_2_Feedback_20ms_t
-    eStatus3FrameRate = 96  # TALON_Status_3_Enc_100ms_t
-    eStatus4FrameRate = 97  # TALON_Status_4_AinTempVbat_100ms_t
-    eStatus6FrameRate = 98  # TALON_Status_6_Eol_t
-    eStatus7FrameRate = 99  # TALON_Status_7_Debug_200ms_t
-    eClearPositionOnIdx = 100
-    # reserved
-    # reserved
-    # reserved
-    ePeakPosOutput = 104
-    eNominalPosOutput = 105
-    ePeakNegOutput = 106
-    eNominalNegOutput = 107
-    eQuadIdxPolarity = 108
-    eStatus8FrameRate = 109  # TALON_Status_8_PulseWid_100ms_t
-    eAllowPosOverflow = 110
-    eProfileParamSlot0_AllowableClosedLoopErr = 111
-    eNumberPotTurns = 112
-    eNumberEncoderCPR = 113
-    ePwdPosition = 114
-    eAinPosition = 115
-    eProfileParamVcompRate = 116
-    eProfileParamSlot1_AllowableClosedLoopErr = 117
-    eStatus9FrameRate = 118  # TALON_Status_9_MotProfBuffer_100ms_t
-    eMotionProfileHasUnderrunErr = 119
-    eReserved120 = 120
-    eLegacyControlMode = 121
-
-TalonSRXParam_tostr = {getattr(TalonSRXParam, p): p for p in dir(TalonSRXParam) if not p.startswith('__')}
+class EncoderEncodingType:
+    k1X = 0
+    k2X = 1
+    k4X = 2
 

@@ -10,7 +10,9 @@ import os
 
 from . import functions as _dll
 
-__all__ = ["_dll", "_RETFUNC", "_VAR"]
+__all__ = ["_dll", "_RETFUNC", "_VAR", "sleep"]
+
+sleep = _dll.sleep
 
 FuncData = collections.namedtuple('FuncData', [
     'name',         # internal name
@@ -107,7 +109,7 @@ def gen_func(f, name, restype, params, out, _thunk):
 
     # double check that our simulated HAL is correct
     info = inspect.getfullargspec(f)
-    assert info.args == callargs, '%s != %s' % (info.args, args)
+    assert info.args == callargs, '%s: %s != %s' % (name, info.args, args)
 
     # Create the function body to be exec'ed
     # -> optimization: store the function first, instead of looking it up in _dll each time

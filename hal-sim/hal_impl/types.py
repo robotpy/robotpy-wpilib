@@ -2,26 +2,30 @@
 # These are opaque types used internally by the simulation HAL
 #
 
-import copy
-
-__all__ = ["MUTEX_ID", "MULTIWAIT_ID",
-           "HALControlWord_ptr", "HALControlWord",
-           "Port_ptr", "Port",
-           "HALJoystickAxes_ptr", "HALJoystickAxes",
-           "HALJoystickPOVs_ptr", "HALJoystickPOVs",
-           "HALJoystickButtons_ptr", "HALJoystickButtons",
-           "HALJoystickDescriptor_ptr", "HALJoystickDescriptor",
-           "AnalogPort_ptr", "AnalogPort",
-           "AnalogTrigger_ptr", "AnalogTrigger",
-           "PCM_ptr", "PCM",
-           "DigitalPort_ptr", "DigitalPort",
-           "PWM_ptr", "PCM",
-           "Counter_ptr", "Counter",
-           "Encoder_ptr", "Encoder",
-           "Interrupt_ptr", "Interrupt",
-           "Notifier_ptr", "Notifier",
-           "SolenoidPort_ptr", "SolenoidPort",
-           "TalonSRX_ptr", "TalonSRX"]
+__all__ = [
+    "ControlWord", "ControlWord_ptr",
+    "JoystickAxes", "JoystickAxes_ptr",
+    "JoystickPOVs", "JoystickPOVs_ptr",
+    "JoystickButtons", "JoystickButtons_ptr",
+    "JoystickDescriptor", "JoystickDescriptor_ptr",
+           
+    "PortHandle",
+    
+    "AnalogInputHandle",
+    "AnalogOutputHandle",
+    "AnalogTriggerHandle",
+    "CompressorHandle",
+    "CounterHandle",
+    "DigitalHandle",
+    "DigitalPWMHandle",
+    "EncoderHandle",
+    "FPGAEncoderHandle",
+    "GyroHandle",
+    "InterruptHandle",
+    "NotifierHandle",
+    "RelayHandle",
+    "SolenoidHandle",
+]
 
 class _fakeptr(object):
     fake_pointer = True
@@ -35,20 +39,6 @@ def fake_pointer(orig_obj, name=None):
 
 
 #############################################################################
-# Semaphore
-#############################################################################
-
-class _MUTEX_ID:
-    def __init__(self, lock):
-        self.lock = lock
-MUTEX_ID = fake_pointer(_MUTEX_ID, "MUTEX_ID")
-
-class _MULTIWAIT_ID:
-    def __init__(self, cond):
-        self.cond = cond
-MULTIWAIT_ID = fake_pointer(_MULTIWAIT_ID, "MULTIWAIT_ID")
-
-#############################################################################
 # HAL
 #
 # Profiling note: it seems to be faster to use __slots__ and to not have
@@ -57,30 +47,23 @@ MULTIWAIT_ID = fake_pointer(_MULTIWAIT_ID, "MULTIWAIT_ID")
 #
 #############################################################################
 
-class HALControlWord:
+class ControlWord:
     pass
-HALControlWord_ptr = fake_pointer(HALControlWord)
+ControlWord_ptr = fake_pointer(ControlWord)
 
-class Port:
-    __slots__ = ['pin', 'module']
-    def __init__(self, pin, module):
-        self.pin = pin
-        self.module = module
-Port_ptr = fake_pointer(Port)
-
-class HALJoystickAxes:
+class JoystickAxes:
     __slots__ = ['count', 'axes']
-HALJoystickAxes_ptr = fake_pointer(HALJoystickAxes)
+JoystickAxes_ptr = fake_pointer(JoystickAxes)
 
-class HALJoystickPOVs:
+class JoystickPOVs:
     __slots__ = ['count', 'povs']
-HALJoystickPOVs_ptr = fake_pointer(HALJoystickPOVs)
+JoystickPOVs_ptr = fake_pointer(JoystickPOVs)
 
-class HALJoystickButtons:
+class JoystickButtons:
     __slots__ = ['buttons', 'count']
-HALJoystickButtons_ptr = fake_pointer(HALJoystickButtons)
+JoystickButtons_ptr = fake_pointer(JoystickButtons)
 
-class HALJoystickDescriptor:
+class JoystickDescriptor:
     __slots__ = ['isXbox', 'type', 'name', 'axisCount', 'buttonCount']
     def __init__(self, d={}):
         self.isXbox = d.get('isXbox', False)
@@ -88,108 +71,78 @@ class HALJoystickDescriptor:
         self.name = d.get('name', '')
         self.axisCount = d.get("axisCount", 0)
         self.buttonCount = d.get("buttonCount", 0)
-HALJoystickDescriptor_ptr = fake_pointer(HALJoystickDescriptor)
+JoystickDescriptor_ptr = fake_pointer(JoystickDescriptor)
 
 #############################################################################
-# Analog
+# Opaque handles
 #############################################################################
 
-# opaque analog port
-class AnalogPort:
+class PortHandle:
+    __slots__ = ['pin', 'module']
+    def __init__(self, pin, module):
+        self.pin = pin
+        self.module = module
+
+class AnalogInputHandle:
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
-AnalogPort_ptr = fake_pointer(AnalogPort)
 
-# opaque analog trigger
-class AnalogTrigger:
+class AnalogOutputHandle:
+    __slots__ = ['pin']
+    def __init__(self, port):
+        self.pin = port.pin
+
+class AnalogTriggerHandle:
     __slots__ = ['pin', 'index']
     def __init__(self, port, index):
         self.pin = port.pin
         self.index = index
-AnalogTrigger_ptr = fake_pointer(AnalogTrigger)
 
-#############################################################################
-# Compressor
-#############################################################################
+class CompressorHandle:
+    __slots__ = ['module']
+    def __init__(self, module):
+        self.module = module
 
-# opaque pcm
-class PCM:
-    __slots__ = ['pcmid']
-    def __init__(self, pcmid):
-        self.pcmid = pcmid
-PCM_ptr = fake_pointer(PCM)
+class CounterHandle:
+    __slots__ = ['idx']
+    def __init__(self, idx):
+        self.idx = idx
 
-
-#############################################################################
-# Digital
-#############################################################################
-
-# opaque digital port
-class DigitalPort:
+class DigitalHandle:
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
-DigitalPort_ptr = fake_pointer(DigitalPort)
 
-# opaque PWM
-class PWM:
+class DigitalPWMHandle:
     __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
-PWM_ptr = fake_pointer(PWM)
 
-# opaque counter
-class Counter:
+class EncoderHandle:
     __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
-Counter_ptr = fake_pointer(Counter)
 
-# opaque encoder
-class Encoder:
-    __slots__ = ['idx']
-    def __init__(self, idx):
-        self.idx = idx
-Encoder_ptr = fake_pointer(Encoder)
-
-#############################################################################
-# Interrupts
-#############################################################################
-
-# opaque interrupt
-class Interrupt:
+class FPGAEncoderHandle:
     pass
-Interrupt_ptr = fake_pointer(Interrupt)
 
-#############################################################################
-# Notifier
-#############################################################################
-
-# opaque Notifier
-class Notifier:
+class GyroHandle:
     pass
-Notifier_ptr = fake_pointer(Notifier)
+    #def __init__(self, analoginput):
+    #    self.analoginput = analoginput
 
-#############################################################################
-# Solenoid
-#############################################################################
+class InterruptHandle:
+    pass
 
-# opaque SolenoidPort
-class SolenoidPort:
+class NotifierHandle:
+    pass
+
+class RelayHandle:
+    pass
+
+class SolenoidHandle:
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
-SolenoidPort_ptr = fake_pointer(SolenoidPort)
 
-
-#############################################################################
-# TalonSRX
-#############################################################################
-
-# opaque TalonSRX
-class TalonSRX:
-    __slots__ = ['id']
-    def __init__(self, deviceNumber):
-        self.id = deviceNumber
-TalonSRX_ptr = fake_pointer(TalonSRX)

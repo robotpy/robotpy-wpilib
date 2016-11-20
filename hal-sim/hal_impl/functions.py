@@ -8,17 +8,16 @@ import threading
 from . import data
 from .data import hal_data
 from hal_impl.sim_hooks import SimHooks
-from hal_impl.pwm_helpers import reverseByType
 
 import logging
 logger = logging.getLogger('hal')
 
 hooks = SimHooks()
+sleep = hooks.delaySeconds
 
 def reset_hal():
     data._reset_hal_data(hooks)
-
-reset_hal()
+    initialize()
 
 #
 # Misc constants
@@ -62,50 +61,31 @@ PARAMETER_OUT_OF_RANGE = -1028
 RESOURCE_IS_ALLOCATED = -1029
 
 #############################################################################
-# Semaphore
+# PortsInternal.h
 #############################################################################
 
-# constants
-SEMAPHORE_Q_FIFO = 0x01
-SEMAPHORE_Q_PRIORITY = 0x01
-SEMAPHORE_DELETE_SAFE = 0x04
-SEMAPHORE_INVERSION_SAFE = 0x08
-SEMAPHORE_NO_WAIT = 0
-SEMAPHORE_WAIT_FOREVER = -1
-SEMAPHORE_EMPTY = 0
-SEMAPHORE_FULL = 1
+kNumAccumulators = 2
+kNumAnalogTriggers = 8
+kNumAnalogInputs = 8
+kNumAnalogOutputs = 2 # mxp only
+kNumCounters = 8
+kNumDigitalHeaders = 10
+kNumDigitalMXPChannels = 16
+kNumDigitalSPIPortChannels = 5
+kNumPWMHeaders = 10
+kNumDigitalChannels = kNumDigitalHeaders + kNumDigitalMXPChannels + kNumDigitalSPIPortChannels
+kNumPWMChannels = 10 + kNumPWMHeaders
+kNumDigitalPWMOutputs = 4 + 2
+kNumEncoders = 8
+kNumInterrupts = 8
+kNumRelayChannels = 8
+kNumRelayHeaders = kNumRelayChannels / 2
+kNumPCMModules = 63
+kNumSolenoidChannels = 8
+kNumPDPModules = 63
+kNumPDPChannels = 16
 
-def initializeMutexNormal():
-    return types.MUTEX_ID(threading.Lock())
-
-def deleteMutex(sem):
-    sem.lock = None
-
-def takeMutex(sem):
-    sem.lock.acquire()
-    return 0
-
-def tryTakeMutex(sem):
-    return sem.lock.acquire(False)
-
-def giveMutex(sem):
-    sem.lock.release()
-    return 0
-
-def initializeMultiWait():
-    return types.MULTIWAIT_ID(threading.Condition())
-
-def deleteMultiWait(sem):
-    sem.cond = None
-
-def takeMultiWait(sem, mutex):
-    with sem.cond:
-        sem.cond.wait()
-
-def giveMultiWait(sem):
-    with sem.cond:
-        sem.cond.notify_all() # hal uses pthread_cond_broadcast, which wakes all threads
-
+kAccumulatorChannels = [0, 1]
 
 #############################################################################
 # HAL
@@ -115,13 +95,9 @@ def getPort(pin):
     return getPortWithModule(0, pin)
 
 def getPortWithModule(module, pin):
-    return types.Port(pin, module)
+    return types.PortHandle(pin, module)
 
-def freePort(port):
-    port.pin = None
-    port.module = None
-
-def _getHALErrorMessage(code):
+def _getErrorMessage(code):
     if code == 0:
         return ''
 
@@ -194,12 +170,12 @@ def _getHALErrorMessage(code):
     else:
         return "Unknown error status"
     
-def getHALErrorMessage(code):
-    return bytes(_getHALErrorMessage(code), 'utf-8')
+def getErrorMessage(code):
+    return bytes(_getErrorMessage(code), 'utf-8')
 
 def getFPGAVersion(status):
     status.value = 0
-    return 2015
+    return 2017
 
 def getFPGARevision(status):
     status.value = 0
@@ -209,116 +185,28 @@ def getFPGATime(status):
     status.value = 0
     return hooks.getFPGATime()
 
+def getRuntimeType():
+    return constants.RuntimeType.Mock
+
 def getFPGAButton(status):
     status.value = 0
     return hal_data['fpga_button']
 
-def HALSetErrorData(errors, errorsLength, wait_ms):
-    # the only thing that calls this is DriverStation.ReportError
-    # and it logs by default now
-    #logger.warn(errors.decode('utf-8').strip())
-    hal_data['error_data'] = errors
-
-def HALGetControlWord():
-    # profiling indicates it is faster to not have a constructor
-    word = types.HALControlWord()
-    word.__dict__.update(hal_data['control'])
-    return word
-
-def HALGetAllianceStation():
-    return hal_data['alliance_station']
-
-# optimization
-_axes_list = list(range(-128, 0)) + [0] + list(range(0, 128, 1))
-
-def HALGetJoystickAxes(joystickNum, axes):
-    # we store as -1 to 1 for ease of use, so convert to -128 to 127 here
-    #axes.axes = [int(a*128) if a < 0 else int(a*127) for a in hal_data['joysticks'][joystickNum]['axes']]
-    axes.axes = [_axes_list[int(a*128)+128] for a in hal_data['joysticks'][joystickNum]['axes']]
-    axes.count = len(axes.axes)
-
-def HALGetJoystickPOVs(joystickNum, povs):
-    povs.povs = list(map(int, hal_data['joysticks'][joystickNum]['povs']))
-    povs.count = len(povs.povs)
-
-
-def HALGetJoystickButtons(joystickNum, buttons):
-    # buttons are stored as booleans for ease of use, convert to integer
-    b = hal_data['joysticks'][joystickNum]['buttons']
-    # profiled optimization
-    #buttons.buttons = sum(int(v) << i for i, v in enumerate(b[1:]))
-    l = len(b)-1
-    buttons.buttons = sum(map(operator.lshift, map(int, b[1:]), range(l)))
-    buttons.count = l
-
-def HALGetJoystickDescriptor(joystickNum, descriptor):
-    stick = hal_data["joysticks"][joystickNum]
-    descriptor.isXbox = stick["isXbox"]
-    descriptor.type = stick["type"]
-    descriptor.name = stick["name"]
-    descriptor.axisCount = stick["axisCount"]
-    descriptor.buttonCount = stick["buttonCount"]
-
-def HALGetJoystickIsXbox(joystickNum):
-    return hal_data["joysticks"][joystickNum]["isXbox"]
-
-def HALGetJoystickType(joystickNum):
-    return hal_data["joysticks"][joystickNum]["type"]
-
-def HALGetJoystickName(joystickNum):
-    return hal_data["joysticks"][joystickNum]["name"]
-
-def HALGetJoystickAxisType(joystickNum, axis):
-    assert False
-
-def HALSetJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
-    hal_data['joysticks'][joystickNum]["leftRumble"] = leftRumble
-    hal_data['joysticks'][joystickNum]["rightRumble"] = rightRumble
-    hal_data['joysticks'][joystickNum]["outputs"] = [bool(val) for val in bin(outputs)]
-
-def HALGetMatchTime():
-    '''
-        Returns approximate match time:
-        - At beginning of autonomous, time is 0
-        - At beginning of teleop, time is set to 15
-        - If robot is disabled, time is 0
-    '''
-    match_start = hal_data['time']['match_start']
-    if match_start is None:
-        return 0.0
-    else:
-        return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
-
-def HALGetSystemActive(status):
+def getSystemActive(status):
     status.value = 0
     return True
-
-def HALGetBrownedOut(status):
+    
+def getBrownedOut(status):
     status.value = 0
     return False
 
-def HALSetNewDataSem(sem):
-    data.hal_newdata_sem = sem
-
-def HALInitialize(mode=0):
+def initialize(mode=0):
+    #initializeNotifier()
+    initializeDriverStation()
+    
     return True
 
-def HALNetworkCommunicationObserveUserProgramStarting():
-    hal_data['user_program_state'] = 'starting'
-
-def HALNetworkCommunicationObserveUserProgramDisabled():
-    hal_data['user_program_state'] = 'disabled'
-
-def HALNetworkCommunicationObserveUserProgramAutonomous():
-    hal_data['user_program_state'] = 'autonomous'
-
-def HALNetworkCommunicationObserveUserProgramTeleop():
-    hal_data['user_program_state'] = 'teleop'
-
-def HALNetworkCommunicationObserveUserProgramTest():
-    hal_data['user_program_state'] = 'test'
-
-def HALReport(resource, instanceNumber, context=0, feature=None):
+def report(resource, instanceNumber, context=0, feature=None):
     
     # TODO: Cover all interesting devices
     hur = constants.HALUsageReporting
@@ -343,7 +231,7 @@ def HALReport(resource, instanceNumber, context=0, feature=None):
 
 
 #############################################################################
-# Accelerometer
+# Accelerometer.h
 #############################################################################
 
 def setAccelerometerActive(active):
@@ -361,44 +249,104 @@ def getAccelerometerY():
 def getAccelerometerZ():
     return hal_data['accelerometer']['z']
 
+#############################################################################
+# AnalogAccumulator.h
+#############################################################################
+
+def isAccumulatorChannel(analog_port, status):
+    status.value = 0
+    return analog_port.pin in kAccumulatorChannels
+
+def initAccumulator(analog_port, status):
+    status.value = 0
+    hal_data['analog_in'][analog_port.pin]['accumulator_initialized'] = True
+
+def resetAccumulator(analog_port, status):
+    status.value = 0
+    hal_data['analog_in'][analog_port.pin]['accumulator_center'] = 0
+    hal_data['analog_in'][analog_port.pin]['accumulator_count'] = 1
+    hal_data['analog_in'][analog_port.pin]['accumulator_value'] = 0
+
+def setAccumulatorCenter(analog_port, center, status):
+    status.value = 0
+    hal_data['analog_in'][analog_port.pin]['accumulator_center'] = center
+
+def setAccumulatorDeadband(analog_port, deadband, status):
+    status.value = 0
+    hal_data['analog_in'][analog_port.pin]['accumulator_deadband'] = deadband
+
+def getAccumulatorValue(analog_port, status):
+    status.value = 0
+    return hal_data['analog_in'][analog_port.pin]['accumulator_value']
+
+def getAccumulatorCount(analog_port, status):
+    status.value = 0
+    return hal_data['analog_in'][analog_port.pin]['accumulator_count']
+
+def getAccumulatorOutput(analog_port, status):
+    status.value = 0
+    return (hal_data['analog_in'][analog_port.pin]['accumulator_value'],
+           hal_data['analog_in'][analog_port.pin]['accumulator_count'])
 
 #############################################################################
-# Analog
+# AnalogGyro.h
 #############################################################################
 
-kTimebase = 40000000 #< 40 MHz clock
-kDefaultOversampleBits = 0
-kDefaultAverageBits = 7
-kDefaultSampleRate = 50000.0
-kAnalogInputPins = 8
-kAnalogOutputPins = 2
-
-kAccumulatorNumChannels = 2
-kAccumulatorChannels = [0, 1]
-
-def initializeAnalogOutputPort(port, status):
+def initializeAnalogGyro(handle, status):
     status.value = 0
-    hal_data['analog_out'][port.pin]['initialized'] = True
-    return types.AnalogPort(port)
+    assert False
 
-def freeAnalogOutputPort(analog_port):
-    hal_data['analog_out'][analog_port.pin]['initialized'] = False
-
-def setAnalogOutput(analog_port, voltage, status):
+def setupAnalogGyro(handle, status):
     status.value = 0
-    hal_data['analog_out'][analog_port.pin]['output'] = voltage
+    assert False
 
-def getAnalogOutput(analog_port, status):
+def freeAnalogGyro(handle):
+    assert False
+
+def setAnalogGyroParameters(handle, voltsPerDegreePerSecond, offset, center, status):
     status.value = 0
-    return hal_data['analog_out'][analog_port.pin]['output']
+    assert False
 
-def checkAnalogOutputChannel(pin):
-    return pin < kAnalogOutputPins
+def setAnalogGyroVoltsPerDegreePerSecond(handle, voltsPerDegreePerSecond, status):
+    status.value = 0
+    assert False
+
+def resetAnalogGyro(handle, status):
+    status.value = 0
+    assert False
+
+def calibrateAnalogGyro(handle, status):
+    status.value = 0
+    assert False
+
+def setAnalogGyroDeadband(handle, volts, status):
+    status.value = 0
+    assert False
+
+def getAnalogGyroAngle(handle, status):
+    status.value = 0
+    assert False
+
+def getAnalogGyroRate(handle, status):
+    status.value = 0
+    assert False
+
+def getAnalogGyroOffset(handle, status):
+    status.value = 0
+    assert False
+
+def getAnalogGyroCenter(handle, status):
+    status.value = 0
+    assert False
+
+#############################################################################
+# AnalogInput.h
+#############################################################################
 
 def initializeAnalogInputPort(port, status):
     status.value = 0
     hal_data['analog_in'][port.pin]['initialized'] = True
-    return types.AnalogPort(port)
+    return types.AnalogInputHandle(port)
 
 def freeAnalogInputPort(analog_port):
     hal_data['analog_in'][analog_port.pin]['initialized'] = False
@@ -407,7 +355,7 @@ def checkAnalogModule(module):
     return module == 1
 
 def checkAnalogInputChannel(pin):
-    return pin < kAnalogInputPins
+    return pin < kNumAnalogInputs and pin >= 0
 
 def setAnalogSampleRate(samples_per_second, status):
     status.value = 0
@@ -470,40 +418,37 @@ def getAnalogOffset(analog_port, status):
     status.value = 0
     return hal_data['analog_in'][analog_port.pin]['offset']
 
-def isAccumulatorChannel(analog_port, status):
-    status.value = 0
-    return analog_port.pin in kAccumulatorChannels
+#############################################################################
+# AnalogOutput.h
+#############################################################################
 
-def initAccumulator(analog_port, status):
-    status.value = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_initialized'] = True
+kTimebase = 40000000 #< 40 MHz clock
+kDefaultOversampleBits = 0
+kDefaultAverageBits = 7
+kDefaultSampleRate = 50000.0
 
-def resetAccumulator(analog_port, status):
+def initializeAnalogOutputPort(port, status):
     status.value = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_center'] = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_count'] = 1
-    hal_data['analog_in'][analog_port.pin]['accumulator_value'] = 0
+    hal_data['analog_out'][port.pin]['initialized'] = True
+    return types.AnalogOutputHandle(port)
 
-def setAccumulatorCenter(analog_port, center, status):
-    status.value = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_center'] = center
+def freeAnalogOutputPort(analog_port):
+    hal_data['analog_out'][analog_port.pin]['initialized'] = False
 
-def setAccumulatorDeadband(analog_port, deadband, status):
+def setAnalogOutput(analog_port, voltage, status):
     status.value = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_deadband'] = deadband
+    hal_data['analog_out'][analog_port.pin]['output'] = voltage
 
-def getAccumulatorValue(analog_port, status):
+def getAnalogOutput(analog_port, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['accumulator_value']
+    return hal_data['analog_out'][analog_port.pin]['output']
 
-def getAccumulatorCount(analog_port, status):
-    status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['accumulator_count']
+def checkAnalogOutputChannel(pin):
+    return pin < kNumAnalogOutputs and pin >= 0
 
-def getAccumulatorOutput(analog_port, status):
-    status.value = 0
-    return (hal_data['analog_in'][analog_port.pin]['accumulator_value'],
-           hal_data['analog_in'][analog_port.pin]['accumulator_count'])
+#############################################################################
+# AnalogTrigger.h
+#############################################################################
 
 def initializeAnalogTrigger(port, status):
     status.value = 0
@@ -512,7 +457,7 @@ def initializeAnalogTrigger(port, status):
         if cnt['initialized'] == False:
             cnt['initialized'] = True
             cnt['port'] = port
-            return types.AnalogTrigger(port, idx), idx
+            return types.AnalogTriggerHandle(port, idx), idx
 
     status.value = NO_AVAILABLE_RESOURCES
     return None, -1
@@ -595,258 +540,293 @@ def getAnalogTriggerOutput(analog_trigger, type, status):
 
 
 #############################################################################
-# Compressor
+# Compressor.h
 #############################################################################
 
-def initializeCompressor(module):
+def initializeCompressor(module, status):
+    status.value = 0
     assert module == 0 # don't support multiple modules for now
     hal_data['compressor']['initialized'] = True
-    return types.PCM(module)
+    return types.CompressorHandle(module)
 
 def checkCompressorModule(module):
     return module < 63
 
-def getCompressor(pcm, status):
+def getCompressor(compressorHandle, status):
     status.value = 0
     return hal_data['compressor']['on']
 
-def setClosedLoopControl(pcm, value, status):
+def setCompressorClosedLoopControl(compressorHandle, value, status):
     status.value = 0
     hal_data['compressor']['closed_loop_enabled'] = value
 
-def getClosedLoopControl(pcm, status):
+def getCompressorClosedLoopControl(compressorHandle, status):
     status.value = 0
     return hal_data['compressor']['closed_loop_enabled']
 
-def getPressureSwitch(pcm, status):
+def getCompressorPressureSwitch(compressorHandle, status):
     status.value = 0
     return hal_data['compressor']['pressure_switch']
 
-def getCompressorCurrent(pcm, status):
+def getCompressorCurrent(compressorHandle, status):
     status.value = 0
     return hal_data['compressor']['current']
 
-def getCompressorCurrentTooHighFault(pcm, status):
+def getCompressorCurrentTooHighFault(compressorHandle, status):
     status.value = 0
     return False
 
-def getCompressorCurrentTooHighStickyFault(pcm, status):
+def getCompressorCurrentTooHighStickyFault(compressorHandle, status):
     status.value = 0
     return False
 
-def getCompressorShortedFault(pcm, status):
+def getCompressorShortedFault(compressorHandle, status):
     status.value = 0
     return False
 
-def getCompressorShortedStickyFault(pcm, status):
+def getCompressorShortedStickyFault(compressorHandle, status):
     status.value = 0
     return False
 
-def getCompressorNotConnectedFault(pcm, status):
+def getCompressorNotConnectedFault(compressorHandle, status):
     status.value = 0
     return False
 
-def getCompressorNotConnectedStickyFault(pcm, status):
+def getCompressorNotConnectedStickyFault(compressorHandle, status):
     status.value = 0
     return False
 
-def clearAllPCMStickyFaults(pcm, status):
-    status.value = 0
-    return False
 
 #############################################################################
-# Digital
+# Constants.h
+#############################################################################
+
+#def getSystemClockTicksPerMicrosecond():
+#    assert False
+
+
+#############################################################################
+# Counter.h
+#############################################################################
+
+def initializeCounter(mode, status):
+    status.value = 0
+    for idx in range(0, len(hal_data['counter'])):
+        cnt = hal_data['counter'][idx]
+        if cnt['initialized'] == False:
+            cnt['initialized'] = True
+            cnt['mode'] = mode
+            return types.CounterHandle(idx), idx 
+    
+    status.value = NO_AVAILABLE_RESOURCES
+    return None, -1
+
+def freeCounter(counterHandle, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['initialized'] = False
+
+def setCounterAverageSize(counterHandle, size, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['average_size'] = size
+
+def setCounterUpSource(counterHandle, pin, analog_trigger, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['up_source_channel'] = pin
+    hal_data['counter'][counterHandle.idx]['up_source_trigger'] = analog_trigger
+    
+    if hal_data['counter'][counterHandle.idx]['mode'] in \
+       [constants.CounterMode.kTwoPulse, constants.CounterMode.kExternalDirection]:
+        setCounterUpSourceEdge(counterHandle, True, False, status) 
+
+def setCounterUpSourceEdge(counterHandle, rising_edge, falling_edge, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['up_rising_edge'] = rising_edge
+    hal_data['counter'][counterHandle.idx]['up_falling_edge'] = falling_edge
+
+def clearCounterUpSource(counterHandle, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['up_rising_edge'] = False
+    hal_data['counter'][counterHandle.idx]['up_falling_edge'] = False
+    hal_data['counter'][counterHandle.idx]['up_source_channel'] = 0
+    hal_data['counter'][counterHandle.idx]['up_source_trigger'] = False
+
+def setCounterDownSource(counterHandle, digitalSourceHandle, analogTriggerType, status):
+    status.value = 0
+    if hal_data['counter'][counterHandle.idx]['mode'] not in \
+       [constants.CounterMode.kTwoPulse, constants.CounterMode.kExternalDirection]:
+        status.value = PARAMETER_OUT_OF_RANGE
+        return
+    
+    hal_data['counter'][counterHandle.idx]['down_source_channel'] = pin
+    hal_data['counter'][counterHandle.idx]['down_source_trigger'] = analog_trigger
+    
+
+def setCounterDownSourceEdge(counterHandle, rising_edge, falling_edge, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['down_rising_edge'] = rising_edge
+    hal_data['counter'][counterHandle.idx]['down_falling_edge'] = falling_edge
+
+def clearCounterDownSource(counterHandle, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['down_rising_edge'] = False
+    hal_data['counter'][counterHandle.idx]['down_falling_edge'] = False
+    hal_data['counter'][counterHandle.idx]['down_source_channel'] = 0
+    hal_data['counter'][counterHandle.idx]['down_source_trigger'] = False
+
+def setCounterUpDownMode(counterHandle, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['mode'] = constants.CounterMode.kTwoPulse
+
+def setCounterExternalDirectionMode(counterHandle, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['mode'] = constants.CounterMode.kExternalDirection
+
+def setCounterSemiPeriodMode(counterHandle, high_semi_period, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['mode'] = constants.CounterMode.kSemiperiod
+    hal_data['counter'][counterHandle.idx]['up_rising_edge'] = high_semi_period
+    hal_data['counter'][counterHandle.idx]['update_when_empty'] = False
+
+def setCounterPulseLengthMode(counterHandle, threshold, status):
+    hal_data['counter'][counterHandle.idx]['mode'] = constants.CounterMode.kPulseLength
+    hal_data['counter'][counterHandle.idx]['pulse_length_threshold'] = threshold
+
+def getCounterSamplesToAverage(counterHandle, status):
+    status.value = 0
+    return hal_data['counter'][counterHandle.idx]['samples_to_average']
+
+def setCounterSamplesToAverage(counterHandle, samples_to_average, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['samples_to_average'] = samples_to_average
+
+def resetCounter(counterHandle, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['count'] = 0
+
+def getCounter(counterHandle, status):
+    status.value = 0
+    return hal_data['counter'][counterHandle.idx]['count']
+
+def getCounterPeriod(counterHandle, status):
+    status.value = 0
+    return hal_data['counter'][counterHandle.idx]['period']
+
+def setCounterMaxPeriod(counterHandle, max_period, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['max_period'] = max_period
+
+def setCounterUpdateWhenEmpty(counterHandle, enabled, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['update_when_empty'] = enabled
+
+def getCounterStopped(counterHandle, status):
+    status.value = 0
+    cnt = hal_data['counter'][counterHandle.idx]
+    return cnt['period'] > cnt['max_period']
+
+def getCounterDirection(counterHandle, status):
+    status.value = 0
+    return hal_data['counter'][counterHandle.idx]['direction']
+
+def setCounterReverseDirection(counterHandle, reverse_direction, status):
+    status.value = 0
+    hal_data['counter'][counterHandle.idx]['reverse_direction'] = reverse_direction
+
+
+
+#############################################################################
+# DIO.h
 #############################################################################
 
 kExpectedLoopTiming = 40
-kDigitalPins = 26
-kPwmPins = 20
-kRelayPins = 8
-kNumHeaders = 10
 
-def initializeDigitalPort(port, status):
-    status.value = 0
-    return types.DigitalPort(port)
-
-def freeDigitalPort(digital_port):
-    digital_port.pin = None
-
-def checkPWMChannel(digital_port):
-    return digital_port.pin < kPwmPins
-
-def checkRelayChannel(digital_port):
-    return digital_port.pin < kRelayPins
-
-#
-# MXP
-#
-
-def remapMXPChannel(pin):
+def _remapMXPChannel(pin):
     return pin - 10
 
-def remapMXPPWMChannel(pin):
+def _remapMXPPWMChannel(pin):
     if pin < 14:
         return pin - 10
     else:
         return pin - 6
 
-#
-# PWM
-#
+def _remapSPIChannel(pin):
+    return pin - 26
 
-def setPWM(digital_port, value, status):
+# def allocateDIO(digital_port, input, status):
+#     status.value = 0
+#     if digital_port.pin >= kNumDigitalHeaders:
+#         mxp_port = _remapMXPChannel(digital_port.pin)
+#         if hal_data["mxp"][mxp_port]["initialized"]:
+#             status.value = RESOURCE_IS_ALLOCATED
+#             return False
+#     dio = hal_data['dio'][digital_port.pin]
+#     if dio['initialized']:
+#         status.value = RESOURCE_IS_ALLOCATED
+#         return False
+#     if digital_port.pin >= kNumDigitalHeaders:
+#         hal_data["mxp"][mxp_port]["initialized"] = True
+#     dio['initialized'] = True
+#     dio['is_input'] = input
+
+
+# def freeDIO(digital_port, status):
+#     status.value = 0
+#     hal_data['dio'][digital_port.pin]['initialized'] = False
+#     if digital_port.pin >= kNumDigitalHeaders:
+#         mxp_port = _remapMXPChannel(digital_port.pin)
+#         hal_data["mxp"][mxp_port]["initialized"] = False
+
+
+
+def initializeDIOPort(portHandle, input, status):
     status.value = 0
-    hal_data['pwm'][digital_port.pin]['raw_value'] = value
-    hal_data['pwm'][digital_port.pin]['value'] = reverseByType(digital_port.pin)
+    return types.DigitalHandle(portHandle, input)
 
-def allocatePWMChannel(digital_port, status):
+def checkDIOChannel(channel):
+    return channel < kNumDigitalChannels and channel >= 0
+
+def freeDIOPort(dioPortHandle):
+    dioPortHandle.pin = None
+
+def allocateDigitalPWM(status):
     status.value = 0
+    assert False
 
-    if digital_port.pin >= kNumHeaders:
-        mxp_port = remapMXPPWMChannel(digital_port.pin)
-        if hal_data["mxp"][mxp_port]["initialized"]:
-            status.value = RESOURCE_IS_ALLOCATED
-            return False
-
-    if hal_data['pwm'][digital_port.pin]['initialized']:
-        status.value = RESOURCE_IS_ALLOCATED
-        return False
-    
-    hal_data['pwm'][digital_port.pin]['initialized'] = True
-
-    if digital_port.pin >= kNumHeaders:
-        hal_data["mxp"][mxp_port]["initialized"] = True
-
-    return True
-
-def freePWMChannel(digital_port, status):
+def freeDigitalPWM(pwmGenerator, status):
     status.value = 0
-    assert hal_data['pwm'][digital_port.pin]['initialized']
-    hal_data['pwm'][digital_port.pin]['initialized'] = False
-    hal_data['pwm'][digital_port.pin]['raw_value'] = 0
-    hal_data['pwm'][digital_port.pin]['value'] = 0
-    hal_data['pwm'][digital_port.pin]['period_scale'] = None
-    hal_data['pwm'][digital_port.pin]['zero_latch'] = False
+    assert False
 
-    if digital_port.pin >= kNumHeaders:
-        mxp_port = remapMXPPWMChannel(digital_port.pin)
-        hal_data["mxp"][mxp_port]["initialized"] = False
-
-def getPWM(digital_port, status):
+def setDigitalPWMRate(rate, status):
     status.value = 0
-    return hal_data['pwm'][digital_port.pin]['raw_value']
+    assert False
 
-def latchPWMZero(digital_port, status):
-    # TODO: what does this do?
+def setDigitalPWMDutyCycle(pwmGenerator, dutyCycle, status):
     status.value = 0
-    hal_data['pwm'][digital_port.pin]['zero_latch'] = True
+    assert False
 
-def setPWMPeriodScale(digital_port, squelch_mask, status):
+def setDigitalPWMOutputChannel(pwmGenerator, channel, status):
     status.value = 0
-    hal_data['pwm'][digital_port.pin]['period_scale'] = squelch_mask
+    assert False
 
-#
-# DIO PWM
-#
-
-def allocatePWM(status):
+def setDIO(dioPortHandle, value, status):
     status.value = 0
-    
-    for i, v in enumerate(hal_data['d0_pwm']):
-        if v is None:
-            break
-    else:
-        return None
-    
-    hal_data['d0_pwm'][i] = {'duty_cycle': None, 'pin': None}
-    return types.PWM(i)
+    hal_data['dio'][dioPortHandle.pin]['value'] = True if value else False
 
-def freePWM(pwm, status):
+def getDIO(dioPortHandle, status):
     status.value = 0
-    hal_data['d0_pwm'][pwm.idx] = None
-    
-def setPWMRate(rate, status):
+    return bool(hal_data['dio'][dioPortHandle.pin]['value'])
+
+def getDIODirection(dioPortHandle, status):
     status.value = 0
-    hal_data['d0_pwm_rate'] = rate
+    return hal_data['dio'][dioPortHandle.pin]['is_input']
 
-def setPWMDutyCycle(pwm, duty_cycle, status):
+def pulse(dioPortHandle, pulse_length, status):
     status.value = 0
-    hal_data['d0_pwm'][pwm.idx]['duty_cycle'] = duty_cycle
+    hal_data['dio'][dioPortHandle.pin]['pulse_length'] = pulse_length
 
-def setPWMOutputChannel(pwm, pin, status):
+def isPulsing(dioPortHandle, status):
     status.value = 0
-    hal_data['d0_pwm'][pwm.idx]['pin'] = pin
-
-#
-# Relay
-#
-
-def setRelayForward(digital_port, on, status):
-    status.value = 0
-    relay = hal_data['relay'][digital_port.pin]
-    relay['initialized'] = True
-    relay['fwd'] = on
-
-def setRelayReverse(digital_port, on, status):
-    status.value = 0
-    relay = hal_data['relay'][digital_port.pin]
-    relay['initialized'] = True
-    relay['rev'] = on
-
-def getRelayForward(digital_port, status):
-    return hal_data['relay'][digital_port.pin]['fwd']
-
-def getRelayReverse(digital_port, status):
-    status.value = 0
-    return hal_data['relay'][digital_port.pin]['rev']
-
-#
-# DIO
-#
-
-def allocateDIO(digital_port, input, status):
-    status.value = 0
-    if digital_port.pin >= kNumHeaders:
-        mxp_port = remapMXPChannel(digital_port.pin)
-        if hal_data["mxp"][mxp_port]["initialized"]:
-            status.value = RESOURCE_IS_ALLOCATED
-            return False
-    dio = hal_data['dio'][digital_port.pin]
-    if dio['initialized']:
-        status.value = RESOURCE_IS_ALLOCATED
-        return False
-    if digital_port.pin >= kNumHeaders:
-        hal_data["mxp"][mxp_port]["initialized"] = True
-    dio['initialized'] = True
-    dio['is_input'] = input
-
-
-def freeDIO(digital_port, status):
-    status.value = 0
-    hal_data['dio'][digital_port.pin]['initialized'] = False
-    if digital_port.pin >= kNumHeaders:
-        mxp_port = remapMXPChannel(digital_port.pin)
-        hal_data["mxp"][mxp_port]["initialized"] = False
-
-def setDIO(digital_port, value, status):
-    status.value = 0
-    hal_data['dio'][digital_port.pin]['value'] = True if value else False
-
-def getDIO(digital_port, status):
-    status.value = 0
-    return bool(hal_data['dio'][digital_port.pin]['value'])
-
-def getDIODirection(digital_port, status):
-    status.value = 0
-    return hal_data['dio'][digital_port.pin]['is_input']
-
-def pulse(digital_port, pulse_length, status):
-    status.value = 0
-    hal_data['dio'][digital_port.pin]['pulse_length'] = pulse_length
-
-def isPulsing(digital_port, status):
-    status.value = 0
-    return hal_data['dio'][digital_port.pin]['pulse_length'] is not None
+    return hal_data['dio'][dioPortHandle.pin]['pulse_length'] is not None
 
 def isAnyPulsing(status):
     status.value = 0
@@ -856,204 +836,189 @@ def isAnyPulsing(status):
             return True
     return False
     
-def setFilterSelect(digital_port, filter_idx, status):
-    if filter_idx < 0 or filter_idx > 3:
+def setFilterSelect(dioPortHandle, filterIndex, status):
+    if filterIndex < 0 or filterIndex > 3:
         status.value = PARAMETER_OUT_OF_RANGE
         return
     
-    if filter_idx == 0:
-        filter_idx = hal_data['dio'][digital_port.pin]['filter_idx']
-        hal_data['dio'][digital_port.pin]['filter_idx'] = None
-        hal_data['filter'][filter_idx]['enabled'] = False
+    if filterIndex == 0:
+        filterIndex = hal_data['dio'][dioPortHandle.pin]['filterIndex']
+        hal_data['dio'][dioPortHandle.pin]['filterIndex'] = None
+        hal_data['filter'][filterIndex]['enabled'] = False
     else:
-        filter_idx = filter_idx - 1
-        hal_data['filter'][filter_idx]['enabled'] = True
-        hal_data['dio'][digital_port.pin]['filter_idx'] = filter_idx
+        filterIndex = filterIndex - 1
+        hal_data['filter'][filterIndex]['enabled'] = True
+        hal_data['dio'][dioPortHandle.pin]['filterIndex'] = filterIndex
     status.value = 0
 
-def getFilterSelect(digital_port, status):
+def getFilterSelect(dioPortHandle, status):
     status.value = 0
-    filter_idx = hal_data['dio'][digital_port.pin]['filter_idx']
-    if filter_idx is None:
+    filterIndex = hal_data['dio'][dioPortHandle.pin]['filterIndex']
+    if filterIndex is None:
         return 0
     else:
-        return filter_idx + 1 # really?
+        return filterIndex + 1 # really?
 
-def setFilterPeriod(filter_idx, value, status):
-    if filter_idx < 0 or filter_idx > 2:
+def setFilterPeriod(filterIndex, value, status):
+    if filterIndex < 0 or filterIndex > 2:
         status.value = PARAMETER_OUT_OF_RANGE
         return
     
     status.value = 0
-    hal_data['filter'][filter_idx]['period'] = value
+    hal_data['filter'][filterIndex]['period'] = value
 
-def getFilterPeriod(filter_idx, status):
-    if filter_idx < 0 or filter_idx > 2:
+def getFilterPeriod(filterIndex, status):
+    if filterIndex < 0 or filterIndex > 2:
         status.value = PARAMETER_OUT_OF_RANGE
         return
     
     status.value = 0
-    return hal_data['filter'][filter_idx]['period']
+    return hal_data['filter'][filterIndex]['period']
 
-#
-# Counter
-#
 
-def initializeCounter(mode, status):
+#############################################################################
+# DriverStation.h
+#############################################################################
+
+def setErrorData(errors, errorsLength, waitMs):
+    # Nothing calls this anymore
+    pass
+
+def sendError(isError, errorCode, isLVCode, details, location, callStack, printMsg):
+    # the only thing that calls this is DriverStation.ReportError
+    # and it logs by default now
+    hal_data['error_data'] = (isError, details, location)
+
+def getControlWord(controlWord):
+    controlWord.__dict__.update(hal_data['control'])
+
+def getAllianceStation(status):
     status.value = 0
-    for idx in range(0, len(hal_data['counter'])):
-        cnt = hal_data['counter'][idx]
-        if cnt['initialized'] == False:
-            cnt['initialized'] = True
-            cnt['mode'] = mode
-            return types.Counter(idx), idx 
-    
-    status.value = NO_AVAILABLE_RESOURCES
-    return None, -1
+    return hal_data['alliance_station']
 
+def getJoystickAxes(joystickNum, axes):
+    axes.axes = list(map(float, hal_data['joysticks'][joystickNum]['axes']))
+    axes.count = len(axes.axes)
 
-def freeCounter(counter, status):
+def getJoystickPOVs(joystickNum, povs):
+    povs.povs = list(map(int, hal_data['joysticks'][joystickNum]['povs']))
+    povs.count = len(povs.povs)
+
+def getJoystickButtons(joystickNum, buttons):
+    # buttons are stored as booleans for ease of use, convert to integer
+    b = hal_data['joysticks'][joystickNum]['buttons']
+    # profiled optimization
+    #buttons.buttons = sum(int(v) << i for i, v in enumerate(b[1:]))
+    l = len(b)-1
+    buttons.buttons = sum(map(operator.lshift, map(int, b[1:]), range(l)))
+    buttons.count = l
+
+def getJoystickDescriptor(joystickNum, desc):
+    stick = hal_data["joysticks"][joystickNum]
+    desc.isXbox = stick["isXbox"]
+    desc.type = stick["type"]
+    desc.name = stick["name"]
+    desc.axisCount = stick["axisCount"]
+    desc.buttonCount = stick["buttonCount"]
+
+def getJoystickIsXbox(joystickNum):
+    return hal_data["joysticks"][joystickNum]["isXbox"]
+
+def getJoystickType(joystickNum):
+    return hal_data["joysticks"][joystickNum]["type"]
+
+def getJoystickName(joystickNum):
+    return hal_data["joysticks"][joystickNum]["name"]
+
+def getJoystickAxisType(joystickNum, axis):
+    assert False
+
+def setJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
+    hal_data['joysticks'][joystickNum]["leftRumble"] = leftRumble
+    hal_data['joysticks'][joystickNum]["rightRumble"] = rightRumble
+    hal_data['joysticks'][joystickNum]["outputs"] = [bool(val) for val in bin(outputs)]
+
+def getMatchTime(status):
+    '''
+        Returns approximate match time:
+        - At beginning of autonomous, time is 0
+        - At beginning of teleop, time is set to 15
+        - If robot is disabled, time is 0
+    '''
     status.value = 0
-    hal_data['counter'][counter.idx]['initialized'] = False
+    match_start = hal_data['time']['match_start']
+    if match_start is None:
+        return 0.0
+    else:
+        return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
 
-def setCounterAverageSize(counter, size, status):
+def waitForDSData():
+    with data.hal_newdata_cond:
+        data.hal_newdata_cond.wait()
+
+def initializeDriverStation():
+    if data.hal_newdata_cond is None:
+        data.hal_newdata_cond = threading.Condition()
+
+def observeUserProgramStarting():
+    hal_data['user_program_state'] = 'starting'
+
+def observeUserProgramDisabled():
+    hal_data['user_program_state'] = 'disabled'
+
+def observeUserProgramAutonomous():
+    hal_data['user_program_state'] = 'autonomous'
+
+def observeUserProgramTeleop():
+    hal_data['user_program_state'] = 'teleop'
+
+def observeUserProgramTest():
+    hal_data['user_program_state'] = 'test'
+
+
+#############################################################################
+# Encoder.h
+#############################################################################
+
+def initializeEncoder(digitalSourceHandleA, analogTriggerTypeA, digitalSourceHandleB, analogTriggerTypeB, reverseDirection, encodingType, status):
     status.value = 0
-    hal_data['counter'][counter.idx]['average_size'] = size
+    assert False
 
-def setCounterUpSource(counter, pin, analog_trigger, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['up_source_channel'] = pin
-    hal_data['counter'][counter.idx]['up_source_trigger'] = analog_trigger
-    
-    if hal_data['counter'][counter.idx]['mode'] in \
-       [constants.Mode.kTwoPulse, constants.Mode.kExternalDirection]:
-        setCounterUpSourceEdge(counter, True, False, status) 
-
-def setCounterUpSourceEdge(counter, rising_edge, falling_edge, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['up_rising_edge'] = rising_edge
-    hal_data['counter'][counter.idx]['up_falling_edge'] = falling_edge
-
-def clearCounterUpSource(counter, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['up_rising_edge'] = False
-    hal_data['counter'][counter.idx]['up_falling_edge'] = False
-    hal_data['counter'][counter.idx]['up_source_channel'] = 0
-    hal_data['counter'][counter.idx]['up_source_trigger'] = False
-
-def setCounterDownSource(counter, pin, analog_trigger, status):
-    status.value = 0
-    if hal_data['counter'][counter.idx]['mode'] not in \
-       [constants.Mode.kTwoPulse, constants.Mode.kExternalDirection]:
-        status.value = PARAMETER_OUT_OF_RANGE
-        return
-    
-    hal_data['counter'][counter.idx]['down_source_channel'] = pin
-    hal_data['counter'][counter.idx]['down_source_trigger'] = analog_trigger
-    
-
-def setCounterDownSourceEdge(counter, rising_edge, falling_edge, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['down_rising_edge'] = rising_edge
-    hal_data['counter'][counter.idx]['down_falling_edge'] = falling_edge
-
-def clearCounterDownSource(counter, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['down_rising_edge'] = False
-    hal_data['counter'][counter.idx]['down_falling_edge'] = False
-    hal_data['counter'][counter.idx]['down_source_channel'] = 0
-    hal_data['counter'][counter.idx]['down_source_trigger'] = False
-
-def setCounterUpDownMode(counter, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['mode'] = constants.Mode.kTwoPulse
-
-def setCounterExternalDirectionMode(counter, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['mode'] = constants.Mode.kExternalDirection
-
-def setCounterSemiPeriodMode(counter, high_semi_period, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['mode'] = constants.Mode.kSemiperiod
-    hal_data['counter'][counter.idx]['up_rising_edge'] = high_semi_period
-    hal_data['counter'][counter.idx]['update_when_empty'] = False
-
-def setCounterPulseLengthMode(counter, threshold, status):
-    hal_data['counter'][counter.idx]['mode'] = constants.Mode.kPulseLength
-    hal_data['counter'][counter.idx]['pulse_length_threshold'] = threshold
-
-def getCounterSamplesToAverage(counter, status):
-    status.value = 0
-    return hal_data['counter'][counter.idx]['samples_to_average']
-
-def setCounterSamplesToAverage(counter, samples_to_average, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['samples_to_average'] = samples_to_average
-
-def resetCounter(counter, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['count'] = 0
-
-def getCounter(counter, status):
-    status.value = 0
-    return hal_data['counter'][counter.idx]['count']
-
-def getCounterPeriod(counter, status):
-    status.value = 0
-    return hal_data['counter'][counter.idx]['period']
-
-def setCounterMaxPeriod(counter, max_period, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['max_period'] = max_period
-
-def setCounterUpdateWhenEmpty(counter, enabled, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['update_when_empty'] = enabled
-
-def getCounterStopped(counter, status):
-    status.value = 0
-    cnt = hal_data['counter'][counter.idx]
-    return cnt['period'] > cnt['max_period']
-
-def getCounterDirection(counter, status):
-    status.value = 0
-    return hal_data['counter'][counter.idx]['direction']
-
-def setCounterReverseDirection(counter, reverse_direction, status):
-    status.value = 0
-    hal_data['counter'][counter.idx]['reverse_direction'] = reverse_direction
-
-#
-# Encoder
-#
-
-def initializeEncoder(port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger, reverse_direction, status):
-    status.value = 0
-    for idx in range(0, len(hal_data['encoder'])):
-        enc = hal_data['encoder'][idx]
-        if enc['initialized'] == False:
-            enc['initialized'] = True
-
-            enc['config'] = {"ASource_Module": port_a_module, "ASource_Channel": port_a_pin, "ASource_AnalogTrigger": port_a_analog_trigger,
-                             "BSource_Module": port_b_module, "BSource_Channel": port_b_pin, "BSource_AnalogTrigger": port_b_analog_trigger}
-            enc['reverse_direction'] = reverse_direction
-            return types.Encoder(idx), idx 
-        
-    # I think HAL fails silently.. 
-    status.value = NO_AVAILABLE_RESOURCES
-    return None, -1
+# def initializeEncoder(port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger, reverse_direction, status):
+#     status.value = 0
+#     for idx in range(0, len(hal_data['encoder'])):
+#         enc = hal_data['encoder'][idx]
+#         if enc['initialized'] == False:
+#             enc['initialized'] = True
+# 
+#             enc['config'] = {"ASource_Module": port_a_module, "ASource_Channel": port_a_pin, "ASource_AnalogTrigger": port_a_analog_trigger,
+#                              "BSource_Module": port_b_module, "BSource_Channel": port_b_pin, "BSource_AnalogTrigger": port_b_analog_trigger}
+#             enc['reverse_direction'] = reverse_direction
+#             return types.EncoderHandle(idx), idx 
+#         
+#     # I think HAL fails silently.. 
+#     status.value = NO_AVAILABLE_RESOURCES
+#     return None, -1
 
 def freeEncoder(encoder, status):
     status.value = 0
     hal_data['encoder'][encoder.idx]['initialized'] = False
 
-def resetEncoder(encoder, status):
-    status.value = 0
-    hal_data['encoder'][encoder.idx]['count'] = 0
-
 def getEncoder(encoder, status):
     status.value = 0
     return hal_data['encoder'][encoder.idx]['count']
+
+def getEncoderRaw(encoderHandle, status):
+    status.value = 0
+    assert False
+
+def getEncoderEncodingScale(encoderHandle, status):
+    status.value = 0
+    assert False
+
+def resetEncoder(encoder, status):
+    status.value = 0
+    hal_data['encoder'][encoder.idx]['count'] = 0
 
 def getEncoderPeriod(encoder, status):
     status.value = 0
@@ -1072,6 +1037,22 @@ def getEncoderDirection(encoder, status):
     status.value = 0
     return hal_data['encoder'][encoder.idx]['direction']
 
+def getEncoderDistance(encoderHandle, status):
+    status.value = 0
+    assert False
+
+def getEncoderRate(encoderHandle, status):
+    status.value = 0
+    assert False
+
+def setEncoderMinRate(encoderHandle, minRate, status):
+    status.value = 0
+    assert False
+
+def setEncoderDistancePerPulse(encoderHandle, distancePerPulse, status):
+    status.value = 0
+    assert False
+
 def setEncoderReverseDirection(encoder, reverse_direction, status):
     status.value = 0
     hal_data['encoder'][encoder.idx]['reverse_direction'] = reverse_direction
@@ -1084,91 +1065,35 @@ def getEncoderSamplesToAverage(encoder, status):
     status.value = 0
     return hal_data['encoder'][encoder.idx]['samples_to_average']
 
-def setEncoderIndexSource(encoder, pin, analogTrigger, activeHigh, edgeSensitive, status):
+def setEncoderIndexSource(encoderHandle, digitalSourceHandle, analogTriggerType, type, status):
     status.value = 0
-    index_conf = {"IndexSource_Channel": pin, "IndexSource_Module": 0, "IndexSource_AnalogTrigger": analogTrigger,
-                  "IndexActiveHigh": activeHigh, "IndexEdgeSensitive": edgeSensitive}
-    hal_data['encoder'][encoder.idx]['config'].update(index_conf)
-
-def getLoopTiming(status):
+    assert False
+# def setEncoderIndexSource(encoder, pin, analogTrigger, activeHigh, edgeSensitive, status):
+#     status.value = 0
+#     index_conf = {"IndexSource_Channel": pin, "IndexSource_Module": 0, "IndexSource_AnalogTrigger": analogTrigger,
+#                   "IndexActiveHigh": activeHigh, "IndexEdgeSensitive": edgeSensitive}
+#     hal_data['encoder'][encoder.idx]['config'].update(index_conf)
+    
+def getEncoderFPGAIndex(encoderHandle, status):
     status.value = 0
-    return hal_data['pwm_loop_timing']
-
-#
-# SPI: These functions should never get called, pass a simPort object
-#      to the SPI implementation instead. See spi_helpers.py for an
-#      example.
-#
-#      The simPort object should implement all of the SPI functions below
-#
-# TODO: change WPILib HAL impl to take an object, then we can implement
-#       the simport stuff at the HAL layer instead
-#
-
-def spiInitialize(port, status):
     assert False
 
-def spiTransaction(port, data_to_send, data_received, size):
+def getEncoderDecodingScaleFactor(encoderHandle, status):
+    status.value = 0
     assert False
 
-def spiWrite(port, data_to_send, send_size):
+def getEncoderDistancePerPulse(encoderHandle, status):
+    status.value = 0
     assert False
 
-def spiRead(port, buffer, count):
+def getEncoderEncodingType(encoderHandle, status):
+    status.value = 0
     assert False
 
-def spiClose(port):
-    assert False
 
-def spiSetSpeed(port, speed):
-    assert False
-
-def spiSetOpts(port, msb_first, sample_on_trailing, clk_idle_high):
-    assert False
-
-def spiSetChipSelectActiveHigh(port, status):
-    assert False
-
-def spiSetChipSelectActiveLow(port, status):
-    assert False
-
-def spiGetHandle(port):
-    assert False
-
-def spiSetHandle(port, handle):
-    assert False
-    
-def spiInitAccumulator(port,
-                       period, cmd, xfer_size, valid_mask, valid_value,
-                       data_shift, data_size, is_signed, big_endian, status):
-    assert False
-    
-def spiFreeAccumulator(port, status):
-    assert False
-    
-def spiResetAccumulator(port, status):
-    assert False
-
-def spiSetAccumulatorCenter(port, center, status):
-    assert False
-    
-def spiSetAccumulatorDeadband(port, deadband, status):
-    assert False
-    
-def spiGetAccumulatorLastValue(port, status):
-    assert False
-    
-def spiGetAccumulatorValue(port, status):
-    assert False
-    
-def spiGetAccumulatorCount(port, status):
-    assert False
-
-def spiGetAccumulatorAverage(port, status):
-    assert False
-    
-def spiGetAccumulatorOutput(port, status):
-    assert False
+#############################################################################
+# I2C.h
+#############################################################################
 
 #
 # i2c: These functions should never get called, pass a simPort object
@@ -1181,27 +1106,26 @@ def spiGetAccumulatorOutput(port, status):
 #       the simport stuff at the HAL layer instead
 #
 
-def i2CInitialize(port, status):
+def initializeI2C(port, status):
     assert False
 
-def i2CTransaction(port, device_address, data_to_send, send_size, data_received, receive_size):
+def transactionI2C(port, deviceAddress, dataToSend, sendSize, dataReceived, receiveSize):
     assert False
 
-def i2CWrite(port, device_address, data_to_send, send_size):
+def writeI2C(port, deviceAddress, dataToSend, sendSize):
     assert False
 
-def i2CRead(port, device_address, buffer, count):
+def readI2C(port, deviceAddress, buffer, count):
     assert False
 
-def i2CClose(port):
+def closeI2C(port):
     assert False
-
 
 #############################################################################
 # Interrupts
 #############################################################################
 
-def initializeInterrupts(interrupt_index, watcher, status):
+def initializeInterrupts(watcher, status):
     assert False # TODO
 
 def cleanInterrupts(interrupt, status):
@@ -1216,17 +1140,22 @@ def enableInterrupts(interrupt, status):
 def disableInterrupts(interrupt, status):
     assert False # TODO
 
-def readRisingTimestamp(interrupt, status):
+def readInterruptRisingTimestamp(interrupt, status):
     assert False # TODO
 
-def readFallingTimestamp(interrupt, status):
+def readInterruptFallingTimestamp(interrupt, status):
     assert False # TODO
 
-def requestInterrupts(interrupt, routing_module, routing_pin, routing_analog_trigger, status):
-    assert False # TODO
+def requestInterrupts(interruptHandle, digitalSourceHandle, analogTriggerType, status):
+    status.value = 0
+    assert False
 
 def attachInterruptHandler(interrupt, handler, param, status):
     assert False # TODO
+
+def attachInterruptHandlerThreaded(interruptHandle, handler, param, status):
+    status.value = 0
+    assert False
 
 def setInterruptUpSourceEdge(interrupt, rising_edge, falling_edge, status):
     assert False # TODO
@@ -1236,27 +1165,33 @@ def setInterruptUpSourceEdge(interrupt, rising_edge, falling_edge, status):
 # Notifier
 #############################################################################
 
-def initializeNotifier(processQueue, param, status):
-    assert False # TODO
-
-def cleanNotifier(notifier, status):
-    assert False # TODO
-    
-def getNotifierParam(notifier, status):
-    assert False # TODO
-
-def updateNotifierAlarm(notifier, triggerTime, status):
-    assert False # TODO
-
-def stopNotifierAlarm(notifier, status):
-    assert False # TODO
+# def initializeNotifier(processQueue, param, status):
+#     assert False # TODO
+# 
+# def cleanNotifier(notifier, status):
+#     assert False # TODO
+#     
+# def getNotifierParam(notifier, status):
+#     assert False # TODO
+# 
+# def updateNotifierAlarm(notifier, triggerTime, status):
+#     assert False # TODO
+# 
+# def stopNotifierAlarm(notifier, status):
+#     assert False # TODO
 
 #############################################################################
 # PDP
 #############################################################################
 
-def initializePDP(module):
-    pass
+def initializePDP(module, status):
+    status.value = 0
+    
+def checkPDPChannel(channel):
+    return channel < kNumPDPChannels and channel >= 0
+
+def checkPDPModule(module):
+    return module < kNumPDPModules and module >= 0
 
 def getPDPTemperature(module, status):
     status.value = 0
@@ -1292,6 +1227,179 @@ def resetPDPTotalEnergy(module, status):
 def clearPDPStickyFaults(module, status):
     status.value = 0
     # not sure what to do here?
+
+#############################################################################
+# PWM
+#############################################################################
+
+def initializePWMPort(portHandle, status):
+    status.value = 0
+    assert False
+
+def freePWMPort(pwmPortHandle, status):
+    status.value = 0
+    assert False
+    
+#     status.value = 0
+#     assert hal_data['pwm'][digital_port.pin]['initialized']
+#     hal_data['pwm'][digital_port.pin]['initialized'] = False
+#     hal_data['pwm'][digital_port.pin]['raw_value'] = 0
+#     hal_data['pwm'][digital_port.pin]['value'] = 0
+#     hal_data['pwm'][digital_port.pin]['period_scale'] = None
+#     hal_data['pwm'][digital_port.pin]['zero_latch'] = False
+# 
+#     if digital_port.pin >= kNumDigitalHeaders:
+#         mxp_port = _remapMXPPWMChannel(digital_port.pin)
+#         hal_data["mxp"][mxp_port]["initialized"] = False
+
+def checkPWMChannel(channel):
+    return channel < kNumPWMChannels and channel >= 0
+
+def setPWMConfig(pwmPortHandle, maxPwm, deadbandMaxPwm, centerPwm, deadbandMinPwm, minPwm, status):
+    status.value = 0
+    assert False
+
+def setPWMConfigRaw(pwmPortHandle, maxPwm, deadbandMaxPwm, centerPwm, deadbandMinPwm, minPwm, status):
+    status.value = 0
+    assert False
+
+def getPWMConfigRaw(pwmPortHandle, status): #, maxPwm, deadbandMaxPwm, centerPwm, deadbandMinPwm, minPwm, status):
+    status.value = 0
+    assert False
+
+def setPWMEliminateDeadband(pwmPortHandle, eliminateDeadband, status):
+    status.value = 0
+    assert False
+
+def getPWMEliminateDeadband(pwmPortHandle, status):
+    status.value = 0
+    assert False
+
+def setPWMRaw(pwmPortHandle, value, status):
+    status.value = 0
+    assert False
+
+def setPWMSpeed(pwmPortHandle, speed, status):
+    status.value = 0
+    assert False
+
+def setPWMPosition(pwmPortHandle, position, status):
+    status.value = 0
+    assert False
+
+def setPWMDisabled(pwmPortHandle, status):
+    status.value = 0
+    assert False
+
+def getPWMRaw(pwmPortHandle, status):
+    status.value = 0
+    return hal_data['pwm'][pwmPortHandle.pin]['raw_value']
+
+def getPWMSpeed(pwmPortHandle, status):
+    status.value = 0
+    assert False
+
+def getPWMPosition(pwmPortHandle, status):
+    status.value = 0
+    assert False
+
+#def setPWM(digital_port, value, status):
+#    status.value = 0
+#    hal_data['pwm'][digital_port.pin]['raw_value'] = value
+#    hal_data['pwm'][digital_port.pin]['value'] = reverseByType(digital_port.pin)
+
+# def allocatePWMChannel(digital_port, status):
+#     status.value = 0
+# 
+#     if digital_port.pin >= kNumDigitalHeaders:
+#         mxp_port = _remapMXPPWMChannel(digital_port.pin)
+#         if hal_data["mxp"][mxp_port]["initialized"]:
+#             status.value = RESOURCE_IS_ALLOCATED
+#             return False
+# 
+#     if hal_data['pwm'][digital_port.pin]['initialized']:
+#         status.value = RESOURCE_IS_ALLOCATED
+#         return False
+#     
+#     hal_data['pwm'][digital_port.pin]['initialized'] = True
+# 
+#     if digital_port.pin >= kNumDigitalHeaders:
+#         hal_data["mxp"][mxp_port]["initialized"] = True
+# 
+#     return True
+
+def latchPWMZero(pwmPortHandle, status):
+    # TODO: what does this do?
+    status.value = 0
+    hal_data['pwm'][pwmPortHandle.pin]['zero_latch'] = True
+
+def setPWMPeriodScale(pwmPortHandle, squelchMask, status):
+    status.value = 0
+    hal_data['pwm'][pwmPortHandle.pin]['period_scale'] = squelchMask
+
+def getLoopTiming(status):
+    status.value = 0
+    return hal_data['pwm_loop_timing']
+
+
+#############################################################################
+# Ports.h
+#############################################################################
+
+def getNumAccumulators():
+    return kNumAccumulators
+
+def getNumAnalogTriggers():
+    return kNumAnalogTriggers
+
+def getNumAnalogInputs():
+    return kNumAnalogInputs
+
+def getNumAnalogOutputs():
+    return kNumAnalogOutputs
+
+def getNumCounters():
+    return kNumCounters
+
+def getNumDigitalHeaders():
+    return kNumDigitalHeaders
+
+def getNumPWMHeaders():
+    return kNumPWMHeaders
+
+def getNumDigitalChannels():
+    return kNumDigitalChannels
+
+def getNumPWMChannels():
+    return kNumPWMChannels
+
+def getNumDigitalPWMOutputs():
+    return kNumDigitalPWMOutputs
+
+def getNumEncoders():
+    return kNumEncoders
+
+def getNumInterrupts():
+    return kNumInterrupts
+
+def getNumRelayChannels():
+    return kNumRelayChannels
+
+def getNumRelayHeaders():
+    return kNumRelayHeaders
+
+def getNumPCMModules():
+    return kNumPCMModules
+
+def getNumSolenoidChannels():
+    return kNumSolenoidChannels
+
+def getNumPDPModules():
+    return kNumPDPModules
+
+def getNumPDPChannels():
+    return kNumPDPChannels
+
 
 #############################################################################
 # Power
@@ -1354,6 +1462,140 @@ def getUserCurrentFaults3V3(status):
     return hal_data['power']['user_faults_3v3']
 
 #############################################################################
+# Relay.h
+#############################################################################
+
+def initializeRelayPort(portHandle, fwd, status):
+    status.value = 0
+    assert False
+
+def freeRelayPort(relayPortHandle):
+    assert False
+
+def checkRelayChannel(channel):
+    assert False
+
+def setRelay(relayPortHandle, on, status):
+    status.value = 0
+    assert False
+
+def getRelay(relayPortHandle, status):
+    status.value = 0
+    assert False
+
+# def setRelayForward(digital_port, on, status):
+#     status.value = 0
+#     relay = hal_data['relay'][digital_port.pin]
+#     relay['initialized'] = True
+#     relay['fwd'] = on
+# 
+# def setRelayReverse(digital_port, on, status):
+#     status.value = 0
+#     relay = hal_data['relay'][digital_port.pin]
+#     relay['initialized'] = True
+#     relay['rev'] = on
+# 
+# def getRelayForward(digital_port, status):
+#     return hal_data['relay'][digital_port.pin]['fwd']
+# 
+# def getRelayReverse(digital_port, status):
+#     status.value = 0
+#     return hal_data['relay'][digital_port.pin]['rev']
+
+
+#############################################################################
+# SPI.h
+#############################################################################
+
+#
+# SPI: These functions should never get called, pass a simPort object
+#      to the SPI implementation instead. See spi_helpers.py for an
+#      example.
+#
+#      The simPort object should implement all of the SPI functions below
+#
+# TODO: change WPILib HAL impl to take an object, then we can implement
+#       the simport stuff at the HAL layer instead
+#
+
+def initializeSPI(port, status):
+    status.value = 0
+    assert False
+
+def transactionSPI(port, dataToSend, dataReceived, size):
+    assert False
+
+def writeSPI(port, dataToSend, sendSize):
+    assert False
+
+def readSPI(port, buffer, count):
+    assert False
+
+def closeSPI(port):
+    assert False
+
+def setSPISpeed(port, speed):
+    assert False
+
+def setSPIOpts(port, msbFirst, sampleOnTrailing, clkIdleHigh):
+    assert False
+
+def setSPIChipSelectActiveHigh(port, status):
+    status.value = 0
+    assert False
+
+def setSPIChipSelectActiveLow(port, status):
+    status.value = 0
+    assert False
+
+def getSPIHandle(port):
+    assert False
+
+def setSPIHandle(port, handle):
+    assert False
+
+def initSPIAccumulator(port, period, cmd, xferSize, validMask, validValue, dataShift, dataSize, isSigned, bigEndian, status):
+    status.value = 0
+    assert False
+
+def freeSPIAccumulator(port, status):
+    status.value = 0
+    assert False
+
+def resetSPIAccumulator(port, status):
+    status.value = 0
+    assert False
+
+def setSPIAccumulatorCenter(port, center, status):
+    status.value = 0
+    assert False
+
+def setSPIAccumulatorDeadband(port, deadband, status):
+    status.value = 0
+    assert False
+
+def getSPIAccumulatorLastValue(port, status):
+    status.value = 0
+    assert False
+
+def getSPIAccumulatorValue(port, status):
+    status.value = 0
+    assert False
+
+def getSPIAccumulatorCount(port, status):
+    status.value = 0
+    assert False
+
+def getSPIAccumulatorAverage(port, status):
+    status.value = 0
+    assert False
+
+def getSPIAccumulatorOutput(port, status):
+    status.value = 0
+    assert False
+
+
+#############################################################################
 # Solenoid
 #############################################################################
 
@@ -1361,14 +1603,17 @@ def initializeSolenoidPort(port, status):
     status.value = 0
     # sigh: it would be nice if all the solenoids weren't always initialized
     hal_data['solenoid'][port.pin]['value'] = False 
-    return types.SolenoidPort(port)
+    return types.SolenoidHandle(port)
 
 def freeSolenoidPort(port):
     # sigh: it would be nice if all the solenoids weren't always initialized
     port.pin = None
 
 def checkSolenoidModule(module):
-    return module < 63
+    return module < kNumPCMModules and module >= 0
+
+def checkSolenoidChannel(channel):
+    return channel < kNumSolenoidChannels and channel >= 0
 
 def getSolenoid(solenoid_port, status):
     status.value = 0
@@ -1385,628 +1630,21 @@ def setSolenoid(solenoid_port, value, status):
     status.value = 0
     hal_data['solenoid'][solenoid_port.pin]['value'] = value
 
-def getPCMSolenoidBlackList(solenoid_port, status):
+def getPCMSolenoidBlackList(module, status):
     status.value = 0
     return 0
 
-def getPCMSolenoidVoltageStickyFault(solenoid_port, status):
+def getPCMSolenoidVoltageStickyFault(module, status):
     status.value = 0
     return False
 
-def getPCMSolenoidVoltageFault(solenoid_port, status):
+def getPCMSolenoidVoltageFault(module, status):
     status.value = 0
     return False
 
-def clearAllPCMStickyFaults_sol(solenoid_port, status):
+def clearAllPCMStickyFaults(module, status):
     status.value = 0
     return False
 
 
-#############################################################################
-# TalonSRX
-#############################################################################
-
-def __create_srx_param_map():
-    '''Defines the mappings between CANTalon dict items and raw parameter types'''
-    TalonSRXParam = constants.TalonSRXParam
-    return {
-        TalonSRXParam.eProfileParamSlot0_P :                    'profile0_p',
-        TalonSRXParam.eProfileParamSlot0_I :                    'profile0_i',
-        TalonSRXParam.eProfileParamSlot0_D :                    'profile0_d',
-        TalonSRXParam.eProfileParamSlot0_F :                    'profile0_f',
-        TalonSRXParam.eProfileParamSlot0_IZone :                'profile0_izone',
-        TalonSRXParam.eProfileParamSlot0_CloseLoopRampRate :    'profile0_closeloopramprate',
-        TalonSRXParam.eProfileParamSlot1_P :                    'profile1_p',
-        TalonSRXParam.eProfileParamSlot1_I :                    'profile1_i',
-        TalonSRXParam.eProfileParamSlot1_D :                    'profile1_d',
-        TalonSRXParam.eProfileParamSlot1_F :                    'profile1_f',
-        TalonSRXParam.eProfileParamSlot1_IZone :                'profile1_izone',
-        TalonSRXParam.eProfileParamSlot1_CloseLoopRampRate :    'profile1_closeloopramprate',
-        TalonSRXParam.eProfileParamSoftLimitForThreshold :      'soft_limit_for',
-        TalonSRXParam.eProfileParamSoftLimitRevThreshold :      'soft_limit_rev',
-        TalonSRXParam.eProfileParamSoftLimitForEnable :         'soft_limit_for_enable',
-        TalonSRXParam.eProfileParamSoftLimitRevEnable :         'soft_limit_rev_enable',
-        TalonSRXParam.eOnBoot_BrakeMode :                        'onboot_brake_mode',
-        TalonSRXParam.eOnBoot_LimitSwitch_Forward_NormallyClosed : 'onboot_limsw_for_normally_closed',
-        TalonSRXParam.eOnBoot_LimitSwitch_Reverse_NormallyClosed : 'onboot_limsw_rev_normally_closed',
-        TalonSRXParam.eOnBoot_LimitSwitch_Forward_Disable :     'onboot_limsw_for_disable',
-        TalonSRXParam.eOnBoot_LimitSwitch_Reverse_Disable :     'onboot_limsw_rev_disable',
-        TalonSRXParam.eFault_OverTemp :                         'fault_overtemp',
-        TalonSRXParam.eFault_UnderVoltage :                     'fault_undervoltage',
-        TalonSRXParam.eFault_ForLim :                           'fault_forlim',
-        TalonSRXParam.eFault_RevLim :                           'fault_revlim',
-        TalonSRXParam.eFault_HardwareFailure :                  'fault_hwfailure',
-        TalonSRXParam.eFault_ForSoftLim :                       'fault_forsoftlim',
-        TalonSRXParam.eFault_RevSoftLim :                       'fault_revsoftlim',
-        TalonSRXParam.eStckyFault_OverTemp :                    'stickyfault_overtemp',
-        TalonSRXParam.eStckyFault_UnderVoltage :                'stickyfault_undervoltage',
-        TalonSRXParam.eStckyFault_ForLim :                      'stickyfault_forlim',
-        TalonSRXParam.eStckyFault_RevLim :                      'stickyfault_revlim',
-        TalonSRXParam.eStckyFault_ForSoftLim :                  'stickyfault_forsoftlim',
-        TalonSRXParam.eStckyFault_RevSoftLim :                  'stickyfault_revsoftlim',
-        TalonSRXParam.eAppliedThrottle :                        'value',
-        TalonSRXParam.eCloseLoopErr :                           'closeloop_err',
-        TalonSRXParam.eFeedbackDeviceSelect :                   'feedback_device',
-        TalonSRXParam.eRevMotDuringCloseLoopEn :                'rev_motor_during_close_loop',
-        TalonSRXParam.eModeSelect :                             'mode_select',
-        TalonSRXParam.eProfileSlotSelect :                      'profile_slot_select',
-        TalonSRXParam.eRampThrottle :                           'ramp_throttle',
-        TalonSRXParam.eRevFeedbackSensor :                      'rev_feedback_sensor',
-        TalonSRXParam.eLimitSwitchEn :                          'limit_switch_en',
-        TalonSRXParam.eLimitSwitchClosedFor :                   'limit_switch_closed_for',
-        TalonSRXParam.eLimitSwitchClosedRev :                   'limit_switch_closed_rev',
-        TalonSRXParam.eSensorPosition :                         'ERR_DONT_USE_THIS',
-        TalonSRXParam.eSensorVelocity :                         'ERR_DONT_USE_THIS',
-        TalonSRXParam.eCurrent :                                'current',
-        TalonSRXParam.eBrakeIsEnabled :                         'brake_enabled',
-        TalonSRXParam.eEncPosition :                            'enc_position',
-        TalonSRXParam.eEncVel :                                 'enc_velocity',
-        TalonSRXParam.eEncIndexRiseEvents :                     'enc_index_rise_events',
-        TalonSRXParam.eQuadApin :                               'quad_apin',
-        TalonSRXParam.eQuadBpin :                               'quad_bpin',
-        TalonSRXParam.eQuadIdxpin :                             'quad_idxpin',
-        TalonSRXParam.eAnalogInWithOv :                         'analog_in_position',
-        TalonSRXParam.eAnalogInVel :                            'analog_in_velocity',
-        TalonSRXParam.eTemp :                                   'temp',
-        TalonSRXParam.eBatteryV :                               'battery',
-        TalonSRXParam.eResetCount :                             'reset_count',
-        TalonSRXParam.eResetFlags :                             'reset_flags',
-        TalonSRXParam.eFirmVers :                               'firmware_version',
-        TalonSRXParam.eSettingsChanged :                        'settings_changed',
-        TalonSRXParam.eQuadFilterEn :                           'quad_filter_en',
-        TalonSRXParam.ePidIaccum :                              'pid_iaccum',
-        #TalonSRXParam.eStatus1FrameRate : 94  # TALON_Status_1_General_10ms_t,
-        #TalonSRXParam.eStatus2FrameRate : 95  # TALON_Status_2_Feedback_20ms_t,
-        #TalonSRXParam.eStatus3FrameRate : 96  # TALON_Status_3_Enc_100ms_t,
-        #TalonSRXParam.eStatus4FrameRate : 97  # TALON_Status_4_AinTempVbat_100ms_t,
-        #TalonSRXParam.eStatus6FrameRate : 98  # TALON_Status_6_Eol_t,
-        #TalonSRXParam.eStatus7FrameRate : 99  # TALON_Status_7_Debug_200ms_t,
-        TalonSRXParam.eClearPositionOnIdx :                     'clear_position_on_idx',
-        
-        TalonSRXParam.ePeakPosOutput :                          'peak_pos_output',
-        TalonSRXParam.eNominalPosOutput :                       'nominal_pos_output',
-        TalonSRXParam.ePeakNegOutput :                          'peak_neg_output',
-        TalonSRXParam.eNominalNegOutput :                       'nominal_neg_output',
-        TalonSRXParam.eQuadIdxPolarity :                        'quad_idx_polarity',
-        #TalonSRXParam.eStatus8FrameRate : 109  # TALON_Status_8_PulseWid_100ms_t,
-        TalonSRXParam.eAllowPosOverflow :                       'allow_pos_overflow',
-        TalonSRXParam.eProfileParamSlot0_AllowableClosedLoopErr: 'profile0_allowable_closed_loop_err',
-        TalonSRXParam.eNumberPotTurns :                         'number_pot_turns',
-        TalonSRXParam.eNumberEncoderCPR :                       'number_encoder_cpr',
-        TalonSRXParam.ePwdPosition :                            'pulse_width_position',
-        TalonSRXParam.eAinPosition :                            'analog_in_position',
-        TalonSRXParam.eProfileParamVcompRate :                  'profile_vcomp_rate',
-        TalonSRXParam.eProfileParamSlot1_AllowableClosedLoopErr : 'profile1_allowable_closed_loop_err',
-        #TalonSRXParam.eStatus9FrameRate : 118  # TALON_Status_9_MotProfBuffer_100ms_t,
-        TalonSRXParam.eMotionProfileHasUnderrunErr :            'motion_profile_has_underrun',
-        #TalonSRXParam.eReserved120 : 120,
-        TalonSRXParam.eLegacyControlMode :                      'legacy_mode'
-    }
-
-def __create_srx_sensor_position_map():
-    '''Used to determine which dict value is returned based on the currently
-       selected feedback_device''' 
-    TalonSRXConst = constants.TalonSRXConst
-    return {
-        TalonSRXConst.kFeedbackDev_DigitalQuadEnc:              'enc_position',
-        TalonSRXConst.kFeedbackDev_AnalogPot:                   'analog_in_position',
-        TalonSRXConst.kFeedbackDev_AnalogEncoder:               'analog_in_position',
-        TalonSRXConst.kFeedbackDev_CountEveryRisingEdge:        'analog_in_position',
-        TalonSRXConst.kFeedbackDev_CountEveryFallingEdge:       'analog_in_position',
-        TalonSRXConst.kFeedbackDev_CtreMagEncoder_Relative:     'pulse_width_position',
-        TalonSRXConst.kFeedbackDev_CtreMagEncoder_Absolute:     'pulse_width_position',
-        TalonSRXConst.kFeedbackDev_PosIsPulseWidth:             'pulse_width_position',
-    }
-    
-def __create_srx_sensor_velocity_map():
-    '''Used to determine which dict value is returned based on the currently
-       selected feedback_device'''
-    TalonSRXConst = constants.TalonSRXConst
-    return {
-        TalonSRXConst.kFeedbackDev_DigitalQuadEnc:              'enc_velocity',
-        TalonSRXConst.kFeedbackDev_AnalogPot:                   'analog_in_velocity',
-        TalonSRXConst.kFeedbackDev_AnalogEncoder:               'analog_in_velocity',
-        TalonSRXConst.kFeedbackDev_CountEveryRisingEdge:        'analog_in_velocity',
-        TalonSRXConst.kFeedbackDev_CountEveryFallingEdge:       'analog_in_velocity',
-        TalonSRXConst.kFeedbackDev_CtreMagEncoder_Relative:     'pulse_width_velocity',
-        TalonSRXConst.kFeedbackDev_CtreMagEncoder_Absolute:     'pulse_width_velocity',
-        TalonSRXConst.kFeedbackDev_PosIsPulseWidth:             'pulse_width_velocity',
-    }
-
-_srx_param_map = __create_srx_param_map()
-_srx_pos_map = __create_srx_sensor_position_map()
-_srx_vel_map = __create_srx_sensor_velocity_map()
-
-
-def c_TalonSRX_Create1(deviceNumber):
-    return c_TalonSRX_Create3(deviceNumber, 0, 0)
-
-def c_TalonSRX_Create2(deviceNumber, controlPeriodMs):
-    return c_TalonSRX_Create3(deviceNumber, 0, 0)
-
-def c_TalonSRX_Create3(deviceNumber, controlPeriodMs, enablePeriodMs):
-
-    assert deviceNumber not in hal_data['CAN']
-    
-    # Initialize items based on their param type
-    hal_data['CAN'][deviceNumber] = data.NotifyDict({
-        v: 0 for v in _srx_param_map.values()
-    })
-    
-    # Initialize non-zero items or items that don't have an associated parameter
-    hal_data['CAN'][deviceNumber].update({
-        'type': 'talonsrx',
-        
-        'override_limit_switch': 0,
-        'override_braketype': None,
-        
-        'pulse_width_velocity': 0,
-        'pulse_width_present': 0,
-        
-        'voltage_compensation_rate': 0,
-        
-        'battery': 12.0,
-        
-        # Motion profile stuff
-        'mp_position': 0,
-        'mp_velocity': 0,
-        'mp_timeDurMs': 0,
-        'mp_profileSlotSelect': 0,
-        
-        'mp_flags': 0,
-        'mp_topBufferCnt': 0,
-        'mp_btmBufferCnt': 0,
-        'mp_topBufferRem': 0,
-        'mp_zeroPos': 0,
-        'mp_outputEnable': constants.TalonSRXConst.kMotionProfile_Disable
-    })
-    
-    return types.TalonSRX(deviceNumber)
-    
-
-def c_TalonSRX_Destroy(handle):
-    del hal_data['CAN'][handle.id]
-    
-def c_TalonSRX_Set(handle, value):
-    hal_data['CAN'][handle.id]['value'] = int(value*1023)
-
-def c_TalonSRX_SetParam(handle, paramEnum, value):
-    hal_data['CAN'][handle.id][_srx_param_map[paramEnum]] = value
-
-def c_TalonSRX_RequestParam(handle, paramEnum):
-    return hal_data['CAN'][handle.id][_srx_param_map[paramEnum]]
-
-def c_TalonSRX_GetParamResponse(handle, paramEnum):
-    return hal_data['CAN'][handle.id][_srx_param_map[paramEnum]]
-
-def c_TalonSRX_GetParamResponseInt32(handle, paramEnum):
-    return int(hal_data['CAN'][handle.id][_srx_param_map[paramEnum]])
-
-def c_TalonSRX_SetPgain(handle, slotIdx, gain):
-    if slotIdx == 0:
-        hal_data['CAN'][handle.id]['profile0_p'] = gain
-    else:
-        hal_data['CAN'][handle.id]['profile1_p'] = gain
-
-def c_TalonSRX_SetIgain(handle, slotIdx, gain):
-    if slotIdx == 0:
-        hal_data['CAN'][handle.id]['profile0_i'] = gain
-    else:
-        hal_data['CAN'][handle.id]['profile1_i'] = gain
-
-def c_TalonSRX_SetDgain(handle, slotIdx, gain):
-    if slotIdx == 0:
-        hal_data['CAN'][handle.id]['profile0_d'] = gain
-    else:
-        hal_data['CAN'][handle.id]['profile1_d'] = gain
-
-def c_TalonSRX_SetFgain(handle, slotIdx, gain):
-    if slotIdx == 0:
-        hal_data['CAN'][handle.id]['profile0_f'] = gain
-    else:
-        hal_data['CAN'][handle.id]['profile1_f'] = gain
-
-def c_TalonSRX_SetIzone(handle, slotIdx, zone):
-    if slotIdx == 0:
-        hal_data['CAN'][handle.id]['profile0_izone'] = zone
-    else:
-        hal_data['CAN'][handle.id]['profile1_izone'] = zone
-
-def c_TalonSRX_SetCloseLoopRampRate(handle, slotIdx, closeLoopRampRate):
-    if slotIdx == 0:
-        hal_data['CAN'][handle.id]['profile0_closeloopramprate'] = closeLoopRampRate
-    else:
-        hal_data['CAN'][handle.id]['profile1_closeloopramprate'] = closeLoopRampRate
-
-def c_TalonSRX_SetVoltageCompensationRate(handle, voltagePerMs):
-    hal_data['CAN'][handle.id]['voltage_compensation_rate'] = voltagePerMs
-
-def c_TalonSRX_SetSensorPosition(handle, pos):
-    data = hal_data['CAN'][handle.id]
-    device_type = data['feedback_device']
-    data[_srx_pos_map[device_type]] = pos
-
-def c_TalonSRX_SetForwardSoftLimit(handle, forwardLimit):
-    hal_data['CAN'][handle.id]['soft_limit_for'] = forwardLimit 
-
-def c_TalonSRX_SetReverseSoftLimit(handle, reverseLimit):
-    hal_data['CAN'][handle.id]['soft_limit_rev'] = reverseLimit
-
-def c_TalonSRX_SetForwardSoftEnable(handle, enable):
-    hal_data['CAN'][handle.id]['soft_limit_for_enable'] = enable
-
-def c_TalonSRX_SetReverseSoftEnable(handle, enable):
-    hal_data['CAN'][handle.id]['soft_limit_rev_enable'] = enable
-
-def c_TalonSRX_GetPgain(handle, slotIdx):
-    if slotIdx == 0:
-        return hal_data['CAN'][handle.id]['profile0_p']
-    else:
-        return hal_data['CAN'][handle.id]['profile1_p']
-
-def c_TalonSRX_GetIgain(handle, slotIdx):
-    if slotIdx == 0:
-        return hal_data['CAN'][handle.id]['profile0_i']
-    else:
-        return hal_data['CAN'][handle.id]['profile1_i']
-
-def c_TalonSRX_GetDgain(handle, slotIdx):
-    if slotIdx == 0:
-        return hal_data['CAN'][handle.id]['profile0_d']
-    else:
-        return hal_data['CAN'][handle.id]['profile1_d']
-
-def c_TalonSRX_GetFgain(handle, slotIdx):
-    if slotIdx == 0:
-        return hal_data['CAN'][handle.id]['profile0_f']
-    else:
-        return hal_data['CAN'][handle.id]['profile1_f']
-
-def c_TalonSRX_GetIzone(handle, slotIdx):
-    if slotIdx == 0:
-        return hal_data['CAN'][handle.id]['profile0_izone']
-    else:
-        return hal_data['CAN'][handle.id]['profile1_izone']
-
-def c_TalonSRX_GetCloseLoopRampRate(handle, slotIdx):
-    if slotIdx == 0:
-        return hal_data['CAN'][handle.id]['profile0_closeloopramprate']
-    else:
-        return hal_data['CAN'][handle.id]['profile1_closeloopramprate']
-
-def c_TalonSRX_GetVoltageCompensationRate(handle):
-    return hal_data['CAN'][handle.id]['voltage_compensation_rate']
-
-def c_TalonSRX_GetForwardSoftLimit(handle):
-    return hal_data['CAN'][handle.id]['soft_limit_for']
-
-def c_TalonSRX_GetReverseSoftLimit(handle):
-    return hal_data['CAN'][handle.id]['soft_limit_rev']
-
-def c_TalonSRX_GetForwardSoftEnable(handle):
-    return hal_data['CAN'][handle.id]['soft_limit_for_enable']
-
-def c_TalonSRX_GetReverseSoftEnable(handle):
-    return hal_data['CAN'][handle.id]['soft_limit_rev_enable']
-
-def c_TalonSRX_GetPulseWidthRiseToFallUs(handle):
-    assert False
-
-def c_TalonSRX_IsPulseWidthSensorPresent(handle):
-    return hal_data['CAN'][handle.id]['pulse_width_present']
-
-def c_TalonSRX_SetStatusFrameRate(handle, frameEnum, periodMs):
-    pass
-
-def c_TalonSRX_ClearStickyFaults(handle):
-    hal_data['CAN'][handle.id]['sticky_overtemp'] = 0
-    hal_data['CAN'][handle.id]['stickyfault_undervoltage'] = 0
-    hal_data['CAN'][handle.id]['stickyfault_forlim'] = 0
-    hal_data['CAN'][handle.id]['stickyfault_revlim'] = 0
-    hal_data['CAN'][handle.id]['stickyfault_forsoftlim'] = 0
-    hal_data['CAN'][handle.id]['stickyfault_revsoftlim'] = 0
-    
-def c_TalonSRX_ChangeMotionControlFramePeriod(handle, periodMs):
-    pass
-
-def c_TalonSRX_ClearMotionProfileTrajectories(handle):
-    pass
-
-def c_TalonSRX_GetMotionProfileTopLevelBufferCount(handle):
-    return hal_data['CAN'][handle.id]['mp_topBufferCnt']
-
-def c_TalonSRX_IsMotionProfileTopLevelBufferFull(handle):
-    return False
-
-_push_mp_mask = ~(constants.TalonSRXConst.kMotionProfileFlag_ActTraj_VelOnly | \
-                  constants.TalonSRXConst.kMotionProfileFlag_ActTraj_IsLast)
-
-def c_TalonSRX_PushMotionProfileTrajectory(handle, targPos, targVel, profileSlotSelect, timeDurMs, velOnly, isLastPoint, zeroPos):
-    data = hal_data['CAN'][handle.id]
-    data['mp_position'] = targPos
-    data['mp_velocity'] = targVel
-    data['mp_profileSlotSelect'] = profileSlotSelect
-    data['mp_timeDurMs'] = timeDurMs
-    data['mp_zeroPos'] = zeroPos
-    
-    flags = data['mp_flags']
-    flags &= _push_mp_mask
-    
-    if velOnly:
-        flags |= constants.TalonSRXConst.kMotionProfileFlag_ActTraj_VelOnly
-        
-    if isLastPoint:
-        flags |= constants.TalonSRXConst.kMotionProfileFlag_ActTraj_IsLast
-
-def c_TalonSRX_ProcessMotionProfileBuffer(handle):
-    pass
-
-def c_TalonSRX_GetMotionProfileStatus(handle):
-    data = hal_data['CAN'][handle.id]
-    
-    return (data['mp_flags'],
-            data['mp_profileSlotSelect'],
-            data['mp_position'],
-            data['mp_velocity'],
-            data['mp_topBufferRem'],
-            data['mp_topBufferCnt'],
-            data['mp_btmBufferCnt'],
-            data['mp_outputEnable'])
-
-def c_TalonSRX_GetFault_OverTemp(handle):
-    return hal_data['CAN'][handle.id]['fault_overtemp']
-
-def c_TalonSRX_GetFault_UnderVoltage(handle):
-    return hal_data['CAN'][handle.id]['fault_undervoltage']
-
-def c_TalonSRX_GetFault_ForLim(handle):
-    return hal_data['CAN'][handle.id]['fault_forlim']
-
-def c_TalonSRX_GetFault_RevLim(handle):
-    return hal_data['CAN'][handle.id]['fault_revlim']
-
-def c_TalonSRX_GetFault_HardwareFailure(handle):
-    return hal_data['CAN'][handle.id]['fault_hwfailure']
-
-def c_TalonSRX_GetFault_ForSoftLim(handle):
-    return hal_data['CAN'][handle.id]['fault_forsoftlim']
-
-def c_TalonSRX_GetFault_RevSoftLim(handle):
-    return hal_data['CAN'][handle.id]['fault_revsoftlim']
-
-def c_TalonSRX_GetStckyFault_OverTemp(handle):
-    return hal_data['CAN'][handle.id]['stickyfault_overtemp']
-
-def c_TalonSRX_GetStckyFault_UnderVoltage(handle):
-    return hal_data['CAN'][handle.id]['stickyfault_undervoltage']
-
-def c_TalonSRX_GetStckyFault_ForLim(handle):
-    return hal_data['CAN'][handle.id]['stickyfault_forlim']
-
-def c_TalonSRX_GetStckyFault_RevLim(handle):
-    return hal_data['CAN'][handle.id]['stickyfault_revlim']
-
-def c_TalonSRX_GetStckyFault_ForSoftLim(handle):
-    return hal_data['CAN'][handle.id]['stickyfault_forsoftlim']
-
-def c_TalonSRX_GetStckyFault_RevSoftLim(handle):
-    return hal_data['CAN'][handle.id]['stickyfault_revsoftlim']
-
-def c_TalonSRX_GetAppliedThrottle(handle):
-    return hal_data['CAN'][handle.id]['value']
-
-def c_TalonSRX_GetCloseLoopErr(handle):
-    return hal_data['CAN'][handle.id]['closeloop_err']
-
-def c_TalonSRX_GetFeedbackDeviceSelect(handle):
-    return hal_data['CAN'][handle.id]['feedback_device']
-
-def c_TalonSRX_GetModeSelect(handle):
-    return hal_data['CAN'][handle.id]['mode_select']
-
-def c_TalonSRX_GetLimitSwitchEn(handle):
-    return hal_data['CAN'][handle.id]['limit_switch_en']
-
-def c_TalonSRX_GetLimitSwitchClosedFor(handle):
-    return hal_data['CAN'][handle.id]['limit_switch_closed_for']
-
-def c_TalonSRX_GetLimitSwitchClosedRev(handle):
-    return hal_data['CAN'][handle.id]['limit_switch_closed_rev']
-
-def c_TalonSRX_GetSensorPosition(handle):
-    # this returns different values depending on the feedback device selected
-    data = hal_data['CAN'][handle.id]
-    device_type = data['feedback_device']
-    return data[_srx_pos_map[device_type]]
-
-def c_TalonSRX_GetSensorVelocity(handle):
-    # this returns different values depending on the feedback device selected
-    data = hal_data['CAN'][handle.id]
-    device_type = data['feedback_device']
-    return data[_srx_vel_map[device_type]]
-
-def c_TalonSRX_GetCurrent(handle):
-    return hal_data['CAN'][handle.id]['current']
-
-def c_TalonSRX_GetBrakeIsEnabled(handle):
-    return hal_data['CAN'][handle.id]['brake_enabled']
-
-def c_TalonSRX_GetEncPosition(handle):
-    return hal_data['CAN'][handle.id]['enc_position']
-
-def c_TalonSRX_GetEncVel(handle):
-    return hal_data['CAN'][handle.id]['enc_velocity']
-
-def c_TalonSRX_GetEncIndexRiseEvents(handle):
-    return hal_data['CAN'][handle.id]['enc_index_rise_events']
-
-def c_TalonSRX_GetQuadApin(handle):
-    return hal_data['CAN'][handle.id]['quad_apin']
-
-def c_TalonSRX_GetQuadBpin(handle):
-    return hal_data['CAN'][handle.id]['quad_bpin']
-
-def c_TalonSRX_GetQuadIdxpin(handle):
-    return hal_data['CAN'][handle.id]['quad_idxpin']
-
-def c_TalonSRX_GetAnalogInWithOv(handle):
-    return hal_data['CAN'][handle.id]['analog_in_position']
-
-def c_TalonSRX_GetAnalogInVel(handle):
-    return hal_data['CAN'][handle.id]['analog_in_velocity']
-
-def c_TalonSRX_GetTemp(handle):
-    return hal_data['CAN'][handle.id]['temp']
-
-def c_TalonSRX_GetBatteryV(handle):
-    return hal_data['CAN'][handle.id]['battery']
-
-def c_TalonSRX_GetResetCount(handle):
-    return hal_data['CAN'][handle.id]['reset_count']
-
-def c_TalonSRX_GetResetFlags(handle):
-    return hal_data['CAN'][handle.id]['reset_flags']
-
-def c_TalonSRX_GetFirmVers(handle):
-    return hal_data['CAN'][handle.id]['firmware_version']
-
-def c_TalonSRX_GetPulseWidthPosition(handle):
-    return hal_data['CAN'][handle.id]['pulse_width_position']
-
-def c_TalonSRX_GetPulseWidthVelocity(handle):
-    return hal_data['CAN'][handle.id]['pulse_width_velocity']
-
-def c_TalonSRX_GetPulseWidthRiseToRiseUs(handle):
-    assert False
-
-def c_TalonSRX_GetActTraj_IsValid(handle):
-    flags = hal_data['CAN'][handle.id]['mp_flags']
-    return (flags & constants.TalonSRXConst.kMotionProfileFlag_ActTraj_IsValid) != 0
-    
-def c_TalonSRX_GetActTraj_ProfileSlotSelect(handle):
-    return hal_data['CAN'][handle.id]['mp_profileSlotSelect']
-
-def c_TalonSRX_GetActTraj_VelOnly(handle):
-    flags = hal_data['CAN'][handle.id]['mp_flags']
-    return (flags & constants.TalonSRXConst.kMotionProfileFlag_ActTraj_VelOnly) != 0
-
-def c_TalonSRX_GetActTraj_IsLast(handle):
-    flags = hal_data['CAN'][handle.id]['mp_flags']
-    return (flags & constants.TalonSRXConst.kMotionProfileFlag_ActTraj_IsLast) != 0
-
-def c_TalonSRX_GetOutputType(handle):
-    assert False
-
-def c_TalonSRX_GetHasUnderrun(handle):
-    flags = hal_data['CAN'][handle.id]['mp_flags']
-    return (flags & constants.TalonSRXConst.kMotionProfileFlag_HasUnderrun) != 0
-
-def c_TalonSRX_GetIsUnderrun(handle):
-    flags = hal_data['CAN'][handle.id]['mp_flags']
-    return (flags & constants.TalonSRXConst.kMotionProfileFlag_IsUnderrun) != 0
-
-def c_TalonSRX_GetNextID(handle):
-    assert False
-
-def c_TalonSRX_GetBufferIsFull(handle):
-    assert False
-
-def c_TalonSRX_GetCount(handle):
-    assert False
-
-def c_TalonSRX_GetActTraj_Velocity(handle):
-    return hal_data['CAN'][handle.id]['mp_velocity']
-
-def c_TalonSRX_GetActTraj_Position(handle):
-    return hal_data['CAN'][handle.id]['mp_position']
-
-def c_TalonSRX_SetDemand(handle, param):
-    hal_data['CAN'][handle.id]['value'] = param
-
-def c_TalonSRX_SetOverrideLimitSwitchEn(handle, param):
-    hal_data['CAN'][handle.id]['override_limit_switch'] = param
-
-def c_TalonSRX_SetFeedbackDeviceSelect(handle, param):
-    hal_data['CAN'][handle.id]['feedback_device'] = param
-
-def c_TalonSRX_SetRevMotDuringCloseLoopEn(handle, param):
-    hal_data['CAN'][handle.id]['rev_motor_during_close_loop'] = param
-
-def c_TalonSRX_SetOverrideBrakeType(handle, param):
-    hal_data['CAN'][handle.id]['override_braketype'] = param
-
-def c_TalonSRX_SetModeSelect(handle, param):
-    hal_data['CAN'][handle.id]['mode_select'] = param
-
-def c_TalonSRX_SetModeSelect2(handle, modeSelect, demand):
-    hal_data['CAN'][handle.id]['mode_select'] = modeSelect
-    hal_data['CAN'][handle.id]['value'] = demand
-
-def c_TalonSRX_SetProfileSlotSelect(handle, param):
-    hal_data['CAN'][handle.id]['profile_slot_select'] = param
-
-def c_TalonSRX_SetRampThrottle(handle, param):
-    hal_data['CAN'][handle.id]['ramp_throttle'] = param
-
-def c_TalonSRX_SetRevFeedbackSensor(handle, param):
-    hal_data['CAN'][handle.id]['rev_feedback_sensor'] = param
-
-#############################################################################
-# Utilities
-#############################################################################
-
-HAL_NO_WAIT = 0
-HAL_WAIT_FOREVER = -1
-
-def delayTicks(ticks):
-    # ticks is ns*3? don't use this.
-    assert False
-
-def delayMillis(ms):
-    hooks.delayMillis(ms)
-
-def delaySeconds(s):
-    hooks.delaySeconds(s)
-
-#############################################################################
-# CAN
-#############################################################################
-
-def FRC_NetworkCommunication_CANSessionMux_sendMessage(messageID, data, dataSize, periodMs, status):
-    assert False
-
-def FRC_NetworkCommunication_CANSessionMux_receiveMessage(messageID, messageIDMask, data, status):
-    assert False # returns dataSize, timeStamp
-
-def FRC_NetworkCommunication_CANSessionMux_openStreamSession(messageID, messageIDMask, maxMessages, status):
-    assert False # returns sessionHandle
-
-def FRC_NetworkCommunication_CANSessionMux_closeStreamSession(sessionHandle):
-    assert False
-
-def FRC_NetworkCommunication_CANSessionMux_readStreamSession(sessionHandle, messages, messagesToRead, status):
-    assert False # returns messagesRead
-
-def FRC_NetworkCommunication_CANSessionMux_getCANStatus(status):
-    assert False # returns all params
-
+reset_hal()

@@ -72,6 +72,9 @@ def compare_header_dirs(python_objects, header_dirs, filter_h=None):
                 if filter_h and fname != filter_h:
                     continue
                 _process_header(os.path.join(root, fname), output, children_to_ignore, python_objects)
+                
+            # Don't recurse
+            break
     
     return output
 
@@ -84,7 +87,11 @@ def _process_header(header_file, output, children_to_ignore, python_objects):
     #For each class declaration
     header = CppHeaderParser.CppHeader(header_file)
     filename = os.path.basename(header_file)
-
+    
+    enums = {}
+    for e in header.enums:
+        enums[e['name']] = e
+    
     #Scan classes
     for c_class_name in header.classes:
         c_class = header.classes[c_class_name]
@@ -238,6 +245,13 @@ def compare_function(python_object, fndata, c_object, check_fndata, filename):
     #Get all parameters
     output["parameters"] = c_object["parameters"][:]
     
+    #if c_object['name'] in ['HAL_SetAccelerometerRange', 'HAL_GetRuntimeType', 'HAL_SetSPIAccumulatorDeadband']:
+    #    import pprint
+    #    print()
+    #    pprint.pprint(c_object)
+    #    print()
+    #    #print(c_object["parameters"][])
+    
     # Elide void parameters
     if len(output["parameters"]) == 1 and output["parameters"][0]["raw_type"] == "void": 
         output["parameters"] = []
@@ -275,8 +289,8 @@ def _get_c_typeinfo(typename, c_pointer):
     c_type_name = translate_obj(typename)
 
     #Workaround for typedefed pointers
-    if c_type_name in ["MUTEX_ID", "MULTIWAIT_ID"]:
-        c_pointer = True
+    #if c_type_name in ["MUTEX_ID", "MULTIWAIT_ID"]:
+    #    c_pointer = True
 
     #Check for pointers
     if c_pointer:
@@ -287,12 +301,16 @@ def _get_c_typeinfo(typename, c_pointer):
     
 
 def _get_py_typeinfo(py_param):
+    '''
+        :returns: name, is_pointer
+    '''
     
     #Check py param pointer
-    if py_param.__class__.__name__ == "PyCPointerType":
+    py_cls_name = py_param.__class__.__name__ 
+    if py_cls_name == "PyCPointerType":
         py_pointer = True
         py_type_obj = py_param._type_
-    elif py_param.__class__.__name__ == "PyCFuncPtrType":
+    elif py_cls_name == "PyCFuncPtrType":
         py_pointer = True
         py_type_obj = py_param
     elif hasattr(py_param, "fake_pointer"):
@@ -311,6 +329,9 @@ def _get_py_typeinfo(py_param):
         py_type_name = type(py_type_obj).__name__
         if py_type_name == "type":
             py_type_name = py_type_obj.__name__
+            
+        if py_type_name.endswith('Handle'):
+            py_type_name = 'HAL_' + py_type_name
     
     return py_type_name, py_pointer
 
@@ -360,8 +381,10 @@ def _scan_c_end(python_object, idx, summary):
         method_summary["filename"] = fname
         method_summary["errors"] = []
         method_summary["ignored_errors"] = 0
+        
         if not method_summary["present"]:
-            method_summary["errors"].append("missing c object")
+            method_summary["errors"].append("C method does not exist")
+        
         method_summary["ignored"] = False
         method_summary["parameters"] = list()
         
@@ -378,10 +401,10 @@ def _scan_c_end(python_object, idx, summary):
                                                            c_object['returns_pointer'])
                 
             if py_retpointer != c_retpointer:
-                method_summary['errors'].append("mismatched return ptr")
+                method_summary['errors'].append("mismatched return ptr (py: %s, c: %s)" % (py_retpointer, c_retpointer))
                 
             if py_rettype_name != c_rettype_name and c_rettype_name != "void":
-                method_summary["errors"].append("mismatched return type")
+                method_summary["errors"].append("mismatched return type (py: %s, c: %s)" %(py_rettype_name, c_rettype_name))
             
             method_summary['returns'] = c_object['returns']
             if c_object['returns_pointer']:
@@ -433,8 +456,8 @@ def _scan_c_end(python_object, idx, summary):
                         method_summary["errors"].append("mismatched pointer for '%s'" % c_param['name'])
                         continue
                     
-                    if py_type_name != c_type_name and c_type_name != "void":
-                        method_summary["errors"].append("mismatched type for '%s'" % c_param['name'])
+                    if py_type_name != c_type_name:
+                        method_summary["errors"].append("mismatched type for '%s' (py: %s, c: %s)" % (c_param['name'], py_type_name, c_type_name))
                         continue
 
         #Collect errors from the comparison
@@ -556,19 +579,28 @@ def get_status_msg(summary):
         # Don't mark this as an error, just a warning
         status_message.append("Not Present")
         status_color = "orange"
-
-    if len(summary["errors"]) > 0:
-        status_message.append("{} Error(s): {}".format(len(summary["errors"]),
-                                                       summary["errors"]))
+        
+    errs = []
+    l_errors = len(summary["errors"])
+    l_ignored = summary["ignored_errors"]
+    
+    if l_errors:
+        errs.append("%s Error(s)" % l_errors)
         status_color = "red"
-
-    if summary["ignored_errors"] > 0:
-        status_message.append("{} Ignored Error(s)".format(summary["ignored_errors"]))
-
+        
+    if l_ignored:
+        errs.append("%s Ignored Error(s)" % l_ignored)
+        
     if summary["ignored"]:
         status_message.append("All Errors Ignored")
         if status_color == "red":
             status_color = "orange"
+
+    if l_errors:
+        status_message.append('\n- ERR: ' + '\n- ERR: '.join(summary["errors"]))
+
+    if l_ignored:
+        status_message.append('\n- IGN: ' + '\n- IGN: '.join(summary["ignored"]))
 
     return ", ".join(status_message), status_color
 
@@ -710,9 +742,13 @@ def stringize_method_to_hal(summary):
 def stringize_method_to_halsim(summary):
     
     name, _ = c_fn_name_to_py(summary['name'])
+    params = summary['parameters']
     
     text = 'def ' + name + '(' + \
-            ', '.join(arg['name'] for arg in summary['parameters']) + '):'
+            ', '.join(arg['name'] for arg in params) + '):'
+    
+    if params and params[-1]['name'] == 'status':
+        text += '\n    status.value = 0'
     
     text += '\n    assert False'
     text += '\n'
@@ -751,6 +787,12 @@ def print_list(inp):
             print(orange_head + text["text"] + end_head)
         else:
             print(text["text"])
+
+def print_stubs(stubtype, method, text_list):
+    if stubtype == 'pyhal':
+        text_list += stringize_method_to_hal(method)
+    elif stubtype == 'halsim':
+        text_list += stringize_method_to_halsim(method)
 
 
 if __name__ == "__main__":
@@ -801,10 +843,7 @@ if __name__ == "__main__":
                 text_list += stringize_method_summary(method)
                 
             if not method['present']:
-                if args.stubs == 'pyhal':
-                    text_list += stringize_method_to_hal(method)
-                if args.stubs == 'halsim':
-                    text_list += stringize_method_to_halsim(method)
+                print_stubs(args.stubs, method, text_list)
         
         for cls in sort_by_fname(py_end_output["classes"]):
             text_list.extend(stringize_class_summary(cls))
@@ -826,6 +865,9 @@ if __name__ == "__main__":
         text_list = list()
         for method in sort_by_fname(c_end_output["methods"]):
             text_list.extend(stringize_method_summary(method))
+            if method['errors']:
+                print_stubs(args.stubs, method, text_list)
+            
         for cls in sort_by_fname(c_end_output["classes"]):
             text_list.extend(stringize_class_summary(cls))
         print_list(text_list)

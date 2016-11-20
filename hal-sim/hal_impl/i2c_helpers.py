@@ -9,11 +9,11 @@ class I2CSimBase:
         Not particularly useful at the moment
     '''
     
-    def i2CInitialize(self, port, status):
+    def initializeI2C(self, port, status):
         self.port = port
         status.value = 0
     
-    def i2CTransaction(self, port, device_address, data_to_send, send_size, data_received, receive_size):
+    def transactionI2C(self, port, deviceAddress, dataToSend, sendSize, dataReceived, receiveSize):
         '''
             To give data back use ``data_received``::
             
@@ -23,11 +23,11 @@ class I2CSimBase:
         '''
         raise NotImplementedError
     
-    def i2CWrite(self, port, device_address, data_to_send, send_size):
+    def writeI2C(self, port, deviceAddress, dataToSend, sendSize):
         ''':returns: number of bytes written'''
-        return send_size
+        return sendSize
     
-    def i2CRead(self, port,  device_address, buffer, count):
+    def readI2C(self, port, deviceAddress, buffer, count):
         '''
             To give data, do ``buffer[:] = [1,2,3...]``
             
@@ -35,6 +35,6 @@ class I2CSimBase:
         '''
         raise NotImplementedError
     
-    def i2CClose(self, port):
+    def closeI2C(self, port):
         pass
     

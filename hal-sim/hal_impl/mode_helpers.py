@@ -9,8 +9,11 @@ from . import functions as fns
 def notify_new_ds_data():
     '''Called when driver station data is modified'''
     
-    if data.hal_newdata_sem is not None:
-        fns.giveMultiWait(data.hal_newdata_sem)
+    cond = data.hal_newdata_cond
+    
+    if cond is not None:
+        with cond:
+            cond.notify_all()
 
 def set_autonomous(enabled):
     '''Only designed to be called on transition'''

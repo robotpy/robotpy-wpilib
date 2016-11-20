@@ -6,4 +6,4 @@ except ImportError:
     __version__ = 'master'
 
 # Always initialize HAL, otherwise segfaults can happen
-HALInitialize()
+initialize()

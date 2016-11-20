@@ -23,9 +23,9 @@ hal_in_data = {
 }
 
 
-#: A multiwait object. Use hal.giveMultiWait() to set this when
-#: driver station related data has been updated
-hal_newdata_sem = None
+#: A python condition object that is notified when driver station related
+#: data has been updated
+hal_newdata_cond = None
 
 
 
@@ -110,15 +110,15 @@ def _reset_hal_data(hooks):
         .. warning:: Don't put invalid floats in here, or this structure
                      is no longer JSON serializable!
     '''
-    global hal_data, hal_newdata_sem
-    hal_newdata_sem = None
+    global hal_data, hal_newdata_cond
+    hal_newdata_cond = None
     
     hal_data.clear()
     hal_in_data.clear()
     
     hal_data.update({
 
-        'alliance_station': IN(constants.kHALAllianceStationID_red1),
+        'alliance_station': IN(constants.AllianceStationID.kRed1),
 
         'time': {
             'has_source': IN(False),
