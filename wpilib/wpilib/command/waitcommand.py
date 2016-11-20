@@ -1,12 +1,12 @@
-# validated: 2016-01-09 AG b62b606 shared/java/edu/wpi/first/wpilibj/command/WaitCommand.java
+# validated: 2016-11-20 KC b78f580d476f shared/java/edu/wpi/first/wpilibj/command/WaitCommand.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
 
-from .command import Command
+from .timedcommand import TimedCommand
 
 __all__ = ["WaitCommand"]
 
@@ -27,6 +27,3 @@ class WaitCommand(Command):
             super().__init__("Wait(%s)" % timeout, timeout)
         else:
             super().__init__(name, timeout)
-
-    def isFinished(self):
-        return self.isTimedOut()

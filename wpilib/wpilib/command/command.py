@@ -1,6 +1,6 @@
-# validated: 2016-01-09 AG 26d101c shared/java/edu/wpi/first/wpilibj/command/Command.java
+# validated: 2016-11-20 KC b25a7cb3704d shared/java/edu/wpi/first/wpilibj/command/Command.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -172,7 +172,7 @@ class Command(Sendable):
         """The initialize method is called the first time this Command is run
         after being started.
         """
-        pass #raise NotImplementedError
+        pass
 
     def _initialize(self):
         """A shadow method called before initialize()."""
@@ -182,7 +182,7 @@ class Command(Sendable):
         """The execute method is called repeatedly until this Command either
         finishes or is canceled.
         """
-        pass #raise NotImplementedError
+        pass
 
     def _execute(self):
         """A shadow method called before execute()."""
@@ -193,19 +193,25 @@ class Command(Sendable):
         If it is, then the command will be removed and end() will be called.
 
         It may be useful for a team to reference the isTimedOut() method
-        for time-sensitive commands.
+        for time-sensitive commands, or override TimedCommand.
+
+        If you do not specify isFinished in your command, the command will only
+        end if interrupted or canceled. If you want a command that executes only
+        once and then ends, override InstantCommand.
 
         :returns: whether this command is finished.
         :see: :meth:`isTimedOut`
+        :see: :class: `.TimedCommand`
+        :see: :class: `.InstantCommand`
         """
-        raise NotImplementedError
+        return False
 
     def end(self):
         """Called when the command ended peacefully.  This is where you may
         want to wrap up loose ends, like shutting off a motor that was being
         used in the command.
         """
-        pass #raise NotImplementedError
+        pass
 
     def _end(self):
         """A shadow method called after end()."""
@@ -220,9 +226,9 @@ class Command(Sendable):
         motor that was being used in the command.
 
         Generally, it is useful to simply call the end() method within this
-        method.
+        method, as done here.
         """
-        pass #raise NotImplementedError
+        self.end()
 
     def _interrupted(self):
         """A shadow method called after interrupted()."""
