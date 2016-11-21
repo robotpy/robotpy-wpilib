@@ -13,7 +13,6 @@ import weakref
 
 from .motorsafety import MotorSafety
 from .talon import Talon
-from .canjaguar import CANJaguar
 
 __all__ = ["RobotDrive"]
 

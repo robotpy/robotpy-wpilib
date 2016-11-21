@@ -40,29 +40,6 @@ def hal_data(_module_patch):
     return hal_impl.data.hal_data
 
 @pytest.fixture(scope="function")
-def frccan(request):
-    
-    # Not sure how to deal with this yet
-    assert False
-    
-    """Mock for frccan module."""
-    frccan = MagicMock(name='mock_frccan')
-
-    class CANError(RuntimeError):
-        pass
-    class CANMessageNotFound(CANError):
-        pass
-
-    frccan.CANError = CANError
-    frccan.CANMessageNotFound = CANMessageNotFound
-
-    # Flags in the upper bits of the messageID
-    frccan.CAN_IS_FRAME_REMOTE = 0x80000000
-    frccan.CAN_IS_FRAME_11BIT = 0x40000000
-
-    return frccan
-
-@pytest.fixture(scope="function")
 def wpilib(_module_patch, hal, hal_data):
     """Actual wpilib implementation"""
     import wpilib
@@ -100,7 +77,7 @@ def halmock(request):
 
 @pytest.fixture(scope="function")
 def wpimock(request, halmock):
-    """Monkeypatches sys.modules hal and frccan and loads wpilib."""
+    """Monkeypatches sys.modules hal and loads wpilib."""
     
     assert '_module_patch' not in request.fixturenames, "Cannot use mock and real fixtures in same function!"
     
