@@ -94,7 +94,7 @@ your roboRIO.
 	
 * Then run this::
 
-    pip3 install pynivision robotpy-hal-roborio wpilib
+    pip3 install robotpy-hal-roborio wpilib
 
 .. note:: When powered off, your roboRIO does not keep track of the correct
           date, and as a result pip may fail with an SSL related error message.

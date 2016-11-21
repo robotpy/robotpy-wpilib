@@ -79,13 +79,6 @@ from .utility import *
 from .victor import *
 from .victorsp import *
 
-# Provide dummy implementations if pynivision isn't available.
-try:
-    from .cameraserver import *
-    from .usbcamera import *
-except ImportError:
-    from ._impl.dummycamera import *
-
 from ._impl.main import run
 
 try:
