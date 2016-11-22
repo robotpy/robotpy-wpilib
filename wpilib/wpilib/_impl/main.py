@@ -2,6 +2,7 @@
 
 import argparse
 import inspect
+import sys
 
 from pkg_resources import iter_entry_points
 
@@ -80,14 +81,26 @@ def run(robot_class, **kwargs):
     parser.add_argument('-v', '--verbose', action='store_true', default=False,
                         help="Enable debug logging")
     
+    parser.add_argument('--ignore-plugin-errors', action='store_true', default=False,
+                        help="Ignore errors caused by RobotPy plugins (probably should fix or replace instead!)")
+    
     has_cmd = False
     
     for entry_point in iter_entry_points(group='robotpy', name=None):
-        has_cmd = True
-        cmd_class = entry_point.load()
+        try:
+            cmd_class = entry_point.load()
+        except ImportError:
+            if '--ignore-plugin-errors' in sys.argv:
+                print("WARNING: Ignoring error in '%s'" % entry_point)
+                continue
+            else:
+                print("Plugin error detected in '%s' (use --ignore-plugin-errors to ignore this)" % entry_point)
+                raise
+            
         cmdparser = subparser.add_parser(entry_point.name, help=inspect.getdoc(cmd_class))
         obj = cmd_class(cmdparser)
         cmdparser.set_defaults(cmdobj=obj)
+        has_cmd = True
         
     if not has_cmd:
         parser.error("No entry points defined -- robot code can't do anything. Install packages to add entry points (see README)")
