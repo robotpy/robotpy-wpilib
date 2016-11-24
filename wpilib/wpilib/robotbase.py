@@ -8,6 +8,7 @@
 
 import hal
 import warnings
+from networktables import NetworkTables
 
 import logging
 logger = logging.getLogger('robotpy')
@@ -39,20 +40,19 @@ class RobotBase:
         # TODO: StartCAPI()
         # TODO: See if the next line is necessary
         # Resource.RestartProgram()
-
-        try:
-            from networktables import NetworkTable
-            #NetworkTable.setServerMode() -- don't set this explicitly, it's the default.
-        except ImportError:
-            warnings.warn("networktables not found", ImportWarning)
-            NetworkTable = None
-
+        
+        NetworkTables.setNetworkIdentity("Robot")
+        
+        if not RobotBase.isSimulation():
+            NetworkTables.setPersistentFilename("/home/lvuser/networktables.ini")
+        
+        NetworkTables.setServerMode()
+        
         from .driverstation import DriverStation
         self.ds = DriverStation.getInstance()
 
-        if NetworkTable is not None:
-            NetworkTable.getTable("")   # forces network tables to initialize
-            NetworkTable.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", False)
+        NetworkTables.getTable("")   # forces network tables to initialize
+        NetworkTables.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", False)
 
         self.__initialized = True
 
@@ -138,7 +138,7 @@ class RobotBase:
     @staticmethod
     def initializeHardwareConfiguration():
         """Common initialization for all robot programs."""
-        hal.HALInitialize() # FRCNetworkCommunicationReserve in Java
+        hal.initialize()
 
         from .driverstation import DriverStation
         from .robotstate import RobotState
@@ -149,8 +149,8 @@ class RobotBase:
         """Starting point for the applications."""
         RobotBase.initializeHardwareConfiguration()
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Language,
-                      hal.HALUsageReporting.kLanguage_Python)
+        hal.report(hal.HALUsageReporting.kResourceType_Language,
+                   hal.HALUsageReporting.kLanguage_Python)
 
         try:
             robot = robot_cls()

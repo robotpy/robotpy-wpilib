@@ -91,7 +91,7 @@ class Joystick:
         self.leftRumble = 0
         self.rightRumble = 0
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Joystick, port)
+        hal.report(hal.HALUsageReporting.kResourceType_Joystick, port)
 
     def getX(self, hand=None):
         """Get the X value of the joystick.

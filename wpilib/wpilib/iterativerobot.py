@@ -72,13 +72,13 @@ class IterativeRobot(RobotBase):
 
     def startCompetition(self):
         """Provide an alternate "main loop" via startCompetition()."""
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Framework,
+        hal.report(hal.HALUsageReporting.kResourceType_Framework,
                       hal.HALUsageReporting.kFramework_Iterative)
 
         self.robotInit()
 
         # Tell the DS that the robot is ready to be enabled
-        hal.HALNetworkCommunicationObserveUserProgramStarting()
+        hal.observeUserProgramStarting()
 
         # loop forever, calling the appropriate mode-dependent function
         LiveWindow.setEnabled(False)
@@ -96,7 +96,7 @@ class IterativeRobot(RobotBase):
                     self.teleopInitialized = False
                     self.testInitialized = False
                 if self.nextPeriodReady():
-                    hal.HALNetworkCommunicationObserveUserProgramDisabled()
+                    hal.observeUserProgramDisabled()
                     self.disabledPeriodic()
             elif self.isTest():
                 # call TestInit() if we are now just entering test mode from either
@@ -109,7 +109,7 @@ class IterativeRobot(RobotBase):
                     self.teleopInitialized = False
                     self.disabledInitialized = False
                 if self.nextPeriodReady():
-                    hal.HALNetworkCommunicationObserveUserProgramTest()
+                    hal.observeUserProgramTest()
                     self.testPeriodic()
             elif self.isAutonomous():
                 # call Autonomous_Init() if this is the first time
@@ -125,7 +125,7 @@ class IterativeRobot(RobotBase):
                     self.teleopInitialized = False
                     self.disabledInitialized = False
                 if self.nextPeriodReady():
-                    hal.HALNetworkCommunicationObserveUserProgramAutonomous()
+                    hal.observeUserProgramAutonomous()
                     self.autonomousPeriodic()
             else:
                 # call Teleop_Init() if this is the first time
@@ -138,7 +138,7 @@ class IterativeRobot(RobotBase):
                     self.autonomousInitialized = False
                     self.disabledInitialized = False
                 if self.nextPeriodReady():
-                    hal.HALNetworkCommunicationObserveUserProgramTeleop()
+                    hal.observeUserProgramTeleop()
                     self.teleopPeriodic()
             self.ds.waitForData()
 

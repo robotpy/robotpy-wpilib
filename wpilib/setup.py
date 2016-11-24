@@ -49,7 +49,7 @@ setup(
     url='https://github.com/robotpy/robotpy-wpilib',
     keywords='frc first robotics wpilib',
     packages=find_packages(),
-    install_requires=['pynetworktables>=2015.2.1'],
+    install_requires=['pynetworktables>=2017.0.0a1'],
     license="BSD License",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
