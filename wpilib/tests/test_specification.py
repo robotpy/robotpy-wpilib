@@ -60,34 +60,30 @@ def test_check_hal_api(hal):
     
     _download_hal_includes()
     
-    from spec_scanners import hal_scanner
+    from spec_scanners.hal_scanner import (
+        Class,
+        collect_headers,
+        compare,
+        get_hal_dirs,
+        print_outputs
+    ) 
 
-    hal_dirs = hal_scanner.get_hal_dirs(hal_dir)
+    hal_dirs = get_hal_dirs(hal_dir)
     for tree in hal_dirs:
         assert exists(tree), "Invalid HAL include directory"
 
-    frontend_output = hal_scanner.compare_header_dirs([hal], hal_dirs)
-    backend_output = hal_scanner.scan_c_end(hal, frontend_output)
+    c_data = collect_headers(hal_dirs)
     
-    has_errors = False
+    py_data = Class.from_py("hal", hal)
     
-    for item in backend_output["methods"]:
-        if len(item["errors"]) > 0:
-            has_errors = True
-            print("Error: method call to {} doesn't match c++ spec.".format(item["name"]))
-            for error in item['errors']:
-                print("- ", error)
-            print()
-            
-    for item in backend_output["classes"]:
-        if item["errors"] > 0:
-            has_errors = True
-            print("Error: class {} doesn't match c++ spec, and is not ignored.".format(item["name"]))
-            for error in item['errors']:
-                print("- ", error)
-            print()
+    outputs, num_errors, _, _ = compare(c_data, py_data, True)
 
-    assert has_errors == False, "Check stdout for failure details"
+    if num_errors > 0:
+        outputs = [o for o in outputs if o.errors]
+        print_outputs(outputs, errors_only=True)
+        
+        assert False, "Check stdout for failure details"
+
 
 
 @pytest.mark.skipif(os.getenv('WPILIB_JAVA_DIR', None) == None,
