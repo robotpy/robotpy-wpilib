@@ -119,9 +119,9 @@ class DigitalHandle:
         self.pin = port.pin
 
 class DigitalPWMHandle(Handle):
-    __slots__ = ['idx']
-    def __init__(self, idx):
-        self.idx = idx
+    __slots__ = ['pin', 'portHandle']
+    def __init__(self, portHandle):
+        self.pin = portHandle.pin
 
 class EncoderHandle(Handle):
     __slots__ = ['idx']

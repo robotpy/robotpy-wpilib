@@ -1234,62 +1234,84 @@ def clearPDPStickyFaults(module, status):
 
 def initializePWMPort(portHandle, status):
     status.value = 0
-    assert False
+    
+    pwmPortHandle = types.DigitalPWMHandle(portHandle)
+ 
+    if pwmPortHandle.pin >= kNumDigitalHeaders:
+        mxp_port = _remapMXPPWMChannel(pwmPortHandle.pin)
+        if hal_data["mxp"][mxp_port]["initialized"]:
+            status.value = RESOURCE_IS_ALLOCATED
+            return
+ 
+    if hal_data['pwm'][pwmPortHandle.pin]['initialized']:
+        status.value = RESOURCE_IS_ALLOCATED
+        return
+     
+    hal_data['pwm'][pwmPortHandle.pin]['initialized'] = True
+ 
+    if pwmPortHandle.pin >= kNumDigitalHeaders:
+        hal_data["mxp"][mxp_port]["initialized"] = True
+ 
+    return pwmPortHandle
 
 def freePWMPort(pwmPortHandle, status):
     status.value = 0
-    assert False
     
-#     status.value = 0
-#     assert hal_data['pwm'][digital_port.pin]['initialized']
-#     hal_data['pwm'][digital_port.pin]['initialized'] = False
-#     hal_data['pwm'][digital_port.pin]['raw_value'] = 0
-#     hal_data['pwm'][digital_port.pin]['value'] = 0
-#     hal_data['pwm'][digital_port.pin]['period_scale'] = None
-#     hal_data['pwm'][digital_port.pin]['zero_latch'] = False
-# 
-#     if digital_port.pin >= kNumDigitalHeaders:
-#         mxp_port = _remapMXPPWMChannel(digital_port.pin)
-#         hal_data["mxp"][mxp_port]["initialized"] = False
+    assert hal_data['pwm'][pwmPortHandle.pin]['initialized']
+    hal_data['pwm'][pwmPortHandle.pin]['initialized'] = False
+    hal_data['pwm'][pwmPortHandle.pin]['raw_value'] = 0
+    hal_data['pwm'][pwmPortHandle.pin]['value'] = 0
+    hal_data['pwm'][pwmPortHandle.pin]['period_scale'] = None
+    hal_data['pwm'][pwmPortHandle.pin]['zero_latch'] = False
+    hal_data['pwm'][pwmPortHandle.pin]['elim_deadband'] = False
+ 
+    if pwmPortHandle.pin >= kNumDigitalHeaders:
+        mxp_port = _remapMXPPWMChannel(pwmPortHandle.pin)
+        hal_data["mxp"][mxp_port]["initialized"] = False
+        
+    pwmPortHandle.pin = None
 
 def checkPWMChannel(channel):
     return channel < kNumPWMChannels and channel >= 0
 
 def setPWMConfig(pwmPortHandle, maxPwm, deadbandMaxPwm, centerPwm, deadbandMinPwm, minPwm, status):
     status.value = 0
-    assert False
+    # ignored
 
 def setPWMConfigRaw(pwmPortHandle, maxPwm, deadbandMaxPwm, centerPwm, deadbandMinPwm, minPwm, status):
     status.value = 0
-    assert False
+    # ignored
 
 def getPWMConfigRaw(pwmPortHandle, status): #, maxPwm, deadbandMaxPwm, centerPwm, deadbandMinPwm, minPwm, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setPWMEliminateDeadband(pwmPortHandle, eliminateDeadband, status):
     status.value = 0
-    assert False
+    hal_data['pwm'][pwmPortHandle.pin]['elim_deadband'] = eliminateDeadband
 
 def getPWMEliminateDeadband(pwmPortHandle, status):
     status.value = 0
-    assert False
+    return hal_data['pwm'][pwmPortHandle.pin]['elim_deadband']
 
 def setPWMRaw(pwmPortHandle, value, status):
     status.value = 0
-    assert False
+    hal_data['pwm'][pwmPortHandle.pin]['raw_value'] = value
 
 def setPWMSpeed(pwmPortHandle, speed, status):
     status.value = 0
-    assert False
+    speed = min(max(speed, -1.0), 1.0)
+    hal_data['pwm'][pwmPortHandle.pin]['value'] = speed
 
 def setPWMPosition(pwmPortHandle, position, status):
     status.value = 0
-    assert False
+    position = min(max(position, 0), 1.0)
+    hal_data['pwm'][pwmPortHandle.pin]['value'] = position
 
 def setPWMDisabled(pwmPortHandle, status):
-    status.value = 0
-    assert False
+    setPWMRaw(pwmPortHandle, 0, status)
+    setPWMSpeed(pwmPortHandle, 0, status)
+    setPWMPosition(pwmPortHandle, 0, status)
 
 def getPWMRaw(pwmPortHandle, status):
     status.value = 0
@@ -1297,36 +1319,11 @@ def getPWMRaw(pwmPortHandle, status):
 
 def getPWMSpeed(pwmPortHandle, status):
     status.value = 0
-    assert False
+    return hal_data['pwm'][pwmPortHandle.pin]['value']
 
 def getPWMPosition(pwmPortHandle, status):
     status.value = 0
-    assert False
-
-#def setPWM(digital_port, value, status):
-#    status.value = 0
-#    hal_data['pwm'][digital_port.pin]['raw_value'] = value
-#    hal_data['pwm'][digital_port.pin]['value'] = reverseByType(digital_port.pin)
-
-# def allocatePWMChannel(digital_port, status):
-#     status.value = 0
-# 
-#     if digital_port.pin >= kNumDigitalHeaders:
-#         mxp_port = _remapMXPPWMChannel(digital_port.pin)
-#         if hal_data["mxp"][mxp_port]["initialized"]:
-#             status.value = RESOURCE_IS_ALLOCATED
-#             return False
-# 
-#     if hal_data['pwm'][digital_port.pin]['initialized']:
-#         status.value = RESOURCE_IS_ALLOCATED
-#         return False
-#     
-#     hal_data['pwm'][digital_port.pin]['initialized'] = True
-# 
-#     if digital_port.pin >= kNumDigitalHeaders:
-#         hal_data["mxp"][mxp_port]["initialized"] = True
-# 
-#     return True
+    return hal_data['pwm'][pwmPortHandle.pin]['value']
 
 def latchPWMZero(pwmPortHandle, status):
     # TODO: what does this do?

@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS de39877 athena/java/edu/wpi/first/wpilibj/PWM.java
+# validated: 2016-11-26 DS 69422dc0636c athena/java/edu/wpi/first/wpilibj/PWM.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -15,11 +15,9 @@ from .sensorbase import SensorBase
 
 __all__ = ["PWM"]
 
-def _freePWM(port):
-    hal.setPWM(port, 0)
-    hal.freePWMChannel(port)
-    hal.freeDIO(port)
-    hal.freeDigitalPort(port)
+def _freePWM(handle):
+    hal.setPWMDisabled(handle)
+    hal.freePWMPort(handle)
 
 class PWM(LiveWindowSendable):
     """Raw interface to PWM generation in the FPGA.
@@ -53,29 +51,21 @@ class PWM(LiveWindowSendable):
     - 5ms periods allows higher update rates for Luminary Micro Jaguar speed
       controllers. Due to the shipping firmware on the Jaguar, we can't run the
       update period less than 5.05 ms.
-      
-    .. not_implemented: initPWM
     """
     class PeriodMultiplier:
         """Represents the amount to multiply the minimum servo-pulse pwm
         period by.
         """
+        
+        #: Period Multiplier: don't skip pulses.
         k1X = 1
+        
+        #: Period Multiplier: skip every other pulse.
         k2X = 2
+        
+        #: Period Multiplier: skip three out of four pulses.
         k4X = 4
-
-    #: the default PWM period measured in ms.
-    kDefaultPwmPeriod = 5.05
     
-    #: the PWM range center in ms
-    kDefaultPwmCenter = 1.5
-    
-    #: the number of PWM steps below the centerpoint
-    kDefaultPwmStepsDown = 1000
-    
-    #: the value to use to disable
-    kPwmDisabled = 0
-
     def __init__(self, channel):
         """Allocate a PWM given a channel.
 
@@ -84,27 +74,25 @@ class PWM(LiveWindowSendable):
         """
         SensorBase.checkPWMChannel(channel)
         self.channel = channel
-        self._port = hal.initializeDigitalPort(hal.getPort(channel))
-
-        if not hal.allocatePWMChannel(self._port):
-            raise IndexError("PWM channel %d is already allocated" % channel)
         
-        # Need this to free on unit test wpilib reset
+        self._handle = hal.initializePWMPort(hal.getPort(channel))
+        self.__finalizer = weakref.finalize(self, _freePWM, self._handle)
+        
+        self.setDisabled()
+        
+        hal.setPWMEliminateDeadband(self.handle, False)
+        
+        hal.report(hal.UsageReporting.kResourceType_PWM, channel)
+                
+        # Python-specific: Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
-
-        hal.setPWM(self._port, 0)
-
-        self.__finalizer = weakref.finalize(self, _freePWM, self._port)
-
-        self.eliminateDeadband = False
-
-        hal.HALReport(hal.HALUsageReporting.kResourceType_PWM, channel)
-
+        
+    
     @property
-    def port(self):
+    def handle(self):
         if not self.__finalizer.alive:
             raise ValueError("Cannot use channel after free() has been called")
-        return self._port
+        return self._handle
 
     def free(self):
         """Free the PWM channel.
@@ -122,7 +110,28 @@ class PWM(LiveWindowSendable):
             the full range without modifying any values.
         :type eliminateDeadband: bool
         """
-        self.eliminateDeadband = eliminateDeadband
+        hal.setPWMEliminateDeadband(self.handle, eliminateDeadband)
+
+    def setRawBounds(self, max, deadbandMax, center, deadbandMin, min):
+        """Set the bounds on the PWM values. This sets the bounds on the PWM values for a particular each
+        type of controller. The values determine the upper and lower speeds as well as the deadband
+        bracket.
+        
+        :param max: The Minimum pwm value
+        :type max: int
+        :param deadbandMax: The high end of the deadband range
+        :type deadbandMax: int
+        :param center: The center speed (off)
+        :type center: int
+        :param deadbandMin: The low end of the deadband range
+        :type deadbandMin: int
+        :param min: The minimum pwm value
+        :type min: int
+        
+        .. deprecated:: 2017.0.0
+           Recommended to set bounds in ms using :meth:`setBounds` instead
+        """
+        hal.setPWMConfigRaw(self.handle, max, deadbandMax, center, deadbandMin, min)
 
     def setBounds(self, max, deadbandMax, center, deadbandMin, min):
         """Set the bounds on the PWM pulse widths.
@@ -142,13 +151,16 @@ class PWM(LiveWindowSendable):
         :param min: The minimum pulse width in ms
         :type min: float
         """
-        loopTime = hal.getLoopTiming()/(SensorBase.kSystemClockTicksPerMicrosecond*1e3)
-
-        self.maxPwm = int((max-self.kDefaultPwmCenter)/loopTime+self.kDefaultPwmStepsDown-1)
-        self.deadbandMaxPwm = int((deadbandMax-self.kDefaultPwmCenter)/loopTime+self.kDefaultPwmStepsDown-1)
-        self.centerPwm = int((center-self.kDefaultPwmCenter)/loopTime+self.kDefaultPwmStepsDown-1)
-        self.deadbandMinPwm = int((deadbandMin-self.kDefaultPwmCenter)/loopTime+self.kDefaultPwmStepsDown-1)
-        self.minPwm = int((min-self.kDefaultPwmCenter)/loopTime+self.kDefaultPwmStepsDown-1)
+        hal.setPWMConfig(self.handle, max, deadbandMax, center, deadbandMin, min)
+    
+    def getRawBounds(self):
+        """Gets the bounds on the PWM pulse widths. This Gets the bounds on the PWM values for a
+        particular type of controller. The values determine the upper and lower speeds as well
+        as the deadband bracket.
+        
+        :returns: tuple of (max, deadbandMax, center, deadbandMin, min)
+        """
+        return hal.getPWMConfigRaw(self.handle)
 
     def getChannel(self):
         """Gets the channel number associated with the PWM Object.
@@ -170,15 +182,7 @@ class PWM(LiveWindowSendable):
         :param pos: The position to set the servo between 0.0 and 1.0.
         :type pos: float
         """
-        if pos < 0.0:
-            pos = 0.0
-        elif pos > 1.0:
-            pos = 1.0
-
-        rawValue = int(pos * self.getFullRangeScaleFactor() + self.getMinNegativePwm())
-
-        # send the computed pwm value to the FPGA
-        self.setRaw(rawValue)
+        hal.setPWMPosition(self.handle, pos)
 
     def getPosition(self):
         """Get the PWM value in terms of a position.
@@ -192,13 +196,7 @@ class PWM(LiveWindowSendable):
         :returns: The position the servo is set to between 0.0 and 1.0.
         :rtype: float
         """
-        value = self.getRaw()
-        if value < self.getMinNegativePwm():
-            return 0.0
-        elif value > self.getMaxPositivePwm():
-            return 1.0
-        else:
-            return float(value - self.getMinNegativePwm()) / self.getFullRangeScaleFactor()
+        return hal.getPWMPosition(self.handle)
 
     def setSpeed(self, speed):
         """Set the PWM value based on a speed.
@@ -213,25 +211,7 @@ class PWM(LiveWindowSendable):
             1.0.
         :type speed: float
         """
-        # clamp speed to be in the range 1.0 >= speed >= -1.0
-        if speed < -1.0:
-            speed = -1.0
-        elif speed > 1.0:
-            speed = 1.0
-
-        # calculate the desired output pwm value by scaling the speed
-        # appropriately
-        if speed == 0.0:
-            rawValue = self.getCenterPwm()
-        elif speed > 0.0:
-            rawValue = int(speed * self.getPositiveScaleFactor() +
-                           self.getMinPositivePwm() + 0.5)
-        else:
-            rawValue = int(speed * self.getNegativeScaleFactor() +
-                           self.getMaxNegativePwm() + 0.5)
-
-        # send the computed pwm value to the FPGA
-        self.setRaw(rawValue)
+        hal.setPWMSpeed(self.handle, speed)
 
     def getSpeed(self):
         """Get the PWM value in terms of speed.
@@ -245,17 +225,7 @@ class PWM(LiveWindowSendable):
         :returns: The most recently set speed between -1.0 and 1.0.
         :rtype: float
         """
-        value = self.getRaw()
-        if value > self.getMaxPositivePwm():
-            return 1.0
-        elif value < self.getMinNegativePwm():
-            return -1.0
-        elif value > self.getMinPositivePwm():
-            return float(value - self.getMinPositivePwm()) / self.getPositiveScaleFactor()
-        elif value < self.getMaxNegativePwm():
-            return float(value - self.getMaxNegativePwm()) / self.getNegativeScaleFactor()
-        else:
-            return 0.0
+        return hal.getPWMSpeed(self.handle)
 
     def setRaw(self, value):
         """Set the PWM value directly to the hardware.
@@ -265,7 +235,7 @@ class PWM(LiveWindowSendable):
         :param value: Raw PWM value.  Range 0 - 255.
         :type value: int
         """
-        hal.setPWM(self.port, value)
+        hal.setPWMRaw(self.handle, value)
 
     def getRaw(self):
         """Get the PWM value directly from the hardware.
@@ -275,7 +245,13 @@ class PWM(LiveWindowSendable):
         :returns: Raw PWM control value.  Range: 0 - 255.
         :rtype: int
         """
-        return hal.getPWM(self.port)
+        return hal.getPWMRaw(self.handle)
+    
+    def setDisabled(self):
+        """Temporarily disables the PWM output. The next set call will reenable
+        the output.
+        """
+        hal.setPWMDisabled(self.handle)
 
     def setPeriodMultiplier(self, mult):
         """Slow down the PWM signal for old devices.
@@ -285,53 +261,22 @@ class PWM(LiveWindowSendable):
         """
         if mult == PWM.PeriodMultiplier.k4X:
             # Squelch 3 out of 4 outputs
-            hal.setPWMPeriodScale(self.port, 3)
+            hal.setPWMPeriodScale(self.handle, 3)
         elif mult == PWM.PeriodMultiplier.k2X:
             # Squelch 1 out of 2 outputs
-            hal.setPWMPeriodScale(self.port, 1)
+            hal.setPWMPeriodScale(self.handle, 1)
         elif mult == PWM.PeriodMultiplier.k1X:
             # Don't squelch any outputs
-            hal.setPWMPeriodScale(self.port, 0)
+            hal.setPWMPeriodScale(self.handle, 0)
         else:
             raise ValueError("Invalid mult argument '%s'" % mult)
 
     def setZeroLatch(self):
-        hal.latchPWMZero(self.port)
+        hal.latchPWMZero(self.handle)
 
-    def getMaxPositivePwm(self):
-        return self.maxPwm
-
-    def getMinPositivePwm(self):
-        if self.eliminateDeadband:
-            return self.deadbandMaxPwm
-        else:
-            return self.centerPwm + 1
-
-    def getCenterPwm(self):
-        return self.centerPwm
-
-    def getMaxNegativePwm(self):
-        if self.eliminateDeadband:
-            return self.deadbandMinPwm
-        else:
-            return self.centerPwm - 1
-
-    def getMinNegativePwm(self):
-        return self.minPwm
-
-    def getPositiveScaleFactor(self):
-        """Get the scale for positive speeds."""
-        return self.getMaxPositivePwm() - self.getMinPositivePwm()
-
-    def getNegativeScaleFactor(self):
-        """Get the scale for negative speeds."""
-        return self.getMaxNegativePwm() - self.getMinNegativePwm()
-
-    def getFullRangeScaleFactor(self):
-        """Get the scale for positions."""
-        return self.getMaxPositivePwm() - self.getMinNegativePwm()
-
+    #
     # Live Window code, only does anything if live window is activated.
+    #
 
     def getSmartDashboardType(self):
         return "Speed Controller"

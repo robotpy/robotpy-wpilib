@@ -250,15 +250,16 @@ def _reset_hal_data(hooks):
                 
         # digital stuff here
         
-        # pwm contains dicts with keys: value, period_scale
-        # -> value isn't sane
+            # pwm contains dicts with keys: value, period_scale
+            # -> value isn't sane
         'pwm': [NotifyDict({
             'initialized':  OUT(False),
             'type':         OUT(None),   # string value set by HALReport: jaguar, victor, talon, etc
-            'raw_value':    OUT(0), # raw value that is used by wpilib represents the hardware PWM value
-            'value':        OUT(0),      # value is the PWM value that user set from -1 to 1 (but it might not be exactly what you expect)
+            'raw_value':    OUT(0),      # raw value that is used by wpilib represents the hardware PWM value
+            'value':        OUT(0),      # value is the PWM value that user set from -1 to 1
             'period_scale': OUT(None),
             'zero_latch':   OUT(False),
+            'elim_deadband':OUT(False),
 
         }) for _ in range(20)],
 
