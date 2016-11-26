@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS 6d854af athena/java/edu/wpi/first/wpilibj/PowerDistributionPanel.java
+# validated: 2016-11-26 DS 23ef57561d40 athena/java/edu/wpi/first/wpilibj/PowerDistributionPanel.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -13,9 +13,16 @@ from .sensorbase import SensorBase
 __all__ = ["PowerDistributionPanel"]
 
 class PowerDistributionPanel(SensorBase):
-    """Use to obtain voltage, current, temperature, power, and energy from the CAN PDP"""
+    """
+        Use to obtain voltage, current, temperature, power, and energy from the
+        Power Distribution Panel over CAN
+    """
 
     def __init__(self, module=0):
+        """
+            :param module: CAN ID of the PDP
+            :type module: int
+        """
         self.module = module
         SensorBase.checkPDPModule(module)
         hal.initializePDP(module)
