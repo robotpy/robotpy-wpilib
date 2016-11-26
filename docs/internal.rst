@@ -86,7 +86,7 @@ to your setup.py setup() invocation::
 
     setup(
           ...
-          entry_points={'robot_py': ['name_of_command = package.module:CommandClassName']},
+          entry_points={'robotpy': ['name_of_command = package.module:CommandClassName']},
           ... 
           )
 
