@@ -10,7 +10,7 @@ class RuntimeType:
     Athena = 0
     Mock = 1
 
-class HALUsageReporting:
+class UsageReporting:
     # enum tResourceType
     kResourceType_Controller = 0
     kResourceType_Module = 1
@@ -115,6 +115,8 @@ class HALUsageReporting:
     kCommand_Scheduler = 1
 
     kSmartDashboard_Instance = 1
+
+HALUsageReporting = UsageReporting
 
 #############################################################################
 # Accelerometer.h
