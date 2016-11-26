@@ -7,7 +7,8 @@ __all__ = [
     "JoystickPOVs", "JoystickPOVs_ptr",
     "JoystickButtons", "JoystickButtons_ptr",
     "JoystickDescriptor", "JoystickDescriptor_ptr",
-           
+    
+    "Handle",
     "PortHandle",
     
     "AnalogInputHandle",

@@ -8,7 +8,8 @@ __all__ = [
     "JoystickPOVs", "JoystickPOVs_ptr",
     "JoystickButtons", "JoystickButtons_ptr",
     "JoystickDescriptor", "JoystickDescriptor_ptr",
-           
+    
+    "Handle",
     "PortHandle",
     
     "AnalogInputHandle",
@@ -77,34 +78,37 @@ JoystickDescriptor_ptr = fake_pointer(JoystickDescriptor)
 # Opaque handles
 #############################################################################
 
-class PortHandle:
+class Handle:
+    __slots__ = ()
+
+class PortHandle(Handle):
     __slots__ = ['pin', 'module']
     def __init__(self, pin, module):
         self.pin = pin
         self.module = module
 
-class AnalogInputHandle:
+class AnalogInputHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
 
-class AnalogOutputHandle:
+class AnalogOutputHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
 
-class AnalogTriggerHandle:
+class AnalogTriggerHandle(Handle):
     __slots__ = ['pin', 'index']
     def __init__(self, port, index):
         self.pin = port.pin
         self.index = index
 
-class CompressorHandle:
+class CompressorHandle(Handle):
     __slots__ = ['module']
     def __init__(self, module):
         self.module = module
 
-class CounterHandle:
+class CounterHandle(Handle):
     __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
@@ -114,34 +118,34 @@ class DigitalHandle:
     def __init__(self, port):
         self.pin = port.pin
 
-class DigitalPWMHandle:
+class DigitalPWMHandle(Handle):
     __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
 
-class EncoderHandle:
+class EncoderHandle(Handle):
     __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
 
-class FPGAEncoderHandle:
+class FPGAEncoderHandle(Handle):
     pass
 
-class GyroHandle:
+class GyroHandle(Handle):
     pass
     #def __init__(self, analoginput):
     #    self.analoginput = analoginput
 
-class InterruptHandle:
+class InterruptHandle(Handle):
     pass
 
-class NotifierHandle:
+class NotifierHandle(Handle):
     pass
 
-class RelayHandle:
+class RelayHandle(Handle):
     pass
 
-class SolenoidHandle:
+class SolenoidHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
