@@ -173,10 +173,10 @@ getAnalogOffset = _STATUSFUNC("getAnalogOffset", C.c_int32, ("analog_port", Anal
 # AnalogOutput.h
 #############################################################################
 
-initializeAnalogOutputPort = _STATUSFUNC("initializeAnalogOutputPort", AnalogInputHandle, ("port", PortHandle))
-freeAnalogOutputPort = _RETFUNC("freeAnalogOutputPort", None, ("analog_port", AnalogInputHandle))
-setAnalogOutput = _STATUSFUNC("setAnalogOutput", None, ("analog_port", AnalogInputHandle), ("voltage", C.c_double))
-getAnalogOutput = _STATUSFUNC("getAnalogOutput", C.c_double, ("analog_port", AnalogInputHandle))
+initializeAnalogOutputPort = _STATUSFUNC("initializeAnalogOutputPort", AnalogOutputHandle, ("port", PortHandle))
+freeAnalogOutputPort = _RETFUNC("freeAnalogOutputPort", None, ("analog_port", AnalogOutputHandle))
+setAnalogOutput = _STATUSFUNC("setAnalogOutput", None, ("analog_port", AnalogOutputHandle), ("voltage", C.c_double))
+getAnalogOutput = _STATUSFUNC("getAnalogOutput", C.c_double, ("analog_port", AnalogOutputHandle))
 checkAnalogOutputChannel = _RETFUNC("checkAnalogOutputChannel", C.c_bool, ("pin", C.c_int32))
 
 
@@ -238,10 +238,10 @@ getCompressorNotConnectedFault = _STATUSFUNC("getCompressorNotConnectedFault", C
 initializeCounter = _STATUSFUNC("initializeCounter", CounterHandle, ("mode", C.c_int), ("index", C.POINTER(C.c_int32)), out=["index"])
 freeCounter = _STATUSFUNC("freeCounter", None, ("counterHandle", CounterHandle))
 setCounterAverageSize = _STATUSFUNC("setCounterAverageSize", None, ("counterHandle", CounterHandle), ("size", C.c_int32))
-setCounterUpSource = _STATUSFUNC("setCounterUpSource", None, ("counterHandle", CounterHandle), ("pin", C.c_int32), ("analog_trigger", C.c_bool))
+setCounterUpSource = _STATUSFUNC("setCounterUpSource", None, ("counterHandle", CounterHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32))
 setCounterUpSourceEdge = _STATUSFUNC("setCounterUpSourceEdge", None, ("counterHandle", CounterHandle), ("rising_edge", C.c_bool), ("falling_edge", C.c_bool))
 clearCounterUpSource = _STATUSFUNC("clearCounterUpSource", None, ("counterHandle", CounterHandle))
-setCounterDownSource = _STATUSFUNC("setCounterDownSource", None, ("counterHandle", CounterHandle), ("digitalSourceHandle", C.c_int32), ("analogTriggerType", C.c_int32))
+setCounterDownSource = _STATUSFUNC("setCounterDownSource", None, ("counterHandle", CounterHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32))
 setCounterDownSourceEdge = _STATUSFUNC("setCounterDownSourceEdge", None, ("counterHandle", CounterHandle), ("rising_edge", C.c_bool), ("falling_edge", C.c_bool))
 clearCounterDownSource = _STATUSFUNC("clearCounterDownSource", None, ("counterHandle", CounterHandle))
 setCounterUpDownMode = _STATUSFUNC("setCounterUpDownMode", None, ("counterHandle", CounterHandle))
@@ -320,8 +320,8 @@ observeUserProgramTest = _RETFUNC("observeUserProgramTest", None)
 #############################################################################
 
 initializeEncoder = _STATUSFUNC("initializeEncoder", EncoderHandle,
-            ("digitalSourceHandleA", C.c_int32), ("analogTriggerTypeA", C.c_int32),
-            ("digitalSourceHandleB", C.c_int32), ("analogTriggerTypeB", C.c_int32),
+            ("digitalSourceHandleA", Handle), ("analogTriggerTypeA", C.c_int32),
+            ("digitalSourceHandleB", Handle), ("analogTriggerTypeB", C.c_int32),
             ("reverseDirection", C.c_bool), ("encodingType", C.c_int32))
 
 freeEncoder = _STATUSFUNC("freeEncoder", None, ("encoder", EncoderHandle))
@@ -341,7 +341,7 @@ setEncoderDistancePerPulse = _STATUSFUNC("setEncoderDistancePerPulse", None, ("e
 setEncoderReverseDirection = _STATUSFUNC("setEncoderReverseDirection", None, ("encoder", EncoderHandle), ("reverse_direction", C.c_bool))
 setEncoderSamplesToAverage = _STATUSFUNC("setEncoderSamplesToAverage", None, ("encoder", EncoderHandle), ("samples_to_average", C.c_int32))
 getEncoderSamplesToAverage = _STATUSFUNC("getEncoderSamplesToAverage", C.c_int32, ("encoder", EncoderHandle))
-setEncoderIndexSource = _STATUSFUNC("setEncoderIndexSource", None, ("encoderHandle", EncoderHandle), ("digitalSourceHandle", C.c_int32), ("analogTriggerType", C.c_int32), ("type", C.c_int32))
+setEncoderIndexSource = _STATUSFUNC("setEncoderIndexSource", None, ("encoderHandle", EncoderHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32), ("type", C.c_int32))
 getEncoderFPGAIndex = _STATUSFUNC("getEncoderFPGAIndex", C.c_int32, ("encoderHandle", EncoderHandle))
 getEncoderDecodingScaleFactor = _STATUSFUNC("getEncoderDecodingScaleFactor", C.c_double, ("encoderHandle", EncoderHandle))
 getEncoderDistancePerPulse = _STATUSFUNC("getEncoderDistancePerPulse", C.c_double, ("encoderHandle", EncoderHandle))
@@ -394,6 +394,8 @@ closeI2C = _THUNKFUNC("closeI2C", None, ("port", C.c_int32))
 #############################################################################
 
 _InterruptHandlerFunction = C.CFUNCTYPE(None, C.c_uint32, C.c_void_p)
+_InterruptHandlerFunction._typedef_ = 'InterruptHandlerFunction'
+
 _interruptHandlers = {}
 
 initializeInterrupts = _STATUSFUNC("initializeInterrupts", InterruptHandle, ("watcher", C.c_bool))
@@ -410,7 +412,7 @@ enableInterrupts = _STATUSFUNC("enableInterrupts", None, ("interrupt", Interrupt
 disableInterrupts = _STATUSFUNC("disableInterrupts", None, ("interrupt", InterruptHandle))
 readInterruptRisingTimestamp = _STATUSFUNC("readInterruptRisingTimestamp", C.c_double, ("interrupt", InterruptHandle))
 readInterruptFallingTimestamp = _STATUSFUNC("readInterruptFallingTimestamp", C.c_double, ("interrupt", InterruptHandle))
-requestInterrupts = _STATUSFUNC("requestInterrupts", None, ("interruptHandle", InterruptHandle), ("digitalSourceHandle", C.c_int32), ("analogTriggerType", C.c_int32))
+requestInterrupts = _STATUSFUNC("requestInterrupts", None, ("interruptHandle", InterruptHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32))
 attachInterruptHandlerThreaded = _STATUSFUNC("attachInterruptHandlerThreaded", None, ("interruptHandle", InterruptHandle), ("handler", _InterruptHandlerFunction), ("param", C.POINTER(None)))
 
 _attachInterruptHandler = _STATUSFUNC("attachInterruptHandler", None, ("interrupt", InterruptHandle), ("handler", _InterruptHandlerFunction), ("param", C.c_void_p))
@@ -602,7 +604,7 @@ checkSolenoidModule = _RETFUNC("checkSolenoidModule", C.c_bool, ("module", C.c_i
 checkSolenoidChannel = _RETFUNC("checkSolenoidChannel", C.c_bool, ("channel", C.c_int32))
 
 getSolenoid = _STATUSFUNC("getSolenoid", C.c_bool, ("solenoid_port", SolenoidHandle))
-getAllSolenoids = _STATUSFUNC("getAllSolenoids", C.c_int32, ("solenoid_port", SolenoidHandle))
+getAllSolenoids = _STATUSFUNC("getAllSolenoids", C.c_int32, ("module", C.c_int32))
 setSolenoid = _STATUSFUNC("setSolenoid", None, ("solenoid_port", SolenoidHandle), ("value", C.c_bool))
 
 getPCMSolenoidBlackList = _STATUSFUNC("getPCMSolenoidBlackList", C.c_int, ("module", C.c_int32))

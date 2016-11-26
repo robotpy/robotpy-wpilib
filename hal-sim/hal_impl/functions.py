@@ -629,7 +629,7 @@ def setCounterAverageSize(counterHandle, size, status):
     status.value = 0
     hal_data['counter'][counterHandle.idx]['average_size'] = size
 
-def setCounterUpSource(counterHandle, pin, analog_trigger, status):
+def setCounterUpSource(counterHandle, digitalSourceHandle, analogTriggerType, status):
     status.value = 0
     hal_data['counter'][counterHandle.idx]['up_source_channel'] = pin
     hal_data['counter'][counterHandle.idx]['up_source_trigger'] = analog_trigger
@@ -1619,7 +1619,7 @@ def getSolenoid(solenoid_port, status):
     status.value = 0
     return hal_data['solenoid'][solenoid_port.pin]['value']
 
-def getAllSolenoids(solenoid_port, status):
+def getAllSolenoids(module, status):
     status.value = 0
     value = 0
     for i, s in enumerate(hal_data['solenoid']):
