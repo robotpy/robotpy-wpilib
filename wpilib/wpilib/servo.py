@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/Servo.java
+# validated: 2016-11-26 DS e44a6e227a89 athena/java/edu/wpi/first/wpilibj/Servo.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -18,8 +18,6 @@ class Servo(PWM):
 
     The range parameters default to the appropriate values for the Hitec
     HS-322HD servo provided in the FIRST Kit of Parts in 2008.
-    
-    .. not_implemented: initServo
     """
 
     kMaxServoAngle = 180.0
@@ -43,8 +41,8 @@ class Servo(PWM):
         self.setPeriodMultiplier(self.PeriodMultiplier.k4X)
 
         LiveWindow.addActuatorChannel("Servo", self.getChannel(), self)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Servo,
-                      self.getChannel())
+        hal.report(hal.UsageReporting.kResourceType_Servo,
+                   self.getChannel())
 
     def free(self):
         LiveWindow.removeComponent(self)
