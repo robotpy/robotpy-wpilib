@@ -39,8 +39,8 @@ def test_init_two(kw, mc, wpimock, halmock):
         assert drive.rearLeftMotor == left
         assert drive.rearRightMotor == right
 
-        left.set.assert_called_once_with(0.0, 0)
-        right.set.assert_called_once_with(0.0, 0)
+        left.set.assert_called_once_with(0.0)
+        right.set.assert_called_once_with(0.0)
     else:
         if mc:
             mclass = getattr(wpimock, mc)
@@ -99,10 +99,10 @@ def test_init_four(kw, mc, wpimock, halmock):
         assert drive.frontRightMotor == fright
         assert drive.rearRightMotor == rright
 
-        fleft.set.assert_called_once_with(0.0, 0)
-        rleft.set.assert_called_once_with(0.0, 0)
-        fright.set.assert_called_once_with(0.0, 0)
-        rright.set.assert_called_once_with(0.0, 0)
+        fleft.set.assert_called_once_with(0.0)
+        rleft.set.assert_called_once_with(0.0)
+        fright.set.assert_called_once_with(0.0)
+        rright.set.assert_called_once_with(0.0)
     else:
         if mc:
             mclass = getattr(wpimock, mc)
@@ -408,10 +408,10 @@ def test_holonomicDrive(drive4):
 def test_setLeftRightMotorOutputs(drive4):
     drive4.feed = MagicMock()
     drive4.setLeftRightMotorOutputs(0.2, 0.3)
-    drive4.frontLeftMotor.set.assert_called_once_with(0.2, 0)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.2, 0)
-    drive4.frontRightMotor.set.assert_called_once_with(-0.3, 0)
-    drive4.rearRightMotor.set.assert_called_once_with(-0.3, 0)
+    drive4.frontLeftMotor.set.assert_called_once_with(0.2)
+    drive4.rearLeftMotor.set.assert_called_once_with(0.2)
+    drive4.frontRightMotor.set.assert_called_once_with(-0.3)
+    drive4.rearRightMotor.set.assert_called_once_with(-0.3)
     assert drive4.feed.called
 
     drive4.frontLeftMotor = None
@@ -419,8 +419,8 @@ def test_setLeftRightMotorOutputs(drive4):
     drive4.rearLeftMotor.reset_mock()
     drive4.rearRightMotor.reset_mock()
     drive4.setLeftRightMotorOutputs(0.2, 0.3)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.2, 0)
-    drive4.rearRightMotor.set.assert_called_once_with(-0.3, 0)
+    drive4.rearLeftMotor.set.assert_called_once_with(0.2)
+    drive4.rearRightMotor.set.assert_called_once_with(-0.3)
 
 @pytest.mark.parametrize("motor", ["rearLeftMotor", "rearRightMotor"])
 def test_setLeftRightMotorOutputs_error(motor, drive4):
@@ -477,8 +477,8 @@ def test_setMaxOutput(drive4):
     assert drive4.maxOutput == 0.5
     # drive to make sure it took effect
     drive4.setLeftRightMotorOutputs(1.0, 0.75)
-    drive4.rearLeftMotor.set.assert_called_once_with(0.5, 0)
-    drive4.rearRightMotor.set.assert_called_once_with(-0.375, 0)
+    drive4.rearLeftMotor.set.assert_called_once_with(0.5)
+    drive4.rearRightMotor.set.assert_called_once_with(-0.375)
 
 def test_getDescription(drive_lr):
     assert drive_lr.getDescription() == "Robot Drive"
