@@ -1,4 +1,4 @@
-# validated: 2015-12-23 DS 6d854af athena/java/edu/wpi/first/wpilibj/Jaguar.java
+# validated: 2016-11-26 DS 247cef5ec215 athena/java/edu/wpi/first/wpilibj/Jaguar.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -9,19 +9,13 @@
 import hal
 
 from .livewindow import LiveWindow
-from .safepwm import SafePWM
+from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Jaguar"]
 
-class Jaguar(SafePWM):
+class Jaguar(PWMSpeedController):
     """
         Texas Instruments / Vex Robotics Jaguar Speed Controller as a PWM device.
-    
-        .. seealso::
-        
-           :class:`.CANJaguar` for CAN control of a Jaguar
-           
-        .. not_implemented: initJaguar
     """
 
     def __init__(self, channel):
@@ -39,61 +33,9 @@ class Jaguar(SafePWM):
         # Full forward ranges from 2.3027789ms to 2.328675ms
         self.setBounds(2.31, 1.55, 1.507, 1.454, 0.697)
         self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
-        self.setRaw(self.centerPwm)
+        self.setSpeed(0)
         self.setZeroLatch()
-        self.isInverted = False
         
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Jaguar,
-                      self.getChannel())
+        hal.report(hal.UsageReporting.kResourceType_Jaguar,
+                   self.getChannel())
         LiveWindow.addActuatorChannel("Jaguar", self.getChannel(), self)
-
-    def free(self):
-        LiveWindow.removeComponent(self)
-        super().free()
-
-    def set(self, speed, syncGroup=0):
-        """Set the PWM value.
-
-        The PWM value is set using a range of -1.0 to 1.0, appropriately
-        scaling the value for the FPGA.
-
-        :param speed: The speed to set.  Value should be between -1.0 and 1.0.
-        :type  speed: float
-        :param syncGroup: The update group to add this set() to, pending
-            updateSyncGroup().  If 0, update immediately.
-        """
-        self.setSpeed(-speed if self.isInverted else speed)
-        self.feed()
-        
-    def setInverted(self, isInverted):
-        """
-        Common interface for inverting the direction of a speed controller.
-
-        :param isInverted: The state of inversion (True is inverted).
-        """
-        self.isInverted = isInverted
-
-    def getInverted(self):
-        """
-        Common interface for inverting the direction of a speed controller.
-
-        :returns: The state of inversion (True is inverted)
-        """
-        return self.isInverted
-
-    def get(self):
-        """Get the recently set value of the PWM.
-
-        :returns: The most recently set value for the PWM between -1.0 and 1.0.
-        :rtype: float
-        """
-        return self.getSpeed()
-
-    def pidWrite(self, output):
-        """Write out the PID value as seen in the PIDOutput base object.
-
-        :param output: Write out the PWM value as was found in the
-            :class:`PIDController`.
-        :type  output: float
-        """
-        self.set(output)

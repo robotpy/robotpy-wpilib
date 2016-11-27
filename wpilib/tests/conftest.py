@@ -20,12 +20,6 @@ def hal(_module_patch):
     return hal
 
 @pytest.fixture(scope="function")
-def hal_impl_pwm_helpers(_module_patch):
-    """Simulated hal module"""
-    from hal_impl import pwm_helpers
-    return pwm_helpers
-
-@pytest.fixture(scope="function")
 def hal_impl_mode_helpers(_module_patch):
     """Simulated hal module"""
     from hal_impl import mode_helpers

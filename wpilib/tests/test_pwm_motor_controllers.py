@@ -8,7 +8,7 @@ import pytest
 @pytest.mark.parametrize('clsname, ',
                          ['Jaguar', 'SD540', 'Spark', 'Talon',
                           'TalonSRX', 'Victor', 'VictorSP'])
-def test_controller(wpilib, hal_data, hal_impl_pwm_helpers, clsname):
+def test_controller(wpilib, hal_data, clsname):
     
     # create object/helper function
     obj = getattr(wpilib, clsname)(2)
@@ -31,10 +31,7 @@ def test_controller(wpilib, hal_data, hal_impl_pwm_helpers, clsname):
         obj.pidWrite(i)
         assert abs(obj.get() - i) < 0.01
         
-        # validate that the helpers return the correct value and correct value stored in 'value'
-        # .. to about 0.01
-        assert abs(hal_impl_pwm_helpers.reverseByType(clsname ,hal_data['pwm'][2]['raw_value']) - i) < 0.01
-        assert abs(hal_impl_pwm_helpers.reverseByType(2) - i) < 0.01
+        # speed should be correct
         assert abs(hal_data['pwm'][2]['value'] - i) < 0.01
         
         # Make sure inversion works too

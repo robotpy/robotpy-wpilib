@@ -54,6 +54,7 @@ from .pidcontroller import *
 from .powerdistributionpanel import *
 from .preferences import *
 from .pwm import *
+from .pwmspeedcontroller import *
 from .relay import *
 from .resource import *
 from .robotbase import *
