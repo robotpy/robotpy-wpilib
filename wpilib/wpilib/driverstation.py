@@ -625,6 +625,9 @@ class DriverStation:
                 self.waitForDataPredicate = True
                 self.dataCond.notify_all()
             
+            with self.mutex:
+                self.newControlData = True
+            
             safetyCounter += 1
             if safetyCounter >= 4:
                 MotorSafety.checkMotors()
