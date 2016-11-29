@@ -69,8 +69,20 @@
       
       // add the function definition in if present
       if (s.length > 1) {
-        if (s[4] != "")
-          s[4] = ", " + s[4];
+        if (s[4] != ""){
+          var new_str = "";
+          args = s[4].split(", ")
+          for (var i = 0; i<args.length; i++) {
+              var split = args[i].split(" ");
+              if (split[0] != "final") {
+                  new_str = new_str + ", " + split[1];
+              } else {
+                  new_str = new_str + ", " + split[2];
+              }
+          }
+          s[4] = new_str;
+          
+        }
         
         t[0] = "def " + s[3] + "(self" + s[4] +
             "):\n        " + t[0];
