@@ -1,7 +1,6 @@
 <!DOCTYPE html> 
 <html>
 <head>
-  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 </head>
 <body>
   In: (docstring contents, may be followed by a function declaration without a { character)<br/>
@@ -91,14 +90,12 @@
     }
     
     function xfer() {
-      var txt = process($('#inbox').val());
-      $('#outbox').val(txt[0]);
-      $('#sphinxbox').val(txt[1]);
+      var txt = process(inbox.value);
+      outbox.value = txt[0];
+      sphinxbox.value = txt[1];
     }
   
-    $(function() {
-      $('#inbox').on('input propertychange paste', xfer);
-    });
+    inbox.oninput = inbox.onpropertychange = inbox.onpaste = xfer;
     
     xfer();
     
