@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS 6d854af shared/java/edu/wpi/first/wpilibj/GenericHID.java
+# validated: 2016-12-01 AA 140c365e4b99 shared/java/edu/wpi/first/wpilibj/GenericHID.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -54,7 +54,7 @@ class GenericHID:
         kRight = 1
 
     def __init__(self, port):
-        self._port = port
+        self.port = port
 
     def getX(self, hand=None):
         """Get the x position of HID.
@@ -108,7 +108,7 @@ class GenericHID:
 
         :returns: The port number of the HID.
         """
-        return self._port
+        return self.port
 
     def getType(self):
         """Get the type of the HID.

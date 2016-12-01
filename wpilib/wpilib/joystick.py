@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS c3c35c6 athena/java/edu/wpi/first/wpilibj/Joystick.java
+# validated: 2016-12-01 AA 140c365e4b99 athena/java/edu/wpi/first/wpilibj/Joystick.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -9,15 +9,17 @@
 import hal
 import math
 
+from .interfaces.joystickbase import JoystickBase
+
 __all__ = ["Joystick"]
 
-class Joystick:
+class Joystick(JoystickBase):
     """Handle input from standard Joysticks connected to the Driver Station.
     
     This class handles standard input that comes from the Driver Station. Each
     time a value is requested the most recent value is returned. There is a
     single class instance for each joystick and the mapping of ports to
-    hardware buttons depends on the code in the driver station.
+    hardware buttons depends on the code in the Driver Station.
     """
 
     kDefaultXAxis = 0
@@ -43,22 +45,15 @@ class Joystick:
         kTop = 1
         kNumButton = 2
 
-    class RumbleType:
-        """Represents a rumble output on the Joystick"""
-        kLeftRumble_val = 0
-        kRightRumble_val = 1
-
-
-
     def __init__(self, port, numAxisTypes=None, numButtonTypes=None):
         """Construct an instance of a joystick.
 
-        The joystick index is the usb port on the drivers station.
+        The joystick index is the USB port on the Driver Station.
 
         This constructor is intended for use by subclasses to configure the
         number of constants for axes and buttons.
 
-        :param port: The port on the driver station that the joystick is
+        :param port: The port on the Driver Station that the joystick is
             plugged into.
         :type  port: int
         :param numAxisTypes: The number of axis types.
@@ -66,9 +61,9 @@ class Joystick:
         :param numButtonTypes: The number of button types.
         :type  numButtonTypes: int
         """
+        super().__init__(port)
         from .driverstation import DriverStation
         self.ds = DriverStation.getInstance()
-        self.port = port
 
         if numAxisTypes is None:
             self.axes = [0]*self.AxisType.kNumAxis
@@ -118,15 +113,6 @@ class Joystick:
         return self.getRawAxis(self.axes[self.AxisType.kY])
 
     def getZ(self, hand=None):
-        """Get the Z value of the joystick.
-
-        This depends on the mapping of the joystick connected to the current
-        port.
-
-        :param hand: Unused
-        :returns: The Z value of the joystick.
-        :rtype: float
-        """
         return self.getRawAxis(self.axes[self.AxisType.kZ])
 
     def getTwist(self):
@@ -189,7 +175,7 @@ class Joystick:
         
     def getAxisCount(self):
         """For the current joystick, return the number of axis"""
-        return self.ds.getStickAxisCount(self.port)
+        return self.ds.getStickAxisCount(self.getPort())
 
     def getTrigger(self, hand=None):
         """Read the state of the trigger on the joystick.
@@ -216,6 +202,12 @@ class Joystick:
         """
         return self.getRawButton(self.buttons[self.ButtonType.kTop])
 
+    def getPOV(self, pov=0):
+        return self.ds.getStickPOV(self.getPort(), pov)
+
+    def getPOVCount(self):
+        return self.ds.getStickPOVCount(self.getPort())
+
     def getBumper(self, hand=None):
         """This is not supported for the Joystick.
 
@@ -240,32 +232,14 @@ class Joystick:
         :returns: The state of the button.
         :rtype: bool
         """
-        return self.ds.getStickButton(self.port, button)
+        return self.ds.getStickButton(self.getPort(), button)
     
     def getButtonCount(self):
         """For the current joystick, return the number of buttons
         
         :rtype int
         """
-        return self.ds.getStickButtonCount(self.port)
-
-    def getPOV(self, pov=0):
-        """Get the state of a POV on the joystick.
-
-        :param pov: which POV (default is 0)
-        :type  pov: int
-        :returns: The angle of the POV in degrees, or -1 if the POV is not
-                  pressed.
-        :rtype: float
-        """
-        return self.ds.getStickPOV(self.port, pov)
-    
-    def getPOVCount(self):
-        """For the current joystick, return the number of POVs
-        
-        :rtype: int
-        """
-        return self.ds.getStickPOVCount(self.port)
+        return self.ds.getStickButtonCount(self.getPort())
 
     def getButton(self, button):
         """Get buttons based on an enumerated type.
@@ -337,28 +311,43 @@ class Joystick:
 
         :returns: A boolean that is true if the controller is an xbox controller.
         """
-        return self.ds.getJoystickIsXbox(self.port)
+        return self.ds.getJoystickIsXbox(self.getPort())
+
+    def getAxisType(self, axis):
+        """Get the axis type of a joystick axis.
+
+        :returns: the axis type of a joystick axis.
+        """
+        return self.ds.getJoystickAxisType(self.getPort(), axis)
 
     def getType(self):
-        """
-        Get the HID type of the current joystick.
+        """Get the type of the HID.
 
-        :returns: The HID type value of the current joystick.
+        :returns: the type of the HID.
         """
-        return self.ds.getJoystickType(self.port)
+        return self.ds.getJoystickType(self.getPort())
 
     def getName(self):
         """
-        Get the name of the current joystick.
+        Get the name of the HID.
 
-        :returns: The name of the current joystick.
+        :returns: The name of the HID.
         """
-        return self.ds.getJoystickName(self.port)
+        return self.ds.getJoystickName(self.getPort())
+
+
+    def setOutput(self, outputNumber, value):
+        self.outputs = (self.outputs & ~(value << (outputNumber-1))) | (value << (outputNumber-1))
+        self.flush_outputs()
+
+    def setOutputs(self, value):
+        self.outputs = value
+        self.flush_outputs()
 
     def setRumble(self, type, value):
         """Set the rumble output for the joystick. The DS currently supports 2 rumble values,
         left rumble and right rumble
-        
+
         :param type: Which rumble value to set
         :type  type: :class:`.Joystick.RumbleType`
         :param value: The normalized value (0 to 1) to set the rumble to
@@ -368,30 +357,12 @@ class Joystick:
             value = 0
         elif value > 1:
             value = 1
-        if type == self.RumbleType.kLeftRumble_val:
+        if type == self.RumbleType.kLeftRumble:
             self.leftRumble = int(value*65535)
-        elif type == self.RumbleType.kRightRumble_val:
+        elif type == self.RumbleType.kRightRumble:
             self.rightRumble = int(value*65535)
         else:
             raise ValueError("Invalid wpilib.Joystick.RumbleType: {}".format(type))
-        self.flush_outputs()
-
-    def setOutput(self, outputNumber, value):
-        """Set a single HID output value for the joystick.
-        
-        :param outputNumber: The index of the output to set (1-32)
-        :param value: The value to set the output to.
-        """
-        self.outputs = (self.outputs & ~(value << (outputNumber-1))) | (value << (outputNumber-1))
-        self.flush_outputs()
-
-    def setOutputs(self, value):
-        """Set all HID output values for the joystick.
-        
-        :param value: The 32 bit output value (1 bit for each output)
-        :type  value: int
-        """
-        self.outputs = value
         self.flush_outputs()
 
     def flush_outputs(self):
