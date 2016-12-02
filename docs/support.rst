@@ -46,11 +46,11 @@ Github has a lot of documentation about `forking repositories <https://help.gith
 and `pull requests <https://help.github.com/articles/using-pull-requests>`_,
 so be sure to check out those resources.
 
-IRC
----
+RobotPy Chat
+------------
 
 During the FRC Build Season, some RobotPy developers may be able to be reached on
-**#robotpy** channel on `Freenode <http://freenode.net/irc_servers.shtml>`_. 
+the `RobotPy Gitter Channel <https://gitter.im/robotpy/robotpy-wpilib>`_.
 
 .. note:: the channel is not very active, but if you stick around for a day or two
           someone will probably answer your question -- think in terms of email
