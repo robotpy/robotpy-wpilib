@@ -28,6 +28,8 @@ from .analogpotentiometer import *
 from .analogtrigger import *
 from .analogtriggeroutput import *
 from .builtinaccelerometer import *
+from .canjaguar import *
+from .cantalon import *
 from .compressor import *
 from .controllerpower import *
 from .counter import *
