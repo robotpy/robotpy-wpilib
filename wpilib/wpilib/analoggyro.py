@@ -1,4 +1,4 @@
-# validated: 2016-01-07 DS 628811e athena/java/edu/wpi/first/wpilibj/AnalogGyro.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/AnalogGyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -37,7 +37,7 @@ class AnalogGyro(GyroBase):
     kDefaultVoltsPerDegreePerSecond = 0.007
     
     PIDSourceType = PIDSource.PIDSourceType
-
+    
     def __init__(self, channel, center=None, offset=None):
         """Gyro constructor.
 
@@ -56,6 +56,7 @@ class AnalogGyro(GyroBase):
         :param offset: Preset uncalibrated value to use as the gyro offset
         :type offset: float
         """
+        
         if not hasattr(channel, "initAccumulator"):
             channel = AnalogInput(channel)
             self.channelAllocated = True
@@ -64,54 +65,31 @@ class AnalogGyro(GyroBase):
             
         self.analog = channel
 
-        self.voltsPerDegreePerSecond = AnalogGyro.kDefaultVoltsPerDegreePerSecond
-        self.analog.setAverageBits(AnalogGyro.kAverageBits)
-        self.analog.setOversampleBits(AnalogGyro.kOversampleBits)
-        sampleRate = AnalogGyro.kSamplesPerSecond \
-                * (1 << (AnalogGyro.kAverageBits + AnalogGyro.kOversampleBits))
-        AnalogInput.setGlobalSampleRate(sampleRate)
-        if not hal.HALIsSimulation():
-            Timer.delay(1.0)
-        
+        self.gyroHandle = hal.initializeAnalogGyro(self.analog.port)
+    
+           
         self.setDeadband(0.0)
 
-        self.setPIDSourceType(self.PIDSourceType.kDisplacement)
+        hal.setupAnalogGyro(self.gyroHandle)
         
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Gyro,
+        hal.report(hal.UsageReporting.kResourceType_Gyro,
                       self.analog.getChannel())
         LiveWindow.addSensorChannel("AnalogGyro", self.analog.getChannel(), self)
         
         if center is None or offset is None:
             self.calibrate()
         else:
-            self.center = int(center)
-            self.offset = float(offset)
-            self.analog.setAccumulatorCenter(self.center)
-            self.analog.resetAccumulator()
-            
-
+            hal.setAnalogGyroParameters(self.gyroHandle, self.kDefaultVoltsPerDegreePerSecond, offset, center)        
+            self.reset()
+        
+        
     def calibrate(self):
         """:see: :meth:`.Gyro.calibrate`"""
-        self.analog.initAccumulator()
-        self.analog.resetAccumulator()
+        hal.calibrateAnalogGyro(self.gyroHandle)
         
-        # Only do this on a real robot
-        if not hal.HALIsSimulation():
-            Timer.delay(AnalogGyro.kCalibrationSampleTime)
-
-        value, count = self.analog.getAccumulatorOutput()
-
-        self.center = int(float(value) / float(count) + .5)
-
-        self.offset = (float(value) / float(count)) - self.center
-
-        self.analog.setAccumulatorCenter(self.center)
-        self.analog.resetAccumulator()
-    
     def reset(self):
         """:see: :meth:`.Gyro.reset`"""
-        if self.analog is not None:
-            self.analog.resetAccumulator()
+        hal.resetAnalogGyro(self.gyroHandle)
 
     def free(self):
         """:see: :meth:`.Gyro.free`"""
@@ -119,30 +97,23 @@ class AnalogGyro(GyroBase):
         if self.analog is not None and self.channelAllocated:
             self.analog.free()
             self.analog = None
-
+        hal.freeAnalogGyro(self.gyroHandle)
+        self.gyroHandle = 0
+        
     def getAngle(self):
         """:see: :meth:`.Gyro.getAngle`"""
+    
         if self.analog is None:
             return 0.0
-        value, count = self.analog.getAccumulatorOutput()
-
-        value -= count * self.offset
-
-        return (value
-                * 1e-9
-                * self.analog.getLSBWeight()
-                * (1 << self.analog.getAverageBits())
-                / (AnalogInput.getGlobalSampleRate() * self.voltsPerDegreePerSecond))
+        
+        return hal.getAnalogGyroAngle(self.gyroHandle)
 
     def getRate(self):
         """:see: :meth:`.Gyro.getRate`"""
         if self.analog is None:
             return 0.0
         else:
-            return ((self.analog.getAverageValue() - (self.center + self.offset))
-                    * 1e-9
-                    * self.analog.getLSBWeight()
-                    / ((1 << self.analog.getOversampleBits()) * self.voltsPerDegreePerSecond))
+           return hal.getAnalogGyroRate(self.gyroHandle)
 
     def getOffset(self):
         """Return the gyro offset value set during calibration to
@@ -150,7 +121,7 @@ class AnalogGyro(GyroBase):
         
         :returns: the current offset value
         """
-        return self.offset
+        return hal.getAnalogGyroOffset(self.gyroHandle)
     
     def getCenter(self):
         """Return the gyro center value set during calibration to
@@ -158,7 +129,7 @@ class AnalogGyro(GyroBase):
         
         :returns: the current center value
         """
-        return self.center
+        return hal.getAnalogGyroCenter(self.gyroHandle)
 
     def setSensitivity(self, voltsPerDegreePerSecond):
         """Set the gyro sensitivity. This takes the number of
@@ -170,7 +141,7 @@ class AnalogGyro(GyroBase):
             The sensitivity in Volts/degree/second
         :type  voltsPerDegreePerSecond: float
         """
-        self.voltsPerDegreePerSecond = voltsPerDegreePerSecond
+        hal.setAnalogGyroVoltsPerDegreePerSecond(self.gyroHandle, voltsPerDegreePerSecond)
 
     def setDeadband(self, volts):
         """Set the size of the neutral zone.  Any voltage from the gyro less
@@ -183,7 +154,6 @@ class AnalogGyro(GyroBase):
         """
         if self.analog is None:
             return
-        deadband = int(volts * 1e9 / self.analog.getLSBWeight() * 
-                       (1 << self.analog.getOversampleBits()))
-        self.analog.setAccumulatorDeadband(deadband)
+        
+        hal.setAnalogGyroDeadband(self.gyroHandle, volts)
 

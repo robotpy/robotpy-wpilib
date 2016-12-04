@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/AnalogAccelerometer.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/AnalogAccelerometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -39,7 +39,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         self.voltsPerG = 1.0
         self.zeroGVoltage = 2.5
         self.pidSource = self.PIDSourceType.kDisplacement
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Accelerometer,
+        hal.report(hal.UsageReporting.kResourceType_Accelerometer,
                       self.analogChannel.getChannel())
         LiveWindow.addSensorChannel("Accelerometer",
                                     self.analogChannel.getChannel(), self)

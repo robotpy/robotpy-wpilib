@@ -1,4 +1,4 @@
-# validated: 2015-12-31 DS 6d854af athena/java/edu/wpi/first/wpilibj/ADXL345_SPI.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/ADXL345_SPI.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -69,8 +69,8 @@ class ADXL345_SPI(SensorBase):
 
         self.setRange(range)
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_ADXL345,
-                      hal.HALUsageReporting.kADXL345_SPI)
+        hal.report(hal.UsageReporting.kResourceType_ADXL345,
+                      hal.UsageReporting.kADXL345_SPI)
 
         LiveWindow.addSensor("ADXL345_SPI", port, self)
 

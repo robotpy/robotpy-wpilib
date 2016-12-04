@@ -1,4 +1,4 @@
-# validated: 2015-12-28 DS 375a195 athena/java/edu/wpi/first/wpilibj/AnalogInput.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/AnalogInput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -46,13 +46,9 @@ class AnalogInput(SensorBase):
         """Construct an analog channel.
         :param channel: The channel number to represent. 0-3 are on-board 4-7 are on the MXP port.
         """
-        if not hal.checkAnalogInputChannel(channel):
-            raise IndexError("Analog input channel %d cannot be allocated. Channel is not present." % channel)
-        try:
-            AnalogInput.channels.allocate(self, channel)
-        except IndexError as e:
-            raise IndexError("Analog input channel %d is already allocated" % channel) from e
-
+        
+        SensorBase.checkAnalogInputChannel(channel)
+        
         self.channel = channel
         self.accumulatorOffset = 0
         self.pidSource = self.PIDSourceType.kDisplacement
@@ -61,7 +57,7 @@ class AnalogInput(SensorBase):
         self._port = hal.initializeAnalogInputPort(port)
 
         LiveWindow.addSensorChannel("AnalogInput", channel, self)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_AnalogChannel,
+        hal.report(hal.UsageReporting.kResourceType_AnalogChannel,
                       channel)
         
         self.__finalizer = weakref.finalize(self, _freeAnalogInput, self._port)

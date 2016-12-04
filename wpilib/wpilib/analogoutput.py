@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS de39877 athena/java/edu/wpi/first/wpilibj/AnalogOutput.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/AnalogOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -28,20 +28,15 @@ class AnalogOutput(SensorBase):
 
         :param channel: The channel number to represent.
         """
-        if not hal.checkAnalogOutputChannel(channel):
-            raise IndexError("Analog output channel %d cannot be allocated. Channel is not present." % channel)
-        try:
-            AnalogOutput.channels.allocate(self, channel)
-        except IndexError as e:
-            raise IndexError("Analog output channel %d is already allocated" % channel) from e
-
+        SensorBase.checkAnalogOutputChannel(channel)
+        
         self.channel = channel
 
         port = hal.getPort(channel)
         self._port = hal.initializeAnalogOutputPort(port)
 
         LiveWindow.addSensorChannel("AnalogOutput", channel, self)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_AnalogChannel,
+        hal.report(hal.UsageReporting.kResourceType_AnalogChannel,
                       channel, 1)
         
         self.__finalizer = weakref.finalize(self, _freeAnalogOutput, self._port)

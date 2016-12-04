@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/AnalogTriggerOutput.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/AnalogTriggerOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -58,7 +58,7 @@ class AnalogTriggerOutput:
         self.trigger = trigger
         self.outputType = outputType
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_AnalogTriggerOutput,
+        hal.report(hal.UsageReporting.kResourceType_AnalogTriggerOutput,
                       trigger.index, outputType)
 
     def free(self):
