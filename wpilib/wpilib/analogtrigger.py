@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/AnalogTrigger.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/AnalogTrigger.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -44,6 +44,7 @@ class AnalogTrigger:
         """
         if hasattr(channel, "getChannel"):
             channel = channel.getChannel()
+            self.analogInput = channel
 
         port = hal.getPort(channel)
         self._port, self.index = hal.initializeAnalogTrigger(port)
@@ -53,7 +54,7 @@ class AnalogTrigger:
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_AnalogTrigger,
+        hal.report(hal.UsageReporting.kResourceType_AnalogTrigger,
                       channel)
 
     @property
@@ -65,6 +66,9 @@ class AnalogTrigger:
     def free(self):
         """Release the resources used by this object"""
         self.__finalizer()
+        if self.analogInput:
+            self.analogInput.free()
+            
 
     def setLimitsRaw(self, lower, upper):
         """Set the upper and lower limits of the analog trigger. The limits are

@@ -1,4 +1,4 @@
-# validated: 2016-01-07 DS 376fc6b athena/java/edu/wpi/first/wpilibj/ADXL345_I2C.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/ADXL345_I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -63,8 +63,8 @@ class ADXL345_I2C(SensorBase):
 
         self.setRange(range)
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_ADXL345,
-                      hal.HALUsageReporting.kADXL345_I2C)
+        hal.report(hal.UsageReporting.kResourceType_ADXL345,
+                      hal.UsageReporting.kADXL345_I2C)
 
         LiveWindow.addSensor("ADXL345_I2C", port, self)
 

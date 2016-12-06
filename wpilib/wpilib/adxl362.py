@@ -1,4 +1,4 @@
-# validated: 2015-12-31 DS 9e18330 athena/java/edu/wpi/first/wpilibj/ADXL362.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/ADXL362.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -82,7 +82,7 @@ class ADXL362(SensorBase):
         self.spi.write([self.kRegWrite, self.kPowerCtlRegister,
                         self.kPowerCtl_Measure | self.kPowerCtl_UltraLowNoise])
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_ADXL362,
+        hal.report(hal.UsageReporting.kResourceType_ADXL362,
                       port)
 
         LiveWindow.addSensor("ADXL362", port, self)

@@ -1,4 +1,4 @@
-# validated: 2016-01-07 DS 628811e athena/java/edu/wpi/first/wpilibj/ADXRS450_Gyro.java
+# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/ADXRS450_Gyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2015. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -72,12 +72,12 @@ class ADXRS450_Gyro(GyroBase):
             DriverStation.reportError("could not find ADXRS450 gyro on SPI port %s" % port, False)
             return
         
-        self.spi.initAccumulator(self.kSamplePeriod, 0x20000000, 4, 0x0c000000, 0x04000000,
+        self.spi.initAccumulator(self.kSamplePeriod, 0x20000000, 4, 0x0c00000e, 0x04000000,
             10, 16, True, True)
         
         self.calibrate()
         
-        hal.HALReport(hal.HALUsageReporting.kResourceType_ADXRS450, port)
+        hal.report(hal.UsageReporting.kResourceType_ADXRS450, port)
         LiveWindow.addSensor("ADXRS450_Gyro", port, self)
 
     def calibrate(self):
