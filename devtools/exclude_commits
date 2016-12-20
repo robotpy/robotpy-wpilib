@@ -4,3 +4,5 @@
 a834fff7b2f9696833a8f073c2f2c3bff2d49079 # google java styleguide
 2f7eff709115273aa5e6a1c6fc94112b475fff0d # remove @author lines
 20c6525b1d754f9b9bc5c42ee12ac554850c9df9 # wpilibj enum cleanup
+c30057e923cb81fc2952688063a400b5f264b118 # removing unused imports
+a705eb1c61a01238cb010f1afb4243c1a2a8385e # removing unnecessary parens
