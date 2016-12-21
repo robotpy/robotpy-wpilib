@@ -228,7 +228,7 @@ getCompressorNotConnectedFault = _STATUSFUNC("getCompressorNotConnectedFault", C
 # Constants.h
 #############################################################################
 
-#getSystemClockTicksPerMicrosecond = _RETFUNC("getSystemClockTicksPerMicrosecond", C.c_int32)
+getSystemClockTicksPerMicrosecond = _RETFUNC("getSystemClockTicksPerMicrosecond", C.c_int32)
 
 
 #############################################################################

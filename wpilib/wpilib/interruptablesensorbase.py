@@ -1,4 +1,4 @@
-# validated: 2016-01-07 DS 951c81f athena/java/edu/wpi/first/wpilibj/InterruptableSensorBase.java
+# validated: 2016-12-21 DV 43a2eccdc983 athena/java/edu/wpi/first/wpilibj/InterruptableSensorBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -17,9 +17,6 @@ __all__ = ["InterruptableSensorBase"]
 class InterruptableSensorBase(SensorBase):
     """Base for sensors to be used with interrupts"""
 
-    # Resource manager
-    interrupts = Resource(8)
-
     def __init__(self):
         """Create a new InterrupatableSensorBase"""
         # The interrupt resource
@@ -27,8 +24,6 @@ class InterruptableSensorBase(SensorBase):
         self._interrupt_finalizer = None
         # Flags if the interrupt being allocated is synchronous
         self.isSynchronousInterrupt = False
-        # The index of the interrupt
-        self.interruptIndex = None
 
     def getAnalogTriggerForRouting(self):
         raise NotImplementedError
@@ -83,15 +78,8 @@ class InterruptableSensorBase(SensorBase):
         if self.interrupt is not None:
             raise ValueError("The interrupt has already been allocated")
 
-        try:
-            self.interruptIndex = \
-                    InterruptableSensorBase.interrupts.allocate(self)
-        except IndexError as e:
-            raise IndexError("No interrupts are left to be allocated") from e
-
         self.isSynchronousInterrupt = watcher
-        self._interrupt = hal.initializeInterrupts(self.interruptIndex,
-                                                   1 if watcher else 0)
+        self._interrupt = hal.initializeInterrupts(watcher)
         self._interrupt_finalizer = weakref.finalize(self, hal.cleanInterrupts,
                                                      self._interrupt)
 
@@ -102,8 +90,7 @@ class InterruptableSensorBase(SensorBase):
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
         self._interrupt_finalizer()
-        InterruptableSensorBase.interrupts.free(self.interruptIndex)
-        self.interruptIndex = None
+        self.interrupt = None
 
     def waitForInterrupt(self, timeout, ignorePrevious=True):
         """In synchronous mode, wait for the defined interrupt to occur.
@@ -147,7 +134,7 @@ class InterruptableSensorBase(SensorBase):
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
-        return hal.readRisingTimestamp(self.interrupt)
+        return hal.readInterruptRisingTimestamp(self.interrupt)
 
     def readFallingTimestamp(self):
         """Return the timestamp for the falling interrupt that occurred most
@@ -158,7 +145,7 @@ class InterruptableSensorBase(SensorBase):
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
-        return hal.readFallingTimestamp(self.interrupt)
+        return hal.readInterruptFallingTimestamp(self.interrupt)
 
     def setUpSourceEdge(self, risingEdge, fallingEdge):
         """Set which edge to trigger interrupts on
