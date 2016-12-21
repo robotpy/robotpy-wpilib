@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS 6d854af shared/java/edu/wpi/first/wpilibj/buttons/Trigger.java
+# validated: 2016-12-20 JW a705eb1c61a0 shared/java/edu/wpi/first/wpilibj/buttons/Trigger.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -35,7 +35,6 @@ class Trigger:
         :class:`.SmartDashboard` use is pressed.
         """
         table = self.getTable()
-        #return self.get() or (table is not None and table.isConnected() and table.getBoolean("pressed", False))  #FIXME make is connected work?
         return self.get() or (table is not None and
                               table.getBoolean("pressed", False))
 

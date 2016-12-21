@@ -1,4 +1,4 @@
-# validated: 2015-12-30 DS 4b04073 athena/java/edu/wpi/first/wpilibj/SPI.java
+# validated: 2016-12-20 JW b51e85ae262b athena/java/edu/wpi/first/wpilibj/SPI.java
 
 import hal
 import warnings
@@ -7,7 +7,7 @@ import weakref
 __all__ = ["SPI"]
 
 def _freeSPI(port):
-    hal.spiClose(port)
+    hal.closeSPI(port)
 
 class SPI:
     """Represents a SPI bus port
@@ -61,22 +61,22 @@ class SPI:
                 warnings.warn(msg)
             
             # Just check for basic functionality
-            assert hasattr(simPort, 'spiInitialize')
-            assert hasattr(simPort, 'spiClose')
+            assert hasattr(simPort, 'initializeSPI')
+            assert hasattr(simPort, 'closeSPI')
             
             self._port = (simPort, port)
         else:
             self._port = port
         
-        self.bitOrder = 0
-        self.clockPolarity = 0
-        self.dataOnTrailing = 0
+        self.bitOrder = False
+        self.clockPolarity = False
+        self.dataOnTrailing = False
 
-        hal.spiInitialize(self._port)
+        hal.initializeSPI(self._port)
         self.__finalizer = weakref.finalize(self, _freeSPI, self._port)
 
         SPI.devices += 1
-        hal.HALReport(hal.HALUsageReporting.kResourceType_SPI, SPI.devices)
+        hal.report(hal.HALUsageReporting.kResourceType_SPI, SPI.devices)
     
     @property
     def port(self):
@@ -94,65 +94,65 @@ class SPI:
 
         :param hz: The clock rate in Hertz.
         """
-        hal.spiSetSpeed(self.port, hz)
+        hal.setSPISpeed(self.port, hz)
 
     def setMSBFirst(self):
         """Configure the order that bits are sent and received on the wire
         to be most significant bit first.
         """
-        self.bitOrder = 1
-        hal.spiSetOpts(self.port, self.bitOrder, self.dataOnTrailing,
+        self.bitOrder = True
+        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
 
     def setLSBFirst(self):
         """Configure the order that bits are sent and received on the wire
         to be least significant bit first.
         """
-        self.bitOrder = 0
-        hal.spiSetOpts(self.port, self.bitOrder, self.dataOnTrailing,
+        self.bitOrder = False
+        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
 
     def setClockActiveLow(self):
         """Configure the clock output line to be active low.
         This is sometimes called clock polarity high or clock idle high.
         """
-        self.clockPolarity = 1
-        hal.spiSetOpts(self.port, self.bitOrder, self.dataOnTrailing,
+        self.clockPolarity = True
+        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
 
     def setClockActiveHigh(self):
         """Configure the clock output line to be active high.
         This is sometimes called clock polarity low or clock idle low.
         """
-        self.clockPolarity = 0
-        hal.spiSetOpts(self.port, self.bitOrder, self.dataOnTrailing,
+        self.clockPolarity = False
+        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
 
     def setSampleDataOnFalling(self):
         """Configure that the data is stable on the falling edge and the data
         changes on the rising edge.
         """
-        self.dataOnTrailing = 1
-        hal.spiSetOpts(self.port, self.bitOrder, self.dataOnTrailing,
+        self.dataOnTrailing = True
+        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
 
     def setSampleDataOnRising(self):
         """Configure that the data is stable on the rising edge and the data
         changes on the falling edge.
         """
-        self.dataOnTrailing = 0
-        hal.spiSetOpts(self.port, self.bitOrder, self.dataOnTrailing,
+        self.dataOnTrailing = False
+        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
 
     def setChipSelectActiveHigh(self):
         """Configure the chip select line to be active high.
         """
-        hal.spiSetChipSelectActiveHigh(self.port)
+        hal.setSPIChipSelectActiveHigh(self.port)
 
     def setChipSelectActiveLow(self):
         """Configure the chip select line to be active low.
         """
-        hal.spiSetChipSelectActiveLow(self.port)
+        hal.setSPIChipSelectActiveLow(self.port)
 
     def write(self, dataToSend):
         """Write data to the slave device.  Blocks until there is space in the
@@ -174,7 +174,7 @@ class SPI:
             # send list of integers
             writeCount = spi.write([0x01, 0x02])
         """
-        return hal.spiWrite(self.port, dataToSend)
+        return hal.writeSPI(self.port, dataToSend)
 
     def read(self, initiate, size):
         """Read a word from the receive FIFO.
@@ -194,9 +194,9 @@ class SPI:
         :returns: received data bytes
         """
         if initiate:
-            return hal.spiTransaction(self.port, [0]*size)
+            return hal.transactionSPI(self.port, [0]*size)
         else:
-            return hal.spiRead(self.port, size)
+            return hal.readSPI(self.port, size)
 
     def transaction(self, dataToSend):
         """Perform a simultaneous read/write transaction with the device
@@ -214,7 +214,7 @@ class SPI:
             # send list of integers
             data = spi.transaction([0x01, 0x02])
         """
-        return hal.spiTransaction(self.port, dataToSend)
+        return hal.transactionSPI(self.port, dataToSend)
     
     
     def initAccumulator(self, period, cmd, xfer_size,
@@ -235,17 +235,17 @@ class SPI:
         :param is_signed: Is data field signed?
         :param big_endian: Is device big endian?
         """
-        hal.spiInitAccumulator(self.port, int(period*1.0e6), cmd,
+        hal.initSPIAccumulator(self.port, int(period*1.0e6), cmd,
                                xfer_size, valid_mask, valid_value, data_shift,
                                data_size, is_signed, big_endian)
 
     def freeAccumulator(self):
         """Frees the accumulator."""
-        hal.spiFreeAccumulator(self.port)
+        hal.freeSPIAccumulator(self.port)
 
     def resetAccumulator(self):
         """Resets the accumulator to zero."""
-        hal.spiResetAccumulator(self.port)
+        hal.resetSPIAccumulator(self.port)
 
     def setAccumulatorCenter(self, center):
         """Set the center value of the accumulator.
@@ -254,23 +254,23 @@ class SPI:
         is used for the center value of devices like gyros and accelerometers to make integration work
         and to take the device offset into account when integrating.
         """
-        hal.spiSetAccumulatorCenter(self.port, center)
+        hal.setSPIAccumulatorCenter(self.port, center)
 
     def setAccumulatorDeadband(self, deadband):
         """Set the accumulator's deadband."""
-        hal.spiSetAccumulatorDeadband(self.port, deadband)
+        hal.setSPIAccumulatorDeadband(self.port, deadband)
 
     def getAccumulatorLastValue(self):
         """Read the last value read by the accumulator engine."""
 
-        return hal.spiGetAccumulatorLastValue(self.port);
+        return hal.getSPIAccumulatorLastValue(self.port);
 
     def getAccumulatorValue(self):
         """Read the accumulated value.
         
         :returns: The 64-bit value accumulated since the last Reset().
         """
-        return hal.spiGetAccumulatorValue(self.port)
+        return hal.getSPIAccumulatorValue(self.port)
     
     def getAccumulatorCount(self):
         """Read the number of accumulated values.
@@ -279,14 +279,14 @@ class SPI:
         
         :returns: The number of times samples from the channel were accumulated.
         """
-        return hal.spiGetAccumulatorCount(self.port)
+        return hal.getSPIAccumulatorCount(self.port)
     
     def getAccumulatorAverage(self):
         """Read the average of the accumulated value.
         
         :returns: The accumulated average value (value / count).
         """
-        return hal.spiGetAccumulatorAverage(self.port)
+        return hal.getSPIAccumulatorAverage(self.port)
     
     def getAccumulatorOutput(self):
         """Read the accumulated value and the number of accumulated values atomically.
@@ -296,5 +296,5 @@ class SPI:
         
         :returns: tuple of (value, count)
         """
-        return hal.spiGetAccumulatorOutput(self.port)    
+        return hal.getSPIAccumulatorOutput(self.port)    
  

@@ -1,4 +1,4 @@
-# validated: 2016-01-07 DS 887f220 athena/java/edu/wpi/first/wpilibj/Ultrasonic.java
+# validated: 2016-12-20 JW 69422dc0636c athena/java/edu/wpi/first/wpilibj/Ultrasonic.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -143,7 +143,7 @@ class Ultrasonic(SensorBase):
         Resource._add_global_resource(self)
 
         Ultrasonic.instances += 1
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Ultrasonic,
+        hal.report(hal.HALUsageReporting.kResourceType_Ultrasonic,
                       Ultrasonic.instances)
         LiveWindow.addSensor("Ultrasonic", self.echoChannel.getChannel(), self)
 
@@ -231,7 +231,7 @@ class Ultrasonic(SensorBase):
         # reset the counter to zero (invalid data now)
         self.counter.reset()
         # do the ping to start getting a single range
-        self.pingChannel.pulse(self.pingChannel.channel, Ultrasonic.kPingTime)
+        self.pingChannel.pulse(self.pingChannel.getChannel(), Ultrasonic.kPingTime)
 
     def isRangeValid(self):
         """Check if there is a valid range measurement. The ranges are
