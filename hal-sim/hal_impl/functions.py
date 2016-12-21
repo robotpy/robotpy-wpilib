@@ -61,6 +61,11 @@ PARAMETER_OUT_OF_RANGE = -1028
 RESOURCE_IS_ALLOCATED = -1029
 
 #############################################################################
+# ConstantsInternal.h
+#############################################################################
+kSystemClockTicksPerMicrosecond = 40
+
+#############################################################################
 # PortsInternal.h
 #############################################################################
 
@@ -601,8 +606,8 @@ def getCompressorNotConnectedStickyFault(compressorHandle, status):
 # Constants.h
 #############################################################################
 
-#def getSystemClockTicksPerMicrosecond():
-#    assert False
+def getSystemClockTicksPerMicrosecond():
+    return kSystemClockTicksPerMicrosecond
 
 
 #############################################################################

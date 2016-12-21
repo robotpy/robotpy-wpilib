@@ -1,53 +1,53 @@
-# validated: 2016-01-07 DS 6faa51f shared/java/edu/wpi/first/wpilibj/SensorBase.java
+# validated: 2016-12-21 DV 33b95816ee3b athena/java/edu/wpi/first/wpilibj/SensorBase.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
 
+import hal
+
 from .livewindowsendable import LiveWindowSendable
 
 __all__ = ["SensorBase"]
 
-class SensorBase(LiveWindowSendable): # TODO: Refactor
+class SensorBase(LiveWindowSendable):
     """Base class for all sensors
     
     Stores most recent status information as well as containing utility
     functions for checking channels and error processing.
     """
 
-    # TODO: Move this to the HAL
-
     #: Ticks per microsecond
-    kSystemClockTicksPerMicrosecond = 40
+    kSystemClockTicksPerMicrosecond = hal.getSystemClockTicksPerMicrosecond()
     
     #: Number of digital channels per roboRIO
-    kDigitalChannels = 26
+    kDigitalChannels = hal.getNumDigitalChannels()
     
-    #: Number of analog input channels
-    kAnalogInputChannels = 8
+    #: Number of analog input channels per roboRIO
+    kAnalogInputChannels = hal.getNumAnalogInputs()
     
-    #: Number of analog output channels
-    kAnalogOutputChannels = 2
+    #: Number of analog output channels per roboRIO
+    kAnalogOutputChannels = hal.getNumAnalogOutputs()
     
     #: Number of solenoid channels per module
-    kSolenoidChannels = 8
-    
-    #: Number of solenoid modules
-    kSolenoidModules = 2
+    kSolenoidChannels = hal.getNumSolenoidChannels()
     
     #: Number of PWM channels per roboRIO
-    kPwmChannels = 20
+    kPwmChannels = hal.getNumPWMChannels()
     
     #: Number of relay channels per roboRIO
-    kRelayChannels = 4
+    kRelayChannels = hal.getNumRelayChannels()
     
-    #: Number of power distribution channels
-    kPDPChannels = 16
+    #: Number of power distribution channels per PDP
+    kPDPChannels = hal.getNumPDPChannels()
 
-    #: Number of power distribution channels
-    kPDPModules = 63
+    #: Number of power distribution channels per PDP
+    kPDPModules = hal.getNumPDPModules()
+
+    #: Number of PCM modules
+    kPCMModules = hal.getNumPCMModules()
 
     #: Default solenoid module
     defaultSolenoidModule = 0
@@ -67,7 +67,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param moduleNumber: The solenoid module module number to check.
         """
-        pass
+        if not hal.checkSolenoidModule(moduleNumber):
+            raise IndexError("Requested solenoid module number %d is out of range [0, %d)." % (moduleNumber, SensorBase.kPCMModules))
 
     @staticmethod
     def checkDigitalChannel(channel):
@@ -77,8 +78,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param channel: The channel number to check.
         """
-        if channel < 0 or channel >= SensorBase.kDigitalChannels:
-            raise IndexError("Requested digital channel number %d is out of range." % channel)
+        if not hal.checkDIOChannel(channel):
+            raise IndexError("Requested digital channel number %d is out of range [0, %d)." % (channel, SensorBase.kDigitalChannels))
 
     @staticmethod
     def checkRelayChannel(channel):
@@ -88,8 +89,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param channel: The channel number to check.
         """
-        if channel < 0 or channel >= SensorBase.kRelayChannels:
-            raise IndexError("Requested relay channel number %d is out of range." % channel)
+        if not hal.checkRelayChannel(channel):
+            raise IndexError("Requested relay channel number %d is out of range [0, %d)." % (channel, SensorBase.kRelayChannels))
 
     @staticmethod
     def checkPWMChannel(channel):
@@ -99,8 +100,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param channel: The channel number to check.
         """
-        if channel < 0 or channel >= SensorBase.kPwmChannels:
-            raise IndexError("Requested PWM channel number %d is out of range." % channel)
+        if not hal.checkPWMChannel(channel):
+            raise IndexError("Requested PWM channel number %d is out of range [0, %d)." % (channel, SensorBase.kPwmChannels))
 
     @staticmethod
     def checkAnalogInputChannel(channel):
@@ -110,8 +111,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param channel: The channel number to check.
         """
-        if channel < 0 or channel >= SensorBase.kAnalogInputChannels:
-            raise IndexError("Requested analog input channel number %d is out of range." % channel)
+        if not hal.checkAnalogInputChannel(channel):
+            raise IndexError("Requested analog input channel number %d is out of range [0, %d)." % (channel, SensorBase.kAnalogInputChannels))
 
     @staticmethod
     def checkAnalogOutputChannel(channel):
@@ -121,8 +122,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param channel: The channel number to check.
         """
-        if channel < 0 or channel >= SensorBase.kAnalogOutputChannels:
-            raise IndexError("Requested analog output channel number %d is out of range." % channel)
+        if not hal.checkAnalogOutputChannel(channel):
+            raise IndexError("Requested analog output channel number %d is out of range [0, %d)." % (channel, SensorBase.kAnalogOutputChannels))
 
     @staticmethod
     def checkSolenoidChannel(channel):
@@ -131,8 +132,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param channel: The channel number to check.
         """
-        if channel < 0 or channel >= SensorBase.kSolenoidChannels:
-            raise IndexError("Requested solenoid channel number %d is out of range." % channel)
+        if not hal.checkSolenoidChannel(channel):
+            raise IndexError("Requested solenoid channel number %d is out of range [0, %d)." % (channel, SensorBase.kSolenoidChannels))
 
     @staticmethod
     def checkPDPChannel(channel):
@@ -141,8 +142,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param channel: The channel number to check.
         """
-        if channel < 0 or channel >= SensorBase.kPDPChannels:
-            raise IndexError("Requested PDP channel number %d is out of range." % channel)
+        if not hal.checkPDPChannel(channel):
+            raise IndexError("Requested PDP channel number %d is out of range [0, %d)." % (channel, SensorBase.kPDPChannels))
 
     @staticmethod
     def checkPDPModule(module):
@@ -151,8 +152,8 @@ class SensorBase(LiveWindowSendable): # TODO: Refactor
 
         :param module: The module number to check.
         """
-        if module < 0 or module >= SensorBase.kPDPModules:
-            raise IndexError("Requested PDP module number %d is out of range." % module)
+        if not hal.checkPDPModule(module):
+            raise IndexError("Requested PDP module number %d is out of range [0, %d)." % (module, SensorBase.kPDPModules))
 
     @staticmethod
     def getDefaultSolenoidModule():
