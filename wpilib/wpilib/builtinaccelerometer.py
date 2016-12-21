@@ -1,4 +1,4 @@
-# validated: 2016-11-15 DV 7a402b4 athena/java/edu/wpi/first/wpilibj/BuiltInAccelerometer.java
+# validated: 2016-12-22 JW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/BuiltInAccelerometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -29,7 +29,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
         :type  range: :class:`.Accelerometer.Range`
         """
         self.setRange(range)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Accelerometer, 0, 0,
+        hal.report(hal.HALUsageReporting.kResourceType_Accelerometer, 0, 0,
                       "Built-in accelerometer")
         LiveWindow.addSensor("BuiltInAccel", 0, self)
 
