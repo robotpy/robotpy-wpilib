@@ -1,52 +1,20 @@
-.. RobotPy WPILib documentation master file, created by
-   sphinx-quickstart on Sun Nov  2 21:31:04 2014.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+RobotPy WPILib API Documentation
+================================
 
-RobotPy Documentation
-=====================
+RobotPy WPILib is the source code for a 100% python implementation of WPILib, 
+the library used to interface with hardware for the FIRST Robotics Competition. 
+Teams can use this library to write their robot code in Python, a powerful dynamic
+programming language.
 
-Welcome to RobotPy! RobotPy is a community of FIRST mentors and students
-dedicated to developing python-related projects for the FIRST Robotics
-Competition.
+.. Note:: RobotPy is a community project and is not officially supported by
+          FIRST. Please see the `FAQ <http://robotpy.github.io/faq/>`_ for
+          more information.
 
-This documentation site describes how to use the python version of WPILib. It
-is a pure python implementation of WPILib, so that teams can use to write their
-robot code in Python, a powerful dynamic programming language.
-
-There is a lot of good documentation, but there's still room for improvement.
-We welcome contributions from others!
-
-.. note:: RobotPy is a community project and is not officially supported by
-          FIRST. Please see the `FAQ <http://robotpy.github.io/faq/>`_
-          for more information.
-
-Contents
-~~~~~~~~
-
-.. toctree::
-   :maxdepth: 4
-   
-   getting_started
-   guide/index
-
-   hw
-
-   wpilib
-   wpilib.buttons
-   wpilib.command
-   wpilib.interfaces
-   
-   installer
-   internal
-   support
-   
-
-
+.. include:: _sidebar.rst.inc
+    
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

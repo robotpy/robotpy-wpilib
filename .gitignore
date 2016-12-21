@@ -13,6 +13,7 @@ MANIFEST
 
 # Doc-related stuffs
 /docs/_build
+/docs/_sidebar.rst.inc
 /docs/wpilib.rst
 /docs/wpilib
 /docs/wpilib.buttons.rst
