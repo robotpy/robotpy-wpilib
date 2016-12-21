@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS de39877 athena/java/edu/wpi/first/wpilibj/Relay.java
+# validated: 2016-12-21 DV 45b8e9ab4f00 athena/java/edu/wpi/first/wpilibj/Relay.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -17,16 +17,19 @@ from .sensorbase import SensorBase
 
 __all__ = ["Relay"]
 
-def _freeRelay(port):
-    hal.setRelayForward(port, False)
-    hal.setRelayReverse(port, False)
-    hal.freeDIO(port)
+def _freeRelay(*handles):
+    for handle in handles:
+        try:
+            hal.setRelay(handle, False)
+        except:
+            pass
+        hal.freeRelayPort(handle)
 
 class Relay(SensorBase, LiveWindowSendable, MotorSafety):
     """Controls VEX Robotics Spike style relay outputs.
     
     Relays are intended to be connected to Spikes or similar relays. The relay
-    channels controls a pair of pins that are either both off, one on, the
+    channels controls a pair of channels that are either both off, one on, the
     other on, or both on. This translates into two Spike outputs at 0v, one at
     12v and one at 0v, one at 0v and the other at 12v, or two Spike outputs at
     12V. This allows off, full forward, or full reverse control of motors without
@@ -64,8 +67,6 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         #: Only reverse is valid
         kReverse = 2
 
-    relayChannels = Resource(SensorBase.kRelayChannels * 2)
-
     def __init__(self, channel, direction=None):
         """Relay constructor given a channel.
 
@@ -81,6 +82,8 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
             direction = self.Direction.kBoth
         self.channel = channel
         self.direction = direction
+        self._forwardHandle = 0
+        self._reverseHandle = 0
 
         self._initRelay()
         
@@ -90,41 +93,37 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
 
     def _initRelay(self):
         SensorBase.checkRelayChannel(self.channel)
-        try:
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
-                Relay.relayChannels.allocate(self, self.channel * 2)
-                hal.HALReport(hal.HALUsageReporting.kResourceType_Relay,
-                              self.channel)
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
-                Relay.relayChannels.allocate(self, self.channel * 2 + 1)
-                hal.HALReport(hal.HALUsageReporting.kResourceType_Relay,
-                              self.channel + 128)
-        except IndexError as e:
-            raise IndexError("Relay channel %d is already allocated" % self.channel) from e
+        portHandle = hal.getPort(self.channel)
 
-        self._port = hal.initializeDigitalPort(hal.getPort(self.channel))
-        self.__finalizer = weakref.finalize(self, _freeRelay, self._port)
+        if (self.direction == self.Direction.kBoth or
+            self.direction == self.Direction.kForward):
+            self._forwardHandle = hal.initializeRelayPort(portHandle, True)
+            hal.report(hal.UsageReporting.kResourceType_Relay, self.channel)
+
+        if (self.direction == self.Direction.kBoth or
+            self.direction == self.Direction.kReverse):
+            self._reverseHandle = hal.initializeRelayPort(portHandle, False)
+            hal.report(hal.UsageReporting.kResourceType_Relay, self.channel + 128)
+
+        self.__finalizer = weakref.finalize(self, _freeRelay, self._forwardHandle, self.reverseHandle)
 
         self.setSafetyEnabled(False)
         
         LiveWindow.addActuatorChannel("Relay", self.channel, self)
 
     @property
-    def port(self):
+    def forwardHandle(self):
         if not self.__finalizer.alive:
             raise ValueError("Cannot use relay after free() has been called")
-        return self._port
+        return self._forwardHandle
+
+    @property
+    def reverseHandle(self):
+        if not self.__finalizer.alive:
+            raise ValueError("Cannot use relay after free() has been called")
+        return self._reverseHandle
 
     def free(self):
-        if (self.direction == self.Direction.kBoth or
-            self.direction == self.Direction.kForward):
-            Relay.relayChannels.free(self.channel*2)
-        if (self.direction == self.Direction.kBoth or
-            self.direction == self.Direction.kReverse):
-            Relay.relayChannels.free(self.channel*2 + 1)
-
         LiveWindow.removeComponent(self)
 
         self.__finalizer()
@@ -148,33 +147,33 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         if value == self.Value.kOff:
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kForward):
-                hal.setRelayForward(self.port, False)
+                hal.setRelay(self.forwardHandle, False)
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kReverse):
-                hal.setRelayReverse(self.port, False)
+                hal.setRelay(self.reverseHandle, False)
         elif value == self.Value.kOn:
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kForward):
-                hal.setRelayForward(self.port, True)
+                hal.setRelay(self.forwardHandle, True)
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kReverse):
-                hal.setRelayReverse(self.port, True)
+                hal.setRelay(self.reverseHandle, True)
         elif value == self.Value.kForward:
             if self.direction == self.Direction.kReverse:
                 raise ValueError("A relay configured for reverse cannot be set to forward")
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kForward):
-                hal.setRelayForward(self.port, True)
+                hal.setRelay(self.forwardHandle, True)
             if self.direction == self.Direction.kBoth:
-                hal.setRelayReverse(self.port, False)
+                hal.setRelay(self.reverseHandle, False)
         elif value == self.Value.kReverse:
             if self.direction == self.Direction.kForward:
                 raise ValueError("A relay configured for forward cannot be set to reverse")
             if self.direction == self.Direction.kBoth:
-                hal.setRelayForward(self.port, False)
+                hal.setRelay(self.forwardHandle, False)
             if (self.direction == self.Direction.kBoth or
                 self.direction == self.Direction.kReverse):
-                hal.setRelayReverse(self.port, True)
+                hal.setRelay(self.reverseHandle, True)
         else:
             raise ValueError("Invalid value argument '%s'" % value)
 
@@ -189,8 +188,8 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         :returns: The current state of the relay
         :rtype: :class:`Relay.Value`
         """
-        if hal.getRelayForward(self.port):
-            if hal.getRelayReverse(self.port):
+        if hal.getRelay(self.forwardHandle):
+            if hal.getRelay(self.reverseHandle):
                 return self.Value.kOn
             else:
                 if self.direction == self.Direction.kForward:
@@ -198,7 +197,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
                 else:
                     return self.Value.kForward
         else:
-            if hal.getRelayReverse(self.port):
+            if hal.getRelay(self.reverseHandle):
                 if self.direction == self.Direction.kReverse:
                     return self.Value.kOn
                 else:
