@@ -1,4 +1,4 @@
-# validated: 2016-12-21 DV 43a2eccdc983 athena/java/edu/wpi/first/wpilibj/InterruptableSensorBase.java
+# validated: 2016-12-22 JW aafca4ed7fff athena/java/edu/wpi/first/wpilibj/InterruptableSensorBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -25,13 +25,10 @@ class InterruptableSensorBase(SensorBase):
         # Flags if the interrupt being allocated is synchronous
         self.isSynchronousInterrupt = False
 
-    def getAnalogTriggerForRouting(self):
+    def getAnalogTriggerTypeForRouting(self):
         raise NotImplementedError
 
-    def getChannelForRouting(self):
-        raise NotImplementedError
-
-    def getModuleForRouting(self):
+    def getPortHandleForRouting(self):
         raise NotImplementedError
 
     @property
