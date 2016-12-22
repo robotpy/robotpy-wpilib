@@ -1,4 +1,4 @@
-# validated: 2016-12-21 DV a831978cce17 athena/java/edu/wpi/first/wpilibj/AnalogInput.java
+# validated: 2016-12-22 JW 69422dc0636c athena/java/edu/wpi/first/wpilibj/AnalogInput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

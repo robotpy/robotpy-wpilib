@@ -1,4 +1,4 @@
-# validated: 2016-12-03 TW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/AnalogPotentiometer.java
+# validated: 2016-12-22 JW 613309c0a236 athena/java/edu/wpi/first/wpilibj/AnalogPotentiometer.java
 #----------------------------------------------------------------------------*/
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.                        */
 # Open Source Software - may be modified and shared by FRC teams. The code   */

@@ -1,4 +1,4 @@
-# validated: 2016-01-08 DS e15ca5a shared/java/edu/wpi/first/wpilibj/filters/LinearDigitalFilter.java
+# validated: 2016-12-22 JW b5b2f0c7d8bc shared/java/edu/wpi/first/wpilibj/filters/LinearDigitalFilter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -21,7 +21,7 @@ class LinearDigitalFilter(Filter):
     
     Filters are of the form::
     
-        y[n] = (b0*x[n] + b1*x[n-1] + ... + bP*x[n-P) - (a0*y[n-1] + a2*y[n-2] + ... + aQ*y[n-Q])
+        y[n] = (b0*x[n] + b1*x[n-1] + ... + bP*x[n-P]) - (a0*y[n-1] + a2*y[n-2] + ... + aQ*y[n-Q])
     
     Where:
     
