@@ -9,7 +9,6 @@
 import hal
 import weakref
 
-from .resource import Resource
 from .sensorbase import SensorBase
 
 __all__ = ["InterruptableSensorBase"]
@@ -58,9 +57,8 @@ class InterruptableSensorBase(SensorBase):
 
         assert self.interrupt is not None
 
-        hal.requestInterrupts(self.interrupt, self.getModuleForRouting(),
-                              self.getChannelForRouting(),
-                              1 if self.getAnalogTriggerForRouting() else 0)
+        hal.requestInterrupts(self.interrupt, self.getPortHandleForRouting(),
+                              self.getAnalogTriggerTypeForRouting())
         self.setUpSourceEdge(True, False)
         if handler is not None:
             hal.attachInterruptHandler(self.interrupt, handler)
