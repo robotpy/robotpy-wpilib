@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/IterativeRobot.java
+# validated: 2016-12-22 JW e65f9908d774 athena/java/edu/wpi/first/wpilibj/IterativeRobot.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -83,6 +83,8 @@ class IterativeRobot(RobotBase):
         # loop forever, calling the appropriate mode-dependent function
         LiveWindow.setEnabled(False)
         while True:
+            # Wait for new data to arrive
+            self.ds.waitForData()
             # Call the appropriate function depending upon the current robot mode
             if self.isDisabled():
                 # call DisabledInit() if we are now just entering disabled mode from
@@ -95,9 +97,8 @@ class IterativeRobot(RobotBase):
                     self.autonomousInitialized = False
                     self.teleopInitialized = False
                     self.testInitialized = False
-                if self.nextPeriodReady():
-                    hal.observeUserProgramDisabled()
-                    self.disabledPeriodic()
+                hal.observeUserProgramDisabled()
+                self.disabledPeriodic()
             elif self.isTest():
                 # call TestInit() if we are now just entering test mode from either
                 # a different mode or from power-on
@@ -108,9 +109,8 @@ class IterativeRobot(RobotBase):
                     self.autonomousInitialized = False
                     self.teleopInitialized = False
                     self.disabledInitialized = False
-                if self.nextPeriodReady():
-                    hal.observeUserProgramTest()
-                    self.testPeriodic()
+                hal.observeUserProgramTest()
+                self.testPeriodic()
             elif self.isAutonomous():
                 # call Autonomous_Init() if this is the first time
                 # we've entered autonomous_mode
@@ -124,9 +124,8 @@ class IterativeRobot(RobotBase):
                     self.testInitialized = False
                     self.teleopInitialized = False
                     self.disabledInitialized = False
-                if self.nextPeriodReady():
-                    hal.observeUserProgramAutonomous()
-                    self.autonomousPeriodic()
+                hal.observeUserProgramAutonomous()
+                self.autonomousPeriodic()
             else:
                 # call Teleop_Init() if this is the first time
                 # we've entered teleop_mode
@@ -137,19 +136,9 @@ class IterativeRobot(RobotBase):
                     self.testInitialized = False
                     self.autonomousInitialized = False
                     self.disabledInitialized = False
-                if self.nextPeriodReady():
-                    hal.observeUserProgramTeleop()
-                    self.teleopPeriodic()
-            self.ds.waitForData()
-
-    def nextPeriodReady(self):
-        """Determine if the appropriate next periodic function should be
-        called.  Call the periodic functions whenever a packet is received
-        from the Driver Station, or about every 20ms.
-        
-        :rtype: bool
-        """
-        return self.ds.isNewControlData()
+                hal.observeUserProgramTeleop()
+                self.teleopPeriodic()
+            robotPeriodic()
 
     # ----------- Overridable initialization code -----------------
 
@@ -199,47 +188,79 @@ class IterativeRobot(RobotBase):
 
     # ----------- Overridable periodic code -----------------
 
+    def robotPeriodic(self):
+        """Periodic code for all robot modes should go here.
+
+        This function is called each time a new packet is received from the driver station.
+
+        Packets are received approximately every 20ms.  Fixed loop timing is not guaranteed due to
+        network timing variability and the function may not be called at all if the Driver Station is
+        disconnected.  For most use cases the variable timing will not be an issue.  If your code does
+        require guaranteed fixed periodic timing, consider using Notifier or PIDController instead.
+        """
+        func = self.robotPeriodic.__func__
+        if not hasattr(func, "firstRun"):
+            self.logger.info("Default IterativeRobot.robotPeriodic() method... Overload me!")
+            func.firstRun = False
+
     def disabledPeriodic(self):
         """Periodic code for disabled mode should go here.
 
-        Users should override this method for code which will be called
-        periodically at a regular rate while the robot is in disabled mode.
+        Users should override this method for code which will be called each time a new packet is
+        received from the driver station and the robot is in disabled mode.
+
+        Packets are received approximately every 20ms.  Fixed loop timing is not guaranteed due to
+        network timing variability and the function may not be called at all if the Driver Station is
+        disconnected.  For most use cases the variable timing will not be an issue.  If your code does
+        require guaranteed fixed periodic timing, consider using Notifier or PIDController instead.
         """
         func = self.disabledPeriodic.__func__
         if not hasattr(func, "firstRun"):
             self.logger.info("Default IterativeRobot.disabledPeriodic() method... Overload me!")
             func.firstRun = False
-        Timer.delay(0.001)
 
     def autonomousPeriodic(self):
         """Periodic code for autonomous mode should go here.
 
-        Users should override this method for code which will be called
-        periodically at a regular rate while the robot is in autonomous mode.
+        Users should override this method for code which will be called each time a new packet is
+        received from the driver station and the robot is in autonomous mode.
+
+        Packets are received approximately every 20ms.  Fixed loop timing is not guaranteed due to
+        network timing variability and the function may not be called at all if the Driver Station is
+        disconnected.  For most use cases the variable timing will not be an issue.  If your code does
+        require guaranteed fixed periodic timing, consider using Notifier or PIDController instead.
         """
         func = self.autonomousPeriodic.__func__
         if not hasattr(func, "firstRun"):
             self.logger.info("Default IterativeRobot.autonomousPeriodic() method... Overload me!")
             func.firstRun = False
-        Timer.delay(0.001)
 
     def teleopPeriodic(self):
         """Periodic code for teleop mode should go here.
 
-        Users should override this method for code which will be called
-        periodically at a regular rate while the robot is in teleop mode.
+        Users should override this method for code which will be called each time a new packet is
+        received from the driver station and the robot is in teleop mode.
+
+        Packets are received approximately every 20ms.  Fixed loop timing is not guaranteed due to
+        network timing variability and the function may not be called at all if the Driver Station is
+        disconnected.  For most use cases the variable timing will not be an issue.  If your code does
+        require guaranteed fixed periodic timing, consider using Notifier or PIDController instead.
         """
         func = self.teleopPeriodic.__func__
         if not hasattr(func, "firstRun"):
             self.logger.warn("Default IterativeRobot.teleopPeriodic() method... Overload me!")
             func.firstRun = False
-        Timer.delay(0.001)
 
     def testPeriodic(self):
         """Periodic code for test mode should go here.
 
-        Users should override this method for code which will be called
-        periodically at a regular rate while the robot is in test mode.
+        Users should override this method for code which will be called each time a new packet is
+        received from the driver station and the robot is in test mode.
+
+        Packets are received approximately every 20ms.  Fixed loop timing is not guaranteed due to
+        network timing variability and the function may not be called at all if the Driver Station is
+        disconnected.  For most use cases the variable timing will not be an issue.  If your code does
+        require guaranteed fixed periodic timing, consider using Notifier or PIDController instead.
         """
         func = self.testPeriodic.__func__
         if not hasattr(func, "firstRun"):
