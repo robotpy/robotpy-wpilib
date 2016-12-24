@@ -1,4 +1,4 @@
-# validated: 2015-12-30 DS c3c35c6 athena/java/edu/wpi/first/wpilibj/Solenoid.java
+# validated: 2016-12-25 JW 963391cf3916 athena/java/edu/wpi/first/wpilibj/Solenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -16,14 +16,13 @@ from .solenoidbase import SolenoidBase
 
 __all__ = ["Solenoid"]
 
-def _freeSolenoid(modulePort, solenoidPort):
-    hal.freeSolenoidPort(solenoidPort)
-    hal.freePort(modulePort)
+def _freeSolenoid(solenoidHandle):
+    hal.freeSolenoidPort(solenoidHandle)
 
 class Solenoid(SolenoidBase):
     """Solenoid class for running high voltage Digital Output.
 
-    The Solenoid class is typically used for pneumatics solenoids, but could
+    The Solenoid class is typically used for pneumatic solenoids, but could
     be used for any device within the current spec of the PCM.
     
     .. not_implemented: initSolenoid
@@ -77,21 +76,21 @@ class Solenoid(SolenoidBase):
         except IndexError as e:
             raise IndexError("Solenoid channel %d on module %d is already allocated" % (channel, moduleNumber)) from e
 
-        modulePort = hal.getPortWithModule(moduleNumber, channel)
-        self._port = hal.initializeSolenoidPort(modulePort)
+        portHandle= hal.getPortWithModule(moduleNumber, channel)
+        self._solenoidHandle = hal.initializeSolenoidPort(portHandle)
 
         LiveWindow.addActuatorModuleChannel("Solenoid", moduleNumber, channel,
                                             self)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Solenoid, channel,
+        hal.report(hal.HALUsageReporting.kResourceType_Solenoid, channel,
                       moduleNumber)
         
-        self.__finalizer = weakref.finalize(self, _freeSolenoid, modulePort, self._port)
+        self.__finalizer = weakref.finalize(self, _freeSolenoid, self._solenoidHandle)
         
     @property
-    def port(self):
+    def solenoidHandle(self):
         if not self.__finalizer.alive:
             raise ValueError("Cannot use channel after free() has been called")
-        return self._port
+        return self._solenoidHandle
 
     def free(self):
         """Mark the solenoid as freed."""
@@ -99,25 +98,25 @@ class Solenoid(SolenoidBase):
         self.allocated.free(self.channel)
         
         self.__finalizer()
-        self._port = None
+        self._solenoidHandle = None
         
         super().free()
 
     def set(self, on):
         """Set the value of a solenoid.
 
-        :param on: Turn the solenoid output off or on.
+        :param on: True will turn the solenoid output on. False will turn the solenoid output off.
         :type on: bool
         """
-        hal.setSolenoid(self.port, on)
+        hal.setSolenoid(self.solenoidHandle, on)
 
     def get(self):
         """Read the current value of the solenoid.
 
-        :returns: The current value of the solenoid.
+        :returns: True if the solenoid output is on or false if the solenoid output is off.
         :rtype: bool
         """
-        return hal.getSolenoid(self.port)
+        return hal.getSolenoid(self.solenoidHandle)
 
     def isBlackListed(self):
         """
@@ -134,6 +133,13 @@ class Solenoid(SolenoidBase):
 
     def getSmartDashboardType(self):
         return "Solenoid"
+
+    def initTable(self, subtable):
+        self.table = subtable
+        self.updateTable()
+
+    def getTable(self):
+        return self.table
 
     def updateTable(self):
         table = self.getTable()

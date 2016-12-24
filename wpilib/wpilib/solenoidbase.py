@@ -1,4 +1,4 @@
-# validated: 2015-12-30 DS 906fe65 athena/java/edu/wpi/first/wpilibj/SolenoidBase.java
+# validated: 2016-12-25 JW 963391cf3916 athena/java/edu/wpi/first/wpilibj/SolenoidBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -53,18 +53,6 @@ class SolenoidBase(SensorBase):
         self.ports = self.all_ports[moduleNumber]
         self.mutex = self.all_mutex[moduleNumber]
 
-    def set(self, value, mask):
-        """Set the value of a solenoid.
-
-        :param value: The value you want to set on the module.
-        :param mask: The channels you want to be affected.
-        """
-        with self.mutex:
-            for i in range(SensorBase.kSolenoidChannels):
-                local_mask = 1 << i
-                if (mask & local_mask) != 0:
-                    hal.setSolenoid(self.ports[i], (value & local_mask) != 0)
-
     def getAll(self):
         """Read all 8 solenoids from the module used by this solenoid as a
         single byte.
@@ -72,7 +60,7 @@ class SolenoidBase(SensorBase):
         :returns: The current value of all 8 solenoids on this module.
         """
         with self.mutex:
-            return hal.getAllSolenoids(self.ports[0])
+            return hal.getAllSolenoids(self.moduleNumber)
 
     def getPCMSolenoidBlackList(self):
         """
@@ -83,7 +71,7 @@ class SolenoidBase(SensorBase):
 
         :returns: The solenoid blacklist of all 8 solenoids on the module.
         """
-        return hal.getPCMSolenoidBlackList(self.ports[0])
+        return hal.getPCMSolenoidBlackList(self.moduleNumber)
 
     def getPCMSolenoidVoltageStickyFault(self):
         """
@@ -91,7 +79,7 @@ class SolenoidBase(SensorBase):
             highside solenoid voltage rail is too low, most likely
             a solenoid channel has been shorted.
         """
-        return hal.getPCMSolenoidVoltageStickyFault()
+        return hal.getPCMSolenoidVoltageStickyFault(self.moduleNumber)
 
     def getPCMSolenoidVoltageFault(self):
         """
@@ -99,7 +87,7 @@ class SolenoidBase(SensorBase):
             highside solenoid voltage rail is too low, most likely
             a solenoid channel has been shorted.
         """
-        return hal.getPCMSolenoidVoltageFault()
+        return hal.getPCMSolenoidVoltageFault(self.moduleNumber)
 
     def clearAllPCMStickyFaults(self):
         """
@@ -112,4 +100,5 @@ class SolenoidBase(SensorBase):
 
         If no sticky faults are set then this call will have no effect.
         """
-        hal.clearAllPCMStickyFaults()
+        hal.clearAllPCMStickyFaults(self.moduleNumber)
+

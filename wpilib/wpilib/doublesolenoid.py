@@ -1,4 +1,4 @@
-# validated: 2015-12-30 DS de39877 athena/java/edu/wpi/first/wpilibj/DoubleSolenoid.java
+# validated: 2016-12-25 JW 963391cf3916 athena/java/edu/wpi/first/wpilibj/DoubleSolenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -17,12 +17,10 @@ from .solenoidbase import SolenoidBase
 __all__ = ["DoubleSolenoid"]
 
 class DoubleSolenoid(SolenoidBase):
-    """Controls 2 channels of high voltage Digital Output.
+    """Controls 2 channels of high voltage Digital Output on the PCM.
 
     The DoubleSolenoid class is typically used for pneumatics solenoids that
     have two positions controlled by two separate channels.
-    
-    .. not_implemented: initSolenoid
     """
 
     class Value:
@@ -43,8 +41,8 @@ class DoubleSolenoid(SolenoidBase):
         Alternatively, the above names can be used as keyword arguments.
 
         :param moduleNumber: The module number of the solenoid module to use.
-        :param forwardChannel: The forward channel number on the PCM (0..7)
-        :param reverseChannel: The reverse channel number on the PCM (0..7)
+        :param forwardChannel: The forward channel number on the module to control (0..7)
+        :param reverseChannel: The reverse channel number on the module to control  (0..7)
         """
         # keyword arguments
         forwardChannel = kwargs.pop("forwardChannel", None)
@@ -75,9 +73,6 @@ class DoubleSolenoid(SolenoidBase):
         SensorBase.checkSolenoidChannel(reverseChannel)
 
         super().__init__(moduleNumber)
-        self.forwardChannel = forwardChannel
-        self.reverseChannel = reverseChannel
-
         try:
             self.allocated.allocate(self, forwardChannel)
         except IndexError as e:
@@ -86,16 +81,23 @@ class DoubleSolenoid(SolenoidBase):
             self.allocated.allocate(self, reverseChannel)
         except IndexError as e:
             raise IndexError("Solenoid channel %d on module %d is already allocated" % (reverseChannel, moduleNumber)) from e
-        
+
+        portHandle = hal.getPortWithModule(moduleNumber, forwardChannel)
+        self.forwardHandle = hal.initializeSolenoidPort(portHandle)
+        portHandle = hal.getPortWithModule(moduleNumber, reverseChannel)
+        self.reverseHandle = hal.initializeSolenoidPort(portHandle)
+
+        self.forwardChannel = forwardChannel
+        self.reverseChannel = reverseChannel
+        self.forwardMask = 1 << forwardChannel
+        self.reverseMask = 1 << reverseChannel
+
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
-        self.forwardPort = self.ports[forwardChannel]
-        self.reversePort = self.ports[reverseChannel]
-
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Solenoid,
+        hal.report(hal.HALUsageReporting.kResourceType_Solenoid,
                       forwardChannel, moduleNumber)
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Solenoid,
+        hal.report(hal.HALUsageReporting.kResourceType_Solenoid,
                       reverseChannel, moduleNumber)
 
         LiveWindow.addActuatorModuleChannel("DoubleSolenoid", moduleNumber,
@@ -106,6 +108,8 @@ class DoubleSolenoid(SolenoidBase):
         LiveWindow.removeComponent(self)
         self.allocated.free(self.forwardChannel)
         self.allocated.free(self.reverseChannel)
+        hal.freeSolenoidPort(self.forwardHandle)
+        hal.freeSolenoidPort(self.reverseHandle)
         super().free()
 
     def set(self, value):
@@ -116,14 +120,14 @@ class DoubleSolenoid(SolenoidBase):
         """
 
         if value == self.Value.kOff:
-            hal.setSolenoid(self.forwardPort, False)
-            hal.setSolenoid(self.reversePort, False)
+            hal.setSolenoid(self.forwardHandle, False)
+            hal.setSolenoid(self.reverseHandle, False)
         elif value == self.Value.kForward:
-            hal.setSolenoid(self.reversePort, False)
-            hal.setSolenoid(self.forwardPort, True)
+            hal.setSolenoid(self.reverseHandle, False)
+            hal.setSolenoid(self.forwardHandle, True)
         elif value == self.Value.kReverse:
-            hal.setSolenoid(self.forwardPort, False)
-            hal.setSolenoid(self.reversePort, True)
+            hal.setSolenoid(self.forwardHandle, False)
+            hal.setSolenoid(self.reverseHandle, True)
         else:
             raise ValueError("Invalid argument '%s'" % value)
 
@@ -133,9 +137,9 @@ class DoubleSolenoid(SolenoidBase):
         :returns: The current value of the solenoid.
         :rtype: :class:`DoubleSolenoid.Value`
         """
-        if hal.getSolenoid(self.forwardPort):
+        if hal.getSolenoid(self.forwardHandle):
             return self.Value.kForward
-        if hal.getSolenoid(self.reversePort):
+        if hal.getSolenoid(self.reverseHandle):
             return self.Value.kReverse
         return self.Value.kOff
 
@@ -149,7 +153,7 @@ class DoubleSolenoid(SolenoidBase):
         """
         blacklist = self.getPCMSolenoidBlackList()
 
-        return (blacklist & (1 << self.forwardChannel)) != 0
+        return (blacklist & self.forwardMask) != 0
 
     def isRevSolenoidBlackListed(self):
         """
@@ -161,12 +165,19 @@ class DoubleSolenoid(SolenoidBase):
         """
         blacklist = self.getPCMSolenoidBlackList()
 
-        return (blacklist & (1 << self.reverseChannel)) != 0
+        return blacklist & (1 << self.reverseMask) != 0
 
     # Live Window code, only does anything if live window is activated.
 
     def getSmartDashboardType(self):
         return "Double Solenoid"
+
+    def initTable(self, subtable):
+        self.table = subtable
+        self.updateTable()
+
+    def getTable(self):
+        return self.table
 
     def updateTable(self):
         table = self.getTable()
@@ -174,11 +185,11 @@ class DoubleSolenoid(SolenoidBase):
             #TODO: this is bad
             val = self.get()
             if val == self.Value.kForward:
-                table.putString("Value", "Forward")
+                table.putString("Value", "F")
             elif val == self.Value.kReverse:
-                table.putString("Value", "Reverse")
+                table.putString("Value", "R")
             else:
-                table.putString("Value", "Off")
+                table.putString("Value", "O")
 
     def valueChanged(self, itable, key, value, bln):
         #TODO: this is bad also
