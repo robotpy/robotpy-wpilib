@@ -10,12 +10,12 @@ class I2CSimulator(I2CSimBase):
         'simPort' and it will get called when I2C HAL calls are made
     '''
     
-    def initializeI2C(self, port, device_address, data_to_send, send_size, data_received, receive_size):
+    def transactionI2C(self, port, device_address, data_to_send, send_size, data_received, receive_size):
         assert device_address == 0x42
         assert list(data_to_send) == [1,2]
         data_received[:] = [2, 1]
         return 2
-    
+
     def writeI2C(self, port, device_address, data_to_send, send_size):
         assert device_address == 0x42
         
