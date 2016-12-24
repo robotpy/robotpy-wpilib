@@ -1,4 +1,4 @@
-# validated: 2015-12-28 DS 4881795 athena/java/edu/wpi/first/wpilibj/DigitalGlitchFilter.java
+# validated: 2016-12-25 JW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/DigitalGlitchFilter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2015. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -33,7 +33,7 @@ class DigitalGlitchFilter(SensorBase):
                 if not v:
                     self.channelIndex = i
                     self.filterAllocated[i] = True
-                    hal.HALReport(hal.HALUsageReporting.kResourceType_DigitalFilter,
+                    hal.report(hal.HALUsageReporting.kResourceType_DigitalFilter,
                                   self.channelIndex, 0)
                     break
             else:
@@ -49,9 +49,12 @@ class DigitalGlitchFilter(SensorBase):
     @staticmethod
     def _setFilter(input, channelIndex):
         if input is not None: # Counter might have just one input
-            hal.setFilterSelect(input.port, channelIndex)
+            # analog triggers are not supported for DigitalGlitchFilter
+            if input.isAnalogTrigger():
+                raise ValueError("Analog Triggers are not supported for DigitalGlitchFilters")
+            hal.setFilterSelect(input.getPortHandleForRouting(), channelIndex)
             
-            selected = hal.getFilterSelect(input.port)
+            selected = hal.getFilterSelect(input.getPortHandleForRouting())
             if selected != channelIndex:
                 raise ValueError('setFilterSelect(%s) failed -> %s' % (channelIndex, selected))
     
@@ -60,7 +63,7 @@ class DigitalGlitchFilter(SensorBase):
         Assigns the :class:`.DigitalSource`, :class:`.Encoder`, or
         :class:`.Counter` to this glitch filter.
         
-        :param input: Object to add
+        :param input: The object to add
         '''
         if isinstance(input, DigitalSource):
             DigitalGlitchFilter._setFilter(input, self.channelIndex + 1)
