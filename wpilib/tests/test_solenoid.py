@@ -75,14 +75,4 @@ def test_solenoidbase_getAll(wpilib, hal_data):
     hal_data['solenoid'][0]['value'] = False
     
     assert solenoid.getAll() == 0xFE
-    
-def test_solenoidbase_set(wpilib, hal_data):
-    solenoid = wpilib.SolenoidBase(1)
-    solenoid.set(0xFF, 0x00)
-    assert solenoid.getAll() == 0
-    
-    solenoid.set(0xFF, 0xF0)
-    assert solenoid.getAll() == 0xF0
-    
-    
-    
+

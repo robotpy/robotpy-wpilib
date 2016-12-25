@@ -1,4 +1,4 @@
-# validated: 2016-01-01 DS 4b04073 athena/java/edu/wpi/first/wpilibj/I2C.java
+# validated: 2016-12-24 JW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -13,7 +13,7 @@ import weakref
 __all__ = ["I2C"]
 
 def _freeI2C(port):
-    hal.i2CClose(port)
+    hal.closeI2C(port)
 
 class I2C:
     """I2C bus interface class.
@@ -55,8 +55,8 @@ class I2C:
                 warnings.warn(msg)
             
             # Just check for basic functionality
-            assert hasattr(simPort, 'i2CInitialize')
-            assert hasattr(simPort, 'i2CClose')
+            assert hasattr(simPort, 'initializeI2C')
+            assert hasattr(simPort, 'closeI2C')
             
             self._port = (simPort, port)
         else:
@@ -64,10 +64,10 @@ class I2C:
             
         self.deviceAddress = deviceAddress
 
-        hal.i2CInitialize(self._port)
+        hal.initializeI2C(self._port)
         self.__finalizer = weakref.finalize(self, _freeI2C, self._port)
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_I2C, deviceAddress)
+        hal.report(hal.HALUsageReporting.kResourceType_I2C, deviceAddress)
     
     @property
     def port(self):
@@ -84,14 +84,14 @@ class I2C:
         This is a lower-level interface to the I2C hardware giving you more
         control over each transaction.
 
-        :param dataToSend: Data to send as part of the transaction.
+        :param dataToSend: Buffer of data to send as part of the transaction.
         :type dataToSend: iterable of bytes
-        :param receiveSize: Number of bytes to read from the device. [0..7]
+        :param receiveSize: Number of bytes to read from the device.
         :type receiveSize: int
         :returns: Data received from the device.
         :rtype: iterable of bytes
         """
-        return hal.i2CTransaction(self.port, self.deviceAddress,
+        return hal.transactionI2C(self.port, self.deviceAddress,
                                   dataToSend, receiveSize)
 
     def addressOnly(self):
@@ -120,7 +120,7 @@ class I2C:
         :returns: Transfer Aborted... False for success, True for aborted.
         """
         try:
-            hal.i2CWrite(self.port, self.deviceAddress, [registerAddress, data])
+            hal.writeI2C(self.port, self.deviceAddress, [registerAddress, data])
         except IOError:
             return True
         return False
@@ -144,7 +144,7 @@ class I2C:
             failed = spi.write([0x01, 0x02])
         """
         try:
-            hal.i2CWrite(self.port, self.deviceAddress, data)
+            hal.writeI2C(self.port, self.deviceAddress, data)
         except IOError:
             return True
         return False
@@ -177,7 +177,7 @@ class I2C:
         """
         if count < 1:
             raise ValueError("count must be at least 1, %s given" % count)
-        return hal.i2CRead(self.port, self.deviceAddress, count)
+        return hal.readI2C(self.port, self.deviceAddress, count)
 
     def broadcast(self, registerAddress, data):
         """Send a broadcast write to all devices on the I2C bus.

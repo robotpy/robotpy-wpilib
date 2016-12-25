@@ -8,9 +8,11 @@
 
 import hal
 
+from .digitalsource import DigitalSource
+
 __all__ = ["AnalogTriggerOutput"]
 
-class AnalogTriggerOutput:
+class AnalogTriggerOutput(DigitalSource):
     """Represents a specific output from an :class:`.AnalogTrigger`
     
     This class is used to get the current output value and also as a
@@ -62,7 +64,8 @@ class AnalogTriggerOutput:
                       trigger.index, outputType)
 
     def free(self):
-        pass
+        if self.interrupt is not None:
+            self.cancelInterrupts()
 
     def get(self):
         """Get the state of the analog trigger output.
@@ -72,14 +75,14 @@ class AnalogTriggerOutput:
         """
         return hal.getAnalogTriggerOutput(self.trigger.port, self.outputType)
 
-    def getChannelForRouting(self):
-        return (self.trigger.index << 2) + self.outputType
+    def getPortHandleForRouting(self):
+        return self.trigger.port
 
-    def getModuleForRouting(self):
-        return (self.trigger.index >> 2)
+    def getChannel(self):
+        return self.trigger.index
 
-    def getAnalogTriggerForRouting(self):
-        return True
+    def getAnalogTriggerTypeForRouting(self):
+        return self.outputType
 
     class AnalogTriggerType:
         """Defines the state in which the :class:`.AnalogTrigger` triggers"""
