@@ -1,4 +1,4 @@
-# validated: 2016-01-17 DS b3b03c4 athena/java/edu/wpi/first/wpilibj/Counter.java
+# validated: 2016-12-26 JW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/Counter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -99,7 +99,7 @@ class Counter(SensorBase):
         :type encodingType: :class:`.Counter.EncodingType`
         """
 
-        source_identifier = [int, HasAttribute("getChannelForRouting"), HasAttribute("createOutput")]
+        source_identifier = [int, HasAttribute("getPortHandleForRouting"), HasAttribute("createOutput")]
 
         argument_templates = [[],
                               [("upSource", source_identifier), ],
@@ -137,7 +137,7 @@ class Counter(SensorBase):
 
         self.setMaxPeriod(.5)
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Counter, self.index,
+        hal.report(hal.HALUsageReporting.kResourceType_Counter, self.index,
                       mode)
 
         #Set sources
@@ -217,7 +217,7 @@ class Counter(SensorBase):
         #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
 
         argument_templates = [[("channel", int)],
-                              [("source", HasAttribute("getChannelForRouting")), ],
+                              [("source", HasAttribute("getPortHandleForRouting")), ],
                               [("analogTrigger", HasAttribute("createOutput"))],
                               [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
 
@@ -243,8 +243,8 @@ class Counter(SensorBase):
         # save and set
         self.upSource = source
         hal.setCounterUpSource(self.counter,
-                               self.upSource.getChannelForRouting(),
-                               self.upSource.getAnalogTriggerForRouting())
+                               self.upSource.getPortHandleForRouting(),
+                               self.upSource.getAnalogTriggerTypeForRouting())
 
     def setUpSourceEdge(self, risingEdge, fallingEdge):
         """Set the edge sensitivity on an up counting source. Set the up
@@ -304,7 +304,7 @@ class Counter(SensorBase):
         #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
 
         argument_templates = [[("channel", int)],
-                              [("source", HasAttribute("getChannelForRouting")), ],
+                              [("source", HasAttribute("getPortHandleForRouting")), ],
                               [("analogTrigger", HasAttribute("createOutput")), ],
                               [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
 
@@ -330,8 +330,8 @@ class Counter(SensorBase):
         # save and set
         self.downSource = source
         hal.setCounterDownSource(self.counter,
-                                 self.downSource.getChannelForRouting(),
-                                 self.downSource.getAnalogTriggerForRouting())
+                                 self.downSource.getPortHandleForRouting(),
+                                 self.downSource.getAnalogTriggerTypeForRouting())
 
     def setDownSourceEdge(self, risingEdge, fallingEdge):
         """Set the edge sensitivity on an down counting source. Set the down
@@ -563,6 +563,13 @@ class Counter(SensorBase):
 
     def getSmartDashboardType(self):
         return "Counter"
+
+    def initTable(self, subtable):
+        self.table = subtable
+        self.updateTable()
+
+    def getTable(self):
+        return self.table
 
     def updateTable(self):
         table = self.getTable()
