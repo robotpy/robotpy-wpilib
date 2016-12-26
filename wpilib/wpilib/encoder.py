@@ -1,4 +1,4 @@
-# validated: 2015-12-25 DS 6d854af athena/java/edu/wpi/first/wpilibj/Encoder.java
+# validated: 2016-12-26 JW 0613f1d1827f athena/java/edu/wpi/first/wpilibj/Encoder.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -26,16 +26,16 @@ def _freeEncoder(encoder):
     hal.freeEncoder(encoder)
 
 class Encoder(SensorBase):
-    """Reads from quadrature encoders.
+    """Class to read quadrature encoders.
     
     Quadrature encoders are devices that count
-    shaft rotation and can sense direction. The output of the QuadEncoder class
+    shaft rotation and can sense direction. The output of the Encoder class
     is an integer that can count either up or down, and can go negative for
-    reverse direction counting. When creating QuadEncoders, a direction is
-    supplied that changes the sense of the output to make code more readable
+    reverse direction counting. When creating Encoders, a direction can be
+    supplied that inverts the sense of the output to make code more readable
     if the encoder is mounted such that forward movement generates negative
     values. Quadrature encoders have two digital outputs, an A Channel and a
-    B Channel that are out of phase with each other to allow the FPGA to do
+    B Channel, that are out of phase with each other to allow the FPGA to do
     direction sensing.
 
     All encoders will immediately start counting - reset() them if you need
@@ -46,8 +46,6 @@ class Encoder(SensorBase):
     - aSource: The A phase of the quad encoder
     - bSource: The B phase of the quad encoder
     - indexSource: The index source (available on some encoders)
-    
-    .. not_implemented: initEncoder
     """
 
     class IndexingType:
@@ -179,12 +177,10 @@ class Encoder(SensorBase):
 
         if encodingType == self.EncodingType.k4X:
             self._encoder, self.index = hal.initializeEncoder(
-                    aSource.getModuleForRouting(),
-                    aSource.getChannelForRouting(),
-                    aSource.getAnalogTriggerForRouting(),
-                    bSource.getModuleForRouting(),
-                    bSource.getChannelForRouting(),
-                    bSource.getAnalogTriggerForRouting(),
+                    aSource.getPortHandleRouting(),
+                    aSource.getAnalogTriggerTypeForRouting(),
+                    bSource.getPortHandleForRouting(),
+                    bSource.getAnalogTriggerTypeForRouting(),
                     reverseDirection)
             self.__finalizer = \
                     weakref.finalize(self, _freeEncoder, self._encoder)
@@ -208,9 +204,9 @@ class Encoder(SensorBase):
         if self.indexSource is not None:
             self.setIndexSource(self.indexSource)
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Encoder,
+        hal.report(hal.HALUsageReporting.kResourceType_Encoder,
                       self.index, encodingType)
-        LiveWindow.addSensorChannel("Encoder", aSource.getChannelForRouting(),
+        LiveWindow.addSensorChannel("Encoder", aSource.getChannel(),
                                     self)
 
     @property
@@ -223,14 +219,14 @@ class Encoder(SensorBase):
         """
         :returns: The Encoder's FPGA index
         """
-        return self.index
+        return hal.getEncoderFPGAIndex(self.encoder)
 
     def getEncodingScale(self):
         """
         :returns: The encoding scale factor 1x, 2x, or 4x, per the requested
             encodingType. Used to divide raw edge counts down to spec'd counts.
         """
-        return self.encodingScale
+        return hal.getEncoderEncodingScale(self.encoder)
 
     def free(self):
         LiveWindow.removeComponent(self)
@@ -246,11 +242,8 @@ class Encoder(SensorBase):
         self.aSource = None
         self.bSource = None
         self.indexSource = None
-        if self.counter is not None:
-            self.counter.free()
-            self.counter = None
-        else:
-            self.__finalizer()
+        self.__finalizer()
+        self.encoder = None
 
     def getRaw(self):
         """Gets the raw value from the encoder. The raw value is the actual
@@ -258,9 +251,7 @@ class Encoder(SensorBase):
 
         :returns: Current raw count from the encoder
         """
-        if self.counter is not None:
-            return self.counter.get()
-        return hal.getEncoder(self.encoder)
+        return hal.getEncoderRaw(self.encoder)
 
     def get(self):
         """Gets the current count. Returns the current count on the Encoder.
@@ -269,16 +260,13 @@ class Encoder(SensorBase):
         :returns: Current count from the Encoder adjusted for the 1x, 2x, or
             4x scale factor.
         """
-        return int(self.getRaw() * self.decodingScaleFactor())
+        return hal.getEncoder(self.encoder)
 
     def reset(self):
         """Reset the Encoder distance to zero. Resets the current count to
         zero on the encoder.
         """
-        if self.counter is not None:
-            self.counter.reset()
-        else:
-            hal.resetEncoder(self.encoder)
+        hal.resetEncoder(self.encoder)
 
     def getPeriod(self):
         """Returns the period of the most recent pulse. Returns the period of
@@ -293,11 +281,7 @@ class Encoder(SensorBase):
         :returns: Period in seconds of the most recent pulse.
         """
         warnings.warn("use getRate instead", DeprecationWarning)
-        if self.counter is not None:
-            measuredPeriod = self.counter.getPeriod() / self.decodingScaleFactor()
-        else:
-            measuredPeriod = hal.getEncoderPeriod(self.encoder)
-        return measuredPeriod
+        return hal.getEncoderPeriod(self.encoder)
 
     def setMaxPeriod(self, maxPeriod):
         """Sets the maximum period for stopped detection. Sets the value that
@@ -310,10 +294,7 @@ class Encoder(SensorBase):
             before the FPGA will report the device stopped. This is expressed
             in seconds.
         """
-        if self.counter is not None:
-            self.counter.setMaxPeriod(maxPeriod * self.decodingScaleFactor())
-        else:
-            hal.setEncoderMaxPeriod(self.encoder, maxPeriod)
+        hal.setEncoderMaxPeriod(self.encoder, maxPeriod)
 
     def getStopped(self):
         """Determine if the encoder is stopped. Using the MaxPeriod value, a
@@ -323,32 +304,14 @@ class Encoder(SensorBase):
 
         :returns: True if the encoder is considered stopped.
         """
-        if self.counter is not None:
-            return self.counter.getStopped()
-        else:
-            return hal.getEncoderStopped(self.encoder)
+        return hal.getEncoderStopped(self.encoder)
 
     def getDirection(self):
         """The last direction the encoder value changed.
 
         :returns: The last direction the encoder value changed.
         """
-        if self.counter is not None:
-            return self.counter.getDirection()
         return hal.getEncoderDirection(self.encoder)
-
-    def decodingScaleFactor(self):
-        """The scale needed to convert a raw counter value into a number of
-        encoder pulses.
-        """
-        if self.encodingType == self.EncodingType.k1X:
-            return 1.0
-        elif self.encodingType == self.EncodingType.k2X:
-            return 0.5
-        elif self.encodingType == self.EncodingType.k4X:
-            return 0.25
-        else:
-            raise ValueError("unexpected encodingType: %d" % self.encodingType)
 
     def getDistance(self):
         """Get the distance the robot has driven since the last reset.
@@ -356,7 +319,7 @@ class Encoder(SensorBase):
         :returns: The distance driven since the last reset as scaled by the
             value from :func:`setDistancePerPulse`.
         """
-        return self.getRaw() * self.decodingScaleFactor() * self.distancePerPulse
+        return hal.getEncoderDistance(self.encoder)
 
     def getRate(self):
         """Get the current rate of the encoder. Units are distance per second
@@ -364,7 +327,7 @@ class Encoder(SensorBase):
 
          :returns: The current rate of the encoder.
         """
-        return self.distancePerPulse / self.getPeriod()
+        return hal.getEncoderRate(self.encoder)
 
     def setMinRate(self, minRate):
         """Set the minimum rate of the device before the hardware reports it
@@ -373,7 +336,7 @@ class Encoder(SensorBase):
         :param minRate: The minimum rate. The units are in distance per
             second as scaled by the value from :func:`setDistancePerPulse`.
         """
-        self.setMaxPeriod(self.distancePerPulse / minRate)
+        hal.setEncoderMinRate(self.encoder, minRate)
 
     def setDistancePerPulse(self, distancePerPulse):
         """Set the distance per pulse for this encoder. This sets the
@@ -387,7 +350,7 @@ class Encoder(SensorBase):
         :param distancePerPulse: The scale factor that will be used to convert
             pulses to useful units.
         """
-        self.distancePerPulse = distancePerPulse
+        hal.setEncoderDistancePerPulse(self.encoder, distancePerPulse)
 
     def setReverseDirection(self, reverseDirection):
         """Set the direction sensing for this encoder. This sets the direction
@@ -397,10 +360,7 @@ class Encoder(SensorBase):
         :param reverseDirection: True if the encoder direction should be
             reversed
         """
-        if self.counter is not None:
-            self.counter.setReverseDirection(reverseDirection)
-        else:
-            raise NotImplementedError # FIXME?
+        hal.setEncoderReverseDirection(self.encoder, reverseDirection)
 
     def setSamplesToAverage(self, samplesToAverage):
         """Set the Samples to Average which specifies the number of samples
@@ -414,11 +374,7 @@ class Encoder(SensorBase):
         :param samplesToAverage: The number of samples to average from 1 to
             127.
         """
-        if self.encodingType == self.EncodingType.k4X:
-            hal.setEncoderSamplesToAverage(self.encoder, samplesToAverage)
-        elif self.encodingType in (self.EncodingType.k2X,
-                                   self.EncodingType.k1X):
-            self.counter.setSamplesToAverage(samplesToAverage)
+        hal.setEncoderSamplesToAverage(self.encoder, samplesToAverage)
 
     def getSamplesToAverage(self):
         """Get the Samples to Average which specifies the number of samples
@@ -428,13 +384,7 @@ class Encoder(SensorBase):
 
         :returns: The number of samples being averaged (from 1 to 127)
         """
-        if self.encodingType.value == self.EncodingType.k4X:
-            return hal.getEncoderSamplesToAverage(self.encoder)
-        elif self.encodingType in (self.EncodingType.k2X,
-                                   self.EncodingType.k1X):
-            return self.counter.getSamplesToAverage()
-        else:
-            return 1
+        return hal.getEncoderSamplesToAverage(self.encoder)
 
     def setPIDSourceType(self, pidSource):
         """Set which parameter of the encoder you are using as a process
@@ -472,16 +422,13 @@ class Encoder(SensorBase):
         :param indexing_type: The state that will cause the encoder to reset
         :type: A value from :class:`wpilib.DigitalInput.IndexingType`
         """
-        if hasattr(source, "getChannelForRouting"):
+        if hasattr(source, "getPortHandleForRouting"):
             self.indexSource = source
         else:
             self.indexSource = DigitalInput(source)
 
-        activeHigh = (indexing_type == self.IndexingType.kResetWhileHigh or indexing_type == self.IndexingType.kResetOnRisingEdge)
-        edgeSensitive = (indexing_type == self.IndexingType.kResetOnFallingEdge or indexing_type == self.IndexingType.kResetOnRisingEdge)
-        
-        hal.setEncoderIndexSource(self.encoder, self.indexSource.getChannelForRouting(),
-                                  self.indexSource.getAnalogTriggerForRouting(), activeHigh, edgeSensitive)
+        hal.setEncoderIndexSource(self.encoder, self.indexSource.getPortHandleForRouting(),
+                                  self.indexSource.getAnalogTriggerTypeForRouting(), indexing_type)
 
     # Live Window code, only does anything if live window is activated.
 
@@ -489,6 +436,13 @@ class Encoder(SensorBase):
         if self.encodingType == self.EncodingType.k4X:
             return "Quadrature Encoder"
         return "Encoder"
+
+    def initTable(self, subtable):
+        self.table = subtable
+        self.updateTable()
+
+    def getTable(self):
+        return self.table
 
     def updateTable(self):
         table = self.getTable()
