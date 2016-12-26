@@ -187,8 +187,8 @@ class LinearDigitalFilter(Filter):
 
     def reset(self):
         """Reset the filter state"""
-        self.inputs.reset()
-        self.outputs.reset()
+        self.inputs.clear()
+        self.outputs.clear()
      
     def pidGet(self):
         """Calculates the next value of the filter
