@@ -100,7 +100,10 @@ class PWM(LiveWindowSendable):
         Free the resource associated with the PWM channel and set the value
         to 0.
         """
+        if self.handle is None:
+            return
         self.__finalizer()
+        self._handle = None
 
     def enableDeadbandElimination(self, eliminateDeadband):
         """Optionally eliminate the deadband from a speed controller.
