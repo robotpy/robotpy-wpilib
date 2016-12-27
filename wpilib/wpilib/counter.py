@@ -18,11 +18,18 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Counter"]
 
-def _freeCounter(counter):
-    hal.setCounterUpdateWhenEmpty(counter, True)
-    hal.clearCounterUpSource(counter)
-    hal.clearCounterDownSource(counter)
-    hal.freeCounter(counter)
+def _freeCounter(counterObj):
+    hal.setCounterUpdateWhenEmpty(counterObj._counter, True)
+    
+    counterObj.clearUpSource()
+    counterObj.clearDownSource()
+
+    hal.freeCounter(counterObj._counter)
+
+    counterObj.upSource = None
+    counterObj.downSource = None
+    counterObj._counter = None
+
 
 class Counter(SensorBase):
     """Counts the number of ticks on a :class:`.DigitalInput` channel.
@@ -74,7 +81,7 @@ class Counter(SensorBase):
         - encodingType, up source, down source, inverted
 
         If the passed object has a
-        `getChannelForRouting` function, it is assumed to be a DigitalSource.
+        `getPortHandleForRouting` function, it is assumed to be a DigitalSource.
         If the passed object has a `createOutput` function, it is assumed to
         be an AnalogTrigger.
 
@@ -133,7 +140,7 @@ class Counter(SensorBase):
         # create counter
         self._counter, self.index = hal.initializeCounter(mode)
         self.__finalizer = \
-            weakref.finalize(self, _freeCounter, self._counter)
+            weakref.finalize(self, _freeCounter, self)
 
         self.setMaxPeriod(.5)
 
@@ -168,10 +175,6 @@ class Counter(SensorBase):
         return self._counter
 
     def free(self):
-        self.setUpdateWhenEmpty(True)
-        self.clearUpSource()
-
-        self.clearDownSource()
         self.__finalizer()
 
     def getFPGAIndex(self):
@@ -192,7 +195,7 @@ class Counter(SensorBase):
         - analogTrigger, triggerType
 
         For positional arguments, if the passed object has a
-        `getChannelForRouting` function, it is assumed to be a DigitalSource.
+        `getPortHandleForRouting` function, it is assumed to be a DigitalSource.
         If the passed object has a `createOutput` function, it is assumed to
         be an AnalogTrigger.
 
@@ -265,7 +268,7 @@ class Counter(SensorBase):
             self.upSource.free()
             self.allocatedUpSource = False
         self.upSource = None
-        hal.clearCounterUpSource(self.counter)
+        hal.clearCounterUpSource(self._counter)
 
     def setDownSource(self, *args, **kwargs):
         """Set the down counting source for the counter.
@@ -308,7 +311,7 @@ class Counter(SensorBase):
                               [("analogTrigger", HasAttribute("createOutput")), ],
                               [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
 
-        _, results = match_arglist('Counter.setUpSource',
+        _, results = match_arglist('Counter.setDownSource',
                                    args, kwargs, argument_templates)
 
         # extract arguments
@@ -355,9 +358,7 @@ class Counter(SensorBase):
             self.allocatedDownSource = False
         self.downSource = None
 
-        if self.counter is None:
-            return
-        hal.clearCounterDownSource(self.counter)
+        hal.clearCounterDownSource(self._counter)
 
     def setUpDownCounterMode(self):
         """Set standard up / down counting mode on this counter. Up and down
