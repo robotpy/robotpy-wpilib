@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/DigitalInput.java
+# validated: 2016-12-27 JW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/DigitalInput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -30,15 +30,19 @@ class DigitalInput(DigitalSource):
         :param channel: the DIO channel for the digital input. 0-9 are on-board, 10-25 are on the MXP
         :type  channel: int
         """
+        # Store the channel and generate the handle in the constructor of the parent class
+        # This is different from the Java implementation
         super().__init__(channel, True)
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_DigitalInput,
+        hal.report(hal.HALUsageReporting.kResourceType_DigitalInput,
                       channel)
-        LiveWindow.addSensorChannel("DigitalInput", channel, self)
+        LiveWindow.addSensor("DigitalInput", channel, self)
 
     def free(self):
-        LiveWindow.removeComponent(self)
-        super().free()
+        if self.interrupt:
+            self.cancelInterrupts()
+
+        super().free() # This calls hal.freeDIOPort
 
     def get(self):
         """Get the value from a digital input channel. Retrieve the value of
@@ -50,21 +54,54 @@ class DigitalInput(DigitalSource):
         return hal.getDIO(self.port)
 
     def getChannel(self):
-        """Get the channel of the digital input
+        """Get the channel of the digital input.
 
         :returns: The GPIO channel number that this object represents.
         :rtype: int
         """
         return self.channel
 
-    def getAnalogTriggerForRouting(self):
-        return False
+    def getAnalogTriggerTypeForRouting(self):
+        """Get the analog trigger type.
+
+        :returns: false
+        :rtype: int
+        """
+        return 0
+
+    def isAnalogTrigger(self):
+        """Is this an analog trigger.
+
+        :returns: true if this is an analog trigger
+        :rtype: bool
+        """
+
+    def getPortHandleForRouting(self):
+        """Get the HAL Port Handle.
+
+        :return: The HAL Handle to the specified source
+        """
+        return self.handle
 
     # Live Window code, only does anything if live window is activated.
     def getSmartDashboardType(self):
         return "Digital Input"
 
+    def initTable(self, subtable):
+        self.table = subtable
+        self.updateTable()
+
     def updateTable(self):
         table = self.getTable()
         if table is not None:
             table.putBoolean("Value", self.get())
+
+    def getTable(self):
+        return self.table
+
+    def startLiveWindowMode(self):
+        pass
+
+    def stopLiveWindowMode(self):
+        pass
+
