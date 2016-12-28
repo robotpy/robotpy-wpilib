@@ -100,7 +100,7 @@ class PWM(LiveWindowSendable):
         Free the resource associated with the PWM channel and set the value
         to 0.
         """
-        if self.handle is None:
+        if self._handle is None:
             return
         self.__finalizer()
         self._handle = None
