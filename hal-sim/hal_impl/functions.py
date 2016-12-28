@@ -636,7 +636,11 @@ def setCounterAverageSize(counterHandle, size, status):
 
 def setCounterUpSource(counterHandle, digitalSourceHandle, analogTriggerType, status):
     status.value = 0
-    hal_data['counter'][counterHandle.idx]['up_source_channel'] = digitalSourceHandle.pin
+    # AnalogInputs should be referred to by index, not pin
+    try:
+        hal_data['counter'][counterHandle.idx]['up_source_channel'] = digitalSourceHandle.index
+    except AttributeError:
+        hal_data['counter'][counterHandle.idx]['up_source_channel'] = digitalSourceHandle.pin
     hal_data['counter'][counterHandle.idx]['up_source_trigger'] = analogTriggerType
     
     if hal_data['counter'][counterHandle.idx]['mode'] in \
@@ -661,10 +665,12 @@ def setCounterDownSource(counterHandle, digitalSourceHandle, analogTriggerType, 
        [constants.CounterMode.kTwoPulse, constants.CounterMode.kExternalDirection]:
         status.value = PARAMETER_OUT_OF_RANGE
         return
-    
-    hal_data['counter'][counterHandle.idx]['down_source_channel'] = digitalSourceHandle.pin
+    # AnalogInputs should be referred to by index, not pin
+    try:
+        hal_data['counter'][counterHandle.idx]['down_source_channel'] = digitalSourceHandle.index
+    except AttributeError:
+        hal_data['counter'][counterHandle.idx]['down_source_channel'] = digitalSourceHandle.pin
     hal_data['counter'][counterHandle.idx]['down_source_trigger'] = analogTriggerType
-    
 
 def setCounterDownSourceEdge(counterHandle, rising_edge, falling_edge, status):
     status.value = 0
