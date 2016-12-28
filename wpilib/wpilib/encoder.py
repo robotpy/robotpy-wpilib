@@ -80,7 +80,7 @@ class Encoder(SensorBase):
         - aChannel, bChannel, indexChannel
 
         For positional arguments, if the passed object has a
-        `getChannelForRouting` function, it is assumed to be a DigitalSource.
+        `getPortHandleForRouting` function, it is assumed to be a DigitalSource.
 
         Alternatively, sources and/or channels may be passed as keyword
         arguments.  The behavior of specifying both a source and a number
@@ -114,9 +114,9 @@ class Encoder(SensorBase):
             spec'd count.  Defaults to k4X if unspecified.
         :type encodingType: :class:`Encoder.EncodingType`
         """
-        a_source_arg = ("aSource", HasAttribute("getChannelForRouting"))
-        b_source_arg = ("bSource", HasAttribute("getChannelForRouting"))
-        index_source_arg = ("indexSource", HasAttribute("getChannelForRouting"))
+        a_source_arg = ("aSource", HasAttribute("getPortHandleForRouting"))
+        b_source_arg = ("bSource", HasAttribute("getPortHandleForRouting"))
+        index_source_arg = ("indexSource", HasAttribute("getPortHandleForRouting"))
         a_channel_arg = ("aChannel", int)
         b_channel_arg = ("bChannel", int)
         index_channel_arg = ("indexChannel", int)
@@ -177,11 +177,11 @@ class Encoder(SensorBase):
 
         if encodingType == self.EncodingType.k4X:
             self._encoder, self.index = hal.initializeEncoder(
-                    aSource.getPortHandleRouting(),
+                    aSource.getPortHandleForRouting(),
                     aSource.getAnalogTriggerTypeForRouting(),
                     bSource.getPortHandleForRouting(),
                     bSource.getAnalogTriggerTypeForRouting(),
-                    reverseDirection)
+                    reverseDirection, encodingType)
             self.__finalizer = \
                     weakref.finalize(self, _freeEncoder, self._encoder)
             self.setMaxPeriod(.5)
