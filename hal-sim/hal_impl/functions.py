@@ -791,12 +791,14 @@ def _remapSPIChannel(pin):
 
 def initializeDIOPort(portHandle, input, status):
     status.value = 0
+    hal_data['dio'][portHandle.pin]['initialized'] = True
     return types.DigitalHandle(portHandle)
 
 def checkDIOChannel(channel):
     return channel < kNumDigitalChannels and channel >= 0
 
 def freeDIOPort(dioPortHandle):
+    hal_data['dio'][dioPortHandle.pin]['initialized'] = False
     dioPortHandle.pin = None
 
 def allocateDigitalPWM(status):
