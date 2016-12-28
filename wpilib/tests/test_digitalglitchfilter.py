@@ -12,7 +12,7 @@ def test_glitch_filters(wpilib, hal_data):
         f.add(d)
         filters.append((i, d, f))
         
-        assert hal_data['dio'][i]['filter_idx'] == i
+        assert hal_data['dio'][i]['filterIndex'] == i
         
     # shouldn't be able to allocate another
     with pytest.raises(ValueError):
@@ -23,4 +23,4 @@ def test_glitch_filters(wpilib, hal_data):
         f.remove(d)
         f.free()
         
-        assert hal_data['dio'][i]['filter_idx'] is None
+        assert hal_data['dio'][i]['filterIndex'] is None

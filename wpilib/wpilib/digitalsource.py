@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 4b04073 athena/java/edu/wpi/first/wpilibj/DigitalSource.java
+# validated: 2016-12-27 JW aafca4ed7fff athena/java/edu/wpi/first/wpilibj/DigitalSource.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -15,9 +15,8 @@ from .interruptablesensorbase import InterruptableSensorBase
 
 __all__ = ["DigitalSource"]
 
-def _freeDigitalSource(port):
-    hal.freeDIO(port)
-    hal.freeDigitalPort(port)
+def _freeDigitalSource(handle):
+    hal.freeDIOPort(handle)
 
 class DigitalSource(InterruptableSensorBase):
     """DigitalSource Interface. The DigitalSource represents all the possible
@@ -41,50 +40,30 @@ class DigitalSource(InterruptableSensorBase):
         """
         super().__init__()
 
-        self.channel = channel
-        
         SensorBase.checkDigitalChannel(channel)
+        self.channel = channel
+        self._handle = hal.initializeDIOPort(hal.getPort(channel), input)
 
         try:
             DigitalSource.channels.allocate(self, channel)
         except IndexError as e:
             raise IndexError("Digital input %d is already allocated" % self.channel) from e
 
-        self._port = hal.initializeDigitalPort(hal.getPort(channel))
-        hal.allocateDIO(self._port, True if input else False)
-
-        self.__finalizer = weakref.finalize(self, _freeDigitalSource, self._port)
+        self.__finalizer = weakref.finalize(self, _freeDigitalSource, self._handle)
 
     @property
-    def port(self):
+    def handle(self):
         if not self.__finalizer.alive:
             raise ValueError("Cannot use channel after free() has been called")
-        return self._port
+        return self._handle
 
     def free(self):
-        if self.channel is None:
-            return
         DigitalSource.channels.free(self.channel)
         self.__finalizer()
-        self.channel = None
 
-    def getChannelForRouting(self):
-        """Get the channel routing number
+    def isAnalogTrigger(self):
+        raise NotImplementedError
 
-        :returns: channel routing number
-        """
-        return self.channel
+    def getChannel(self):
+        raise NotImplementedError
 
-    def getModuleForRouting(self):
-        """Get the module routing number
-
-        :returns: 0
-        """
-        return 0
-
-    def getAnalogTriggerForRouting(self):
-        """Is this an analog trigger
-        
-        :returns: True if this is an analog trigger
-        """
-        return False

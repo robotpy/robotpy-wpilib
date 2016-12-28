@@ -105,7 +105,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
             self._reverseHandle = hal.initializeRelayPort(portHandle, False)
             hal.report(hal.UsageReporting.kResourceType_Relay, self.channel + 128)
 
-        self.__finalizer = weakref.finalize(self, _freeRelay, self._forwardHandle, self.reverseHandle)
+        self.__finalizer = weakref.finalize(self, _freeRelay, self._forwardHandle, self._reverseHandle)
 
         self.setSafetyEnabled(False)
         

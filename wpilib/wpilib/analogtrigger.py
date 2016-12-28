@@ -9,6 +9,7 @@
 import hal
 import weakref
 
+from .analoginput import AnalogInput
 from .analogtriggeroutput import AnalogTriggerOutput
 from .resource import Resource
 
@@ -43,8 +44,9 @@ class AnalogTrigger:
             getChannel function.
         """
         if hasattr(channel, "getChannel"):
-            channel = channel.getChannel()
             self.analogInput = channel
+        else:
+            self.analogInput = AnalogInput(channel)
 
         port = hal.getPort(channel)
         self._port, self.index = hal.initializeAnalogTrigger(port)

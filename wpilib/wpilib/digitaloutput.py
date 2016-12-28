@@ -1,4 +1,4 @@
-# validated: 2016-01-07 DS dbba4a1 athena/java/edu/wpi/first/wpilibj/DigitalOutput.java
+# validated: 2016-12-27 JW 69422dc0636c athena/java/edu/wpi/first/wpilibj/DigitalOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -17,8 +17,8 @@ __all__ = ["DigitalOutput"]
 
 def _freePWMGenerator(pwmGenerator):
     # Disable the output by routing to a dead bit.
-    hal.setPWMOutputChannel(pwmGenerator, SensorBase.kDigitalChannels)
-    hal.freePWM(pwmGenerator)
+    hal.setDigitalPWMOutputChannel(pwmGenerator, SensorBase.kDigitalChannels)
+    hal.freeDigitalPWM(pwmGenerator)
 
 class DigitalOutput(DigitalSource):
     """Writes to a digital output
@@ -36,7 +36,7 @@ class DigitalOutput(DigitalSource):
         self._pwmGenerator = None
         self._pwmGenerator_finalizer = None
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_DigitalOutput,
+        hal.report(hal.HALUsageReporting.kResourceType_DigitalOutput,
                       channel)
 
     @property
@@ -52,7 +52,9 @@ class DigitalOutput(DigitalSource):
         # finalize the pwm only if we have allocated it
         if self.pwmGenerator is not None:
             self._pwmGenerator_finalizer()
+        self._pwmGenerator = None
         super().free()
+        self._handle = None
 
     def set(self, value):
         """Set the value of a digital output.
@@ -61,6 +63,14 @@ class DigitalOutput(DigitalSource):
         :type  value: bool
         """
         hal.setDIO(self.port, 1 if value else 0)
+
+    def get(self):
+        """Gets the value being output from the Digital Output.
+
+        :returns: the state of the digital output
+        :rtype: bool
+        """
+        return hal.getDIO(self.handle)
 
     def getChannel(self):
         """:returns: The GPIO channel number that this object represents.
@@ -75,7 +85,7 @@ class DigitalOutput(DigitalSource):
         :param pulseLength: The length of the pulse.
         :type  pulseLength: float
         """
-        hal.pulse(self.port, pulseLength)
+        hal.pulse(self.handle, pulseLength)
 
     def isPulsing(self):
         """Determine if the pulse is still going. Determine if a previously
@@ -84,7 +94,7 @@ class DigitalOutput(DigitalSource):
         :returns: True if pulsing
         :rtype: bool
         """
-        return hal.isPulsing(self.port)
+        return hal.isPulsing(self.handle)
 
     def setPWMRate(self, rate):
         """Change the PWM frequency of the PWM output on a Digital Output line.
@@ -97,7 +107,7 @@ class DigitalOutput(DigitalSource):
         :param rate: The frequency to output all digital output PWM signals.
         :type  rate: float
         """
-        hal.setPWMRate(rate)
+        hal.setDigitalPWMRate(rate)
 
     def enablePWM(self, initialDutyCycle):
         """Enable a PWM Output on this line.
@@ -115,9 +125,9 @@ class DigitalOutput(DigitalSource):
         """
         if self.pwmGenerator is not None:
             return
-        self._pwmGenerator = hal.allocatePWM()
-        hal.setPWMDutyCycle(self._pwmGenerator, initialDutyCycle)
-        hal.setPWMOutputChannel(self._pwmGenerator, self.channel)
+        self._pwmGenerator = hal.allocateDigitalPWM()
+        hal.setDigitalPWMDutyCycle(self._pwmGenerator, initialDutyCycle)
+        hal.setDigitalPWMOutputChannel(self._pwmGenerator, self.channel)
         self._pwmGenerator_finalizer = \
                 weakref.finalize(self, _freePWMGenerator, self._pwmGenerator)
 
@@ -142,7 +152,34 @@ class DigitalOutput(DigitalSource):
         """
         if self.pwmGenerator is None:
             return
-        hal.setPWMDutyCycle(self.pwmGenerator, dutyCycle)
+        hal.setDigitalPWMDutyCycle(self.pwmGenerator, dutyCycle)
+
+    def getAnalogTriggerTypeForRouting(self):
+        """Get the analog trigger type.
+
+        :returns: false
+        :rtype: int
+        """
+        return 0
+
+    def isAnalogTrigger(self):
+        """Is this an analog trigger.
+
+        :returns: true if this is an analog trigger
+        :rtype: bool
+        """
+        return False
+
+    def getPortHandleForRouting(self):
+        """Get the HAL Port Handle.
+
+        :returns: The HAL Handle to the specified source
+        """
+        return self.handle
+
+    def initTable(self, subtable):
+        self.table = subtable
+        self.updateTable()
 
     # Live Window code, only does anything if live window is activated.
     def getSmartDashboardType(self):

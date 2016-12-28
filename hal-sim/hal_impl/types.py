@@ -113,7 +113,7 @@ class CounterHandle(Handle):
     def __init__(self, idx):
         self.idx = idx
 
-class DigitalHandle:
+class DigitalHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
