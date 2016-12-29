@@ -1010,23 +1010,17 @@ def observeUserProgramTest():
 
 def initializeEncoder(digitalSourceHandleA, analogTriggerTypeA, digitalSourceHandleB, analogTriggerTypeB, reverseDirection, encodingType, status):
     status.value = 0
-    assert False
+    for idx in range(0, len(hal_data['encoder'])):
+        enc = hal_data['encoder'][idx]
+        if enc['initialized'] == False:
+            enc['initialized'] = True
 
-# def initializeEncoder(port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger, reverse_direction, status):
-#     status.value = 0
-#     for idx in range(0, len(hal_data['encoder'])):
-#         enc = hal_data['encoder'][idx]
-#         if enc['initialized'] == False:
-#             enc['initialized'] = True
-# 
-#             enc['config'] = {"ASource_Module": port_a_module, "ASource_Channel": port_a_pin, "ASource_AnalogTrigger": port_a_analog_trigger,
-#                              "BSource_Module": port_b_module, "BSource_Channel": port_b_pin, "BSource_AnalogTrigger": port_b_analog_trigger}
-#             enc['reverse_direction'] = reverse_direction
-#             return types.EncoderHandle(idx), idx 
-#         
-#     # I think HAL fails silently.. 
-#     status.value = NO_AVAILABLE_RESOURCES
-#     return None, -1
+            enc['config'] = {"ASource_Channel": digitalSourceHandleA.pin, "ASource_AnalogTrigger": analogTriggerTypeA,
+                             "BSource_Channel": digitalSourceHandleB.pin, "BSource_AnalogTrigger": analogTriggerTypeB}
+            enc['reverse_direction'] = reverseDirection
+            return types.EncoderHandle(idx), idx
+    status.value = NO_AVAILABLE_RESOURCES
+    return None, -1
 
 def freeEncoder(encoder, status):
     status.value = 0
@@ -1067,19 +1061,20 @@ def getEncoderDirection(encoder, status):
 
 def getEncoderDistance(encoderHandle, status):
     status.value = 0
-    assert False
+    enc = hal_data['encoder'][encoder.idx]
+    return enc['count']*enc['distance_per_pulse']
 
 def getEncoderRate(encoderHandle, status):
     status.value = 0
-    assert False
+    return hal_data['encoder'][encoder.idx]['rate']
 
 def setEncoderMinRate(encoderHandle, minRate, status):
     status.value = 0
-    assert False
+    hal_data['encoder'][encoderHandle.idx]['min_rate'] = minRate
 
 def setEncoderDistancePerPulse(encoderHandle, distancePerPulse, status):
     status.value = 0
-    assert False
+    hal_data['encoder'][encoderHandle.idx]['distance_per_pulse'] = distancePerPulse
 
 def setEncoderReverseDirection(encoder, reverse_direction, status):
     status.value = 0
@@ -1095,13 +1090,10 @@ def getEncoderSamplesToAverage(encoder, status):
 
 def setEncoderIndexSource(encoderHandle, digitalSourceHandle, analogTriggerType, type, status):
     status.value = 0
-    assert False
-# def setEncoderIndexSource(encoder, pin, analogTrigger, activeHigh, edgeSensitive, status):
-#     status.value = 0
-#     index_conf = {"IndexSource_Channel": pin, "IndexSource_Module": 0, "IndexSource_AnalogTrigger": analogTrigger,
-#                   "IndexActiveHigh": activeHigh, "IndexEdgeSensitive": edgeSensitive}
-#     hal_data['encoder'][encoder.idx]['config'].update(index_conf)
-    
+    index_conf = {"IndexSource_Channel": digitalSourceHandle.pin, "IndexSource_AnalogTrigger": analogTriggerType,
+                  "IndexType": type}
+    hal_data['encoder'][encoderHandle.idx]['config'].update(index_conf)
+
 def getEncoderFPGAIndex(encoderHandle, status):
     status.value = 0
     assert False
@@ -1112,7 +1104,7 @@ def getEncoderDecodingScaleFactor(encoderHandle, status):
 
 def getEncoderDistancePerPulse(encoderHandle, status):
     status.value = 0
-    assert False
+    return hal_data['encoder'][encoderHandle.idx]['distance_per_pulse']
 
 def getEncoderEncodingType(encoderHandle, status):
     status.value = 0

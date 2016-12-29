@@ -243,7 +243,7 @@ class Encoder(SensorBase):
         self.bSource = None
         self.indexSource = None
         self.__finalizer()
-        self.encoder = None
+        self._encoder = None
 
     def getRaw(self):
         """Gets the raw value from the encoder. The raw value is the actual
