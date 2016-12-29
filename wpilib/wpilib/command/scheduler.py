@@ -48,7 +48,7 @@ class Scheduler(Sendable):
     def __init__(self):
         """Instantiates a Scheduler.
         """
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Command,
+        hal.report(hal.HALUsageReporting.kResourceType_Command,
                       hal.HALUsageReporting.kCommand_Scheduler)
 
         # Active Commands
