@@ -35,7 +35,7 @@ def test_counter_init_5(wpilib, hal_data):
     at = wpilib.AnalogTrigger(2)
     ctr = wpilib.Counter(at)
     #Analog triggers get their channel ids from their index, not their analog port.
-    check_init(hal_data, 0, 1, 0, (True, False), (False, False), True)
+    check_init(hal_data, 0, 0, 0, (True, False), (False, False), True)
 
 def test_counter_set_up_channel(wpilib, hal_data):
     ctr = wpilib.Counter()
@@ -53,7 +53,7 @@ def test_counter_set_up_trigger(wpilib, hal_data):
     ctr = wpilib.Counter()
     ctr.setUpSource(src, wpilib.AnalogTriggerOutput.AnalogTriggerType.kState)
     #Analog triggers get their channel ids from their index, not their analog port.
-    check_init(hal_data, 0, 1, 0, (True, False), (False, False), True)
+    check_init(hal_data, 0, 0, 0, (True, False), (False, False), True)
 
 def test_counter_set_down_channel(wpilib, hal_data):
     ctr = wpilib.Counter()
@@ -71,7 +71,7 @@ def test_counter_set_down_trigger(wpilib, hal_data):
     ctr = wpilib.Counter()
     ctr.setDownSource(src, wpilib.AnalogTriggerOutput.AnalogTriggerType.kState)
     #Analog triggers get their channel ids from their index, not their analog port.
-    check_init(hal_data, 0, 0, 1, (False, False), (False, False), False, True)
+    check_init(hal_data, 0, 0, 0, (False, False), (False, False), False, True)
 
 def test_counter_free(wpilib, hal_data):
     assert not hal_data["counter"][0]["initialized"]
