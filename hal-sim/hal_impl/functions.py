@@ -84,7 +84,7 @@ kNumDigitalPWMOutputs = 4 + 2
 kNumEncoders = 8
 kNumInterrupts = 8
 kNumRelayChannels = 8
-kNumRelayHeaders = kNumRelayChannels / 2
+kNumRelayHeaders = int(kNumRelayChannels / 2)
 kNumPCMModules = 63
 kNumSolenoidChannels = 8
 kNumPDPModules = 63
@@ -791,7 +791,19 @@ def _remapSPIChannel(pin):
 
 def initializeDIOPort(portHandle, input, status):
     status.value = 0
-    hal_data['dio'][portHandle.pin]['initialized'] = True
+    if portHandle.pin >= kNumDigitalHeaders:
+        mxp_port = _remapMXPChannel(portHandle.pin)
+        if hal_data["mxp"][mxp_port]["initialized"]:
+            status.value = RESOURCE_IS_ALLOCATED
+            return False
+    dio = hal_data['dio'][portHandle.pin]
+    if dio['initialized']:
+        status.value = RESOURCE_IS_ALLOCATED
+        return False
+    if portHandle.pin >= kNumDigitalHeaders:
+        hal_data["mxp"][mxp_port]["initialized"] = True
+    dio['initialized'] = True
+    dio['is_input'] = input
     return types.DigitalHandle(portHandle)
 
 def checkDIOChannel(channel):
@@ -799,6 +811,9 @@ def checkDIOChannel(channel):
 
 def freeDIOPort(dioPortHandle):
     hal_data['dio'][dioPortHandle.pin]['initialized'] = False
+    if dioPortHandle.pin >= kNumDigitalHeaders:
+        mxp_port = _remapMXPChannel(dioPortHandle.pin)
+        hal_data["mxp"][mxp_port]["initialized"] = False
     dioPortHandle.pin = None
 
 def allocateDigitalPWM(status):
@@ -1475,23 +1490,51 @@ def getUserCurrentFaults3V3(status):
 # Relay.h
 #############################################################################
 
+def _handle_to_channel(relayPortHandle):
+    channel = int(relayPortHandle.pin/2)
+    return channel, relayPortHandle.pin % 2 == 0
+
 def initializeRelayPort(portHandle, fwd, status):
     status.value = 0
-    assert False
+    pin = portHandle.pin * 2
+    if not fwd:
+        pin = pin + 1
+        hal_data['relay'][portHandle.pin]['rev'] = False
+    else:
+        hal_data['relay'][portHandle.pin]['fwd'] = False
+
+    hal_data['relay'][portHandle.pin]['initialized'] = True
+
+    return types.RelayHandle(pin)
 
 def freeRelayPort(relayPortHandle):
-    assert False
+    channel, fwd = _handle_to_channel(relayPortHandle)
+    if fwd:
+        hal_data['relay'][channel]['fwd'] = False
+    else:
+        hal_data['relay'][channel]['rev'] = False
 
+    
 def checkRelayChannel(channel):
-    assert False
+    return 0 <= channel and channel < kNumRelayHeaders
 
 def setRelay(relayPortHandle, on, status):
     status.value = 0
-    assert False
+    channel, fwd = _handle_to_channel(relayPortHandle)
+    if fwd:
+        hal_data['relay'][channel]['fwd'] = on
+    else:
+        hal_data['relay'][channel]['rev'] = on
 
 def getRelay(relayPortHandle, status):
     status.value = 0
-    assert False
+    if not relayPortHandle:
+        return False
+    channel, fwd = _handle_to_channel(relayPortHandle)
+    if fwd:
+        return hal_data['relay'][channel]['fwd']
+    else:
+        return hal_data['relay'][channel]['rev']
 
 # def setRelayForward(digital_port, on, status):
 #     status.value = 0

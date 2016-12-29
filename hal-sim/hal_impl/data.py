@@ -274,7 +274,7 @@ def _reset_hal_data(hooks):
             'fwd':         OUT(False),
             'rev':         OUT(False),
 
-        }) for _ in range(8)],
+        }) for _ in range(4)],
 
         #Keep track of used MXP dio ports
         'mxp': [{
