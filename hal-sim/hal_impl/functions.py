@@ -818,23 +818,23 @@ def freeDIOPort(dioPortHandle):
 
 def allocateDigitalPWM(status):
     status.value = 0
-    assert False
+    return types.DigitalPWMHandle()
 
 def freeDigitalPWM(pwmGenerator, status):
     status.value = 0
-    assert False
+    hal_data['d0_pwm'][pwmGenerator.pin]['pin'] = None
 
 def setDigitalPWMRate(rate, status):
     status.value = 0
-    assert False
+    hal_data['d0_pwm_rate'] = rate
 
 def setDigitalPWMDutyCycle(pwmGenerator, dutyCycle, status):
     status.value = 0
-    assert False
+    hal_data['d0_pwm'][pwmGenerator.pin]['duty_cycle'] = dutyCycle
 
 def setDigitalPWMOutputChannel(pwmGenerator, channel, status):
     status.value = 0
-    assert False
+    hal_data['d0_pwm'][pwmGenerator.pin]['pin'] = channel
 
 def setDIO(dioPortHandle, value, status):
     status.value = 0
