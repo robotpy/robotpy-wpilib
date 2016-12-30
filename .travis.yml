@@ -11,9 +11,9 @@ script:
 git:
   depth: 200
 notifications:
-  irc:
-    channels:
-    - "chat.freenode.net#robotpy"
-    use_notice: true
-    skip_join: true
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/2fb1c026e64fdd70d27b
     on_success: change
+    on_failure: always
+    on_start: never
