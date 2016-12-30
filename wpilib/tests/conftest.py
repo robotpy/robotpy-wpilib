@@ -1,3 +1,5 @@
+
+import sys
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -6,6 +8,8 @@ def _module_patch(request):
     '''This patch forces wpilib to reload each time we do this'''
     
     assert 'halmock' not in request.fixturenames, "Cannot use mock and real fixtures in same function!"
+    
+    assert 'wpilib' not in sys.modules, "Must use wpilib fixture, don't import wpilib directly"
     
     # .. this seems inefficient
     
@@ -38,6 +42,9 @@ def wpilib(_module_patch, hal, hal_data):
     """Actual wpilib implementation"""
     import wpilib
     return wpilib
+
+    # Note: we don't use wpilib.Resource._reset here because the wpilib module
+    # is freshly loaded each time a new test is ran
 
 @pytest.fixture(scope="function")
 def networktables():

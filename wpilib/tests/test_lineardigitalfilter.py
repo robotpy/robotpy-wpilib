@@ -3,8 +3,6 @@ import pytest
 import random
 from unittest.mock import MagicMock
 
-from wpilib.interfaces.pidsource import PIDSource
-
 # Filter constants taken from Java WPILIB
 # allwpilib/blob/master/wpilibjIntegrationTests/src/main/java/edu/wpi/first/wpilibj/test/TestBench.java
 
@@ -27,7 +25,7 @@ class FilterSource():
         self.pid_idx = 0
 
     def getPIDSourceType(self):
-        return PIDSource.PIDSourceType.kDisplacement
+        assert False
 
     def pidGet(self):
         self.pid_idx += 1
