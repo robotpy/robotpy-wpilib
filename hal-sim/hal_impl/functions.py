@@ -84,7 +84,7 @@ kNumDigitalPWMOutputs = 4 + 2
 kNumEncoders = 8
 kNumInterrupts = 8
 kNumRelayChannels = 8
-kNumRelayHeaders = kNumRelayChannels / 2
+kNumRelayHeaders = int(kNumRelayChannels / 2)
 kNumPCMModules = 63
 kNumSolenoidChannels = 8
 kNumPDPModules = 63
@@ -791,7 +791,19 @@ def _remapSPIChannel(pin):
 
 def initializeDIOPort(portHandle, input, status):
     status.value = 0
-    hal_data['dio'][portHandle.pin]['initialized'] = True
+    if portHandle.pin >= kNumDigitalHeaders:
+        mxp_port = _remapMXPChannel(portHandle.pin)
+        if hal_data["mxp"][mxp_port]["initialized"]:
+            status.value = RESOURCE_IS_ALLOCATED
+            return False
+    dio = hal_data['dio'][portHandle.pin]
+    if dio['initialized']:
+        status.value = RESOURCE_IS_ALLOCATED
+        return False
+    if portHandle.pin >= kNumDigitalHeaders:
+        hal_data["mxp"][mxp_port]["initialized"] = True
+    dio['initialized'] = True
+    dio['is_input'] = input
     return types.DigitalHandle(portHandle)
 
 def checkDIOChannel(channel):
@@ -799,27 +811,30 @@ def checkDIOChannel(channel):
 
 def freeDIOPort(dioPortHandle):
     hal_data['dio'][dioPortHandle.pin]['initialized'] = False
+    if dioPortHandle.pin >= kNumDigitalHeaders:
+        mxp_port = _remapMXPChannel(dioPortHandle.pin)
+        hal_data["mxp"][mxp_port]["initialized"] = False
     dioPortHandle.pin = None
 
 def allocateDigitalPWM(status):
     status.value = 0
-    assert False
+    return types.DigitalPWMHandle()
 
 def freeDigitalPWM(pwmGenerator, status):
     status.value = 0
-    assert False
+    hal_data['d0_pwm'][pwmGenerator.pin]['pin'] = None
 
 def setDigitalPWMRate(rate, status):
     status.value = 0
-    assert False
+    hal_data['d0_pwm_rate'] = rate
 
 def setDigitalPWMDutyCycle(pwmGenerator, dutyCycle, status):
     status.value = 0
-    assert False
+    hal_data['d0_pwm'][pwmGenerator.pin]['duty_cycle'] = dutyCycle
 
 def setDigitalPWMOutputChannel(pwmGenerator, channel, status):
     status.value = 0
-    assert False
+    hal_data['d0_pwm'][pwmGenerator.pin]['pin'] = channel
 
 def setDIO(dioPortHandle, value, status):
     status.value = 0
@@ -995,23 +1010,17 @@ def observeUserProgramTest():
 
 def initializeEncoder(digitalSourceHandleA, analogTriggerTypeA, digitalSourceHandleB, analogTriggerTypeB, reverseDirection, encodingType, status):
     status.value = 0
-    assert False
+    for idx in range(0, len(hal_data['encoder'])):
+        enc = hal_data['encoder'][idx]
+        if enc['initialized'] == False:
+            enc['initialized'] = True
 
-# def initializeEncoder(port_a_module, port_a_pin, port_a_analog_trigger, port_b_module, port_b_pin, port_b_analog_trigger, reverse_direction, status):
-#     status.value = 0
-#     for idx in range(0, len(hal_data['encoder'])):
-#         enc = hal_data['encoder'][idx]
-#         if enc['initialized'] == False:
-#             enc['initialized'] = True
-# 
-#             enc['config'] = {"ASource_Module": port_a_module, "ASource_Channel": port_a_pin, "ASource_AnalogTrigger": port_a_analog_trigger,
-#                              "BSource_Module": port_b_module, "BSource_Channel": port_b_pin, "BSource_AnalogTrigger": port_b_analog_trigger}
-#             enc['reverse_direction'] = reverse_direction
-#             return types.EncoderHandle(idx), idx 
-#         
-#     # I think HAL fails silently.. 
-#     status.value = NO_AVAILABLE_RESOURCES
-#     return None, -1
+            enc['config'] = {"ASource_Channel": digitalSourceHandleA.pin, "ASource_AnalogTrigger": analogTriggerTypeA,
+                             "BSource_Channel": digitalSourceHandleB.pin, "BSource_AnalogTrigger": analogTriggerTypeB}
+            enc['reverse_direction'] = reverseDirection
+            return types.EncoderHandle(idx), idx
+    status.value = NO_AVAILABLE_RESOURCES
+    return None, -1
 
 def freeEncoder(encoder, status):
     status.value = 0
@@ -1052,19 +1061,20 @@ def getEncoderDirection(encoder, status):
 
 def getEncoderDistance(encoderHandle, status):
     status.value = 0
-    assert False
+    enc = hal_data['encoder'][encoder.idx]
+    return enc['count']*enc['distance_per_pulse']
 
 def getEncoderRate(encoderHandle, status):
     status.value = 0
-    assert False
+    return hal_data['encoder'][encoder.idx]['rate']
 
 def setEncoderMinRate(encoderHandle, minRate, status):
     status.value = 0
-    assert False
+    hal_data['encoder'][encoderHandle.idx]['min_rate'] = minRate
 
 def setEncoderDistancePerPulse(encoderHandle, distancePerPulse, status):
     status.value = 0
-    assert False
+    hal_data['encoder'][encoderHandle.idx]['distance_per_pulse'] = distancePerPulse
 
 def setEncoderReverseDirection(encoder, reverse_direction, status):
     status.value = 0
@@ -1080,13 +1090,10 @@ def getEncoderSamplesToAverage(encoder, status):
 
 def setEncoderIndexSource(encoderHandle, digitalSourceHandle, analogTriggerType, type, status):
     status.value = 0
-    assert False
-# def setEncoderIndexSource(encoder, pin, analogTrigger, activeHigh, edgeSensitive, status):
-#     status.value = 0
-#     index_conf = {"IndexSource_Channel": pin, "IndexSource_Module": 0, "IndexSource_AnalogTrigger": analogTrigger,
-#                   "IndexActiveHigh": activeHigh, "IndexEdgeSensitive": edgeSensitive}
-#     hal_data['encoder'][encoder.idx]['config'].update(index_conf)
-    
+    index_conf = {"IndexSource_Channel": digitalSourceHandle.pin, "IndexSource_AnalogTrigger": analogTriggerType,
+                  "IndexType": type}
+    hal_data['encoder'][encoderHandle.idx]['config'].update(index_conf)
+
 def getEncoderFPGAIndex(encoderHandle, status):
     status.value = 0
     assert False
@@ -1097,7 +1104,7 @@ def getEncoderDecodingScaleFactor(encoderHandle, status):
 
 def getEncoderDistancePerPulse(encoderHandle, status):
     status.value = 0
-    assert False
+    return hal_data['encoder'][encoderHandle.idx]['distance_per_pulse']
 
 def getEncoderEncodingType(encoderHandle, status):
     status.value = 0
@@ -1475,23 +1482,51 @@ def getUserCurrentFaults3V3(status):
 # Relay.h
 #############################################################################
 
+def _handle_to_channel(relayPortHandle):
+    channel = int(relayPortHandle.pin/2)
+    return channel, relayPortHandle.pin % 2 == 0
+
 def initializeRelayPort(portHandle, fwd, status):
     status.value = 0
-    assert False
+    pin = portHandle.pin * 2
+    if not fwd:
+        pin = pin + 1
+        hal_data['relay'][portHandle.pin]['rev'] = False
+    else:
+        hal_data['relay'][portHandle.pin]['fwd'] = False
+
+    hal_data['relay'][portHandle.pin]['initialized'] = True
+
+    return types.RelayHandle(pin)
 
 def freeRelayPort(relayPortHandle):
-    assert False
+    channel, fwd = _handle_to_channel(relayPortHandle)
+    if fwd:
+        hal_data['relay'][channel]['fwd'] = False
+    else:
+        hal_data['relay'][channel]['rev'] = False
 
+    
 def checkRelayChannel(channel):
-    assert False
+    return 0 <= channel and channel < kNumRelayHeaders
 
 def setRelay(relayPortHandle, on, status):
     status.value = 0
-    assert False
+    channel, fwd = _handle_to_channel(relayPortHandle)
+    if fwd:
+        hal_data['relay'][channel]['fwd'] = on
+    else:
+        hal_data['relay'][channel]['rev'] = on
 
 def getRelay(relayPortHandle, status):
     status.value = 0
-    assert False
+    if not relayPortHandle:
+        return False
+    channel, fwd = _handle_to_channel(relayPortHandle)
+    if fwd:
+        return hal_data['relay'][channel]['fwd']
+    else:
+        return hal_data['relay'][channel]['rev']
 
 # def setRelayForward(digital_port, on, status):
 #     status.value = 0

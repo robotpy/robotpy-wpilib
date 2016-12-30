@@ -39,80 +39,80 @@ def test_init(wpimock, halmock):
         assert mockthread.Thread.return_value.start.called
         assert ds.mutex == mockthread.RLock.return_value
         mockthread.Condition.assert_called_once_with(ds.mutex)
-        assert ds.dataSem == mockthread.Condition.return_value
-    assert ds.packetDataAvailableMutex == halmock.initializeMutexNormal.return_value
-    assert ds.packetDataAvailableSem == halmock.initializeMultiWait.return_value
-    halmock.HALSetNewDataSem.assert_called_once_with(ds.packetDataAvailableSem)
+        assert ds.dataCond == mockthread.Condition.return_value
     assert ds.userInDisabled == False
     assert ds.userInAutonomous == False
     assert ds.userInTeleop == False
     assert ds.userInTest == False
     assert ds.newControlData == False
-    assert ds.thread_keepalive == True
+    assert ds.threadKeepAlive == True
 
 def test_release(dsmock):
-    assert dsmock.thread_keepalive
+    assert dsmock.threadKeepAlive
     dsmock.release()
-    assert not dsmock.thread_keepalive
+    assert not dsmock.threadKeepAlive
 
 def test_task(dsmock, halmock):
     # exit function after one iteration
-    def unalive(sem, mutex):
-        assert sem == dsmock.packetDataAvailableSem
-        dsmock.thread_keepalive = False
-    halmock.takeMultiWait = unalive
-    dsmock.getData = MagicMock()
-    dsmock.task()
-    assert dsmock.getData.called
-    assert dsmock.dataSem.notify_all.called
+    def unalive():
+        dsmock.threadKeepAlive = False
+    halmock.waitForDSData = unalive
+    halmock.getFPGATime.return_value=1000
+    dsmock._getData = MagicMock()
+    dsmock._run()
+    assert dsmock._getData.called
+    assert dsmock.dataCond.notify_all.called
 
 def test_task_safetyCounter(dsmock, halmock):
     # exit function after 5 iterations
     class unalive:
         def __init__(self):
             self.count = 0
-        def __call__(self, sem, mutex):
+        def __call__(self):
             self.count += 1
             if self.count >= 5:
-                dsmock.thread_keepalive = False
-    halmock.takeMultiWait = unalive()
-    dsmock.getData = MagicMock()
+                dsmock.threadKeepAlive = False
+    halmock.waitForDSData = unalive()
+    dsmock._getData = MagicMock()
     with patch("wpilib.driverstation.MotorSafety") as mocksafety:
-        dsmock.task()
+        dsmock._run()
         assert mocksafety.checkMotors.called
 
 @pytest.mark.parametrize("mode", ["Disabled", "Autonomous", "Teleop", "Test"])
 def test_task_usermode(mode, dsmock, halmock):
     # exit function after one iteration
-    def unalive(sem, mutex):
-        dsmock.thread_keepalive = False
-    halmock.takeMultiWait = unalive
-    dsmock.getData = MagicMock()
+    def unalive():
+        dsmock.threadKeepAlive = False
+    halmock.waitForDSData = unalive
+    dsmock._getData = MagicMock()
     setattr(dsmock, "userIn"+mode, True)
-    dsmock.task()
-    assert getattr(halmock, "HALNetworkCommunicationObserveUserProgram"+mode).called
+    dsmock._run()
+    assert getattr(halmock, "observeUserProgram"+mode).called
 
 def test_waitForData(dsmock):
     dsmock.waitForData()
-    dsmock.dataSem.wait.assert_called_once_with(None)
+    dsmock.dataCond.wait_for.assert_called_once_with(dsmock._waitForDataPredicateFn, None)
 
 def test_waitForData_timeout(dsmock):
     dsmock.waitForData(5.0)
-    dsmock.dataSem.wait.assert_called_once_with(5.0)
+    dsmock.dataCond.wait_for.assert_called_once_with(dsmock._waitForDataPredicateFn, 5.0)
 
 def test_getData(dsmock, halmock):
     halmock.getFPGATime.return_value = 1000
-    dsmock.getData()
-    assert dsmock.newControlData
+    dsmock._getData()
     # TODO: check joystick values
 
 def test_getBatteryVoltage(dsmock, halmock):
     assert dsmock.getBatteryVoltage() == halmock.getVinVoltage.return_value
 
-def test_getStickAxis(dsmock):
-    dsmock.joystickAxes[2][0] = 127
+def test_getStickAxis(dsmock, halmock):
+    dsmock.joystickAxes[2] = MagicMock()
+    dsmock.joystickAxes[2].count = halmock.kMaxJoystickAxes
+    dsmock.joystickAxes[2].axes = [1.0,]
     assert dsmock.getStickAxis(2, 0) == 1.0
-    dsmock.joystickAxes[0][1] = -128
+    dsmock.joystickAxes[0] = MagicMock()
+    dsmock.joystickAxes[0].count = halmock.kMaxJoystickAxes
+    dsmock.joystickAxes[0].axes = [0, -1.0]
     assert dsmock.getStickAxis(0, 1) == -1.0
 
 def test_getStickAxis_limits(dsmock, halmock):
@@ -125,8 +125,10 @@ def test_getStickAxis_limits(dsmock, halmock):
     with pytest.raises(IndexError):
         dsmock.getStickAxis(0, halmock.kMaxJoystickAxes)
 
-def test_getStickPOV(dsmock):
-    dsmock.joystickPOVs[2][0] = 30
+def test_getStickPOV(dsmock, halmock):
+    dsmock.joystickPOVs[2] = MagicMock()
+    dsmock.joystickPOVs[2].count = halmock.kMaxJoystickPOVs
+    dsmock.joystickPOVs[2].povs = [30, ]
     assert dsmock.getStickPOV(2, 0) == 30
 
 def test_getStickPOV_limits(dsmock, halmock):
@@ -153,45 +155,56 @@ def test_getStickButton_limits(dsmock):
         dsmock.getStickButton(dsmock.kJoystickPorts, 1)
 
 def test_getJoystickIsXbox(ds, hal_data):
+    ds.joystickButtons[0] = MagicMock()
+    ds.joystickButtons[0].count = 12
     hal_data['joysticks'][0]['isXbox'] = True
     assert ds.getJoystickIsXbox(0)
     
+    ds.joystickButtons[1] = MagicMock()
+    ds.joystickButtons[1].count = 12
     hal_data['joysticks'][1]['isXbox'] = False
     assert not ds.getJoystickIsXbox(1)
 
 def test_getJoystickName(ds, hal_data):
+    ds.joystickButtons[0] = MagicMock()
+    ds.joystickButtons[0].count = 12
     hal_data['joysticks'][0]['name'] = 'bob'
     assert ds.getJoystickName(0) == 'bob'
 
 def test_isEnabled(dsmock, halmock):
-    halmock.HALGetControlWord.return_value.enabled = 1
+    halmock.getFPGATime.return_value = 1000
+    dsmock.controlWordCache.enabled = 1
     assert dsmock.isEnabled()
-    halmock.HALGetControlWord.return_value.enabled = 0
+    dsmock.controlWordCache.enabled = 0
     assert not dsmock.isEnabled()
 
 def test_isDisabled(dsmock, halmock):
-    halmock.HALGetControlWord.return_value.enabled = 0
+    halmock.getFPGATime.return_value = 1000
+    dsmock.controlWordCache.enabled = 0
     assert dsmock.isDisabled()
-    halmock.HALGetControlWord.return_value.enabled = 1
+    dsmock.controlWordCache.enabled = 1
     assert not dsmock.isDisabled()
 
 def test_isAutonomous(dsmock, halmock):
-    halmock.HALGetControlWord.return_value.autonomous = 1
+    halmock.getFPGATime.return_value = 1000
+    dsmock.controlWordCache.autonomous = 1
     assert dsmock.isAutonomous()
-    halmock.HALGetControlWord.return_value.autonomous = 0
+    dsmock.controlWordCache.autonomous = 0
     assert not dsmock.isAutonomous()
 
 def test_isTest(dsmock, halmock):
-    halmock.HALGetControlWord.return_value.test = 1
+    halmock.getFPGATime.return_value = 1000
+    dsmock.controlWordCache.test = 1
     assert dsmock.isTest()
-    halmock.HALGetControlWord.return_value.test = 0
+    dsmock.controlWordCache.test = 0
     assert not dsmock.isTest()
 
 @pytest.mark.parametrize("auto,test,oper",
         [(0, 0, True), (0, 1, False), (1, 0, False), (1, 1, False)])
 def test_isOperatorControl(auto, test, oper, dsmock, halmock):
-    halmock.HALGetControlWord.return_value.autonomous = auto
-    halmock.HALGetControlWord.return_value.test = test
+    halmock.getFPGATime.return_value = 1000
+    dsmock.controlWordCache.autonomous = auto
+    dsmock.controlWordCache.test = test
     assert dsmock.isOperatorControl() == oper
 
 def test_isNewControlData(dsmock):
@@ -209,7 +222,7 @@ def test_getAlliance(alliance, dsmock, halmock):
         alliance = getattr(halmock, "kHALAllianceStationID_"+alliance)
     else:
         result = dsmock.Alliance.Invalid
-    halmock.HALGetAllianceStation.return_value = alliance
+    halmock.getAllianceStation.return_value = alliance
     assert dsmock.getAlliance() == result
 
 @pytest.mark.parametrize("alliance",
@@ -220,13 +233,14 @@ def test_getLocation(alliance, dsmock, halmock):
         alliance = getattr(halmock, "kHALAllianceStationID_"+alliance)
     else:
         result = 0
-    halmock.HALGetAllianceStation.return_value = alliance
+    halmock.getAllianceStation.return_value = alliance
     assert dsmock.getLocation() == result
 
 def test_isFMSAttached_mock(dsmock, halmock):
-    halmock.HALGetControlWord.return_value.fmsAttached = 1
+    halmock.getFPGATime.return_value = 1000
+    dsmock.controlWordCache.fmsAttached = 1
     assert dsmock.isFMSAttached()
-    halmock.HALGetControlWord.return_value.fmsAttached = 0
+    dsmock.controlWordCache.fmsAttached = 0
     assert not dsmock.isFMSAttached()
     
 def test_isFMSAttached(ds, hal_data):
@@ -237,7 +251,7 @@ def test_isFMSAttached(ds, hal_data):
     assert not ds.isFMSAttached()
 
 def test_getMatchTime(dsmock, halmock):
-    assert dsmock.getMatchTime() == halmock.HALGetMatchTime.return_value
+    assert dsmock.getMatchTime() == halmock.getMatchTime.return_value
 
 def test_InDisabled(dsmock):
     dsmock.InDisabled(True)

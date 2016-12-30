@@ -38,7 +38,7 @@ class SensorBase(LiveWindowSendable):
     kPwmChannels = hal.getNumPWMChannels()
     
     #: Number of relay channels per roboRIO
-    kRelayChannels = hal.getNumRelayChannels()
+    kRelayChannels = hal.getNumRelayHeaders()
     
     #: Number of power distribution channels per PDP
     kPDPChannels = hal.getNumPDPChannels()

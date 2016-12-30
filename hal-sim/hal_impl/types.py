@@ -143,7 +143,9 @@ class NotifierHandle(Handle):
     pass
 
 class RelayHandle(Handle):
-    pass
+    __slots__ = ['pin']
+    def __init__(self, pin):
+        self.pin = pin
 
 class SolenoidHandle(Handle):
     __slots__ = ['pin']

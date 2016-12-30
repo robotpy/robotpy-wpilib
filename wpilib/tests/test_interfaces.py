@@ -49,25 +49,13 @@ def test_GenericHID_Hand(wpilib):
     assert hasattr(wpilib.interfaces.GenericHID.Hand, "kRight")
 
 def test_GenericHID(wpilib):
-    x = wpilib.interfaces.GenericHID()
+    x = wpilib.interfaces.GenericHID(0)
     with pytest.raises(NotImplementedError):
         x.getX()
     with pytest.raises(NotImplementedError):
         x.getY()
     with pytest.raises(NotImplementedError):
-        x.getZ()
-    with pytest.raises(NotImplementedError):
-        x.getTwist()
-    with pytest.raises(NotImplementedError):
-        x.getThrottle()
-    with pytest.raises(NotImplementedError):
         x.getRawAxis(1)
-    with pytest.raises(NotImplementedError):
-        x.getTrigger()
-    with pytest.raises(NotImplementedError):
-        x.getTop()
-    with pytest.raises(NotImplementedError):
-        x.getBumper()
     with pytest.raises(NotImplementedError):
         x.getRawButton(1)
     with pytest.raises(NotImplementedError):

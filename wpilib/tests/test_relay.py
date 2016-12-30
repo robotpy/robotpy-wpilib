@@ -74,11 +74,16 @@ def test_relay_create_error(hal, wpilib):
 
 def test_relay_free(relay, hal, wpilib):
     #wasport = relay._port
-    assert relay.port == relay._port
+    assert relay.forwardHandle == relay._forwardHandle
+    assert relay.reverseHandle == relay._reverseHandle
+
     relay.free()
     
     with pytest.raises(ValueError):
-        _ = relay.port
+        _ = relay.forwardHandle
+    with pytest.raises(ValueError):
+        _ = relay.reverseHandle
+
     #hal.setRelayForward.assert_called_once_with(wasport, False)
     #hal.setRelayReverse.assert_called_once_with(wasport, False)
     #hal.freeDIO.assert_called_once_with(wasport)
