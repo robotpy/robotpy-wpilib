@@ -65,6 +65,12 @@ def halmock(request):
     hal.kHALAllianceStationID_blue1 = 3
     hal.kHALAllianceStationID_blue2 = 4
     hal.kHALAllianceStationID_blue3 = 5
+    hal.AllianceStationID.kRed1 = 0
+    hal.AllianceStationID.kRed2 = 1
+    hal.AllianceStationID.kRed3 = 2
+    hal.AllianceStationID.kBlue1 = 3
+    hal.AllianceStationID.kBlue2 = 4
+    hal.AllianceStationID.kBlue3 = 5
     hal.kMaxJoystickAxes = 12
     hal.kMaxJoystickPOVs = 12
     return hal

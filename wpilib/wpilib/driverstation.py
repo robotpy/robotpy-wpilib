@@ -172,12 +172,11 @@ class DriverStation:
 
         if axis < 0 or axis >= hal.kMaxJoystickAxes:
             raise IndexError("Joystick axis is out of range")
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
         with self.joystickMutex:
-            try:
-                joystickAxes = self.joystickAxes[stick]
-            except IndexError:
-                raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+            joystickAxes = self.joystickAxes[stick]
 
             if axis >= joystickAxes.count:
                 self._reportJoystickUnpluggedWarning("Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick))
@@ -198,12 +197,11 @@ class DriverStation:
         """
         if pov < 0 or pov >= hal.kMaxJoystickPOVs:
             raise IndexError("Joystick POV is out of range")
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
         with self.joystickMutex:
-            try:
-                joystickPOVs = self.joystickPOVs[stick]
-            except IndexError:
-                raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+            joystickPOVs = self.joystickPOVs[stick]
 
             if pov >= joystickPOVs.count:
                 self._reportJoystickUnpluggedWarning("Joystick POV %d on port %d not available, check if controller is plugged in\n" % (pov, stick))
@@ -218,11 +216,11 @@ class DriverStation:
         
         :returns: The state of all buttons, as a bit array.
         """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
         with self.joystickMutex:
-            try:
-                return self.joystickButtons[stick].buttons
-            except IndexError:
-                raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+            return self.joystickButtons[stick].buttons
 
     def getStickButton(self, stick, button):
         """The state of a button on the joystick. Button indexes begin at 1.
@@ -239,7 +237,7 @@ class DriverStation:
 
         with self.joystickMutex:
             joystickButtons = self.joystickButtons[stick]
-            if joystickButtons > joystickButtons.count:
+            if button > joystickButtons.count:
                 self._reportJoystickUnpluggedWarning("Joystick Button %d on port %d not available, check if controller is plugged in" % (button, stick))
                 return False
             if button <= 0:
@@ -255,11 +253,11 @@ class DriverStation:
 
         :returns: The number of axes on the indicated joystick
         """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
         with self.joystickMutex:
-            try:
-                return self.joystickAxes[stick].count
-            except IndexError:
-                raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+            return self.joystickAxes[stick].count
                 
 
     def getStickPOVCount(self, stick):
@@ -270,11 +268,11 @@ class DriverStation:
 
         :returns: The number of POVs on the indicated joystick
         """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
         with self.joystickMutex:
-            try:
-                return self.joystickPOVs[stick].count
-            except IndexError:
-                raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+            return self.joystickPOVs[stick].count
 
     def getStickButtonCount(self, stick):
         """Gets the number of buttons on a joystick
@@ -284,11 +282,11 @@ class DriverStation:
 
         :returns: The number of buttons on the indicated joystick.
         """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
         with self.joystickMutex:
-            try:
-                return self.joystickButtons[stick].count
-            except IndexError:
-                raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+            return self.joystickButtons[stick].count
 
     def getJoystickIsXbox(self, stick):
         """Gets the value of isXbox on a joystick
