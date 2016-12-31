@@ -1,4 +1,4 @@
-# validated: 2016-12-20 JW 69422dc0636c athena/java/edu/wpi/first/wpilibj/Ultrasonic.java
+# validated: 2016-12-31 JW 8f67f2c24cb9 athena/java/edu/wpi/first/wpilibj/Ultrasonic.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -89,8 +89,7 @@ class Ultrasonic(SensorBase):
                 count += 1
                 if u.isEnabled():
                     # do the ping
-                    u.pingChannel.pulse(u.pingChannel.channel,
-                                        Ultrasonic.kPingTime)
+                    u.pingChannel.pulse(Ultrasonic.kPingTime)
                 Timer.delay(.1) # wait for ping to return
             if not count:
                 return
@@ -231,7 +230,7 @@ class Ultrasonic(SensorBase):
         # reset the counter to zero (invalid data now)
         self.counter.reset()
         # do the ping to start getting a single range
-        self.pingChannel.pulse(self.pingChannel.getChannel(), Ultrasonic.kPingTime)
+        self.pingChannel.pulse(Ultrasonic.kPingTime)
 
     def isRangeValid(self):
         """Check if there is a valid range measurement. The ranges are

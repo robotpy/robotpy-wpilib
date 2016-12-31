@@ -1,4 +1,4 @@
-# validated: 2016-12-27 JW 69422dc0636c athena/java/edu/wpi/first/wpilibj/DigitalOutput.java
+# validated: 2016-12-31 JW 8f67f2c24cb9 athena/java/edu/wpi/first/wpilibj/DigitalOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,6 +6,7 @@
 # the project.
 #----------------------------------------------------------------------------
 
+import warnings
 import weakref
 
 import hal
@@ -77,14 +78,16 @@ class DigitalOutput(DigitalSource):
         """
         return self.channel
 
-    def pulse(self, channel, pulseLength):
-        """Generate a single pulse. Write a pulse to the specified digital
-        output channel. There can only be a single pulse going at any time.
+    def pulse(self, pulseLength, *args):
+        """Generate a single pulse. There can only be a single pulse going at any time.
 
-        :param channel: The channel to pulse.
+        :param channel: Unused. Deprecated 2017.1.1.
         :param pulseLength: The length of the pulse.
         :type  pulseLength: float
         """
+        if len(args) > 0:
+            warnings.warn("Use of channel argument is deprecated.", DeprecationWarning)
+            pulseLength = args[0]
         hal.pulse(self.handle, pulseLength)
 
     def isPulsing(self):
