@@ -198,6 +198,18 @@ def _reset_hal_data(hooks):
         'analog_sample_rate': OUT(1024.0), # need a better default
 
         # 8 analog channels, each is a dictionary.
+        
+        'analog_gyro': [NotifyDict({
+            'initialized': OUT(False),
+            'deadband': OUT(0),
+            'volts_per_degree': OUT(0),
+            'offset': OUT(0),
+            'center': OUT(0),
+            
+            'angle': IN(0),
+            'rate': IN(0),
+            
+        }) for _ in range(2)],
 
         'analog_out': [NotifyDict({
             'initialized': OUT(False),

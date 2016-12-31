@@ -299,50 +299,76 @@ def getAccumulatorOutput(analog_port, status):
 
 def initializeAnalogGyro(handle, status):
     status.value = 0
-    assert False
+    handle = types.GyroHandle(handle)
+    
+    try:
+        data = hal_data['analog_gyro'][handle.pin]
+    except IndexError:
+        status.value = PARAMETER_OUT_OF_RANGE
+        return
+        
+    if data['initialized']:
+        status.value = RESOURCE_IS_ALLOCATED
+        return
+    
+    data['initialized'] = True
+    
+    data['offset'] = 0
+    data['deadband'] = 0
+    data['volts_per_degree'] = 0
+    
+    data['angle'] = 0
+    data['rate'] = 0
+    
+    return handle
 
 def setupAnalogGyro(handle, status):
     status.value = 0
-    assert False
+    assert hal_data['analog_gyro'][handle.pin]['initialized']
 
 def freeAnalogGyro(handle):
-    assert False
+    hal_data['analog_gyro'][handle.pin]['initialized'] = False
 
 def setAnalogGyroParameters(handle, voltsPerDegreePerSecond, offset, center, status):
     status.value = 0
-    assert False
+    data = hal_data['analog_gyro'][handle.pin]
+    data['volts_per_degree'] = voltsPerDegreePerSecond
+    data['offset'] = offset
+    data['center'] = center
 
 def setAnalogGyroVoltsPerDegreePerSecond(handle, voltsPerDegreePerSecond, status):
     status.value = 0
-    assert False
+    hal_data['analog_gyro'][handle.pin]['volts_per_degree'] = voltsPerDegreePerSecond
 
 def resetAnalogGyro(handle, status):
     status.value = 0
-    assert False
+    data = hal_data['analog_gyro'][handle.pin]
+    data['rate'] = 0.0
+    data['angle'] = 0.0
 
 def calibrateAnalogGyro(handle, status):
     status.value = 0
-    assert False
+    assert hal_data['analog_gyro'][handle.pin]['initialized']
 
 def setAnalogGyroDeadband(handle, volts, status):
     status.value = 0
-    assert False
+    hal_data['analog_gyro'][handle.pin]['deadband'] = volts 
 
 def getAnalogGyroAngle(handle, status):
     status.value = 0
-    assert False
+    return hal_data['analog_gyro'][handle.pin]['angle'] 
 
 def getAnalogGyroRate(handle, status):
     status.value = 0
-    assert False
+    return hal_data['analog_gyro'][handle.pin]['rate'] 
 
 def getAnalogGyroOffset(handle, status):
     status.value = 0
-    assert False
+    return hal_data['analog_gyro'][handle.pin]['offset'] 
 
 def getAnalogGyroCenter(handle, status):
     status.value = 0
-    assert False
+    return hal_data['analog_gyro'][handle.pin]['center'] 
 
 #############################################################################
 # AnalogInput.h

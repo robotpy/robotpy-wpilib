@@ -132,9 +132,9 @@ class FPGAEncoderHandle(Handle):
     pass
 
 class GyroHandle(Handle):
-    pass
-    #def __init__(self, analoginput):
-    #    self.analoginput = analoginput
+    __slots__ = ['pin']
+    def __init__(self, port):
+        self.pin = port.pin
 
 class InterruptHandle(Handle):
     pass

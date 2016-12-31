@@ -113,7 +113,7 @@ class AnalogGyro(GyroBase):
         if self.analog is None:
             return 0.0
         else:
-           return hal.getAnalogGyroRate(self.gyroHandle)
+            return hal.getAnalogGyroRate(self.gyroHandle)
 
     def getOffset(self):
         """Return the gyro offset value set during calibration to
