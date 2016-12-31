@@ -143,7 +143,7 @@ class Ultrasonic(SensorBase):
         Resource._add_global_resource(self)
 
         Ultrasonic.instances += 1
-        hal.report(hal.HALUsageReporting.kResourceType_Ultrasonic,
+        hal.report(hal.UsageReporting.kResourceType_Ultrasonic,
                       Ultrasonic.instances)
         LiveWindow.addSensor("Ultrasonic", self.echoChannel.getChannel(), self)
 

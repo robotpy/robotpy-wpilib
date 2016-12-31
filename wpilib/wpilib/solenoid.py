@@ -81,8 +81,8 @@ class Solenoid(SolenoidBase):
 
         LiveWindow.addActuatorModuleChannel("Solenoid", moduleNumber, channel,
                                             self)
-        hal.report(hal.HALUsageReporting.kResourceType_Solenoid, channel,
-                      moduleNumber)
+        hal.report(hal.UsageReporting.kResourceType_Solenoid, channel,
+                   moduleNumber)
         
         self.__finalizer = weakref.finalize(self, _freeSolenoid, self._solenoidHandle)
         

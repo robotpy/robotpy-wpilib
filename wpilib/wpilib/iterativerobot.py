@@ -72,8 +72,8 @@ class IterativeRobot(RobotBase):
 
     def startCompetition(self):
         """Provide an alternate "main loop" via startCompetition()."""
-        hal.report(hal.HALUsageReporting.kResourceType_Framework,
-                      hal.HALUsageReporting.kFramework_Iterative)
+        hal.report(hal.UsageReporting.kResourceType_Framework,
+                      hal.UsageReporting.kFramework_Iterative)
 
         self.robotInit()
 

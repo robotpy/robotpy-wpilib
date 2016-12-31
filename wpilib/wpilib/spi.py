@@ -76,7 +76,7 @@ class SPI:
         self.__finalizer = weakref.finalize(self, _freeSPI, self._port)
 
         SPI.devices += 1
-        hal.report(hal.HALUsageReporting.kResourceType_SPI, SPI.devices)
+        hal.report(hal.UsageReporting.kResourceType_SPI, SPI.devices)
     
     @property
     def port(self):

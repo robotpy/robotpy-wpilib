@@ -45,8 +45,8 @@ class SmartDashboard:
         if SmartDashboard.table is None:
             from networktables import NetworkTable
             SmartDashboard.table = NetworkTable.getTable("SmartDashboard")
-            hal.HALReport(hal.HALUsageReporting.kResourceType_SmartDashboard,
-                          hal.HALUsageReporting.kSmartDashboard_Instance)
+            hal.report(hal.UsageReporting.kResourceType_SmartDashboard,
+                       hal.UsageReporting.kSmartDashboard_Instance)
         return SmartDashboard.table
 
     @staticmethod

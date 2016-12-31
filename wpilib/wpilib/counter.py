@@ -144,10 +144,9 @@ class Counter(SensorBase):
 
         self.setMaxPeriod(.5)
 
-        hal.report(hal.HALUsageReporting.kResourceType_Counter, self.index,
-                      mode)
+        hal.report(hal.UsageReporting.kResourceType_Counter, self.index, mode)
 
-        #Set sources
+        # Set sources
         if upSource is not None:
             self.setUpSource(upSource)
         else:

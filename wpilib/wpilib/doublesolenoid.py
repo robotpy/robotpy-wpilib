@@ -95,9 +95,9 @@ class DoubleSolenoid(SolenoidBase):
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
-        hal.report(hal.HALUsageReporting.kResourceType_Solenoid,
+        hal.report(hal.UsageReporting.kResourceType_Solenoid,
                       forwardChannel, moduleNumber)
-        hal.report(hal.HALUsageReporting.kResourceType_Solenoid,
+        hal.report(hal.UsageReporting.kResourceType_Solenoid,
                       reverseChannel, moduleNumber)
 
         LiveWindow.addActuatorModuleChannel("DoubleSolenoid", moduleNumber,

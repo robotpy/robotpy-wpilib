@@ -36,7 +36,7 @@ class DigitalOutput(DigitalSource):
         self._pwmGenerator = None
         self._pwmGenerator_finalizer = None
 
-        hal.report(hal.HALUsageReporting.kResourceType_DigitalOutput,
+        hal.report(hal.UsageReporting.kResourceType_DigitalOutput,
                       channel)
 
     @property

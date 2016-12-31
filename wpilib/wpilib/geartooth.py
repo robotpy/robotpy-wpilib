@@ -41,11 +41,11 @@ class GearTooth(Counter):
         self.enableDirectionSensing(directionSensitive)
         if hasattr(self.upSource, "getChannel"):
             if directionSensitive:
-                hal.HALReport(hal.HALUsageReporting.kResourceType_GearTooth,
-                              self.upSource.getChannel(), 0, "D")
+                hal.report(hal.UsageReporting.kResourceType_GearTooth,
+                           self.upSource.getChannel(), 0, "D")
             else:
-                hal.HALReport(hal.HALUsageReporting.kResourceType_GearTooth,
-                              self.upSource.getChannel(), 0)
+                hal.report(hal.UsageReporting.kResourceType_GearTooth,
+                           self.upSource.getChannel(), 0)
         LiveWindow.addSensorChannel("GearTooth", self.upSource.getChannel(),
                                     self)
 

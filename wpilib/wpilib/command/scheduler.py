@@ -48,8 +48,8 @@ class Scheduler(Sendable):
     def __init__(self):
         """Instantiates a Scheduler.
         """
-        hal.report(hal.HALUsageReporting.kResourceType_Command,
-                      hal.HALUsageReporting.kCommand_Scheduler)
+        hal.report(hal.UsageReporting.kResourceType_Command,
+                   hal.UsageReporting.kCommand_Scheduler)
 
         # Active Commands
         self.commandTable = collections.OrderedDict()

@@ -149,8 +149,8 @@ class RobotBase:
         """Starting point for the applications."""
         RobotBase.initializeHardwareConfiguration()
 
-        hal.report(hal.HALUsageReporting.kResourceType_Language,
-                   hal.HALUsageReporting.kLanguage_Python)
+        hal.report(hal.UsageReporting.kResourceType_Language,
+                   hal.UsageReporting.kLanguage_Python)
 
         try:
             robot = robot_cls()

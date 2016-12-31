@@ -34,7 +34,7 @@ class DigitalInput(DigitalSource):
         # This is different from the Java implementation
         super().__init__(channel, True)
 
-        hal.report(hal.HALUsageReporting.kResourceType_DigitalInput,
+        hal.report(hal.UsageReporting.kResourceType_DigitalInput,
                       channel)
         LiveWindow.addSensor("DigitalInput", channel, self)
 

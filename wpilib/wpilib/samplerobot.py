@@ -122,8 +122,8 @@ class SampleRobot(RobotBase):
         change, either the other mode starts or the robot is disabled. Then
         go back and wait for the robot to be enabled again.
         """
-        hal.report(hal.HALUsageReporting.kResourceType_Framework,
-                   hal.HALUsageReporting.kFramework_Sample)
+        hal.report(hal.UsageReporting.kResourceType_Framework,
+                   hal.UsageReporting.kFramework_Sample)
 
         self.robotInit()
         

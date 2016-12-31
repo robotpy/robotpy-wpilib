@@ -134,8 +134,8 @@ class PIDController(LiveWindowSendable):
         Resource._add_global_resource(self)
 
         PIDController.instances += 1
-        hal.HALReport(hal.HALUsageReporting.kResourceType_PIDController,
-                      PIDController.instances)
+        hal.report(hal.UsageReporting.kResourceType_PIDController,
+                   PIDController.instances)
 
     def free(self):
         """Free the PID object"""

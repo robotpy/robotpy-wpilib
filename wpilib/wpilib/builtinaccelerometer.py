@@ -29,7 +29,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
         :type  range: :class:`.Accelerometer.Range`
         """
         self.setRange(range)
-        hal.report(hal.HALUsageReporting.kResourceType_Accelerometer, 0, 0,
+        hal.report(hal.UsageReporting.kResourceType_Accelerometer, 0, 0,
                       "Built-in accelerometer")
         LiveWindow.addSensor("BuiltInAccel", 0, self)
 

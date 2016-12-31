@@ -33,8 +33,8 @@ class DigitalGlitchFilter(SensorBase):
                 if not v:
                     self.channelIndex = i
                     self.filterAllocated[i] = True
-                    hal.report(hal.HALUsageReporting.kResourceType_DigitalFilter,
-                                  self.channelIndex, 0)
+                    hal.report(hal.UsageReporting.kResourceType_DigitalFilter,
+                               self.channelIndex, 0)
                     break
             else:
                 raise ValueError("No more filters available")

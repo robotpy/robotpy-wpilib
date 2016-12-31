@@ -87,7 +87,7 @@ class Preferences:
             reader.start()
             self.fileLock.wait()
 
-        hal.HALReport(hal.HALUsageReporting.kResourceType_Preferences, 0)
+        hal.report(hal.UsageReporting.kResourceType_Preferences, 0)
 
     def getKeys(self):
         """:returns: a list of the keys

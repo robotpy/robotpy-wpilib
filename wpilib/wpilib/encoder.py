@@ -204,7 +204,7 @@ class Encoder(SensorBase):
         if self.indexSource is not None:
             self.setIndexSource(self.indexSource)
 
-        hal.report(hal.HALUsageReporting.kResourceType_Encoder,
+        hal.report(hal.UsageReporting.kResourceType_Encoder,
                       self.index, encodingType)
         LiveWindow.addSensorChannel("Encoder", aSource.getChannel(),
                                     self)

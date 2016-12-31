@@ -67,7 +67,7 @@ class I2C:
         hal.initializeI2C(self._port)
         self.__finalizer = weakref.finalize(self, _freeI2C, self._port)
 
-        hal.report(hal.HALUsageReporting.kResourceType_I2C, deviceAddress)
+        hal.report(hal.UsageReporting.kResourceType_I2C, deviceAddress)
     
     @property
     def port(self):
