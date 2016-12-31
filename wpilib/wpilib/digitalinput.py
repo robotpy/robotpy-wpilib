@@ -51,7 +51,7 @@ class DigitalInput(DigitalSource):
         :returns: the state of the digital input
         :rtype: bool
         """
-        return hal.getDIO(self.port)
+        return hal.getDIO(self.handle)
 
     def getChannel(self):
         """Get the channel of the digital input.
@@ -75,6 +75,7 @@ class DigitalInput(DigitalSource):
         :returns: true if this is an analog trigger
         :rtype: bool
         """
+        return False
 
     def getPortHandleForRouting(self):
         """Get the HAL Port Handle.
