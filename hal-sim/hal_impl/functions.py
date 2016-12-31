@@ -3,7 +3,6 @@ from hal import constants
 from . import types
 
 import operator
-import threading
 
 from . import data
 from .data import hal_data
@@ -13,7 +12,6 @@ import logging
 logger = logging.getLogger('hal')
 
 hooks = SimHooks()
-sleep = hooks.delaySeconds
 
 def reset_hal():
     data._reset_hal_data(hooks)
@@ -95,6 +93,9 @@ kAccumulatorChannels = [0, 1]
 #############################################################################
 # HAL
 #############################################################################
+
+def sleep(s):
+    hooks.delaySeconds(s)
 
 def getPort(pin):
     return getPortWithModule(0, pin)
@@ -1007,12 +1008,11 @@ def getMatchTime(status):
         return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
 
 def waitForDSData():
-    with data.hal_newdata_cond:
-        data.hal_newdata_cond.wait()
+    with hooks.ds_cond:
+        hooks.ds_cond.wait()
 
 def initializeDriverStation():
-    if data.hal_newdata_cond is None:
-        data.hal_newdata_cond = threading.Condition()
+    hooks.initializeDriverStation()
 
 def observeUserProgramStarting():
     hal_data['user_program_state'] = 'starting'

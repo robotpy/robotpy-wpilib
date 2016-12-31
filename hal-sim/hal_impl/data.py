@@ -22,11 +22,7 @@ hal_in_data = {
     # don't fill this out
 }
 
-
-#: A python condition object that is notified when driver station related
-#: data has been updated
-hal_newdata_cond = None
-
+hooks = None
 
 
 class NotifyDict(dict):
@@ -89,7 +85,7 @@ class OUT:
     def __init__(self, value):
         self.value = value
 
-def _reset_hal_data(hooks):
+def _reset_hal_data(current_hooks):
     '''
         Intended to be used by the test runner or simulator. Don't call this
         directly, instead call hal_impl.reset_hal()
@@ -110,8 +106,9 @@ def _reset_hal_data(hooks):
         .. warning:: Don't put invalid floats in here, or this structure
                      is no longer JSON serializable!
     '''
-    global hal_data, hal_newdata_cond
-    hal_newdata_cond = None
+    global hal_data, hooks
+    hooks = current_hooks
+    hooks.ds_cond = None
     
     hal_data.clear()
     hal_in_data.clear()

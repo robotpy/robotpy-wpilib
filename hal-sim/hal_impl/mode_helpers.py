@@ -9,7 +9,7 @@ from . import functions as fns
 def notify_new_ds_data():
     '''Called when driver station data is modified'''
     
-    cond = data.hal_newdata_cond
+    cond = data.hooks.ds_cond
     
     if cond is not None:
         with cond:

@@ -1,5 +1,7 @@
 
+import threading
 import time
+
 from .data import hal_data
 
 class SimHooks:
@@ -8,6 +10,10 @@ class SimHooks:
     
         To use your own hook, set hal_impl.functions.hooks
     '''
+    
+    #: A python condition object that is notified when driver station related
+    #: data has been updated
+    ds_cond = None
     
     #
     # Hook functions
@@ -25,9 +31,6 @@ class SimHooks:
     def delaySeconds(self, s):
         time.sleep(s)
         
-        
-    
-    
-    
-    
-    
+    def initializeDriverStation(self):
+        if self.ds_cond is None:
+            self.ds_cond = threading.Condition()
