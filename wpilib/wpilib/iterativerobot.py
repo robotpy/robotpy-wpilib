@@ -138,7 +138,7 @@ class IterativeRobot(RobotBase):
                     self.disabledInitialized = False
                 hal.observeUserProgramTeleop()
                 self.teleopPeriodic()
-            robotPeriodic()
+            self.robotPeriodic()
 
     # ----------- Overridable initialization code -----------------
 
