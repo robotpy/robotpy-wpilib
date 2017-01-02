@@ -1,6 +1,6 @@
-# validated: 2015-12-24 DS 6d854af shared/java/edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
+# validated: 2017-01-02 DV c3160bad4463 shared/java/edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -46,11 +46,8 @@ class SendableChooser(Sendable):
     def __init__(self):
         """Instantiates a SendableChooser.
         """
-        from networktables import StringArray
-        self.choices = StringArray()
-        self.values = []
+        self.map = {}
         self.defaultChoice = None
-        self.defaultValue = None
 
     def addObject(self, name, object):
         """Adds the given object to the list of options. On the
@@ -64,16 +61,11 @@ class SendableChooser(Sendable):
         if self.defaultChoice is None:
             self.addDefault(name, object)
             return
-        for i, choice in enumerate(self.choices):
-            if choice == name:
-                self.values[i] = object
-                return
-        # not found
-        self.choices.append(name)
-        self.values.append(object)
+        self.map[name] = object
+
         table = self.getTable()
         if table is not None:
-            table.putValue(self.OPTIONS, self.choices)
+            table.putValue(self.OPTIONS, self.map.keys())
 
     def addDefault(self, name, object):
         """Add the given object to the list of options and marks it as the
@@ -87,7 +79,6 @@ class SendableChooser(Sendable):
         if name is None:
             raise ValueError("Name cannot be None")
         self.defaultChoice = name
-        self.defaultValue = object
         table = self.getTable()
         if table is not None:
             table.putString(self.DEFAULT, self.defaultChoice)
@@ -102,12 +93,9 @@ class SendableChooser(Sendable):
         """
         table = self.getTable()
         if table is None:
-            return self.defaultValue
+            return self.map[self.defaultChoice]
         selected = table.getString(self.SELECTED, None)
-        for i, choice in enumerate(self.choices):
-            if choice == selected:
-                return self.values[i]
-        return self.defaultValue
+        return self.map.get(selected, self.map[self.defaultChoice])
 
     def getSmartDashboardType(self):
         return "String Chooser"
@@ -115,6 +103,6 @@ class SendableChooser(Sendable):
     def initTable(self, table):
         self.table = table
         if table is not None:
-            table.putValue(self.OPTIONS, self.choices)
+            table.putValue(self.OPTIONS, self.map.keys())
             if self.defaultChoice is not None:
                 table.putString(self.DEFAULT, self.defaultChoice)
