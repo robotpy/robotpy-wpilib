@@ -13,14 +13,14 @@ setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')
 base_package = 'hal_impl'
 version_file = join(setup_dir, base_package, 'version.py')
-hal_version = '2017.1.1-beta-3-20161121010851'
+hal_version = '2017.1.1-rc-2'
 
 #
 # Code for downloading/extracting HAL shared library files
 # - Used by wpilib tests
 #
 
-hal_site = 'http://first.wpi.edu/FRC/roborio/maven/development/edu/wpi/first/wpilib/athena-runtime'
+hal_site = 'http://first.wpi.edu/FRC/roborio/maven/release/edu/wpi/first/wpilib/athena-runtime'
 hal_zip = 'athena-runtime-%s.zip' % hal_version
 
 hal_base_files = [
