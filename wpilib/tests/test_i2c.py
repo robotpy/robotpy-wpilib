@@ -56,9 +56,6 @@ def test_i2c(wpilib):
     
     assert i2c.readOnly(7) == [0x24]*7
     
-    with pytest.raises(NotImplementedError):
-        i2c.broadcast(1,2)
-    
     # TODO: test verifySensor
     
     i2c.free()

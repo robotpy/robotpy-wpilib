@@ -1,4 +1,4 @@
-# validated: 2016-12-24 JW e44a6e227a89 athena/java/edu/wpi/first/wpilibj/I2C.java
+# validated: 2016-12-31 JW 8f67f2c24cb9 athena/java/edu/wpi/first/wpilibj/I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -178,17 +178,6 @@ class I2C:
         if count < 1:
             raise ValueError("count must be at least 1, %s given" % count)
         return hal.readI2C(self.port, self.deviceAddress, count)
-
-    def broadcast(self, registerAddress, data):
-        """Send a broadcast write to all devices on the I2C bus.
-
-        .. warning:: This is not currently implemented!
-
-        :param registerAddress:
-            The register to write on all devices on the bus.
-        :param data: The value to write to the devices.
-        """
-        raise NotImplementedError
 
     def verifySensor(self, registerAddress, expected):
         """Verify that a device's registers contain expected values.

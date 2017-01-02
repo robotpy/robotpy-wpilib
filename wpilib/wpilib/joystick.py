@@ -1,4 +1,4 @@
-# validated: 2016-12-01 AA 140c365e4b99 athena/java/edu/wpi/first/wpilibj/Joystick.java
+# validated: 2016-12-31 JW 8f67f2c24cb9 athena/java/edu/wpi/first/wpilibj/Joystick.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
