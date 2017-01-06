@@ -2,6 +2,8 @@
 # These are opaque types used internally by the simulation HAL
 #
 
+from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
+
 __all__ = [
     "ControlWord", "ControlWord_ptr",
     "JoystickAxes", "JoystickAxes_ptr",
@@ -54,14 +56,29 @@ ControlWord_ptr = fake_pointer(ControlWord)
 
 class JoystickAxes:
     __slots__ = ['count', 'axes']
+    
+    def __init__(self):
+        self.count = 0
+        self.axes = [0]*kMaxJoystickAxes
+    
 JoystickAxes_ptr = fake_pointer(JoystickAxes)
 
 class JoystickPOVs:
     __slots__ = ['count', 'povs']
+    
+    def __init__(self):
+        self.count = 0
+        self.povs = [0]*kMaxJoystickPOVs
+    
 JoystickPOVs_ptr = fake_pointer(JoystickPOVs)
 
 class JoystickButtons:
     __slots__ = ['buttons', 'count']
+    
+    def __init__(self):
+        self.count = 0
+        self.buttons = 0
+    
 JoystickButtons_ptr = fake_pointer(JoystickButtons)
 
 class JoystickDescriptor:
