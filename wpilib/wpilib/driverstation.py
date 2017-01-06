@@ -623,7 +623,7 @@ class DriverStation:
                 self.waitForDataPredicate = True
                 self.dataCond.notify_all()
             
-            with self.mutex:
+            #with self.mutex: # dataCond already holds the mutex
                 self.newControlData = True
             
             safetyCounter += 1
