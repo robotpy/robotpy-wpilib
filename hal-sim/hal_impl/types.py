@@ -103,47 +103,76 @@ class PortHandle(Handle):
     def __init__(self, pin, module):
         self.pin = pin
         self.module = module
+        
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s module=%s>" % (self.__class__.__qualname__, id(self),
+                                                  self.pin, self.module)
 
 class AnalogInputHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
+        
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
 
 class AnalogOutputHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
+    
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
 
 class AnalogTriggerHandle(Handle):
     __slots__ = ['pin', 'index']
     def __init__(self, port, index):
         self.pin = port.pin
         self.index = index
+    
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s index=%s>" % (type(self).__qualname__, id(self),
+                                                 self.pin, self.index)
 
 class CompressorHandle(Handle):
     __slots__ = ['module']
     def __init__(self, module):
         self.module = module
+        
+    def __repr__(self):
+        return "<%s at 0x%x module=%s>" % (type(self).__qualname__, id(self), self.module)
 
 class CounterHandle(Handle):
     __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
+        
+    def __repr__(self):
+        return "<%s at 0x%x idx=%s>" % (type(self).__qualname__, id(self), self.idx)
 
 class DigitalHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
+    
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
 
 class DigitalPWMHandle(Handle):
     __slots__ = ['pin', 'portHandle']
     def __init__(self, portHandle):
         self.pin = portHandle.pin
+        
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
 
 class EncoderHandle(Handle):
     __slots__ = ['idx']
     def __init__(self, idx):
         self.idx = idx
+    
+    def __repr__(self):
+        return "<%s at 0x%x idx=%s>" % (type(self).__qualname__, id(self), self.idx)
 
 class FPGAEncoderHandle(Handle):
     pass
@@ -152,6 +181,9 @@ class GyroHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
+        
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
 
 class InterruptHandle(Handle):
     pass
@@ -163,9 +195,15 @@ class RelayHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, pin):
         self.pin = pin
+        
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
 
 class SolenoidHandle(Handle):
     __slots__ = ['pin']
     def __init__(self, port):
         self.pin = port.pin
+        
+    def __repr__(self):
+        return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
 
