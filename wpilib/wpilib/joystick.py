@@ -367,4 +367,4 @@ class Joystick(JoystickBase):
 
     def flush_outputs(self):
         """Flush all joystick HID & rumble output values to the HAL"""
-        hal.HALSetJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
+        hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
