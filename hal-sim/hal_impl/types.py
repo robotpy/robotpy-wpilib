@@ -51,7 +51,15 @@ def fake_pointer(orig_obj, name=None):
 #############################################################################
 
 class ControlWord:
-    pass
+    
+    def __init__(self):
+        self.enabled = 0
+        self.autonomous = 0
+        self.test = 0
+        self.eStop = 0
+        self.fmsAttached = 0
+        self.dsAttached = 0
+    
 ControlWord_ptr = fake_pointer(ControlWord)
 
 class JoystickAxes:
