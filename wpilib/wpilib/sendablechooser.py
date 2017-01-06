@@ -65,7 +65,7 @@ class SendableChooser(Sendable):
 
         table = self.getTable()
         if table is not None:
-            table.putValue(self.OPTIONS, self.map.keys())
+            table.putStringArray(self.OPTIONS, self.map.keys())
 
     def addDefault(self, name, object):
         """Add the given object to the list of options and marks it as the
@@ -103,6 +103,6 @@ class SendableChooser(Sendable):
     def initTable(self, table):
         self.table = table
         if table is not None:
-            table.putValue(self.OPTIONS, self.map.keys())
+            table.putStringArray(self.OPTIONS, self.map.keys())
             if self.defaultChoice is not None:
                 table.putString(self.DEFAULT, self.defaultChoice)
