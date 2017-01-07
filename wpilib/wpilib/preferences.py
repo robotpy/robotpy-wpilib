@@ -87,7 +87,7 @@ class Preferences:
         """
         if '"' in value:
             raise ValueError("Can not put string: '%s' because it contains quotation marks" % value)
-        self.table.put(key, value)
+        self.table.putString(key, value)
         self.table.setPersistent(key)
 
     def putInt(self, key, value):
@@ -137,22 +137,8 @@ class Preferences:
 
     def __setitem__(self, key, value):
         """Python style setting of key/value."""
-        if isinstance(value, str):
-            self.table.putString(key, value)
-
-        else:
-            self.table.put(key, str(value))
-
-    def get(self, key, d=None):
-        """Returns the value at the given key.
-
-        :param key: the key
-        :param d: the return value if the key doesn't exist (default is None)
-        :returns: the value (or d/None if none exists)
-        """
-        with self.lock:
-            return self.values.get(key, d)
-
+        self.table.putString(key, str(value))
+  
     def containsKey(self, key):
         """Returns whether or not there is a key with the given name.
 
@@ -177,7 +163,7 @@ class Preferences:
         """
         self.table.delete(key)
 
-    def getString(self, key, backup):
+    def getString(self, key, backup=None):
         """Returns the string at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -187,7 +173,7 @@ class Preferences:
         """
         return self.table.getString(key, backup)
 
-    def getInt(self, key, backup):
+    def getInt(self, key, backup=None):
         """Returns the int at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -196,12 +182,9 @@ class Preferences:
         :returns: either the value in the table, or the backup
         :raises: TableKeyNotDefinedException if key cannot be found
         """
-        try:
-            return self.table.getNumber(key)
-        except NetworkTables.TableKeyNotDefinedException:
-            return backup
+        return self.table.getNumber(key, backup)
 
-    def getFloat(self, key, backup):
+    def getFloat(self, key, backup=None):
         """Returns the float at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -210,12 +193,9 @@ class Preferences:
         :returns: either the value in the table, or the backup
         :raises: TableKeyNotDefinedException if key cannot be found
         """
-        try:
-            return self.table.getNumber(key)
-        except NetworkTables.TableKeyNotDefinedException:
-            return backup
+        return self.table.getNumber(key, backup)
 
-    def getBoolean(self, key, backup):
+    def getBoolean(self, key, backup=None):
         """Returns the boolean at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
