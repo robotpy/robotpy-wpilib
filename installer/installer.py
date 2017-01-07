@@ -24,7 +24,8 @@ import inspect
 import os
 import socket
 import string
-from os.path import abspath, basename, dirname, exists, isdir, join, relpath
+from os.path import abspath, basename, dirname, expanduser, exists, isdir, join, relpath
+import re
 import shutil
 import subprocess
 import sys
@@ -360,8 +361,19 @@ def ssh_from_cfg(cfg_filename, username, password, hostname=None, allow_mitm=Fal
     if dirty:
         with open(cfg_filename, 'w') as fp:
             cfg.write(fp)
+        
+    # see if an ssh alias exists    
+    try:
+        with open(join(expanduser('~'), '.ssh', 'config')) as fp:
+            hn = hostname.lower()
+            for line in fp:
+                if re.match(r'\s*host\s+%s\s*' % hn, line.lower()):
+                    no_resolve = True
+                    break
             
-    
+    except Exception:
+        raise
+        
     
     if not no_resolve:
         try:
