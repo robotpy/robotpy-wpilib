@@ -5,7 +5,10 @@ import time
 
 __all__ = ["_dll", "_RETFUNC", "_VAR", "sleep"]
 
-_dll = C.CDLL(os.path.join(os.path.dirname(sys.modules['hal_impl'].__file__), "libHALAthena.so"), use_errno=True)
+_module_path = os.path.dirname(sys.modules['hal_impl'].__file__)
+
+C.CDLL(os.path.join(_module_path, "libwpiutil.so"))
+_dll = C.CDLL(os.path.join(_module_path, "libHALAthena.so"), use_errno=True)
 sleep = time.sleep
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
@@ -27,7 +30,7 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
         c_name = 'HAL_%s%s' % (name[0].upper(), name[1:])
             
     try:
-        func = prototype((name, library), tuple(paramflags))
+        func = prototype((c_name, library), tuple(paramflags))
         if errcheck is not None:
             func.errcheck = errcheck
     except AttributeError:

@@ -13,7 +13,7 @@ setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')
 base_package = 'hal_impl'
 version_file = join(setup_dir, base_package, 'version.py')
-hal_version = '2017.1.1-rc-2'
+hal_version = '2017.1.1'
 
 #
 # Code for downloading/extracting HAL shared library files

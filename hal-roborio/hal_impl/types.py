@@ -39,22 +39,22 @@ class ControlWord(C.Structure):
                 ("fmsAttached", C.c_uint32, 1),
                 ("dsAttached", C.c_uint32, 1),
                 ("control_reserved", C.c_uint32, 26)]
-HALControlWord_ptr = C.POINTER(HALControlWord)
+ControlWord_ptr = C.POINTER(ControlWord)
 
 class JoystickAxes(C.Structure):
     _fields_ = [("count", C.c_uint16),
                 ("axes", C.c_float * kMaxJoystickAxes)]
-HALJoystickAxes_ptr = C.POINTER(HALJoystickAxes)
+JoystickAxes_ptr = C.POINTER(JoystickAxes)
 
 class JoystickPOVs(C.Structure):
     _fields_ = [("count", C.c_uint16),
                 ("povs", C.c_int16 * kMaxJoystickPOVs)]
-HALJoystickPOVs_ptr = C.POINTER(HALJoystickPOVs)
+JoystickPOVs_ptr = C.POINTER(JoystickPOVs)
 
 class JoystickButtons(C.Structure):
     _fields_ = [("buttons", C.c_uint32),
                 ("count", C.c_uint8)]
-HALJoystickButtons_ptr = C.POINTER(HALJoystickButtons)
+JoystickButtons_ptr = C.POINTER(JoystickButtons)
 
 class JoystickDescriptor(C.Structure):
     _fields_ = [("isXbox", C.c_uint8),
@@ -64,7 +64,7 @@ class JoystickDescriptor(C.Structure):
                 ("axisTypes", C.c_uint8 * kMaxJoystickAxes),
                 ("buttonCount", C.c_uint8),
                 ("povCount", C.c_uint8)]
-HALJoystickDescriptor_ptr = C.POINTER(HALJoystickDescriptor)
+JoystickDescriptor_ptr = C.POINTER(JoystickDescriptor)
 
 #############################################################################
 # Handles
