@@ -67,6 +67,7 @@ from .ultrasonic import *
 from .utility import *
 from .victor import *
 from .victorsp import *
+from .xboxcontroller import *
 
 from ._impl.main import run
 

@@ -20,7 +20,7 @@ class GenericHID:
         kLeftRumble = 0
 
         #: Right Hand
-        kRightRumble = 0
+        kRightRumble = 1
 
     class HIDType:
         kUnknown = -1
