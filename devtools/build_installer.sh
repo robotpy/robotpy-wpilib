@@ -43,9 +43,7 @@ cp installer.rst $rpy_tmpdir/installer.txt
 cp win32/plink.exe $rpy_tmpdir/win32
 cp win32/psftp.exe $rpy_tmpdir/win32
 
-# copy examples (but only the ones that are checked in!)
 popd
-git archive HEAD examples | tar -x -C $rpy_tmpdir
 
 pushd $rpy_tmpdir
 find *
