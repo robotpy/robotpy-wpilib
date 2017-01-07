@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 from os.path import dirname, exists, join
 import sys, subprocess
 from setuptools import find_packages, setup
@@ -49,7 +50,7 @@ setup(
     url='https://github.com/robotpy/robotpy-wpilib',
     keywords='frc first robotics wpilib',
     packages=find_packages(),
-    install_requires=['pynetworktables>=2017.0.0a1'],
+    install_requires=['pynetworktables>=2017.0.0a1'] if not os.environ.get('ROBOTPY_NO_DEPS') else None,
     license="BSD License",
     classifiers=[
         "Development Status :: 5 - Production/Stable",

@@ -1,11 +1,15 @@
 language: python
+sudo: false
+env:
+  - RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
 python:
   - "3.4"
   - "3.5"
   - "3.6"
 # command to install dependencies
 install:
-  - "pushd wpilib; pip install -r testing-requirements.txt; popd"
+  - pip install -U pip
+  - "pushd wpilib; pip install -r travis-requirements.txt; popd"
 # command to run tests
 script:
   - wpilib/tests/run_tests.sh
