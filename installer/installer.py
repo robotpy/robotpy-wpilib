@@ -672,8 +672,8 @@ class RobotpyInstaller(object):
 
     def _get_opkg(self):
         opkg = OpkgRepo(self.opkg_cache, self.opkg_arch)
-        opkg.add_feed('http://www.tortall.net/~robotpy/feeds/2016')
-        opkg.add_feed("http://download.ni.com/ni-linux-rt/feeds/2015/arm/ipk/cortexa9-vfpv3")
+        opkg.add_feed('http://www.tortall.net/~robotpy/feeds/2017')
+        opkg.add_feed("http://download.ni.com/ni-linux-rt/feeds/2016/arm/ipk/cortexa9-vfpv3")
         return opkg
 
     def set_hostname(self, hostname):
@@ -725,7 +725,7 @@ class RobotpyInstaller(object):
     def _create_rpy_opkg_options(self, options):
         # Construct an appropriate line to install
         options.requirement = []
-        options.packages = ['python3']
+        options.packages = ['python36', 'netconsole-host']
         options.upgrade = True
 
         options.force_reinstall = False
