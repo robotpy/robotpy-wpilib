@@ -11,41 +11,35 @@ import pytest
 hal_dir = abspath(join(dirname(__file__), '__hal__'))
 hal_version_file = join(hal_dir, 'version')
 
-hal_setup_py = abspath(join(dirname(__file__), '..', '..', 'hal-roborio', 'setup.py'))
+hal_distutils_file = abspath(join(dirname(__file__),
+                             '..', '..',
+                             'hal-roborio', 'hal_impl', 'distutils.py'))
 
 def _download_hal_includes():
     
-    hal_setup = importlib.machinery.SourceFileLoader('hal_setup_py',
-                                                     hal_setup_py).load_module()
+    hal_distutils = importlib.machinery.SourceFileLoader('hal_setup_py',
+                                                         hal_distutils_file).load_module()
+    hal_version = hal_distutils.hal_version
     
-    print("Using HAL", hal_setup.hal_version)
+    print("Using HAL", hal_distutils.hal_version)
     print()
     
     if exists(hal_dir):
         # find the version
         if exists(hal_version_file):
             with open(hal_version_file) as fp:
-                hal_version = fp.read().strip()
-                
-            if hal_version == hal_setup.hal_version:
-                return
-            
+                if hal_version == fp.read().strip():
+                    return
+        
         # Nope, gotta download a new distribution
         shutil.rmtree(hal_dir)
     
     # Download the hal zipfile
-    hal_download_zip = hal_setup.hal_download_zip
-    if hal_download_zip is None:
-        hal_download_zip = hal_setup.download_halzip()
-    
-    os.mkdir(hal_dir)
-    
-    with zipfile.ZipFile(hal_download_zip) as z:
-        z.extractall(hal_dir)
+    hal_distutils.extract_halzip(hal_dir)
         
     # write the version to a file
     with open(hal_version_file, 'w') as fp:
-        fp.write(hal_setup.hal_version + '\n')
+        fp.write(hal_version + '\n')
 
 
 def test_check_hal_api(hal):
