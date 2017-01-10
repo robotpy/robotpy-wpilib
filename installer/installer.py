@@ -103,7 +103,7 @@ class OpkgRepo(object):
     
         # dictionary of lists of packages sorted by version
         pkg = OrderedDict()
-        with open(feed["db_fname"], 'r') as fp:
+        with open(feed["db_fname"], 'r', encoding='utf-8') as fp:
             for line in fp.readlines():
                 line = line.strip()
                 if len(line) == 0:
