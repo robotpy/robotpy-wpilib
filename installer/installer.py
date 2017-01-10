@@ -370,9 +370,8 @@ def ssh_from_cfg(cfg_filename, username, password, hostname=None, allow_mitm=Fal
                 if re.match(r'\s*host\s+%s\s*' % hn, line.lower()):
                     no_resolve = True
                     break
-            
     except Exception:
-        raise
+        pass
         
     
     if not no_resolve:
