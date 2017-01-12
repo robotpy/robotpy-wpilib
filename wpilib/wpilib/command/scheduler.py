@@ -217,27 +217,26 @@ class Scheduler(Sendable):
 
     def initTable(self, subtable):
         self.table = subtable
-        from networktables import StringArray, NumberArray
-        self.commands = StringArray()
-        self.ids = NumberArray()
-        self.toCancel = NumberArray()
+        self.commands = []
+        self.ids = []
+        self.toCancel = []
 
-        self.table.putValue("Names", self.commands)
-        self.table.putValue("Ids", self.ids)
-        self.table.putValue("Cancel", self.toCancel)
+        self.table.putStringArray("Names", self.commands)
+        self.table.putNumberArray("Ids", self.ids)
+        self.table.putNumberArray("Cancel", self.toCancel)
 
     def updateTable(self):
         table = self.getTable()
         if table is None:
             return
         # Get the commands to cancel
-        self.table.retrieveValue("Cancel", self.toCancel)
+        self.toCancel = self.table.getValue("Cancel")
         if self.toCancel:
             for command in self.commandTable:
                 if id(command) in self.toCancel:
                     command.cancel()
             self.toCancel.clear()
-            self.table.putValue("Cancel", self.toCancel)
+            self.table.putNumberArray("Cancel", self.toCancel)
 
         if self.runningCommandsChanged:
             self.commands.clear()
@@ -246,8 +245,8 @@ class Scheduler(Sendable):
             for command in self.commandTable:
                 self.commands.append(command.getName())
                 self.ids.append(id(command))
-            self.table.putValue("Names", self.commands)
-            self.table.putValue("Ids", self.ids)
+            self.table.putStringArray("Names", self.commands)
+            self.table.putNumberArray("Ids", self.ids)
 
     def getSmartDashboardType(self):
         return "Scheduler"
