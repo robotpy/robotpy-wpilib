@@ -15,7 +15,7 @@ class InstantCommand(Command):
     method to carry out desired actions.
     '''
 
-    def __init__(self, name):
+    def __init__(self, name=None):
         super().__init__(name)
 
 

@@ -1,4 +1,4 @@
-# validated: 2016-11-20 KC b25a7cb3704d shared/java/edu/wpi/first/wpilibj/command/Command.java
+# validated: 2017-01-13 DS 7a049c29bdb7 shared/java/edu/wpi/first/wpilibj/command/Command.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -278,6 +278,13 @@ class Command(Sendable):
         table = self.getTable()
         if table is not None:
             table.putBoolean("isParented", True)
+            
+    def clearRequirements(self):
+        """Clears list of subsystem requirements. This is only used by
+        :class:`.ConditionalCommand` so cancelling the chosen command works properly
+        in :class:`.CommandGroup`.
+        """
+        self.requirements = set()
 
     def start(self):
         """Starts up the command.  Gets the command ready to start.

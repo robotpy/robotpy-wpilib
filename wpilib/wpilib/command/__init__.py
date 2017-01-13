@@ -17,6 +17,7 @@
 
 from .command import *
 from .commandgroup import *
+from .conditionalcommand import *
 from .instantcommand import *
 from .pidcommand import *
 from .pidsubsystem import *
