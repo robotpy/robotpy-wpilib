@@ -509,7 +509,9 @@ class DriverStation:
             return self.dataCond.wait_for(self._waitForDataPredicateFn, timeout)
             
     def _waitForDataPredicateFn(self):
-        return self.waitForDataPredicate
+        retval = self.waitForDataPredicate
+        self.waitForDataPredicate = False
+        return retval
 
     def getMatchTime(self):
         """Return the approximate match time.
