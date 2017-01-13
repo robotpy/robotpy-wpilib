@@ -1,3 +1,4 @@
+# notrack
 # Placeholder for the CANJaguar class, which has been removed
 
 __all__ = ["CANJaguar"]

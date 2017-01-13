@@ -1,3 +1,4 @@
+# notrack
 # Placeholder for the CANTalon class, which has moved to its own package
 
 __all__ = ["CANTalon"]
