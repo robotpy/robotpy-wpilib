@@ -1,3 +1,4 @@
+# validated: 2017-01-12 DS 8f67f2c24cb9 athena/java/edu/wpi/first/wpilibj/XboxController.java
 import hal
 from .driverstation import DriverStation
 from .interfaces.gamepadbase import GamepadBase
@@ -5,11 +6,12 @@ from wpilib.interfaces.generichid import GenericHID
 
 
 class XboxController(GamepadBase):
-    """ GenericHID.Handle input from Xbox 360 or Xbox One controllers connected to the Driver Station.
+    """
+        Handle input from Xbox 360 or Xbox One controllers connected to the Driver Station.
 
-    This class handles Xbox input that comes from the Driver Station. Each time a value is
-    requested the most recent value is returend. There is a single class instance for each controller
-    and the mapping of ports to hardware buttons depends on the code in the Driver Station.
+        This class handles Xbox input that comes from the Driver Station. Each time a value is
+        requested the most recent value is returned. There is a single class instance for each controller
+        and the mapping of ports to hardware buttons depends on the code in the Driver Station.
      """
 
     def __init__(self, port):
@@ -184,7 +186,6 @@ class XboxController(GamepadBase):
             self.leftRumble = int(value * 65535)
         else:
             self.rightRumble = int(value * 65535)
-            print(self.rightRumble)
 
         hal.setJoystickOutputs(
             self.port,
