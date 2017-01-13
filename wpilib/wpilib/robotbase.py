@@ -67,7 +67,7 @@ class RobotBase:
             :returns: If the robot is running in simulation.
             :rtype: bool
         """
-        return hal.HALIsSimulation()
+        return hal.isSimulation()
 
     @staticmethod
     def isReal():
@@ -75,7 +75,7 @@ class RobotBase:
             :returns: If the robot is running in the real world.
             :rtype: bool
         """
-        return not hal.HALIsSimulation()
+        return not hal.isSimulation()
 
     def isDisabled(self):
         """Determine if the Robot is currently disabled.
@@ -96,28 +96,28 @@ class RobotBase:
         return self.ds.isEnabled()
 
     def isAutonomous(self):
-        """Determine if the robot is currently in Autonomous mode.
+        """Determine if the robot is currently in Autonomous mode as
+        determined by the field controls.
 
-        :returns: True if the robot is currently operating Autonomously as
-            determined by the field controls.
+        :returns: True if the robot is currently operating Autonomously
         :rtype: bool
         """
         return self.ds.isAutonomous()
 
     def isTest(self):
-        """Determine if the robot is currently in Test mode.
+        """Determine if the robot is currently in Test mode as
+        determined by the driver station.
 
-        :returns: True if the robot is currently operating in Test mode as
-            determined by the driver station.
+        :returns: True if the robot is currently operating in Test mode.
         :rtype: bool
         """
         return self.ds.isTest()
 
     def isOperatorControl(self):
-        """Determine if the robot is currently in Operator Control mode.
+        """Determine if the robot is currently in Operator Control mode as
+        determined by the field controls.
 
-        :returns: True if the robot is currently operating in Tele-Op mode as
-            determined by the field controls.
+        :returns: True if the robot is currently operating in Tele-Op mode
         :rtype: bool
         """
         return self.ds.isOperatorControl()
@@ -166,7 +166,7 @@ class RobotBase:
             logger.error("If your robot class has an __init__ function, it must call super().__init__()!")
             return False
         
-        if not hal.HALIsSimulation():
+        if not hal.isSimulation():
             try:
                 import wpilib
                 with open('/tmp/frc_versions/FRC_Lib_Version.ini', 'w') as fp:
