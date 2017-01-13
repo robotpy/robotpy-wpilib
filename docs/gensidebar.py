@@ -72,6 +72,7 @@ def generate_sidebar(conf, conf_api):
     write_api('pynetworktables', 'NetworkTables')
     write_api('utilities', 'Utilities')
     write_api('pyfrc', 'PyFRC')
+    write_api('ctre', 'CTRE Libraries')
     endl()
     
     toctree('Additional Info')
