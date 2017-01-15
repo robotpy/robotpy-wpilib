@@ -1102,12 +1102,12 @@ def getEncoderDirection(encoder, status):
 
 def getEncoderDistance(encoderHandle, status):
     status.value = 0
-    enc = hal_data['encoder'][encoder.idx]
+    enc = hal_data['encoder'][encoderHandle.idx]
     return enc['count']*enc['distance_per_pulse']
 
 def getEncoderRate(encoderHandle, status):
     status.value = 0
-    return hal_data['encoder'][encoder.idx]['rate']
+    return hal_data['encoder'][encoderHandle.idx]['rate']
 
 def setEncoderMinRate(encoderHandle, minRate, status):
     status.value = 0
