@@ -8,6 +8,7 @@
 
 import hal
 import warnings
+import weakref
 
 from .livewindow import LiveWindow
 from .resource import Resource
@@ -15,6 +16,10 @@ from .sensorbase import SensorBase
 from .solenoidbase import SolenoidBase
 
 __all__ = ["DoubleSolenoid"]
+
+def _freeSolenoid(fwdHandle, revHandle):
+    hal.freeSolenoidPort(fwdHandle)
+    hal.freeSolenoidPort(revHandle)
 
 class DoubleSolenoid(SolenoidBase):
     """Controls 2 channels of high voltage Digital Output on the PCM.
@@ -100,12 +105,18 @@ class DoubleSolenoid(SolenoidBase):
 
         LiveWindow.addActuatorModuleChannel("DoubleSolenoid", moduleNumber,
                                             forwardChannel, self)
+        
+        self.__finalizer = weakref.finalize(self, _freeSolenoid,
+                                            self.forwardHandle, self.reverseHandle)
 
     def free(self):
         """Mark the solenoid as freed."""
         LiveWindow.removeComponent(self)
-        hal.freeSolenoidPort(self.forwardHandle)
-        hal.freeSolenoidPort(self.reverseHandle)
+        
+        self.__finalizer()
+        self.forwardHandle = None
+        self.reverseHandle = None
+        
         super().free()
 
     def set(self, value):
