@@ -7,9 +7,7 @@
 #----------------------------------------------------------------------------
 
 import hal
-import threading
 
-from .resource import Resource
 from .sensorbase import SensorBase
 
 __all__ = ["SolenoidBase"]
@@ -18,17 +16,6 @@ class SolenoidBase(SensorBase):
     """SolenoidBase class is the common base class for the Solenoid and
     DoubleSolenoid classes."""
 
-    # global to all instances, keyed by module number
-    all_allocated = {}
-    all_ports = {}
-    all_mutex = {}
-    
-    @staticmethod
-    def _reset():
-        SolenoidBase.all_allocated = {}
-        SolenoidBase.all_ports = {}
-        SolenoidBase.all_mutex = {}
-
     def __init__(self, moduleNumber):
         """Constructor.
 
@@ -36,31 +23,13 @@ class SolenoidBase(SensorBase):
         """
         self.moduleNumber = moduleNumber
 
-        if moduleNumber not in self.all_ports:
-            self.all_ports[moduleNumber] = []
-
-            for i in range(SensorBase.kSolenoidChannels):
-                port = hal.getPortWithModule(moduleNumber, i)
-                self.all_ports[moduleNumber].append(hal.initializeSolenoidPort(port))
-
-        if moduleNumber not in self.all_mutex:
-            self.all_mutex[moduleNumber] = threading.Lock()
-
-        if moduleNumber not in self.all_allocated:
-            self.all_allocated[moduleNumber] = Resource(SensorBase.kSolenoidChannels)
-
-        self.allocated = self.all_allocated[moduleNumber]
-        self.ports = self.all_ports[moduleNumber]
-        self.mutex = self.all_mutex[moduleNumber]
-
     def getAll(self):
         """Read all 8 solenoids from the module used by this solenoid as a
         single byte.
 
         :returns: The current value of all 8 solenoids on this module.
         """
-        with self.mutex:
-            return hal.getAllSolenoids(self.moduleNumber)
+        return hal.getAllSolenoids(self.moduleNumber)
 
     def getPCMSolenoidBlackList(self):
         """

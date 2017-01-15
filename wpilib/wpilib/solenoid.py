@@ -65,18 +65,13 @@ class Solenoid(SolenoidBase):
         if channel is None:
             raise ValueError("must specify channel")
 
-        SensorBase.checkSolenoidModule(moduleNumber)
-        SensorBase.checkSolenoidChannel(channel)
-
         super().__init__(moduleNumber)
         self.channel = channel
 
-        try:
-            self.allocated.allocate(self, channel)
-        except IndexError as e:
-            raise IndexError("Solenoid channel %d on module %d is already allocated" % (channel, moduleNumber)) from e
-
-        portHandle= hal.getPortWithModule(moduleNumber, channel)
+        SensorBase.checkSolenoidModule(moduleNumber)
+        SensorBase.checkSolenoidChannel(channel)
+        
+        portHandle = hal.getPortWithModule(moduleNumber, channel)
         self._solenoidHandle = hal.initializeSolenoidPort(portHandle)
 
         LiveWindow.addActuatorModuleChannel("Solenoid", moduleNumber, channel,
@@ -95,7 +90,6 @@ class Solenoid(SolenoidBase):
     def free(self):
         """Mark the solenoid as freed."""
         LiveWindow.removeComponent(self)
-        self.allocated.free(self.channel)
         
         self.__finalizer()
         self._solenoidHandle = None

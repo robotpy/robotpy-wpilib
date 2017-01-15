@@ -68,27 +68,25 @@ class DoubleSolenoid(SolenoidBase):
         if reverseChannel is None:
             raise ValueError("must specify reverse channel")
 
+        super().__init__(moduleNumber)
+        
         SensorBase.checkSolenoidModule(moduleNumber)
         SensorBase.checkSolenoidChannel(forwardChannel)
         SensorBase.checkSolenoidChannel(reverseChannel)
 
-        super().__init__(moduleNumber)
-        try:
-            self.allocated.allocate(self, forwardChannel)
-        except IndexError as e:
-            raise IndexError("Solenoid channel %d on module %d is already allocated" % (forwardChannel, moduleNumber)) from e
-        try:
-            self.allocated.allocate(self, reverseChannel)
-        except IndexError as e:
-            raise IndexError("Solenoid channel %d on module %d is already allocated" % (reverseChannel, moduleNumber)) from e
-
         portHandle = hal.getPortWithModule(moduleNumber, forwardChannel)
         self.forwardHandle = hal.initializeSolenoidPort(portHandle)
-        portHandle = hal.getPortWithModule(moduleNumber, reverseChannel)
-        self.reverseHandle = hal.initializeSolenoidPort(portHandle)
+        
+        try:
+            portHandle = hal.getPortWithModule(moduleNumber, reverseChannel)
+            self.reverseHandle = hal.initializeSolenoidPort(portHandle)
+        except Exception:
+            # free the forward handle on exception, then rethrow
+            hal.freeSolenoidPort(self.forwardHandle)
+            self.forwardHandle = None
+            self.reverseHandle = None
+            raise
 
-        self.forwardChannel = forwardChannel
-        self.reverseChannel = reverseChannel
         self.forwardMask = 1 << forwardChannel
         self.reverseMask = 1 << reverseChannel
 
@@ -106,8 +104,6 @@ class DoubleSolenoid(SolenoidBase):
     def free(self):
         """Mark the solenoid as freed."""
         LiveWindow.removeComponent(self)
-        self.allocated.free(self.forwardChannel)
-        self.allocated.free(self.reverseChannel)
         hal.freeSolenoidPort(self.forwardHandle)
         hal.freeSolenoidPort(self.reverseHandle)
         super().free()

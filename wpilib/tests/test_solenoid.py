@@ -1,11 +1,11 @@
 
 import pytest
 
-def test_doublesolenoid_set(wpilib, hal_data):
+def test_doublesolenoid_set(wpilib, hal, hal_data):
     
     ds = wpilib.DoubleSolenoid(0, 1)
     
-    with pytest.raises(IndexError):
+    with pytest.raises(hal.exceptions.HALError):
         wpilib.Solenoid(1)
     
     assert ds.get() == ds.Value.kOff
@@ -31,7 +31,7 @@ def test_doublesolenoid_set(wpilib, hal_data):
     
     
 
-def test_solenoid(wpilib, hal_data):
+def test_solenoid(wpilib, hal, hal_data):
 
     for i in range(wpilib.SensorBase.kSolenoidChannels):
         
@@ -39,7 +39,7 @@ def test_solenoid(wpilib, hal_data):
         for _ in range(2):        
             s = wpilib.Solenoid(i)
             
-            with pytest.raises(IndexError):
+            with pytest.raises(hal.exceptions.HALError):
                 wpilib.Solenoid(i)
             
             assert hal_data['solenoid'][i]['initialized']
@@ -57,6 +57,27 @@ def test_solenoid(wpilib, hal_data):
             with pytest.raises(ValueError):
                 s.set(True)
 
+
+def test_multiple_solenoids(wpilib, hal_data):
+    
+    assert not hal_data['solenoid'][4]['initialized']
+    assert not hal_data['solenoid'][2]['initialized']
+    
+    s1 = wpilib.Solenoid(4)
+    assert hal_data['solenoid'][4]['initialized']
+    
+    s2 = wpilib.Solenoid(2)
+    assert hal_data['solenoid'][2]['initialized']
+    
+    for i, s in [(4, s1), (2, s2)]:
+        for v in [True, False, True, True, False]:
+            s.set(v)
+            assert hal_data['solenoid'][i]['value'] == v
+            
+            nv = not v
+            hal_data['solenoid'][i]['value'] = nv
+            assert s.get() == nv
+    
 
 def test_solenoidbase_getAll(wpilib, hal_data):
     

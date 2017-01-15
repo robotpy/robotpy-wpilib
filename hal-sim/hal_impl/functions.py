@@ -245,8 +245,6 @@ def report(resource, instanceNumber, context=0, feature=None):
         hal_data['pwm'][instanceNumber]['type'] = 'victor'
     elif resource == hur.kResourceType_VictorSP:
         hal_data['pwm'][instanceNumber]['type'] = 'victorsp'
-    elif resource == hur.kResourceType_Solenoid:
-        hal_data['solenoid'][instanceNumber]['initialized'] = True
     
     hal_data['reports'].setdefault(resource, []).append(instanceNumber)
 
@@ -1686,13 +1684,22 @@ def getSPIAccumulatorOutput(port, status):
 #############################################################################
 
 def initializeSolenoidPort(port, status):
+    
+    if not checkSolenoidChannel(port.pin):
+        status.value = RESOURCE_OUT_OF_RANGE
+        return
+    
+    if hal_data['solenoid'][port.pin]['initialized']:
+        status.value = RESOURCE_IS_ALLOCATED
+        return
+    
     status.value = 0
-    # sigh: it would be nice if all the solenoids weren't always initialized
-    hal_data['solenoid'][port.pin]['value'] = False 
+    hal_data['solenoid'][port.pin]['initialized'] = True
+    hal_data['solenoid'][port.pin]['value'] = False
     return types.SolenoidHandle(port)
 
 def freeSolenoidPort(port):
-    # sigh: it would be nice if all the solenoids weren't always initialized
+    hal_data['solenoid'][port.pin]['initialized'] = False
     port.pin = None
 
 def checkSolenoidModule(module):
