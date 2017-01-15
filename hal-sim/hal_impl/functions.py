@@ -57,6 +57,11 @@ ANALOG_TRIGGER_LIMIT_ORDER_ERROR = -1010
 ANALOG_TRIGGER_PULSE_OUTPUT_ERROR = -1011
 PARAMETER_OUT_OF_RANGE = -1028
 RESOURCE_IS_ALLOCATED = -1029
+RESOURCE_OUT_OF_RANGE = -1030
+HAL_INVALID_ACCUMULATOR_CHANNEL = -1035
+HAL_COUNTER_NOT_SUPPORTED = -1058
+HAL_PWM_SCALE_ERROR = -1072
+HAL_HANDLE_ERROR = -1098
 
 #############################################################################
 # ConstantsInternal.h
@@ -173,8 +178,18 @@ def _getErrorMessage(code):
         return "HAL: A parameter is out of range."
     elif code == RESOURCE_IS_ALLOCATED:
         return "HAL: A resource is already allocated."
+    elif code == RESOURCE_OUT_OF_RANGE:
+        return "HAL: The requested resource is out of range."
+    elif code == HAL_INVALID_ACCUMULATOR_CHANNEL:
+        return "HAL: The requested input is not an accumulator channel"
+    elif code == HAL_COUNTER_NOT_SUPPORTED:
+        return "HAL: Counter mode not supported for encoder method"
+    elif code == HAL_PWM_SCALE_ERROR:
+        return "HAL: The PWM Scale Factors are out of range"
+    elif code == HAL_HANDLE_ERROR:
+        return  "HAL: A handle parameter was passed incorrectly"
     else:
-        return "Unknown error status"
+        return "Unknown error status %s" % code
     
 def getErrorMessage(code):
     return bytes(_getErrorMessage(code), 'utf-8')
