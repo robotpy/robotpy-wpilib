@@ -7,7 +7,7 @@
 #
 
 
-hal_version = '2017.1.1'
+hal_version = '2017.2.1'
 
 hal_site = 'http://first.wpi.edu/FRC/roborio/maven/release/edu/wpi/first/wpilib/athena-runtime'
 hal_zip = 'athena-runtime-%s.zip' % hal_version
