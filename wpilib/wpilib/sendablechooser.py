@@ -1,4 +1,4 @@
-# validated: 2017-01-02 DV c3160bad4463 shared/java/edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
+# validated: 2017-01-22 DS 15e58acc761c shared/java/edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -57,10 +57,6 @@ class SendableChooser(Sendable):
         :param name: the name of the option
         :param object: the option
         """
-        # if we don't have a default, set the default automatically
-        if self.defaultChoice is None:
-            self.addDefault(name, object)
-            return
         self.map[name] = object
 
         table = self.getTable()
