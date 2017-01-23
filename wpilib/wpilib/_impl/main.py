@@ -30,6 +30,26 @@ def _log_versions():
     if hal.__version__ != wpilib.__version__ and \
        hal.__version__ != hal_impl.__version__:
         logger.warn("Core component versions are not identical! This is not a supported configuration, and you may run into errors!")
+        
+    # Log third party versions
+    # -> TODO: in the future, expand 3rd party HAL support here?
+    for entry_point in iter_entry_points(group='robotpylib', name=None):
+        try:
+            info_class = entry_point.load()
+        except ImportError:
+            continue
+        else:
+            try:
+                inst = info_class()
+                module_info = inst.module_info()
+                if len(module_info) == 2:
+                    logstr = '%s version %s'
+                elif len(module_info) == 3:
+                    logstr = '%s version %s (%s)'
+                
+                logger.info(logstr, *module_info)
+            except Exception:
+                logger.warn("Error loading module info for %s", entry_point.name)
 
 
 class _CustomHelpAction(argparse.Action):
