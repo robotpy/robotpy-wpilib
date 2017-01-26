@@ -81,6 +81,19 @@ class ADXRS450_Gyro(GyroBase):
         LiveWindow.addSensor("ADXRS450_Gyro", port, self)
 
     def calibrate(self):
+        """Calibrate the gyro by running for a number of samples and computing the
+        center value. Then use the center value as the Accumulator center value for
+        subsequent measurements.
+        
+        It's important to make sure that the robot is not moving while the centering
+        calculations are in progress, this is typically done when the robot is first
+        turned on while it's sitting at rest before the competition starts.
+        
+        .. note:: Usually you don't need to call this, as it's called when the
+                  object is first created. If you do, it will freeze your robot
+                  for 5 seconds
+        """
+        
         if self.spi is None:
             return
         
@@ -122,6 +135,11 @@ class ADXRS450_Gyro(GyroBase):
         return (val >> 5) & 0xffff
     
     def reset(self):
+        """
+        Reset the gyro. Resets the gyro to a heading of zero. This can be used if
+        there is significant drift in the gyro and it needs to be recalibrated
+        after it has been running.
+        """
         self.spi.resetAccumulator()
         
     def free(self):
@@ -131,11 +149,29 @@ class ADXRS450_Gyro(GyroBase):
             self.spi = None
     
     def getAngle(self):
+        """
+        Return the actual angle in degrees that the robot is currently facing.
+        
+        The angle is based on the current accumulator value corrected by the
+        oversampling rate, the gyro type and the A/D calibration values. The angle
+        is continuous, that is it will continue from 360 to 361 degrees. This
+        allows algorithms that wouldn't want to see a discontinuity in the gyro
+        output as it sweeps past from 360 to 0 on the second time around.
+        
+        :returns: the current heading of the robot in degrees. This heading is based
+                  on integration of the returned rate from the gyro.
+        """
         if self.spi is None:
             return 0.0
         return self.spi.getAccumulatorValue() * self.kDegreePerSecondPerLSB * self.kSamplePeriod
 
     def getRate(self):
+        """Return the rate of rotation of the gyro
+        
+        The rate is based on the most recent reading of the gyro value
+        
+        :returns: the current rate in degrees per second
+        """
         if self.spi is None:
             return 0.0
         else:

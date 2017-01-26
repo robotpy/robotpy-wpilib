@@ -12,15 +12,17 @@ class Gyro:
     """Interface for yaw rate gyros"""
     
     def calibrate(self):
-        """
-        Calibrate the gyro by running for a number of samples and computing the
+        """Calibrate the gyro by running for a number of samples and computing the
         center value. Then use the center value as the Accumulator center value for
         subsequent measurements.
         
-        .. note:: It's important to make sure that the robot is not
-            moving while the centering calculations are in progress, this is typically
-            done when the robot is first turned on while it's sitting at rest before
-            the competition starts.
+        It's important to make sure that the robot is not moving while the centering
+        calculations are in progress, this is typically done when the robot is first
+        turned on while it's sitting at rest before the competition starts.
+        
+        .. note:: Usually you don't need to call this, as it's called when the
+                  object is first created. If you do, it will freeze your robot
+                  for 5 seconds
         """
         raise NotImplementedError
 
