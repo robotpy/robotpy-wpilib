@@ -138,7 +138,10 @@ class RobotBase:
     @staticmethod
     def initializeHardwareConfiguration():
         """Common initialization for all robot programs."""
-        hal.initialize()
+        
+        # Python specific: do not call this, initialize() is already called when
+        # hal is imported
+        #hal.initialize()
 
         from .driverstation import DriverStation
         from .robotstate import RobotState

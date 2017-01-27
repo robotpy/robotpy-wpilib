@@ -13,8 +13,11 @@ logger = logging.getLogger('hal')
 
 hooks = SimHooks()
 
+_initialized = False
+
 def reset_hal():
     data._reset_hal_data(hooks)
+    globals()['_initialized'] = False
     initialize()
 
 #
@@ -222,6 +225,10 @@ def getBrownedOut(status):
     return False
 
 def initialize(mode=0):
+    # the real HAL cannot be initialized twice. Neither should this.
+    global _initialized
+    assert _initialized == False
+    _initialized = True
     #initializeNotifier()
     initializeDriverStation()
     
@@ -1738,6 +1745,3 @@ def getPCMSolenoidVoltageFault(module, status):
 def clearAllPCMStickyFaults(module, status):
     status.value = 0
     return False
-
-
-reset_hal()
