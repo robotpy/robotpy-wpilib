@@ -214,7 +214,29 @@ class OpkgRepo(object):
                     for item, dep in data.items()
                         if item not in ordered}
         if len(data) != 0:
-            raise ValueError('Cyclic dependencies exist among these items: {}'.format(', '.join(repr(x) for x in data.items())))
+            #raise ValueError('Cyclic dependencies exist among these items: {}'.format(', '.join(repr(x) for x in data.items())))
+            yield self._modified_dfs(data)
+            
+    def _modified_dfs(self, nodes):
+        # this is a modified depth first search that does a best effort at
+        # a topological sort, but ignores cycles and keeps going on despite
+        # that. Only used if the topological sort fails.
+        retval = []
+        visited = set()
+        
+        def _visit(n):
+            if n in visited:
+                return
+            for m in nodes[n]:
+                visited.add(n)
+                _visit(n)
+            
+            retval.append(n)
+        
+        for item in nodes:
+            _visit(item)
+        
+        return reversed(retval)
     
     def download(self, name):
         
