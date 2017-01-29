@@ -799,6 +799,7 @@ class RobotpyInstaller(object):
                             help="Packages to download")
         parser.add_argument('--force-reinstall', action='store_true', default=False,
                             help='When upgrading, reinstall all packages even if they are already up-to-date.')
+        parser.add_argument('--no-index', action='store_true', default=False)
     install_opkg_opts = download_opkg_opts
 
     def download_opkg(self, options):
@@ -810,7 +811,8 @@ class RobotpyInstaller(object):
         ensure_win_bins()
         
         opkg = self._get_opkg()
-        opkg.update_packages()
+        if not options.no_index:
+            opkg.update_packages()
         package_list = opkg.resolve_pkg_deps(options.packages)
         for package in package_list:
             opkg.download(package)
