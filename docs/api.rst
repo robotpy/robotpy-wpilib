@@ -1,3 +1,6 @@
+
+.. _wpilib_api:
+
 WPILib API
 ----------
 
