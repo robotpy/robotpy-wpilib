@@ -72,12 +72,12 @@ def generate_sidebar(conf, conf_api):
     write_api('pynetworktables', 'NetworkTables')
     write_api('utilities', 'Utilities')
     write_api('pyfrc', 'PyFRC')
-    write_api('ctre', 'CTRE Libraries')
     endl()
     
     toctree('Additional Info')
     write("Troubleshooting", 'troubleshooting')
     write('Support', 'support')
+    write('FAQ', 'faq')
     endl()
     
     toctree('RobotPy Developers')
