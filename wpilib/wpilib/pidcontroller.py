@@ -385,7 +385,7 @@ class PIDController(LiveWindowSendable):
         """
         with self.mutex:
             #return self.error
-            return self.getContinuousError(self.getSetpoint() - self.pidInput())
+            return self.getContinuousError(self.getSetpoint() - self.pidInput.pidGet())
         
     def setPIDSourceType(self, pidSourceType):
         """Sets what type of input the PID controller will use
