@@ -6,19 +6,21 @@ import weakref
 
 __all__ = ["SPI"]
 
+
 def _freeSPI(port):
     hal.closeSPI(port)
 
+
 class SPI:
     """Represents a SPI bus port
-    
+
     Example usage::
-    
+
         spi = wpilib.SPI(wpilib.SPI.Port.kOnboardCS0)
-        
+
         # Write bytes 'text', and receive something
         data = spi.transaction(b'text')
-    
+
     """
 
     class Port:
@@ -29,7 +31,7 @@ class SPI:
         kMXP = 4
 
     devices = 0
-    
+
     @staticmethod
     def _reset():
         SPI.devices = 0
@@ -43,31 +45,31 @@ class SPI:
                         the spi* functions from hal_impl that you use.
                         See ``test_spi.py`` for an example.
         """
-        
+
         if port not in [self.Port.kOnboardCS0,
                         self.Port.kOnboardCS1,
                         self.Port.kOnboardCS2,
                         self.Port.kOnboardCS3,
                         self.Port.kMXP]:
             raise ValueError("Invalid value '%s' for SPI port" % port)
-        
+
         if hal.HALIsSimulation():
             if simPort is None:
                 # If you want more functionality, implement your own mock
                 from hal_impl.spi_helpers import SPISimBase
                 simPort = SPISimBase()
-                
+
                 msg = "Using stub simulator for SPI port %s" % port
                 warnings.warn(msg)
-            
+
             # Just check for basic functionality
             assert hasattr(simPort, 'initializeSPI')
             assert hasattr(simPort, 'closeSPI')
-            
+
             self._port = (simPort, port)
         else:
             self._port = port
-        
+
         self.bitOrder = False
         self.clockPolarity = False
         self.dataOnTrailing = False
@@ -77,7 +79,7 @@ class SPI:
 
         SPI.devices += 1
         hal.report(hal.UsageReporting.kResourceType_SPI, SPI.devices)
-    
+
     @property
     def port(self):
         if not self.__finalizer.alive:
@@ -163,14 +165,14 @@ class SPI:
 
         :param dataToSend: Data to send
         :type dataToSend: iterable of bytes
-        
+
         :returns: Number of bytes written
-        
+
         Usage::
-        
+
             # send byte string
             writeCount = spi.write(b'stuff')
-            
+
             # send list of integers
             writeCount = spi.write([0x01, 0x02])
         """
@@ -194,7 +196,7 @@ class SPI:
         :returns: received data bytes
         """
         if initiate:
-            return hal.transactionSPI(self.port, [0]*size)
+            return hal.transactionSPI(self.port, [0] * size)
         else:
             return hal.readSPI(self.port, size)
 
@@ -205,24 +207,23 @@ class SPI:
         :type dataToSend: iterable of bytes
 
         :returns: data received from the device
-        
+
         Usage::
-        
+
             # send byte string
             data = spi.transaction(b'stuff')
-            
+
             # send list of integers
             data = spi.transaction([0x01, 0x02])
         """
         return hal.transactionSPI(self.port, dataToSend)
-    
-    
+
     def initAccumulator(self, period, cmd, xfer_size,
                         valid_mask, valid_value,
                         data_shift, data_size,
                         is_signed, big_endian):
         """Initialize the accumulator.
-        
+
         :param period: Time between reads
         :param cmd: SPI command to send to request data
         :param xfer_size: SPI transfer size, in bytes
@@ -235,7 +236,7 @@ class SPI:
         :param is_signed: Is data field signed?
         :param big_endian: Is device big endian?
         """
-        hal.initSPIAccumulator(self.port, int(period*1.0e6), cmd,
+        hal.initSPIAccumulator(self.port, int(period * 1.0e6), cmd,
                                xfer_size, valid_mask, valid_value, data_shift,
                                data_size, is_signed, big_endian)
 
@@ -249,7 +250,7 @@ class SPI:
 
     def setAccumulatorCenter(self, center):
         """Set the center value of the accumulator.
-        
+
         The center value is subtracted from each value before it is added to the accumulator. This
         is used for the center value of devices like gyros and accelerometers to make integration work
         and to take the device offset into account when integrating.
@@ -263,38 +264,37 @@ class SPI:
     def getAccumulatorLastValue(self):
         """Read the last value read by the accumulator engine."""
 
-        return hal.getSPIAccumulatorLastValue(self.port);
+        return hal.getSPIAccumulatorLastValue(self.port)
 
     def getAccumulatorValue(self):
         """Read the accumulated value.
-        
+
         :returns: The 64-bit value accumulated since the last Reset().
         """
         return hal.getSPIAccumulatorValue(self.port)
-    
+
     def getAccumulatorCount(self):
         """Read the number of accumulated values.
-        
+
         Read the count of the accumulated values since the accumulator was last Reset().
-        
+
         :returns: The number of times samples from the channel were accumulated.
         """
         return hal.getSPIAccumulatorCount(self.port)
-    
+
     def getAccumulatorAverage(self):
         """Read the average of the accumulated value.
-        
+
         :returns: The accumulated average value (value / count).
         """
         return hal.getSPIAccumulatorAverage(self.port)
-    
+
     def getAccumulatorOutput(self):
         """Read the accumulated value and the number of accumulated values atomically.
-        
+
         This function reads the value and count atomically.
         This can be used for averaging.
-        
+
         :returns: tuple of (value, count)
         """
-        return hal.getSPIAccumulatorOutput(self.port)    
- 
+        return hal.getSPIAccumulatorOutput(self.port)

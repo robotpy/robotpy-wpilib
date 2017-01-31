@@ -15,11 +15,12 @@ from .livewindow import LiveWindow
 
 __all__ = ["ADXL345_I2C"]
 
+
 class ADXL345_I2C(SensorBase):
     """
         ADXL345 accelerometer device via i2c
     """
-    
+
     kAddress = 0x1D
     kPowerCtlRegister = 0x2D
     kDataFormatRegister = 0x31
@@ -55,7 +56,7 @@ class ADXL345_I2C(SensorBase):
         """
         if address is None:
             address = self.kAddress
-        
+
         self.i2c = I2C(port, address)
 
         # Turn on the measurements
@@ -64,7 +65,7 @@ class ADXL345_I2C(SensorBase):
         self.setRange(range)
 
         hal.report(hal.UsageReporting.kResourceType_ADXL345,
-                      hal.UsageReporting.kADXL345_I2C)
+                   hal.UsageReporting.kADXL345_I2C)
 
         LiveWindow.addSensor("ADXL345_I2C", port, self)
 
@@ -139,7 +140,7 @@ class ADXL345_I2C(SensorBase):
         # Sensor is little endian... swap bytes
         rawData = []
         for i in range(3):
-            rawData.append((data[i*2+1] << 8) | data[i*2])
+            rawData.append((data[i * 2 + 1] << 8) | data[i * 2])
 
         return (rawData[0] * self.kGsPerLSB,
                 rawData[1] * self.kGsPerLSB,
@@ -155,4 +156,3 @@ class ADXL345_I2C(SensorBase):
             self.table.putNumber("X", self.getX())
             self.table.putNumber("Y", self.getY())
             self.table.putNumber("Z", self.getZ())
-

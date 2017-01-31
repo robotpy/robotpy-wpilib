@@ -11,6 +11,7 @@ from ..sendable import Sendable
 
 __all__ = ["Subsystem"]
 
+
 class Subsystem(Sendable):
     """This class defines a major component of the robot.
 
@@ -64,7 +65,7 @@ class Subsystem(Sendable):
         None, then there will be no default command for the subsystem.
 
         :param command: the default command (or None if there should be none)
-        
+
         .. warning:: This should NOT be called in a constructor if the subsystem
                      is a singleton.
         """
@@ -84,7 +85,7 @@ class Subsystem(Sendable):
 
     def getDefaultCommand(self):
         """Returns the default command (or None if there is none).
-        
+
         :returns: the default command
         """
         if not self.initializedDefaultCommand:
@@ -94,7 +95,7 @@ class Subsystem(Sendable):
 
     def setCurrentCommand(self, command):
         """Sets the current command
-        
+
         :param command: the new current command
         """
         self.currentCommand = command
@@ -118,7 +119,7 @@ class Subsystem(Sendable):
 
     def getCurrentCommand(self):
         """Returns the command which currently claims this subsystem.
-        
+
         :returns: the command which currently claims this subsystem
         """
         return self.currentCommand
@@ -129,7 +130,7 @@ class Subsystem(Sendable):
     def getName(self):
         """Returns the name of this subsystem, which is by default the class
         name.
-        
+
         :returns: the name of this subsystem
         """
         return self.name

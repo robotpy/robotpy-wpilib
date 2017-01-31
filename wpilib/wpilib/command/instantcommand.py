@@ -9,6 +9,7 @@ from .command import Command
 
 __all__ = ["InstantCommand"]
 
+
 class InstantCommand(Command):
     '''
     A command that has no duration. Subclasses should implement the initialize()
@@ -18,7 +19,5 @@ class InstantCommand(Command):
     def __init__(self, name=None):
         super().__init__(name)
 
-
     def isFinished(self):
         return True
-

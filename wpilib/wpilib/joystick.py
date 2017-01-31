@@ -13,9 +13,10 @@ from .interfaces.joystickbase import JoystickBase
 
 __all__ = ["Joystick"]
 
+
 class Joystick(JoystickBase):
     """Handle input from standard Joysticks connected to the Driver Station.
-    
+
     This class handles standard input that comes from the Driver Station. Each
     time a value is requested the most recent value is returned. There is a
     single class instance for each joystick and the mapping of ports to
@@ -66,21 +67,21 @@ class Joystick(JoystickBase):
         self.ds = DriverStation.getInstance()
 
         if numAxisTypes is None:
-            self.axes = [0]*self.AxisType.kNumAxis
+            self.axes = [0] * self.AxisType.kNumAxis
             self.axes[self.AxisType.kX] = self.kDefaultXAxis
             self.axes[self.AxisType.kY] = self.kDefaultYAxis
             self.axes[self.AxisType.kZ] = self.kDefaultZAxis
             self.axes[self.AxisType.kTwist] = self.kDefaultTwistAxis
             self.axes[self.AxisType.kThrottle] = self.kDefaultThrottleAxis
         else:
-            self.axes = [0]*numAxisTypes
+            self.axes = [0] * numAxisTypes
 
         if numButtonTypes is None:
-            self.buttons = [0]*self.ButtonType.kNumButton
+            self.buttons = [0] * self.ButtonType.kNumButton
             self.buttons[self.ButtonType.kTrigger] = self.kDefaultTriggerButton
             self.buttons[self.ButtonType.kTop] = self.kDefaultTopButton
         else:
-            self.buttons = [0]*numButtonTypes
+            self.buttons = [0] * numButtonTypes
 
         self.outputs = 0
         self.leftRumble = 0
@@ -172,7 +173,7 @@ class Joystick(JoystickBase):
             return self.getThrottle()
         else:
             raise ValueError("Invalid axis specified! Must be one of wpilib.Joystick.AxisType, or use getRawAxis instead")
-        
+
     def getAxisCount(self):
         """For the current joystick, return the number of axis"""
         return self.ds.getStickAxisCount(self.getPort())
@@ -233,10 +234,10 @@ class Joystick(JoystickBase):
         :rtype: bool
         """
         return self.ds.getStickButton(self.getPort(), button)
-    
+
     def getButtonCount(self):
         """For the current joystick, return the number of buttons
-        
+
         :rtype int
         """
         return self.ds.getStickButtonCount(self.getPort())
@@ -335,9 +336,8 @@ class Joystick(JoystickBase):
         """
         return self.ds.getJoystickName(self.getPort())
 
-
     def setOutput(self, outputNumber, value):
-        self.outputs = (self.outputs & ~(value << (outputNumber-1))) | (value << (outputNumber-1))
+        self.outputs = (self.outputs & ~(value << (outputNumber - 1))) | (value << (outputNumber - 1))
         self.flush_outputs()
 
     def setOutputs(self, value):
@@ -358,9 +358,9 @@ class Joystick(JoystickBase):
         elif value > 1:
             value = 1
         if type == self.RumbleType.kLeftRumble:
-            self.leftRumble = int(value*65535)
+            self.leftRumble = int(value * 65535)
         elif type == self.RumbleType.kRightRumble:
-            self.rightRumble = int(value*65535)
+            self.rightRumble = int(value * 65535)
         else:
             raise ValueError("Invalid wpilib.Joystick.RumbleType: {}".format(type))
         self.flush_outputs()

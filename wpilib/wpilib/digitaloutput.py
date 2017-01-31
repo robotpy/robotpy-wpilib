@@ -16,14 +16,16 @@ from .sensorbase import SensorBase
 
 __all__ = ["DigitalOutput"]
 
+
 def _freePWMGenerator(pwmGenerator):
     # Disable the output by routing to a dead bit.
     hal.setDigitalPWMOutputChannel(pwmGenerator, SensorBase.kDigitalChannels)
     hal.freeDigitalPWM(pwmGenerator)
 
+
 class DigitalOutput(DigitalSource):
     """Writes to a digital output
-    
+
     Other devices that are implemented elsewhere will automatically allocate
     digital inputs and outputs as required.
     """
@@ -38,7 +40,7 @@ class DigitalOutput(DigitalSource):
         self._pwmGenerator_finalizer = None
 
         hal.report(hal.UsageReporting.kResourceType_DigitalOutput,
-                      channel)
+                   channel)
 
     @property
     def pwmGenerator(self):
@@ -132,7 +134,7 @@ class DigitalOutput(DigitalSource):
         hal.setDigitalPWMDutyCycle(self._pwmGenerator, initialDutyCycle)
         hal.setDigitalPWMOutputChannel(self._pwmGenerator, self.channel)
         self._pwmGenerator_finalizer = \
-                weakref.finalize(self, _freePWMGenerator, self._pwmGenerator)
+            weakref.finalize(self, _freePWMGenerator, self._pwmGenerator)
 
     def disablePWM(self):
         """Change this line from a PWM output back to a static Digital Output

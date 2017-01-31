@@ -28,8 +28,8 @@ def _freeRobotDrive(allocatedSpeedControllers):
 
 class RobotDrive(MotorSafety):
     """Operations on a robot drivetrain based on a definition of the motor
-    configuration. 
-    
+    configuration.
+
     The robot drive class handles basic driving for a robot. Currently, 2
     and 4 motor tank and mecanum drive trains are supported. In the future
     other drive types like swerve might be implemented. Motor channel numbers
@@ -37,22 +37,22 @@ class RobotDrive(MotorSafety):
     the drive function (intended for hand created drive code, such as
     autonomous) or with the Tank/Arcade functions intended to be used for
     Operator Control driving.
-    
+
     .. not_implemented: setupMotorSafety
     """
 
     class MotorType:
         """The location of a motor on the robot for the purpose of driving."""
-        
+
         #: Front left
         kFrontLeft = 0
-        
+
         #: Front right
         kFrontRight = 1
-        
+
         #: Rear left
         kRearLeft = 2
-        
+
         #: Rear right
         kRearRight = 3
 
@@ -75,7 +75,7 @@ class RobotDrive(MotorSafety):
         a two or four wheel drive system, respectively.
 
         When positional arguments are used, these are the two accepted orders:
-        
+
         - leftMotor, rightMotor
         - frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor
 
@@ -123,55 +123,54 @@ class RobotDrive(MotorSafety):
 
         # convert channel number into motor controller if needed
         if (self.frontLeftMotor is not None and
-            not hasattr(self.frontLeftMotor, "set")):
+                not hasattr(self.frontLeftMotor, "set")):
             self.frontLeftMotor = controllerClass(self.frontLeftMotor)
             self.allocatedSpeedControllers.append(self.frontLeftMotor)
         if (self.rearLeftMotor is not None and
-            not hasattr(self.rearLeftMotor, "set")):
+                not hasattr(self.rearLeftMotor, "set")):
             self.rearLeftMotor = controllerClass(self.rearLeftMotor)
             self.allocatedSpeedControllers.append(self.rearLeftMotor)
         if (self.frontRightMotor is not None and
-            not hasattr(self.frontRightMotor, "set")):
+                not hasattr(self.frontRightMotor, "set")):
             self.frontRightMotor = controllerClass(self.frontRightMotor)
             self.allocatedSpeedControllers.append(self.frontRightMotor)
         if (self.rearRightMotor is not None and
-            not hasattr(self.rearRightMotor, "set")):
+                not hasattr(self.rearRightMotor, "set")):
             self.rearRightMotor = controllerClass(self.rearRightMotor)
             self.allocatedSpeedControllers.append(self.rearRightMotor)
 
         # other defaults
         self.maxOutput = RobotDrive.kDefaultMaxOutput
         self.sensitivity = RobotDrive.kDefaultSensitivity
-        
+
         # set up motor safety
         self.setExpiration(self.kDefaultExpirationTime)
         self.setSafetyEnabled(True)
 
-        #Setup Finalizer
+        # Setup Finalizer
         self.__finalizer = weakref.finalize(self, _freeRobotDrive, self.allocatedSpeedControllers)
 
         # start off not moving
         self.drive(0, 0)
 
-
     def drive(self, outputMagnitude, curve):
         """Drive the motors at "outputMagnitude" and "curve".
-        
+
         Both outputMagnitude and curve are -1.0 to +1.0 values, where 0.0
         represents stopped and not turning. ``curve < 0`` will turn left and ``curve > 0``
         will turn right.
-        
+
         The algorithm for steering provides a constant turn radius for any normal
         speed range, both forward and backward. Increasing m_sensitivity causes
         sharper turns for fixed values of curve.
-        
+
         This function will most likely be used in an autonomous routine.
-        
+
         :param outputMagnitude: The speed setting for the outside wheel in a turn,
                forward or backwards, +1 to -1.
         :param curve: The rate of turn, constant for different forward speeds. Set
                ``curve < 0`` for left turn or ``curve > 0`` for right turn.
-               
+
         Set ``curve = e^(-r/w)`` to get a turn radius r for wheelbase w of your robot.
         Conversely, turn radius r = -ln(curve)*w for a given value of curve and
         wheelbase w.
@@ -181,7 +180,7 @@ class RobotDrive(MotorSafety):
                        self.getNumMotors(),
                        hal.UsageReporting.kRobotDrive_ArcadeRatioCurve)
             RobotDrive.kArcadeRatioCurve_Reported = True
-        
+
         if curve < 0:
             value = math.log(-curve)
             ratio = (value - self.sensitivity) / (value + self.sensitivity)
@@ -199,7 +198,7 @@ class RobotDrive(MotorSafety):
         else:
             leftOutput = outputMagnitude
             rightOutput = outputMagnitude
-        
+
         self.setLeftRightMotorOutputs(leftOutput, rightOutput)
 
     def tankDrive(self, *args, **kwargs):
@@ -208,7 +207,7 @@ class RobotDrive(MotorSafety):
         Either two joysticks (with optional specified axis) or two raw values
         may be passed positionally, along with an optional squaredInputs
         boolean.  The valid positional combinations are:
-        
+
         - leftStick, rightStick
         - leftStick, rightStick, squaredInputs
         - leftStick, leftAxis, rightStick, rightAxis
@@ -239,7 +238,7 @@ class RobotDrive(MotorSafety):
                        self.getNumMotors(),
                        hal.UsageReporting.kRobotDrive_Tank)
             RobotDrive.kTank_Reported = True
-        
+
         # keyword arguments
         leftStick = kwargs.pop("leftStick", None)
         rightStick = kwargs.pop("rightStick", None)
@@ -303,7 +302,7 @@ class RobotDrive(MotorSafety):
                 rightValue = (rightValue * rightValue)
             else:
                 rightValue = -(rightValue * rightValue)
-        
+
         self.setLeftRightMotorOutputs(leftValue, rightValue)
 
     def arcadeDrive(self, *args, **kwargs):
@@ -312,7 +311,7 @@ class RobotDrive(MotorSafety):
         Either one or two joysticks (with optional specified axis) or two raw
         values may be passed positionally, along with an optional
         squaredInputs boolean.  The valid positional combinations are:
-        
+
         - stick
         - stick, squaredInputs
         - moveStick, moveAxis, rotateStick, rotateAxis
@@ -343,13 +342,13 @@ class RobotDrive(MotorSafety):
         :param squaredInputs: Setting this parameter to True decreases the
             sensitivity at lower speeds.  Defaults to True if unspecified.
         """
-        
+
         if not RobotDrive.kArcadeStandard_Reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,
                        self.getNumMotors(),
                        hal.UsageReporting.kRobotDrive_ArcadeStandard)
             RobotDrive.kArcadeStandard_Reported = True
-        
+
         # keyword arguments
         stick = kwargs.pop("stick", None)
         moveStick = kwargs.pop("moveStick", None)
@@ -456,7 +455,7 @@ class RobotDrive(MotorSafety):
                        self.getNumMotors(),
                        hal.UsageReporting.kRobotDrive_MecanumCartesian)
             RobotDrive.kMecanumCartesian_Reported = True
-        
+
         xIn = x
         yIn = y
         # Negate y for the joystick.
@@ -464,7 +463,7 @@ class RobotDrive(MotorSafety):
         # Compenstate for gyro angle.
         xIn, yIn = RobotDrive.rotateVector(xIn, yIn, gyroAngle)
 
-        wheelSpeeds = [0]*self.kMaxNumberOfMotors
+        wheelSpeeds = [0] * self.kMaxNumberOfMotors
         wheelSpeeds[self.MotorType.kFrontLeft] = xIn + yIn + rotation
         wheelSpeeds[self.MotorType.kFrontRight] = -xIn + yIn - rotation
         wheelSpeeds[self.MotorType.kRearLeft] = -xIn + yIn + rotation
@@ -499,7 +498,7 @@ class RobotDrive(MotorSafety):
                        self.getNumMotors(),
                        hal.UsageReporting.kRobotDrive_MecanumPolar)
             RobotDrive.kMecanumPolar_Reported = True
-        
+
         # Normalized for full power along the Cartesian axes.
         magnitude = RobotDrive.limit(magnitude) * math.sqrt(2.0)
         # The rollers are at 45 degree angles.
@@ -507,7 +506,7 @@ class RobotDrive(MotorSafety):
         cosD = math.cos(dirInRad)
         sinD = math.sin(dirInRad)
 
-        wheelSpeeds = [0]*self.kMaxNumberOfMotors
+        wheelSpeeds = [0] * self.kMaxNumberOfMotors
         wheelSpeeds[self.MotorType.kFrontLeft] = sinD * magnitude + rotation
         wheelSpeeds[self.MotorType.kFrontRight] = cosD * magnitude - rotation
         wheelSpeeds[self.MotorType.kRearLeft] = cosD * magnitude + rotation
@@ -630,7 +629,7 @@ class RobotDrive(MotorSafety):
             the drive functions.
         """
         self.maxOutput = maxOutput
-        
+
     def free(self):
         self.__finalizer()
         self.frontLeftMotor = None
@@ -656,10 +655,12 @@ class RobotDrive(MotorSafety):
 
     def getNumMotors(self):
         motors = 0
-        if self.frontLeftMotor is not None: motors += 1
-        if self.frontRightMotor is not None: motors += 1
-        if self.rearLeftMotor is not None: motors += 1
-        if self.rearRightMotor is not None: motors += 1
+        if self.frontLeftMotor is not None:
+            motors += 1
+        if self.frontRightMotor is not None:
+            motors += 1
+        if self.rearLeftMotor is not None:
+            motors += 1
+        if self.rearRightMotor is not None:
+            motors += 1
         return motors
-
-    

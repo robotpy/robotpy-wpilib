@@ -15,6 +15,7 @@ from .livewindow import LiveWindow
 
 __all__ = ["SampleRobot"]
 
+
 class SampleRobot(RobotBase):
     """A simple robot base class that knows the standard FRC competition
     states (disabled, autonomous, or operator controlled).
@@ -27,14 +28,14 @@ class SampleRobot(RobotBase):
 
     Alternatively you can override the :meth:`robotMain` method and manage all
     aspects of the robot yourself (not recommended).
-    
+
     .. warning:: While it may look like a good choice to use for your code
                  if you're inexperienced, don't. Unless you know what you
                  are doing, complex code will be much more difficult under
                  this system. Use :class:`.IterativeRobot` or command based
                  instead if you're new.
     """
-    
+
     #: A python logging object that you can use to send messages to the log. It
     #: is recommended to use this instead of print statements.
     logger = logging.getLogger("robot")
@@ -45,10 +46,10 @@ class SampleRobot(RobotBase):
         Users should override this method for default Robot-wide initialization
         which will be called when the robot is first powered on.  It will be
         called exactly 1 time.
-        
+
         .. note:: It is simpler to override this function instead of defining
                   a constructor for your robot class
-                  
+
         .. warning:: the Driver Station "Robot Code" light and FMS "Robot Ready"
                      indicators will be off until RobotInit() exits. Code in ``robotInit()`` that
                      waits for enable will cause the robot to never indicate that the code is
@@ -102,14 +103,14 @@ class SampleRobot(RobotBase):
         called. If it has not been overridden by a user subclass (i.e. the
         default version runs), then the robotInit(), disabled(), autonomous()
         and operatorControl() methods will be called.
-        
+
         If you override this function, you must call ``hal.HALNetworkCommunicationObserveUserProgramStarting()``
         to indicate that your robot is ready to be enabled, as it will not
         be called for you.
-        
+
         .. warning:: Nobody actually wants to override this function. Neither
                      do you.
-        
+
         """
         self._no_robot_main = True
 
@@ -126,12 +127,12 @@ class SampleRobot(RobotBase):
                    hal.UsageReporting.kFramework_Sample)
 
         self.robotInit()
-        
+
         # Tell the DS that the robot is ready to be enabled
         hal.observeUserProgramStarting()
 
         self.robotMain()
-            
+
         if hasattr(self, '_no_robot_main'):
             # first and one-time initialization
             LiveWindow.setEnabled(False)

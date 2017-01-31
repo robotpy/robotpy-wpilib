@@ -22,12 +22,14 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Encoder"]
 
+
 def _freeEncoder(encoder):
     hal.freeEncoder(encoder)
 
+
 class Encoder(SensorBase):
     """Class to read quadrature encoders.
-    
+
     Quadrature encoders are devices that count
     shaft rotation and can sense direction. The output of the Encoder class
     is an integer that can count either up or down, and can go negative for
@@ -42,7 +44,7 @@ class Encoder(SensorBase):
     them to be zeroed before use.
 
     Instance variables:
-    
+
     - aSource: The A phase of the quad encoder
     - bSource: The B phase of the quad encoder
     - indexSource: The index source (available on some encoders)
@@ -67,7 +69,7 @@ class Encoder(SensorBase):
         numbers or `DigitalSource` sources. There may also be a boolean
         reverseDirection, and an encodingType according to the following
         list.
-        
+
         - aSource, bSource
         - aSource, bSource, reverseDirection
         - aSource, bSource, reverseDirection, encodingType
@@ -134,7 +136,7 @@ class Encoder(SensorBase):
 
         _, results = match_arglist('Encoder.__init__',
                                    args, kwargs, argument_templates)
-        
+
         # keyword arguments
         aSource = results.pop("aSource", None)
         bSource = results.pop("bSource", None)
@@ -169,7 +171,7 @@ class Encoder(SensorBase):
         self.bSource = bSource
         self.indexSource = indexSource
         self.encodingType = encodingType
-        self.distancePerPulse = 1.0 # distance of travel for each encoder tick
+        self.distancePerPulse = 1.0  # distance of travel for each encoder tick
         self.pidSource = self.PIDSourceType.kDisplacement
         self._encoder = None
         self.counter = None
@@ -177,13 +179,13 @@ class Encoder(SensorBase):
 
         if encodingType == self.EncodingType.k4X:
             self._encoder, self.index = hal.initializeEncoder(
-                    aSource.getPortHandleForRouting(),
-                    aSource.getAnalogTriggerTypeForRouting(),
-                    bSource.getPortHandleForRouting(),
-                    bSource.getAnalogTriggerTypeForRouting(),
-                    reverseDirection, encodingType)
+                aSource.getPortHandleForRouting(),
+                aSource.getAnalogTriggerTypeForRouting(),
+                bSource.getPortHandleForRouting(),
+                bSource.getAnalogTriggerTypeForRouting(),
+                reverseDirection, encodingType)
             self.__finalizer = \
-                    weakref.finalize(self, _freeEncoder, self._encoder)
+                weakref.finalize(self, _freeEncoder, self._encoder)
             self.setMaxPeriod(.5)
             self.encodingScale = 4
         elif encodingType in (self.EncodingType.k2X, self.EncodingType.k1X):
@@ -197,15 +199,15 @@ class Encoder(SensorBase):
             self.index = self.counter.getFPGAIndex()
         else:
             raise ValueError("unrecognized encodingType: %s" % encodingType)
-        
+
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
-        
+
         if self.indexSource is not None:
             self.setIndexSource(self.indexSource)
 
         hal.report(hal.UsageReporting.kResourceType_Encoder,
-                      self.index, encodingType)
+                   self.index, encodingType)
         LiveWindow.addSensorChannel("Encoder", aSource.getChannel(),
                                     self)
 
@@ -397,7 +399,7 @@ class Encoder(SensorBase):
                              self.PIDSourceType.kRate):
             raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
 

@@ -15,6 +15,7 @@ import warnings
 
 __all__ = ["Scheduler"]
 
+
 class Scheduler(Sendable):
     """The Scheduler is a singleton which holds the top-level running commands.
     It is in charge of both calling the command's run() method and to make
@@ -27,7 +28,7 @@ class Scheduler(Sendable):
 
     .. seealso:: :class:`.Command`
     """
-    
+
     @staticmethod
     def _reset():
         try:
@@ -108,7 +109,7 @@ class Scheduler(Sendable):
             # Check that the requirements can be had
             for lock in command.getRequirements():
                 if (lock.getCurrentCommand() is not None and
-                    not lock.getCurrentCommand().isInterruptible()):
+                        not lock.getCurrentCommand().isInterruptible()):
                     return
 
             # Give it the requirements
@@ -142,7 +143,7 @@ class Scheduler(Sendable):
         self.runningCommandsChanged = False
 
         if self.disabled:
-            return # Don't run when disabled
+            return  # Don't run when disabled
 
         # Get button input (going backwards preserves button priority)
         for button in reversed(self.buttons):

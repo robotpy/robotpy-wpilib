@@ -10,6 +10,7 @@ from .sendable import Sendable
 
 __all__ = ["SendableChooser"]
 
+
 class SendableChooser(Sendable):
     """A useful tool for presenting a selection of options to be displayed on
     the SmartDashboard

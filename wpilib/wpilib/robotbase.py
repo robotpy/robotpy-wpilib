@@ -15,16 +15,17 @@ logger = logging.getLogger('robotpy')
 
 __all__ = ["RobotBase"]
 
+
 class RobotBase:
     """Implement a Robot Program framework.
-    
+
     The RobotBase class is intended to be subclassed by a user creating a
     robot program.  Overridden ``autonomous()`` and ``operatorControl()`` methods
     are called at the appropriate time as the match proceeds. In the current
     implementation, the Autonomous code will run to completion before the
     OperatorControl code could start. In the future the Autonomous code might
     be spawned as a task, then killed at the end of the Autonomous period.
-    
+
     User code should be placed in the constructor that runs before the
     Autonomous or Operator Control period starts. The constructor will
     run to completion before Autonomous is entered.
@@ -32,7 +33,7 @@ class RobotBase:
     .. warning:: If you override ``__init__`` in your robot class, you must call
                  the base class constructor. This must be used to ensure that
                  the communications code starts.
-                 
+
     .. not_implemented: getBooleanProperty
     """
 
@@ -40,14 +41,14 @@ class RobotBase:
         # TODO: StartCAPI()
         # TODO: See if the next line is necessary
         # Resource.RestartProgram()
-        
+
         NetworkTables.setNetworkIdentity("Robot")
-        
+
         if not RobotBase.isSimulation():
             NetworkTables.setPersistentFilename("/home/lvuser/networktables.ini")
-        
+
         NetworkTables.setServerMode()
-        
+
         from .driverstation import DriverStation
         self.ds = DriverStation.getInstance()
 
@@ -138,10 +139,10 @@ class RobotBase:
     @staticmethod
     def initializeHardwareConfiguration():
         """Common initialization for all robot programs."""
-        
+
         # Python specific: do not call this, initialize() is already called when
         # hal is imported
-        #hal.initialize()
+        # hal.initialize()
 
         from .driverstation import DriverStation
         from .robotstate import RobotState
@@ -161,14 +162,14 @@ class RobotBase:
             from .driverstation import DriverStation
             DriverStation.reportError("ERROR Could not instantiate robot", True)
             logger.exception("Robots don't quit!")
-            logger.exception("Could not instantiate robot "+robot_cls.__name__+"!")
+            logger.exception("Could not instantiate robot " + robot_cls.__name__ + "!")
             return False
-        
+
         # Add a check to see if the user forgot to call super().__init__()
         if not hasattr(robot, '_RobotBase__initialized'):
             logger.error("If your robot class has an __init__ function, it must call super().__init__()!")
             return False
-        
+
         if not hal.isSimulation():
             try:
                 import wpilib

@@ -10,6 +10,7 @@ from .instantcommand import InstantCommand
 
 __all__ = ["StartCommand"]
 
+
 class StartCommand(InstantCommand):
     """A StartCommand will call the start() method of another command when it
     is initialized and will finish immediately.

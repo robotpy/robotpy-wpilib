@@ -12,6 +12,7 @@ from ..pidcontroller import PIDController
 
 __all__ = ["PIDCommand"]
 
+
 class PIDCommand(Command):
     """This class defines a Command which interacts heavily with a PID loop.
 
@@ -25,7 +26,7 @@ class PIDCommand(Command):
         It will use the class name as its name unless otherwise specified.
         It will also space the time between PID loop calculations to be equal
         to the given period.
-        
+
         :param p: the proportional value
         :param i: the integral value
         :param d: the derivative value
@@ -62,7 +63,7 @@ class PIDCommand(Command):
         """Adds the given value to the setpoint.
         If :meth:`setRange` was used, then the bounds will still be honored by
         this method.
-        
+
         :param deltaSetpoint: the change in the setpoint
         """
         self.setSetpoint(self.getSetpoint() + deltaSetpoint)
@@ -70,21 +71,21 @@ class PIDCommand(Command):
     def setSetpoint(self, setpoint):
         """Sets the setpoint to the given value.  If :meth:`setRange` was called,
         then the given setpoint will be trimmed to fit within the range.
-        
+
         :param setpoint: the new setpoint
         """
         self.controller.setSetpoint(setpoint)
 
     def getSetpoint(self):
         """Returns the setpoint.
-        
+
         :returns: the setpoint
         """
         return self.controller.getSetpoint()
 
     def getPosition(self):
         """Returns the current position
-        
+
         :returns: the current position
         """
         return self.returnPIDInput()

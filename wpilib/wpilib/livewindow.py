@@ -8,15 +8,18 @@ logger = logging.getLogger(__name__)
 
 __all__ = ["LiveWindow"]
 
+
 class _LiveWindowComponent:
     """A LiveWindow component is a device (sensor or actuator) that should be
     added to the SmartDashboard in test mode. The components are cached until
     the first time the robot enters Test mode. This allows the components to
     be inserted, then renamed."""
+
     def __init__(self, subsystem, name, isSensor):
         self.subsystem = subsystem
         self.name = str(name)
         self.isSensor = isSensor
+
 
 class LiveWindow:
     """The public interface for putting sensors and
@@ -29,7 +32,7 @@ class LiveWindow:
     statusTable = None
     liveWindowEnabled = False
     firstTime = True
-    
+
     @staticmethod
     def _reset():
         LiveWindow.sensors = set()
@@ -119,7 +122,7 @@ class LiveWindow:
             sensor.
         """
         LiveWindow.components[component] = \
-                _LiveWindowComponent(subsystem, name, True)
+            _LiveWindowComponent(subsystem, name, True)
         LiveWindow.sensors.add(component)
 
     @staticmethod
@@ -133,7 +136,7 @@ class LiveWindow:
             actuator.
         """
         LiveWindow.components[component] = \
-                _LiveWindowComponent(subsystem, name, False)
+            _LiveWindowComponent(subsystem, name, False)
 
     @staticmethod
     def updateValues():
@@ -187,9 +190,9 @@ class LiveWindow:
         :param component: The reference to the object being added
         """
         LiveWindow.addActuator(
-                "Ungrouped",
-                "%s[%s,%s]" % (moduleType, moduleNumber, channel),
-                component)
+            "Ungrouped",
+            "%s[%s,%s]" % (moduleType, moduleNumber, channel),
+            component)
 
     @staticmethod
     def removeComponent(component):

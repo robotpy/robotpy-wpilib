@@ -16,28 +16,29 @@ from .livewindow import LiveWindow
 
 __all__ = ["ADXL362"]
 
+
 class ADXL362(SensorBase):
     """
         ADXL362 SPI Accelerometer.
-    
+
         This class allows access to an Analog Devices ADXL362 3-axis accelerometer.
-        
+
         .. not_implemented: init
     """
-    
+
     kRegWrite = 0x0A
     kRegRead = 0x0B
-     
+
     kPartIdRegister = 0x02
     kDataRegister = 0x0E
     kFilterCtlRegister = 0x2C
     kPowerCtlRegister = 0x2D
-    
+
     kFilterCtl_Range2G = 0x00
     kFilterCtl_Range4G = 0x40
     kFilterCtl_Range8G = 0x80
     kFilterCtl_ODR_100Hz = 0x03
-    
+
     kPowerCtl_UltraLowNoise = 0x20
     kPowerCtl_AutoSleep = 0x04
     kPowerCtl_Measure = 0x02
@@ -51,7 +52,7 @@ class ADXL362(SensorBase):
 
     def __init__(self, range, port=None):
         """Constructor.
-        
+
         :param range: The range (+ or -) that the accelerometer will measure.
         :type range: :class:`.ADXL362.Range`
         :param port: The SPI port that the accelerometer is connected to
@@ -59,7 +60,7 @@ class ADXL362(SensorBase):
         """
         if port is None:
             port = SPI.Port.kOnboardCS1
-        
+
         self.spi = SPI(port)
         self.spi.setClockRate(3000000)
         self.spi.setMSBFirst()
@@ -75,7 +76,7 @@ class ADXL362(SensorBase):
             self.spi.free()
             self.spi = None
             return
-    
+
         self.setRange(range)
 
         # Turn on the measurements
@@ -83,7 +84,7 @@ class ADXL362(SensorBase):
                         self.kPowerCtl_Measure | self.kPowerCtl_UltraLowNoise])
 
         hal.report(hal.UsageReporting.kResourceType_ADXL362,
-                      port)
+                   port)
 
         LiveWindow.addSensor("ADXL362", port, self)
 
@@ -110,7 +111,7 @@ class ADXL362(SensorBase):
             self.gsPerLSB = 0.002
         # 16G not supported; treat as 8G
         elif range == self.Range.k8G or \
-             range == self.Range.k16G:
+                range == self.Range.k16G:
             value = self.kFilterCtl_Range8G
             self.gsPerLSB = 0x004
         else:
@@ -148,7 +149,7 @@ class ADXL362(SensorBase):
         """
         if self.spi is None:
             return 0.0
-        
+
         data = [self.kRegRead,
                 self.kDataRegister + axis, 0, 0]
         data = self.spi.transaction(data)
@@ -163,7 +164,7 @@ class ADXL362(SensorBase):
         """
         if self.spi is None:
             return 0.0, 0.0, 0.0
-        
+
         # Select the data address.
         data = [0] * 8
         data[0] = self.kRegRead
@@ -173,7 +174,7 @@ class ADXL362(SensorBase):
         # Sensor is little endian... swap bytes
         rawData = []
         for i in range(3):
-            rawData.append((data[i*2+2] << 8) | data[i*2+1])
+            rawData.append((data[i * 2 + 2] << 8) | data[i * 2 + 1])
 
         return (rawData[0] * self.gsPerLSB,
                 rawData[1] * self.gsPerLSB,
@@ -189,4 +190,3 @@ class ADXL362(SensorBase):
             self.table.putNumber("X", self.getX())
             self.table.putNumber("Y", self.getY())
             self.table.putNumber("Z", self.getZ())
-

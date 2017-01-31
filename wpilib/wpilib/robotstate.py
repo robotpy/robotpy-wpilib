@@ -2,11 +2,12 @@
 
 __all__ = ["RobotState"]
 
+
 class RobotState:
     """Provides an interface to determine the current operating state of the
     robot code.
     """
-    
+
     impl = None
 
     @staticmethod

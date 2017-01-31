@@ -10,42 +10,42 @@ from .interfaces.pidsource import PIDSource
 
 __all__ = ['Filter']
 
+
 class Filter:
     """Superclass for filters"""
-    
+
     def __init__(self, source):
         """Constructor.
-        
+
         :param source:
         :type source: :class:`.PIDSource`, callable
         """
         self.source = PIDSource.from_obj_or_callable(source)
-        
+
     def setPIDSourceType(self, pidSourceType):
         self.source.setPIDSourceType(pidSourceType)
-        
+
     def getPIDSourceType(self):
         return self.source.getPIDSourceType()
-    
+
     def pidGet(self):
         raise NotImplementedError
-    
+
     def get(self):
         """Returns the current filter estimate without also inserting new data as
         :meth:`pidGet` would do.
-        
+
         :returns: The current filter estimate
         """
         raise NotImplementedError
-    
+
     def reset(self):
         """Reset the filter state"""
         raise NotImplementedError
-    
+
     def pidGetSource(self):
         """Calls PIDGet() of source
-        
+
         :returns: Current value of source
         """
         return self.source.pidGet()
-        

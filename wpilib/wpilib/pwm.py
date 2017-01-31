@@ -15,13 +15,15 @@ from .sensorbase import SensorBase
 
 __all__ = ["PWM"]
 
+
 def _freePWM(handle):
     hal.setPWMDisabled(handle)
     hal.freePWMPort(handle)
 
+
 class PWM(LiveWindowSendable):
     """Raw interface to PWM generation in the FPGA.
-    
+
     The values supplied as arguments for PWM outputs range from -1.0 to 1.0. They
     are mapped to the hardware dependent values, in this case 0-2000 for the
     FPGA.  Changes are immediately sent to the FPGA, and the update occurs at
@@ -29,14 +31,14 @@ class PWM(LiveWindowSendable):
 
     As of revision 0.1.10 of the FPGA, the FPGA interprets the 0-2000 values as
     follows:
-    
+
     - 2000 = full "forward"
     - 1999 to 1001 = linear scaling from "full forward" to "center"
     - 1000 = center value
     - 999 to 2 = linear scaling from "center" to "full reverse"
     - 1 = minimum pulse width (currently .5ms)
     - 0 = disabled (i.e. PWM output is held low)
-    
+
     kDefaultPwmPeriod is the 1x period (5.05 ms).  In hardware, the period
     scaling is implemented as an output squelch to get longer periods for old
     devices.
@@ -56,16 +58,16 @@ class PWM(LiveWindowSendable):
         """Represents the amount to multiply the minimum servo-pulse pwm
         period by.
         """
-        
+
         #: Period Multiplier: don't skip pulses.
         k1X = 1
-        
+
         #: Period Multiplier: skip every other pulse.
         k2X = 2
-        
+
         #: Period Multiplier: skip three out of four pulses.
         k4X = 4
-    
+
     def __init__(self, channel):
         """Allocate a PWM given a channel.
 
@@ -74,20 +76,19 @@ class PWM(LiveWindowSendable):
         """
         SensorBase.checkPWMChannel(channel)
         self.channel = channel
-        
+
         self._handle = hal.initializePWMPort(hal.getPort(channel))
         self.__finalizer = weakref.finalize(self, _freePWM, self._handle)
-        
+
         self.setDisabled()
-        
+
         hal.setPWMEliminateDeadband(self.handle, False)
-        
+
         hal.report(hal.UsageReporting.kResourceType_PWM, channel)
-                
+
         # Python-specific: Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
-        
-    
+
     @property
     def handle(self):
         if not self.__finalizer.alive:
@@ -119,7 +120,7 @@ class PWM(LiveWindowSendable):
         """Set the bounds on the PWM values. This sets the bounds on the PWM values for a particular each
         type of controller. The values determine the upper and lower speeds as well as the deadband
         bracket.
-        
+
         :param max: The Minimum pwm value
         :type max: int
         :param deadbandMax: The high end of the deadband range
@@ -130,7 +131,7 @@ class PWM(LiveWindowSendable):
         :type deadbandMin: int
         :param min: The minimum pwm value
         :type min: int
-        
+
         .. deprecated:: 2017.0.0
            Recommended to set bounds in ms using :meth:`setBounds` instead
         """
@@ -155,12 +156,12 @@ class PWM(LiveWindowSendable):
         :type min: float
         """
         hal.setPWMConfig(self.handle, max, deadbandMax, center, deadbandMin, min)
-    
+
     def getRawBounds(self):
         """Gets the bounds on the PWM pulse widths. This Gets the bounds on the PWM values for a
         particular type of controller. The values determine the upper and lower speeds as well
         as the deadband bracket.
-        
+
         :returns: tuple of (max, deadbandMax, center, deadbandMin, min)
         """
         return hal.getPWMConfigRaw(self.handle)
@@ -249,7 +250,7 @@ class PWM(LiveWindowSendable):
         :rtype: int
         """
         return hal.getPWMRaw(self.handle)
-    
+
     def setDisabled(self):
         """Temporarily disables the PWM output. The next set call will reenable
         the output.
@@ -293,9 +294,9 @@ class PWM(LiveWindowSendable):
         self.setSpeed(float(value))
 
     def startLiveWindowMode(self):
-        self.setSpeed(0) # Stop for safety
+        self.setSpeed(0)  # Stop for safety
         super().startLiveWindowMode()
 
     def stopLiveWindowMode(self):
         super().stopLiveWindowMode()
-        self.setSpeed(0) # Stop for safety
+        self.setSpeed(0)  # Stop for safety

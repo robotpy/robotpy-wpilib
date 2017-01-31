@@ -13,6 +13,7 @@ from .livewindow import LiveWindow
 
 __all__ = ["BuiltInAccelerometer"]
 
+
 class BuiltInAccelerometer(LiveWindowSendable):
     """Built-in accelerometer device
 
@@ -23,14 +24,14 @@ class BuiltInAccelerometer(LiveWindowSendable):
 
     def __init__(self, range=Accelerometer.Range.k8G):
         """Constructor.
-        
+
         :param range: The range the accelerometer will measure.  Defaults to
             +/-8g if unspecified.
         :type  range: :class:`.Accelerometer.Range`
         """
         self.setRange(range)
         hal.report(hal.UsageReporting.kResourceType_Accelerometer, 0, 0,
-                      "Built-in accelerometer")
+                   "Built-in accelerometer")
         LiveWindow.addSensor("BuiltInAccel", 0, self)
 
     def free(self):
@@ -43,7 +44,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
                       the accelerometer will measure.
         :type  range: :class:`BuiltInAccelerometer.Range`
         """
-        
+
         hal.setAccelerometerActive(False)
 
         if range == self.Range.k2G:
@@ -93,8 +94,8 @@ class BuiltInAccelerometer(LiveWindowSendable):
             table.putNumber("Y", self.getY())
             table.putNumber("Z", self.getZ())
 
-    def startLiveWindowMode(self): # pragma: no cover
+    def startLiveWindowMode(self):  # pragma: no cover
         pass
 
-    def stopLiveWindowMode(self): # pragma: no cover
+    def stopLiveWindowMode(self):  # pragma: no cover
         pass

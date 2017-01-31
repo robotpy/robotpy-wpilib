@@ -138,7 +138,7 @@ class Preferences:
     def __setitem__(self, key, value):
         """Python style setting of key/value."""
         self.table.putString(key, str(value))
-  
+
     def containsKey(self, key):
         """Returns whether or not there is a key with the given name.
 

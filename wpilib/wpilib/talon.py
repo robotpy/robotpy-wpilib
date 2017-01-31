@@ -13,6 +13,7 @@ from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Talon"]
 
+
 class Talon(PWMSpeedController):
     """
         Cross the Road Electronics (CTRE) Talon and Talon SR Speed Controller via PWM

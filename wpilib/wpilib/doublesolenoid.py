@@ -17,9 +17,11 @@ from .solenoidbase import SolenoidBase
 
 __all__ = ["DoubleSolenoid"]
 
+
 def _freeSolenoid(fwdHandle, revHandle):
     hal.freeSolenoidPort(fwdHandle)
     hal.freeSolenoidPort(revHandle)
+
 
 class DoubleSolenoid(SolenoidBase):
     """Controls 2 channels of high voltage Digital Output on the PCM.
@@ -39,7 +41,7 @@ class DoubleSolenoid(SolenoidBase):
 
         Arguments can be supplied as positional or keyword.  Acceptable
         positional argument combinations are:
-        
+
         - forwardChannel, reverseChannel
         - moduleNumber, forwardChannel, reverseChannel
 
@@ -74,14 +76,14 @@ class DoubleSolenoid(SolenoidBase):
             raise ValueError("must specify reverse channel")
 
         super().__init__(moduleNumber)
-        
+
         SensorBase.checkSolenoidModule(moduleNumber)
         SensorBase.checkSolenoidChannel(forwardChannel)
         SensorBase.checkSolenoidChannel(reverseChannel)
 
         portHandle = hal.getPortWithModule(moduleNumber, forwardChannel)
         self.forwardHandle = hal.initializeSolenoidPort(portHandle)
-        
+
         try:
             portHandle = hal.getPortWithModule(moduleNumber, reverseChannel)
             self.reverseHandle = hal.initializeSolenoidPort(portHandle)
@@ -99,24 +101,24 @@ class DoubleSolenoid(SolenoidBase):
         Resource._add_global_resource(self)
 
         hal.report(hal.UsageReporting.kResourceType_Solenoid,
-                      forwardChannel, moduleNumber)
+                   forwardChannel, moduleNumber)
         hal.report(hal.UsageReporting.kResourceType_Solenoid,
-                      reverseChannel, moduleNumber)
+                   reverseChannel, moduleNumber)
 
         LiveWindow.addActuatorModuleChannel("DoubleSolenoid", moduleNumber,
                                             forwardChannel, self)
-        
+
         self.__finalizer = weakref.finalize(self, _freeSolenoid,
                                             self.forwardHandle, self.reverseHandle)
 
     def free(self):
         """Mark the solenoid as freed."""
         LiveWindow.removeComponent(self)
-        
+
         self.__finalizer()
         self.forwardHandle = None
         self.reverseHandle = None
-        
+
         super().free()
 
     def set(self, value):
@@ -199,7 +201,7 @@ class DoubleSolenoid(SolenoidBase):
                 table.putString("Value", "O")
 
     def valueChanged(self, itable, key, value, bln):
-        #TODO: this is bad also
+        # TODO: this is bad also
         if value == "Reverse":
             self.set(self.Value.kReverse)
         elif value == "Forward":
@@ -208,9 +210,9 @@ class DoubleSolenoid(SolenoidBase):
             self.set(self.Value.kOff)
 
     def startLiveWindowMode(self):
-        self.set(self.Value.kOff) # Stop for safety
+        self.set(self.Value.kOff)  # Stop for safety
         super().startLiveWindowMode()
 
     def stopLiveWindowMode(self):
         super().stopLiveWindowMode()
-        self.set(self.Value.kOff) # Stop for safety
+        self.set(self.Value.kOff)  # Stop for safety

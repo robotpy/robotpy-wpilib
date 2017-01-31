@@ -15,13 +15,14 @@ from .livewindow import LiveWindow
 
 __all__ = ["ADXL345_SPI"]
 
+
 class ADXL345_SPI(SensorBase):
     """
         ADXL345 accelerometer device via spi
-        
+
         .. not_implemented: init
     """
-    
+
     kPowerCtlRegister = 0x2D
     kDataFormatRegister = 0x31
     kDataRegister = 0x32
@@ -70,7 +71,7 @@ class ADXL345_SPI(SensorBase):
         self.setRange(range)
 
         hal.report(hal.UsageReporting.kResourceType_ADXL345,
-                      hal.UsageReporting.kADXL345_SPI)
+                   hal.UsageReporting.kADXL345_SPI)
 
         LiveWindow.addSensor("ADXL345_SPI", port, self)
 
@@ -151,7 +152,7 @@ class ADXL345_SPI(SensorBase):
         # Sensor is little endian... swap bytes
         rawData = []
         for i in range(3):
-            rawData.append((data[i*2+2] << 8) | data[i*2+1])
+            rawData.append((data[i * 2 + 2] << 8) | data[i * 2 + 1])
 
         return (rawData[0] * self.kGsPerLSB,
                 rawData[1] * self.kGsPerLSB,
@@ -167,4 +168,3 @@ class ADXL345_SPI(SensorBase):
             self.table.putNumber("X", self.getX())
             self.table.putNumber("Y", self.getY())
             self.table.putNumber("Z", self.getZ())
-

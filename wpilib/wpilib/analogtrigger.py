@@ -15,13 +15,15 @@ from .resource import Resource
 
 __all__ = ["AnalogTrigger"]
 
+
 def _freeAnalogTrigger(port):
     hal.cleanAnalogTrigger(port)
+
 
 class AnalogTrigger:
     """
         Converts an analog signal into a digital signal
-        
+
         An analog trigger is a way to convert an analog signal into a digital
         signal using resources built into the FPGA. The resulting digital
         signal can then be used directly or fed into other digital components
@@ -29,7 +31,7 @@ class AnalogTrigger:
         module works by comparing analog signals to a voltage range set by
         the code. The specific return types and meanings depend on the analog
         trigger mode in use.
-        
+
         .. not_implemented: initTrigger
     """
 
@@ -51,13 +53,13 @@ class AnalogTrigger:
         port = hal.getPort(channel)
         self._port, self.index = hal.initializeAnalogTrigger(port)
         self.__finalizer = \
-                weakref.finalize(self, _freeAnalogTrigger, self._port)
-                
+            weakref.finalize(self, _freeAnalogTrigger, self._port)
+
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
         hal.report(hal.UsageReporting.kResourceType_AnalogTrigger,
-                      channel)
+                   channel)
 
     @property
     def port(self):
@@ -70,7 +72,6 @@ class AnalogTrigger:
         self.__finalizer()
         if self.analogInput:
             self.analogInput.free()
-            
 
     def setLimitsRaw(self, lower, upper):
         """Set the upper and lower limits of the analog trigger. The limits are
@@ -82,7 +83,7 @@ class AnalogTrigger:
         """
         if lower > upper:
             raise ValueError("Lower bound is greater than upper")
-        
+
         hal.setAnalogTriggerLimitsRaw(self.port, lower, upper)
 
     def setLimitsVoltage(self, lower, upper):
@@ -94,7 +95,7 @@ class AnalogTrigger:
         """
         if lower > upper:
             raise ValueError("Lower bound is greater than upper")
-        
+
         hal.setAnalogTriggerLimitsVoltage(self.port, float(lower), float(upper))
 
     def setAveraged(self, useAveragedValue):

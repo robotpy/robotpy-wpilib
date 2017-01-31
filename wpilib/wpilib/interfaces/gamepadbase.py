@@ -10,6 +10,7 @@ from .generichid import GenericHID
 
 __all__ = ["GamepadBase"]
 
+
 class GamepadBase(GenericHID):
     """
     GamepadBase Interface.

@@ -15,6 +15,7 @@ from .sensorbase import SensorBase
 
 __all__ = ['DigitalGlitchFilter']
 
+
 class DigitalGlitchFilter(SensorBase):
     '''
     Class to enable glitch filtering on a set of digital inputs.
@@ -22,10 +23,10 @@ class DigitalGlitchFilter(SensorBase):
     filter. The filter lets the user configure the time that an input must remain
     high or low before it is classified as high or low.
     '''
-    
+
     mutex = threading.Lock()
-    filterAllocated = [False]*3
-    
+    filterAllocated = [False] * 3
+
     def __init__(self):
         self.channelIndex = -1
         with self.mutex:
@@ -38,31 +39,31 @@ class DigitalGlitchFilter(SensorBase):
                     break
             else:
                 raise ValueError("No more filters available")
-    
+
     def free(self):
         if self.channelIndex >= 0:
             with self.mutex:
                 self.filterAllocated[self.channelIndex] = False
-            
+
             self.channelIndex = -1
-    
+
     @staticmethod
     def _setFilter(input, channelIndex):
-        if input is not None: # Counter might have just one input
+        if input is not None:  # Counter might have just one input
             # analog triggers are not supported for DigitalGlitchFilter
             if input.isAnalogTrigger():
                 raise ValueError("Analog Triggers are not supported for DigitalGlitchFilters")
             hal.setFilterSelect(input.getPortHandleForRouting(), channelIndex)
-            
+
             selected = hal.getFilterSelect(input.getPortHandleForRouting())
             if selected != channelIndex:
                 raise ValueError('setFilterSelect(%s) failed -> %s' % (channelIndex, selected))
-    
+
     def add(self, input):
         '''
         Assigns the :class:`.DigitalSource`, :class:`.Encoder`, or
         :class:`.Counter` to this glitch filter.
-        
+
         :param input: The object to add
         '''
         if isinstance(input, DigitalSource):
@@ -75,12 +76,12 @@ class DigitalGlitchFilter(SensorBase):
             DigitalGlitchFilter._setFilter(input.downSource, self.channelIndex + 1)
         else:
             raise ValueError("Cannot add %s to glitch filter" % input)
-        
+
     def remove(self, input):
         '''
         Removes this filter from the given input object
         '''
-        
+
         if isinstance(input, DigitalSource):
             DigitalGlitchFilter._setFilter(input, 0)
         elif isinstance(input, Encoder):
@@ -91,40 +92,40 @@ class DigitalGlitchFilter(SensorBase):
             DigitalGlitchFilter._setFilter(input.downSource, 0)
         else:
             raise ValueError("Cannot remove %s from glitch filter" % input)
-        
+
     def setPeriodCycles(self, fpga_cycles):
         '''
         Sets the number of FPGA cycles that the input must hold steady to pass
         through this glitch filter.
-        
+
         :param fpga_cycles: The number of FPGA cycles.
         '''
         hal.setFilterPeriod(self.channelIndex, fpga_cycles)
-        
+
     def setPeriodNanoSeconds(self, nanoseconds):
         '''
         Sets the number of nanoseconds that the input must hold steady to pass
         through this glitch filter.
-        
+
         :param nanoseconds: The number of nanoseconds.
         '''
         fpga_cycles = int(nanoseconds * self.kSystemClockTicksPerMicrosecond / 4 / 1000)
         self.setPeriodCycles(fpga_cycles)
-    
+
     def getPeriodCycles(self):
         '''
         Gets the number of FPGA cycles that the input must hold steady to pass
         through this glitch filter.
-       
+
         :returns: The number of cycles.
         '''
         return hal.getFilterPeriod(self.channelIndex)
-    
+
     def getPeriodNanoSeconds(self):
         '''
         Gets the number of nanoseconds that the input must hold steady to pass
         through this glitch filter.
-       
+
         :returns: The number of nanoseconds.
         '''
         fpga_cycles = self.getPeriodCycles()

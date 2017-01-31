@@ -18,9 +18,10 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Counter"]
 
+
 def _freeCounter(counterObj):
     hal.setCounterUpdateWhenEmpty(counterObj._counter, True)
-    
+
     counterObj.clearUpSource()
     counterObj.clearDownSource()
 
@@ -33,29 +34,29 @@ def _freeCounter(counterObj):
 
 class Counter(SensorBase):
     """Counts the number of ticks on a :class:`.DigitalInput` channel.
-    
+
     This is a general purpose class for counting repetitive events. It can return
     the number of counts, the period of the most recent cycle, and detect when
     the signal being counted has stopped by supplying a maximum cycle time.
 
     All counters will immediately start counting - :meth:`reset` them if you need
     them to be zeroed before use.
-    
+
     .. not_implemented: initCounter
     """
 
     class Mode:
         """Mode determines how and what the counter counts"""
-        
+
         #: two pulse mode
         kTwoPulse = 0
-        
+
         #: semi period mode
         kSemiperiod = 1
-        
+
         #: pulse length mode
         kPulseLength = 2
-        
+
         #: external direction mode
         kExternalDirection = 3
 
@@ -73,7 +74,7 @@ class Counter(SensorBase):
         sources, or :class:`.AnalogTrigger` sources in the following order:
 
         A "source" is any valid single-argument input to :meth:`setUpSource` and :meth:`setDownSource`
-        
+
         - (none)
         - upSource
         - upSource, down source
@@ -114,7 +115,6 @@ class Counter(SensorBase):
                               [("encodingType", None), ("upSource", source_identifier),
                                ("downSource", source_identifier), ("inverted", bool)], ]
 
-
         _, results = match_arglist('Counter.__init__',
                                    args, kwargs, argument_templates, allow_extra_kwargs=True)
 
@@ -127,14 +127,14 @@ class Counter(SensorBase):
         mode = results.pop("mode", None)
 
         if mode is None:
-            #Get the mode
+            # Get the mode
             if upSource is not None and downSource is not None:
                 mode = self.Mode.kExternalDirection
             else:
                 mode = self.Mode.kTwoPulse
 
         # save some variables
-        self.distancePerPulse = 1.0 # distance of travel for each tick
+        self.distancePerPulse = 1.0  # distance of travel for each tick
         self.pidSource = self.PIDSourceType.kDisplacement
 
         # create counter
@@ -216,7 +216,7 @@ class Counter(SensorBase):
         :type triggerType: AnalogTriggerType
         """
 
-        #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
+        # TODO Both this and the java implementation should probably not allow setting a source if one is already set.
 
         argument_templates = [[("channel", int)],
                               [("source", HasAttribute("getPortHandleForRouting")), ],
@@ -274,7 +274,7 @@ class Counter(SensorBase):
 
         This function accepts either a digital channel index, a
         `DigitalSource`, or an `AnalogTrigger` as positional arguments:
-        
+
         - source
         - channel
         - analogTrigger
@@ -303,7 +303,7 @@ class Counter(SensorBase):
         :type triggerType: AnalogTriggerType
         """
 
-        #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
+        # TODO Both this and the java implementation should probably not allow setting a source if one is already set.
 
         argument_templates = [[("channel", int)],
                               [("source", HasAttribute("getPortHandleForRouting")), ],
@@ -475,7 +475,7 @@ class Counter(SensorBase):
         supported.
 
         :param reverseDirection: True if the value counted should be negated.
-        :type  reverseDirection: bool 
+        :type  reverseDirection: bool
         """
         hal.setCounterReverseDirection(self.counter, reverseDirection)
 

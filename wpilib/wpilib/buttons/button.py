@@ -10,6 +10,7 @@ from .trigger import Trigger
 
 __all__ = ["Button"]
 
+
 class Button(Trigger):
     """This class provides an easy way to link commands to OI inputs.
 

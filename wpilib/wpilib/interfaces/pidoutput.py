@@ -8,6 +8,7 @@
 
 __all__ = ["PIDOutput"]
 
+
 class PIDOutput:
     """This interface allows :class:`.PIDController` to write its results to
     its output.

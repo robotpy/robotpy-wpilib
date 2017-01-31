@@ -14,9 +14,10 @@ from .livewindowsendable import LiveWindowSendable
 
 __all__ = ["AnalogPotentiometer"]
 
+
 class AnalogPotentiometer(LiveWindowSendable):
     """Reads a potentiometer via an :class:`.AnalogInput`
-    
+
     Analog potentiometers read
     in an analog voltage that corresponds to a position. The position is in
     whichever units you choose, by way of the scaling and offset constants
@@ -24,7 +25,7 @@ class AnalogPotentiometer(LiveWindowSendable):
 
     .. not_implemented: initPot
     """
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel, fullRange=1.0, offset=0.0):
@@ -61,10 +62,10 @@ class AnalogPotentiometer(LiveWindowSendable):
         :rtype: float
         """
         return (self.analog_input.getVoltage() / hal.getUserVoltage5V()) * self.fullRange + self.offset
-    
+
     def setPIDSourceType(self, pidSource):
         """Set which parameter you are using as a process
-        control variable. 
+        control variable.
 
         :param pidSource: An enum to select the parameter.
         :type  pidSource: :class:`.PIDSource.PIDSourceType`
@@ -72,7 +73,7 @@ class AnalogPotentiometer(LiveWindowSendable):
         if pidSource != self.PIDSourceType.kDisplacement:
             raise ValueError("Only displacement PID is allowed for potentiometers.")
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
 
