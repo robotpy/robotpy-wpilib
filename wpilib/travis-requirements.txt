@@ -8,3 +8,4 @@ git+git://github.com/robotpy/pyfrc.git
 pytest>=2.8
 coverage
 CppHeaderParser>=2.7.4
+pycodestyle

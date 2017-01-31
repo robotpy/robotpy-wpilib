@@ -70,6 +70,7 @@ class _CustomHelpAction(argparse.Action):
         parser.print_help()
         parser.exit(1)  # argparse uses an exit code of zero by default
 
+
 argparse._HelpAction = _CustomHelpAction
 
 
