@@ -12,19 +12,21 @@ import weakref
 
 __all__ = ["I2C"]
 
+
 def _freeI2C(port):
     hal.closeI2C(port)
+
 
 class I2C:
     """I2C bus interface class.
 
     This class is intended to be used by sensor (and other I2C device) drivers.
     It probably should not be used directly.
-    
+
     Example usage::
-    
+
         i2c = wpilib.I2C(wpilib.I2C.Port.kOnboard, 4)
-        
+
         # Write bytes 'text', and receive 4 bytes in data
         data = i2c.transaction(b'text', 4)
     """
@@ -44,37 +46,37 @@ class I2C:
         """
         if port not in [self.Port.kOnboard, self.Port.kMXP]:
             raise ValueError("Invalid value '%s' for I2C port" % port)
-        
+
         if hal.HALIsSimulation():
             if simPort is None:
                 # If you want more functionality, implement your own mock
                 from hal_impl.i2c_helpers import I2CSimBase
                 simPort = I2CSimBase()
-                
+
                 msg = "Using stub simulator for I2C port %s" % port
                 warnings.warn(msg)
-            
+
             # Just check for basic functionality
             assert hasattr(simPort, 'initializeI2C')
             assert hasattr(simPort, 'closeI2C')
-            
+
             self._port = (simPort, port)
         else:
             self._port = port
-            
+
         self.deviceAddress = deviceAddress
 
         hal.initializeI2C(self._port)
         self.__finalizer = weakref.finalize(self, _freeI2C, self._port)
 
         hal.report(hal.UsageReporting.kResourceType_I2C, deviceAddress)
-    
+
     @property
     def port(self):
         if not self.__finalizer.alive:
             raise ValueError("Cannot use i2c port after free() has been called")
         return self._port
-    
+
     def free(self):
         self.__finalizer()
 
@@ -134,12 +136,12 @@ class I2C:
         :param data: The data to write to the device.
         :type data: iterable of bytes
         :returns: Transfer Aborted... False for success, True for aborted.
-        
+
         Usage::
-        
+
             # send byte string
             failed = spi.writeBulk(b'stuff')
-            
+
             # send list of integers
             failed = spi.write([0x01, 0x02])
         """

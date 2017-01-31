@@ -16,9 +16,10 @@ from .timer import Timer
 
 __all__ = ["AnalogGyro"]
 
+
 class AnalogGyro(GyroBase):
     """Interface to a gyro device via an :class:`.AnalogInput`
-    
+
     Use a rate gyro to return the robots heading relative to a starting
     position.  The Gyro class tracks the robots heading based on the starting
     position. As the robot rotates the new heading is computed by integrating
@@ -35,9 +36,9 @@ class AnalogGyro(GyroBase):
     kSamplesPerSecond = 50.0
     kCalibrationSampleTime = 5.0
     kDefaultVoltsPerDegreePerSecond = 0.007
-    
+
     PIDSourceType = PIDSource.PIDSourceType
-    
+
     def __init__(self, channel, center=None, offset=None):
         """Gyro constructor.
 
@@ -56,37 +57,35 @@ class AnalogGyro(GyroBase):
         :param offset: Preset uncalibrated value to use as the gyro offset
         :type offset: float
         """
-        
+
         if not hasattr(channel, "initAccumulator"):
             channel = AnalogInput(channel)
             self.channelAllocated = True
         else:
             self.channelAllocated = False
-            
+
         self.analog = channel
 
         self.gyroHandle = hal.initializeAnalogGyro(self.analog.port)
-    
-           
+
         self.setDeadband(0.0)
 
         hal.setupAnalogGyro(self.gyroHandle)
-        
+
         hal.report(hal.UsageReporting.kResourceType_Gyro,
-                      self.analog.getChannel())
+                   self.analog.getChannel())
         LiveWindow.addSensorChannel("AnalogGyro", self.analog.getChannel(), self)
-        
+
         if center is None or offset is None:
             self.calibrate()
         else:
-            hal.setAnalogGyroParameters(self.gyroHandle, self.kDefaultVoltsPerDegreePerSecond, offset, center)        
+            hal.setAnalogGyroParameters(self.gyroHandle, self.kDefaultVoltsPerDegreePerSecond, offset, center)
             self.reset()
-        
-        
+
     def calibrate(self):
         """:see: :meth:`.Gyro.calibrate`"""
         hal.calibrateAnalogGyro(self.gyroHandle)
-        
+
     def reset(self):
         """:see: :meth:`.Gyro.reset`"""
         hal.resetAnalogGyro(self.gyroHandle)
@@ -99,13 +98,13 @@ class AnalogGyro(GyroBase):
             self.analog = None
         hal.freeAnalogGyro(self.gyroHandle)
         self.gyroHandle = 0
-        
+
     def getAngle(self):
         """:see: :meth:`.Gyro.getAngle`"""
-    
+
         if self.analog is None:
             return 0.0
-        
+
         return hal.getAnalogGyroAngle(self.gyroHandle)
 
     def getRate(self):
@@ -118,15 +117,15 @@ class AnalogGyro(GyroBase):
     def getOffset(self):
         """Return the gyro offset value set during calibration to
         use as a future preset
-        
+
         :returns: the current offset value
         """
         return hal.getAnalogGyroOffset(self.gyroHandle)
-    
+
     def getCenter(self):
         """Return the gyro center value set during calibration to
         use as a future preset
-        
+
         :returns: the current center value
         """
         return hal.getAnalogGyroCenter(self.gyroHandle)
@@ -154,6 +153,5 @@ class AnalogGyro(GyroBase):
         """
         if self.analog is None:
             return
-        
-        hal.setAnalogGyroDeadband(self.gyroHandle, volts)
 
+        hal.setAnalogGyroDeadband(self.gyroHandle, volts)

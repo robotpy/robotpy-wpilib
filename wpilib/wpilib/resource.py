@@ -10,9 +10,10 @@ import weakref
 
 __all__ = ["Resource"]
 
+
 class Resource:
     """Tracks resources in the program.
-    
+
     The Resource class is a convenient way of keeping track of allocated
     arbitrary resources in the program. Resources are just indices that
     have an lower and upper bound that are tracked by this class. In the
@@ -22,19 +23,19 @@ class Resource:
 
     .. not_implemented: restartProgram
     """
-    
+
     _resource_objects = []
     _global_resources = []
-    
+
     @staticmethod
     def _reset():
         '''
             This clears all resources in the program and calls free() on any
             objects that have a free method.
         '''
-        
+
         for resource in Resource._resource_objects:
-            
+
             # free all the resources, if a free method is defined
             for ref in resource.numAllocated:
                 if ref is None:
@@ -42,18 +43,17 @@ class Resource:
                 obj = ref()
                 if obj is not None and hasattr(obj, 'free'):
                     obj.free()
-            
-            resource.numAllocated = [None]*len(resource.numAllocated)
-        
+
+            resource.numAllocated = [None] * len(resource.numAllocated)
+
         for ref in Resource._global_resources:
             obj = ref()
             if obj is not None and hasattr(obj, 'free'):
                 obj.free()
-        
+
     @staticmethod
     def _add_global_resource(obj):
         Resource._global_resources.append(weakref.ref(obj))
-        
 
     def __init__(self, size):
         """Allocate storage for a new instance of Resource.
@@ -64,7 +64,7 @@ class Resource:
         :param size: The number of blocks to allocate
         """
         Resource._resource_objects.append(self)
-        self.numAllocated = [None]*size
+        self.numAllocated = [None] * size
 
     def allocate(self, obj, index=None):
         """Allocate a resource.

@@ -13,6 +13,7 @@ from .pwm import PWM
 
 __all__ = ["Servo"]
 
+
 class Servo(PWM):
     """Standard hobby style servo
 

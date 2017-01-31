@@ -15,6 +15,7 @@ from .livewindow import LiveWindow
 
 __all__ = ["IterativeRobot"]
 
+
 class IterativeRobot(RobotBase):
     """IterativeRobot implements a specific type of Robot Program framework,
     extending the :class:`.RobotBase` class.
@@ -40,14 +41,14 @@ class IterativeRobot(RobotBase):
     the appropriate periodic rate (aka the "slow loop").  The period of
     the iterative robot is synced to the driver station control packets,
     giving a periodic frequency of about 50Hz (50 times per second).
-    
+
     - :meth:`disabledPeriodic`
     - :meth:`autonomousPeriodic`
     - :meth:`teleopPeriodic`
     - :meth:`testPeriodic`
-    
+
     """
-     
+
     #: A python logging object that you can use to send messages to the log. It
     #: is recommended to use this instead of print statements.
     logger = logging.getLogger("robot")
@@ -58,7 +59,7 @@ class IterativeRobot(RobotBase):
         The constructor initializes the instance variables for the robot to
         indicate the status of initialization for disabled, autonomous, and
         teleop code.
-        
+
         .. warning:: If you override ``__init__`` in your robot class, you must call
                      the base class constructor. This must be used to ensure that
                      the communications code starts.
@@ -73,7 +74,7 @@ class IterativeRobot(RobotBase):
     def startCompetition(self):
         """Provide an alternate "main loop" via startCompetition()."""
         hal.report(hal.UsageReporting.kResourceType_Framework,
-                      hal.UsageReporting.kFramework_Iterative)
+                   hal.UsageReporting.kFramework_Iterative)
 
         self.robotInit()
 
@@ -148,7 +149,7 @@ class IterativeRobot(RobotBase):
         Users should override this method for default Robot-wide initialization
         which will be called when the robot is first powered on.  It will be
         called exactly 1 time.
-        
+
         .. note:: It is simpler to override this function instead of defining
                   a constructor for your robot class
         """

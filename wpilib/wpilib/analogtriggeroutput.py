@@ -12,9 +12,10 @@ from .digitalsource import DigitalSource
 
 __all__ = ["AnalogTriggerOutput"]
 
+
 class AnalogTriggerOutput(DigitalSource):
     """Represents a specific output from an :class:`.AnalogTrigger`
-    
+
     This class is used to get the current output value and also as a
     :class:`.DigitalSource` to provide routing of an output to digital
     subsystems on the FPGA such as :class:`.Counter`, :class:`.Encoder:,
@@ -61,7 +62,7 @@ class AnalogTriggerOutput(DigitalSource):
         self.outputType = outputType
 
         hal.report(hal.UsageReporting.kResourceType_AnalogTriggerOutput,
-                      trigger.index, outputType)
+                   trigger.index, outputType)
 
     def free(self):
         if self.interrupt is not None:

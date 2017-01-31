@@ -12,6 +12,7 @@ from ..timer import Timer
 
 __all__ = ["WaitUntilCommand"]
 
+
 class WaitUntilCommand(Command):
     """
     This will wait until the game clock reaches some value, then continue to

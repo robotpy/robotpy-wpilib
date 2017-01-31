@@ -10,6 +10,7 @@ from .instantcommand import InstantCommand
 
 __all__ = ["PrintCommand"]
 
+
 class PrintCommand(InstantCommand):
     """A PrintCommand is a command which prints out a string when it is
     initialized, and then immediately finishes.
@@ -21,7 +22,7 @@ class PrintCommand(InstantCommand):
     def __init__(self, message):
         """Instantiates a PrintCommand which will print the given message when
         it is run.
-        
+
         :param message: the message to print
         """
         super().__init__('Print("%s")' % message)

@@ -12,6 +12,7 @@ from ..pidcontroller import PIDController
 
 __all__ = ["PIDSubsystem"]
 
+
 class PIDSubsystem(Subsystem):
     """This class is designed to handle the case where there is a Subsystem
     which uses a single {@link PIDController} almost constantly (for instance,
@@ -28,7 +29,7 @@ class PIDSubsystem(Subsystem):
         It will use the class name as its name unless otherwise specified.
         It will also space the time between PID loop calculations to be equal
         to the given period.
-        
+
         :param p: the proportional value
         :param i: the integral value
         :param d: the derivative value
@@ -58,7 +59,7 @@ class PIDSubsystem(Subsystem):
         """Adds the given value to the setpoint.
         If :meth:`setRange` was used, then the bounds will still be honored by
         this method.
-        
+
         :param deltaSetpoint: the change in the setpoint
         """
         self.setSetpoint(self.getSetpoint() + deltaSetpoint)
@@ -66,21 +67,21 @@ class PIDSubsystem(Subsystem):
     def setSetpoint(self, setpoint):
         """Sets the setpoint to the given value.  If :meth:`setRange` was called,
         then the given setpoint will be trimmed to fit within the range.
-        
+
         :param setpoint: the new setpoint
         """
         self.controller.setSetpoint(setpoint)
 
     def getSetpoint(self):
         """Returns the setpoint.
-        
+
         :returns: the setpoint
         """
         return self.controller.getSetpoint()
 
     def getPosition(self):
         """Returns the current position
-        
+
         :returns: the current position
         """
         return self.returnPIDInput()
@@ -104,7 +105,7 @@ class PIDSubsystem(Subsystem):
     def setAbsoluteTolerance(self, t):
         """Set the absolute error which is considered tolerable for use with
         OnTarget.
-        
+
         :param t: The absolute tolerance (same range as the PIDInput values)
         """
         self.controller.setAbsoluteTolerance(t)
@@ -112,7 +113,7 @@ class PIDSubsystem(Subsystem):
     def setPercentTolerance(self, p):
         """Set the percentage error which is considered tolerable for use with
         OnTarget.
-        
+
         :param p: The percentage tolerance (value of 15.0 == 15 percent)
         """
         self.controller.setPercentTolerance(p)
@@ -122,7 +123,7 @@ class PIDSubsystem(Subsystem):
         input range, determined by setAbsoluteTolerance or setPercentTolerance.
         This assumes that the maximum and minimum input were set using
         setInput.
-        
+
         :returns: True if the error is less than the tolerance
         """
         return self.controller.onTarget()

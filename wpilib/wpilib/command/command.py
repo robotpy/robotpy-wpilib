@@ -15,34 +15,35 @@ import threading
 
 __all__ = ["Command"]
 
+
 class Command(Sendable):
     """The Command class is at the very core of the entire command framework.
     Every command can be started with a call to start().
     Once a command is started it will call :meth:`initialize`, and then
     will repeatedly call :meth:`execute` until :meth:`isFinished` returns True.
     Once it does, :meth:`end` will be called.
-    
+
     However, if at any point while it is running :meth:`cancel` is called, then
     the command will be stopped and :meth:`interrupted` will be called.
-    
+
     If a command uses a :class:`.Subsystem`, then it should specify that it
     does so by calling the :meth:`requires` method in its constructor.
     Note that a Command may have multiple requirements, and :meth:`requires`
     should be called for each one.
-    
+
     If a command is running and a new command with shared requirements is
     started, then one of two things will happen.  If the active command is
     interruptible, then :meth:`cancel` will be called and the command will be removed
     to make way for the new one.  If the active command is not interruptible,
     the other one will not even be started, and the active one will continue
     functioning.
-    
+
     .. seealso:: :class:`.Subsystem`, :class:`.CommandGroup`
     """
 
     def __init__(self, name=None, timeout=None):
         """Creates a new command.
-        
+
         :param name: The name for this command; if unspecified or None,
                      The name of this command will be set to its class name.
         :param timeout: The time (in seconds) before this command "times out".
@@ -84,16 +85,16 @@ class Command(Sendable):
     def getName(self):
         """Returns the name of this command. If no name was specified
         in the constructor, then the default is the name of the class.
-        
+
         :returns: the name of this command
         """
         return self.name
 
     def setTimeout(self, seconds):
         """Sets the timeout of this command.
-        
+
         :param seconds: the timeout (in seconds)
-        
+
         :see: :meth:`isTimedOut`
         """
         if seconds < 0:
@@ -104,7 +105,7 @@ class Command(Sendable):
     def timeSinceInitialized(self):
         """Returns the time since this command was initialized (in seconds).
         This function will work even if there is no specified timeout.
-        
+
         :returns: the time since this command was initialized (in seconds).
         """
         with self.mutex:
@@ -151,7 +152,7 @@ class Command(Sendable):
 
     def run(self):
         """The run method is used internally to actually run the commands.
-        
+
         :returns: whether or not the command should stay within the Scheduler.
         """
         with self.mutex:
@@ -245,7 +246,7 @@ class Command(Sendable):
         """Returns whether or not the :meth:`timeSinceInitialized` method returns a
         number which is greater than or equal to the timeout for the command.
         If there is no timeout, this will always return false.
-        
+
         :returns: whether the time has expired
         """
         with self.mutex:
@@ -278,7 +279,7 @@ class Command(Sendable):
         table = self.getTable()
         if table is not None:
             table.putBoolean("isParented", True)
-            
+
     def clearRequirements(self):
         """Clears list of subsystem requirements. This is only used by
         :class:`.ConditionalCommand` so cancelling the chosen command works properly
@@ -320,7 +321,7 @@ class Command(Sendable):
         """Returns whether or not the command is running.
         This may return true even if the command has just been canceled, as it
         may not have yet called :meth:`interrupted`.
-        
+
         :returns: whether or not the command is running
         """
         with self.mutex:
@@ -353,7 +354,7 @@ class Command(Sendable):
 
     def isCanceled(self):
         """Returns whether or not this has been canceled.
-        
+
         :returns: whether or not this has been canceled
         """
         with self.mutex:
@@ -361,7 +362,7 @@ class Command(Sendable):
 
     def isInterruptible(self):
         """Returns whether or not this command can be interrupted.
-        
+
         :returns: whether or not this command can be interrupted
         """
         with self.mutex:
@@ -369,7 +370,7 @@ class Command(Sendable):
 
     def setInterruptible(self, interruptible):
         """Sets whether or not this command can be interrupted.
-        
+
         :param interruptible: whether or not this command can be interrupted
         """
         with self.mutex:
@@ -377,7 +378,7 @@ class Command(Sendable):
 
     def doesRequire(self, system):
         """Checks if the command requires the given :class:`.Subsystem`.
-        
+
         :param system: the system
         :returns: whether or not the subsystem is required, or False if given
                   None.
@@ -388,7 +389,7 @@ class Command(Sendable):
     def getGroup(self):
         """Returns the :class:`.CommandGroup` that this command is a part of.
         Will return None if this Command is not in a group.
-        
+
         :returns: the :class:`.CommandGroup` that this command is a part of
                   (or None if not in group)
         """
@@ -417,7 +418,7 @@ class Command(Sendable):
 
     def __str__(self):
         """The string representation for a Command is by default its name.
-        
+
         :returns: the string representation of this object
         """
         return self.getName()

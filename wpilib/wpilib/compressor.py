@@ -5,12 +5,13 @@ from .sensorbase import SensorBase
 
 __all__ = ["Compressor"]
 
+
 class Compressor(SensorBase):
     """Class for operating a compressor connected to a PCM (Pneumatic Control Module).
-    
+
     The PCM will automatically run in closed loop mode by default whenever a
     Solenoid object is created. For most cases the Compressor object does not
-    need to be instantiated or used in a robot program. This class is only required 
+    need to be instantiated or used in a robot program. This class is only required
     in cases where the robot program needs a more detailed status of the compressor or to
     enable/disable closed loop control.
 
@@ -21,7 +22,7 @@ class Compressor(SensorBase):
 
     def __init__(self, module=None):
         """Makes a new instance of the compressor using the provided CAN device ID.
-        
+
         :param module: The PCM CAN device ID. (0 - 62 inclusive)
         """
         self.table = None
@@ -52,7 +53,7 @@ class Compressor(SensorBase):
 
     def enabled(self):
         """Get the enabled status of the compressor.
-        
+
         :returns: True if the compressor is on
         :rtype: bool
         """
@@ -60,7 +61,7 @@ class Compressor(SensorBase):
 
     def getPressureSwitchValue(self):
         """ Get the pressure switch value.
- 
+
         :returns: True if the pressure is low
         :rtype: bool
         """
@@ -68,7 +69,7 @@ class Compressor(SensorBase):
 
     def getCompressorCurrent(self):
         """Get the current being used by the compressor.
-        
+
         :returns: Current consumed by the compressor in amps
         :rtype: float
         """
@@ -76,7 +77,7 @@ class Compressor(SensorBase):
 
     def setClosedLoopControl(self, on):
         """Set the PCM in closed loop control mode.
-        
+
         :param on: If True sets the compressor to be in closed loop control
                    mode (default)
         :type  on: bool
@@ -85,7 +86,7 @@ class Compressor(SensorBase):
 
     def getClosedLoopControl(self):
         """Gets the current operating mode of the PCM.
-        
+
         :returns: True if compressor is operating on closed-loop mode
         :rtype: bool
         """
@@ -136,7 +137,7 @@ class Compressor(SensorBase):
     def clearAllPCMStickyFaults(self):
         """Clear ALL sticky faults inside PCM that Compressor is wired to.
 
-        If a sticky fault is set, then it will be persistently cleared. The compressor might 
+        If a sticky fault is set, then it will be persistently cleared. The compressor might
         momentarily disable while the flags are being cleared. Doo not call this method too
         frequently, otherwise normal compressor functionality may be prevented.
 

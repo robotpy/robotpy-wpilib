@@ -15,8 +15,10 @@ from .sensorbase import SensorBase
 
 __all__ = ["AnalogOutput"]
 
+
 def _freeAnalogOutput(port):
     hal.freeAnalogOutputPort(port)
+
 
 class AnalogOutput(SensorBase):
     """Analog output"""
@@ -29,7 +31,7 @@ class AnalogOutput(SensorBase):
         :param channel: The channel number to represent.
         """
         SensorBase.checkAnalogOutputChannel(channel)
-        
+
         self.channel = channel
 
         port = hal.getPort(channel)
@@ -37,8 +39,8 @@ class AnalogOutput(SensorBase):
 
         LiveWindow.addSensorChannel("AnalogOutput", channel, self)
         hal.report(hal.UsageReporting.kResourceType_AnalogChannel,
-                      channel, 1)
-        
+                   channel, 1)
+
         self.__finalizer = weakref.finalize(self, _freeAnalogOutput, self._port)
 
     @property
@@ -46,7 +48,7 @@ class AnalogOutput(SensorBase):
         if not self.__finalizer.alive:
             return None
         return self._port
-    
+
     def free(self):
         """Channel destructor.
         """

@@ -10,6 +10,7 @@ from .command import Command
 
 __all__ = ["CommandGroup"]
 
+
 class CommandGroup(Command):
     """A CommandGroup is a list of commands which are executed in sequence.
 
@@ -49,7 +50,7 @@ class CommandGroup(Command):
 
     def __init__(self, name=None):
         """Creates a new CommandGroup with the given name.
-        
+
         :param name: the name for this command group (optional).  If None,
                      the name of this command will be set to its class name.
         """
@@ -217,16 +218,16 @@ class CommandGroup(Command):
                 not self.children)
 
     def initialize(self):
-        pass # Can be overwritten by teams
+        pass  # Can be overwritten by teams
 
     def execute(self):
-        pass # Can be overwritten by teams
+        pass  # Can be overwritten by teams
 
     def end(self):
-        pass # Can be overwritten by teams
+        pass  # Can be overwritten by teams
 
     def interrupted(self):
-        pass # Can be overwritten by teams
+        pass  # Can be overwritten by teams
 
     def isInterruptible(self):
         """Returns whether or not this group is interruptible.
@@ -241,7 +242,7 @@ class CommandGroup(Command):
                 return False
 
             if (self.currentCommandIndex is not None and
-                self.currentCommandIndex < len(self.commands)):
+                    self.currentCommandIndex < len(self.commands)):
                 cmd = self.commands[self.currentCommandIndex].command
                 if not cmd.isInterruptible():
                     return False

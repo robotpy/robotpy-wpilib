@@ -16,15 +16,17 @@ from .solenoidbase import SolenoidBase
 
 __all__ = ["Solenoid"]
 
+
 def _freeSolenoid(solenoidHandle):
     hal.freeSolenoidPort(solenoidHandle)
+
 
 class Solenoid(SolenoidBase):
     """Solenoid class for running high voltage Digital Output.
 
     The Solenoid class is typically used for pneumatic solenoids, but could
     be used for any device within the current spec of the PCM.
-    
+
     .. not_implemented: initSolenoid
     """
 
@@ -33,7 +35,7 @@ class Solenoid(SolenoidBase):
 
         Arguments can be supplied as positional or keyword.  Acceptable
         positional argument combinations are:
-        
+
         - channel
         - moduleNumber, channel
 
@@ -70,7 +72,7 @@ class Solenoid(SolenoidBase):
 
         SensorBase.checkSolenoidModule(moduleNumber)
         SensorBase.checkSolenoidChannel(channel)
-        
+
         portHandle = hal.getPortWithModule(moduleNumber, channel)
         self._solenoidHandle = hal.initializeSolenoidPort(portHandle)
 
@@ -78,9 +80,9 @@ class Solenoid(SolenoidBase):
                                             self)
         hal.report(hal.UsageReporting.kResourceType_Solenoid, channel,
                    moduleNumber)
-        
+
         self.__finalizer = weakref.finalize(self, _freeSolenoid, self._solenoidHandle)
-        
+
     @property
     def solenoidHandle(self):
         if not self.__finalizer.alive:
@@ -90,10 +92,10 @@ class Solenoid(SolenoidBase):
     def free(self):
         """Mark the solenoid as freed."""
         LiveWindow.removeComponent(self)
-        
+
         self.__finalizer()
         self._solenoidHandle = None
-        
+
         super().free()
 
     def set(self, on):
@@ -144,9 +146,9 @@ class Solenoid(SolenoidBase):
         self.set(True if value else False)
 
     def startLiveWindowMode(self):
-        self.set(False) # Stop for safety
+        self.set(False)  # Stop for safety
         super().startLiveWindowMode()
 
     def stopLiveWindowMode(self):
         super().stopLiveWindowMode()
-        self.set(False) # Stop for safety
+        self.set(False)  # Stop for safety

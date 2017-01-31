@@ -17,8 +17,10 @@ from .timer import Timer
 
 __all__ = ["AnalogInput"]
 
+
 def _freeAnalogInput(port):
     hal.freeAnalogInputPort(port)
+
 
 class AnalogInput(SensorBase):
     """Analog input
@@ -39,16 +41,16 @@ class AnalogInput(SensorBase):
     kAccumulatorSlot = 1
     kAccumulatorChannels = (0, 1)
     channels = Resource(SensorBase.kAnalogInputChannels)
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel):
         """Construct an analog channel.
         :param channel: The channel number to represent. 0-3 are on-board 4-7 are on the MXP port.
         """
-        
+
         SensorBase.checkAnalogInputChannel(channel)
-        
+
         self.channel = channel
         self.accumulatorOffset = 0
         self.pidSource = self.PIDSourceType.kDisplacement
@@ -58,10 +60,10 @@ class AnalogInput(SensorBase):
 
         LiveWindow.addSensorChannel("AnalogInput", channel, self)
         hal.report(hal.UsageReporting.kResourceType_AnalogChannel,
-                      channel)
-        
+                   channel)
+
         self.__finalizer = weakref.finalize(self, _freeAnalogInput, self._port)
-        
+
     @property
     def port(self):
         if not self.__finalizer.alive:
@@ -194,9 +196,9 @@ class AnalogInput(SensorBase):
         """
         if not self.isAccumulatorChannel():
             raise IndexError(
-                    "Accumulators are only available on slot %d on channels %s"
-                    % (AnalogInput.kAccumulatorSlot,
-                       ",".join(str(c) for c in AnalogInput.kAccumulatorChannels)))
+                "Accumulators are only available on slot %d on channels %s"
+                % (AnalogInput.kAccumulatorSlot,
+                   ",".join(str(c) for c in AnalogInput.kAccumulatorChannels)))
         self.accumulatorOffset = 0
         hal.initAccumulator(self.port)
 
@@ -305,11 +307,11 @@ class AnalogInput(SensorBase):
         :returns: Sample rate.
         """
         return hal.getAnalogSampleRate()
-    
+
     def setPIDSourceType(self, pidSource):
         """:see: :meth:`.PIDSource.setPIDSourceType`"""
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         """:see: :meth:`.PIDSource.getPIDSourceType`"""
         return self.pidSource

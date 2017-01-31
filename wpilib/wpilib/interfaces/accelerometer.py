@@ -7,6 +7,7 @@
 
 __all__ = ["Accelerometer"]
 
+
 class Accelerometer:
     """Interface for 3-axis accelerometers"""
 

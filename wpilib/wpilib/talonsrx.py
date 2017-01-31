@@ -13,10 +13,11 @@ from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["TalonSRX"]
 
+
 class TalonSRX(PWMSpeedController):
     """
         Cross the Road Electronics (CTRE) Talon SRX Speed Controller via PWM
-        
+
         .. seealso:: See :class:`.CANTalon` for CAN control of Talon SRX.
     """
 

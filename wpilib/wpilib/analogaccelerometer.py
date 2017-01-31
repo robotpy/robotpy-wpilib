@@ -15,16 +15,17 @@ from .livewindowsendable import LiveWindowSendable
 
 __all__ = ["AnalogAccelerometer"]
 
+
 class AnalogAccelerometer(LiveWindowSendable):
     """Analog Accelerometer
-    
+
     The accelerometer reads acceleration directly through the sensor. Many
     sensors have multiple axis and can be treated as multiple devices. Each
     is calibrated by finding the center value over a period of time.
-    
+
     .. not_implemented: initAccelerometer
     """
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel):
@@ -40,7 +41,7 @@ class AnalogAccelerometer(LiveWindowSendable):
         self.zeroGVoltage = 2.5
         self.pidSource = self.PIDSourceType.kDisplacement
         hal.report(hal.UsageReporting.kResourceType_Accelerometer,
-                      self.analogChannel.getChannel())
+                   self.analogChannel.getChannel())
         LiveWindow.addSensorChannel("Accelerometer",
                                     self.analogChannel.getChannel(), self)
 
@@ -79,16 +80,16 @@ class AnalogAccelerometer(LiveWindowSendable):
         :type  zero: float
         """
         self.zeroGVoltage = zero
-        
+
     def setPIDSourceType(self, pidSource):
         """Set which parameter you are using as a process
-        control variable. 
+        control variable.
 
         :param pidSource: An enum to select the parameter.
         :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
 

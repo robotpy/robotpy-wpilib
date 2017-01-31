@@ -10,6 +10,7 @@ from .pidoutput import PIDOutput
 
 __all__ = ["SpeedController"]
 
+
 class SpeedController(PIDOutput):
     """Interface for speed controlling devices."""
 
@@ -27,18 +28,18 @@ class SpeedController(PIDOutput):
         :param speed: The speed to set.  Value should be between -1.0 and 1.0.
         """
         raise NotImplementedError
-    
+
     def setInverted(self, isInverted):
         """Common interface for inverting direction of a speed controller.
-        
+
         :param isInverted: The state of inversion
         """
         raise NotImplementedError
-        
+
     def getInverted(self):
         """Common interface for determining if a speed controller is in the
         inverted state or not.
-        
+
         :returns: True if in inverted state
         """
         raise NotImplementedError
@@ -46,7 +47,7 @@ class SpeedController(PIDOutput):
     def disable(self):
         """Disable the speed controller."""
         raise NotImplementedError
-    
+
     def stopMotor(self):
         """Stops motor movement. Motor can be moved again by calling set without having
         to re-enable the motor.

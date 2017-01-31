@@ -3,11 +3,11 @@
     programming.  Command based programming is a design pattern to help you
     organize your robot programs, by organizing your robot program into
     components based on :class:`.Command` and :class:`.Subsystem`
-    
-    The python implementation of the Command framework closely follows the 
-    Java language implementation. RobotPy has several examples of command 
+
+    The python implementation of the Command framework closely follows the
+    Java language implementation. RobotPy has several examples of command
     based robots available.
-    
+
     Each one of the objects in the Command framework has detailed
     documentation available. If you need more information, for examples,
     tutorials, and other detailed information on programming your robot

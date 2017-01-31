@@ -10,6 +10,7 @@ from .command import Command
 
 __all__ = ["WaitForChildren"]
 
+
 class WaitForChildren(Command):
     """This command will only finish if whatever :class:`.CommandGroup` it
     is in has no active children.  If it is not a part of a CommandGroup,

@@ -22,6 +22,7 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["PIDController"]
 
+
 class PIDController(LiveWindowSendable):
     """Can be used to control devices via a PID Control Loop.
 
@@ -35,7 +36,7 @@ class PIDController(LiveWindowSendable):
     """
     kDefaultPeriod = .05
     instances = 0
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     # Tolerance is the type of tolerance used to specify if the PID controller
@@ -45,8 +46,8 @@ class PIDController(LiveWindowSendable):
     def PercentageTolerance_onTarget(self, percentage):
         with self.mutex:
             return self.isAvgErrorValid() and \
-                    (abs(self.getAvgError()) < percentage / 100.0
-                    * (self.maximumInput - self.minimumInput))
+                (abs(self.getAvgError()) < percentage / 100.0
+                 * (self.maximumInput - self.minimumInput))
 
     def AbsoluteTolerance_onTarget(self, value):
         return self.isAvgErrorValid() and abs(self.getAvgError()) < value
@@ -98,13 +99,13 @@ class PIDController(LiveWindowSendable):
         self.P = results.pop("Kp")     # factor for "proportional" control
         self.I = results.pop("Ki")     # factor for "integral" control
         self.D = results.pop("Kd")     # factor for "derivative" control
-        self.F = results.pop("Kf", 0.0)# factor for feedforward term
+        self.F = results.pop("Kf", 0.0)  # factor for feedforward term
         self.pidOutput = results.pop("output")
         self.pidInput = results.pop("source")
         self.period = results.pop("period", PIDController.kDefaultPeriod)
-        
+
         self.pidInput = PIDSource.from_obj_or_callable(self.pidInput)
-        
+
         if hasattr(self.pidOutput, 'pidWrite'):
             self.pidOutput = self.pidOutput.pidWrite
 
@@ -115,7 +116,7 @@ class PIDController(LiveWindowSendable):
         self.continuous = False     # do the endpoints wrap around? eg. Absolute encoder
         self.enabled = False        # is the pid controller enabled
         self.prevError = 0.0        # the prior error (used to compute velocity)
-        self.totalError = 0.0       #the sum of the errors for use in the integral calc
+        self.totalError = 0.0  # the sum of the errors for use in the integral calc
         self.buf = deque(maxlen=1)
         self.setpoint = 0.0
         self.prevSetpoint = 0.0
@@ -126,10 +127,10 @@ class PIDController(LiveWindowSendable):
 
         self.pid_task = TimerTask('PIDTask%d' % PIDController.instances, self.period, self._calculate)
         self.pid_task.start()
-        
+
         self.setpointTimer = Timer()
         self.setpointTimer.start()
-        
+
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
@@ -154,7 +155,7 @@ class PIDController(LiveWindowSendable):
                 return
             if self.pidOutput is None:
                 return
-            enabled = self.enabled # take snapshot of these values...
+            enabled = self.enabled  # take snapshot of these values...
             pidInput = self.pidInput
 
         if enabled:
@@ -170,10 +171,10 @@ class PIDController(LiveWindowSendable):
                                 self.totalError += self.error
                             else:
                                 self.totalError = self.minimumOutput / self.P
-                        
+
                         else:
                             self.totalError = self.maximumOutput / self.P
-                        
+
                     self.result = self.P * self.totalError + \
                         self.D * self.error + \
                         self.calculateFeedForward()
@@ -191,10 +192,10 @@ class PIDController(LiveWindowSendable):
                             self.totalError = self.maximumOutput / self.I
 
                     self.result = self.P * self.error + \
-                            self.I * self.totalError + \
-                            self.D * (self.error - self.prevError) + \
-                            self.calculateFeedForward()
-                            
+                        self.I * self.totalError + \
+                        self.D * (self.error - self.prevError) + \
+                        self.calculateFeedForward()
+
                 self.prevError = self.error
 
                 if self.result > self.maximumOutput:
@@ -203,20 +204,20 @@ class PIDController(LiveWindowSendable):
                     self.result = self.minimumOutput
                 pidOutput = self.pidOutput
                 result = self.result
-                
+
                 self.buf.append(self.error)
 
             pidOutput(result)
-            
+
     def calculateFeedForward(self):
         """Calculate the feed forward term
-        
+
         Both of the provided feed forward calculations are velocity feed forwards.
         If a different feed forward calculation is desired, the user can override
         this function and provide his or her own. This function  does no
         synchronization because the PIDController class only calls it in
         synchronized code, so be careful if calling it oneself.
-        
+
         If a velocity PID controller is being used, the F term should be set to 1
         over the maximum setpoint for the output. If a position PID controller is
         being used, the F term should be set to 1 over the maximum speed for the
@@ -309,7 +310,7 @@ class PIDController(LiveWindowSendable):
 
     def setInputRange(self, minimumInput, maximumInput):
         """Sets the maximum and minimum values expected from the input.
-        
+
         :param minimumInput: the minimum percentage expected from the input
         :param maximumInput: the maximum percentage expected from the output
         """
@@ -348,7 +349,7 @@ class PIDController(LiveWindowSendable):
             else:
                 newsetpoint = setpoint
             self.setpoint = newsetpoint
-            
+
             self.buf.clear()
             self.totalError = 0
 
@@ -363,10 +364,10 @@ class PIDController(LiveWindowSendable):
         """
         with self.mutex:
             return self.setpoint
-        
+
     def getDeltaSetpoint(self):
         """Returns the change in setpoint over time of the PIDController
-        
+
         :returns: the change in setpoint over time
         """
         with self.mutex:
@@ -384,29 +385,29 @@ class PIDController(LiveWindowSendable):
         :return: the current error
         """
         with self.mutex:
-            #return self.error
+            # return self.error
             return self.getContinuousError(self.getSetpoint() - self.pidInput.pidGet())
-        
+
     def setPIDSourceType(self, pidSourceType):
         """Sets what type of input the PID controller will use
-        
+
         :param pidSourceType: the type of input
         """
         self.pidInput.setPIDSourceType(pidSourceType)
-        
+
     def getPIDSourceType(self, pidSourceType):
         """Returns the type of input the PID controller is using
-        
+
         :returns: the PID controller input type
         """
         return self.pidInput.getPIDSourceType()
-    
+
     def getAvgError(self):
         """Returns the current difference of the error over the past few iterations.
         You can specify the number of iterations to average with
         :meth:`setToleranceBuffer` (defaults to 1). getAvgError() is used for the
         onTarget() function.
-        
+
         :returns: the current average of the error
         """
         with self.mutex:
@@ -415,11 +416,11 @@ class PIDController(LiveWindowSendable):
                 return 0
             else:
                 return sum(self.buf) / l
-            
+
     def isAvgErrorValid(self):
         """Returns whether or not any values have been collected. If no values
         have been collected, getAvgError is 0, which is invalid.
-        
+
         :returns: True if :meth:`getAvgError` is currently valid.
         """
         with self.mutex:
@@ -440,7 +441,7 @@ class PIDController(LiveWindowSendable):
                       DeprecationWarning)
         with self.mutex:
             self.onTarget = lambda: \
-                    self.PercentageTolerance_onTarget(percent)
+                self.PercentageTolerance_onTarget(percent)
 
     def setAbsoluteTolerance(self, absvalue):
         """Set the absolute error which is considered tolerable for use with
@@ -451,7 +452,7 @@ class PIDController(LiveWindowSendable):
         """
         with self.mutex:
             self.onTarget = lambda: \
-                    self.AbsoluteTolerance_onTarget(absvalue)
+                self.AbsoluteTolerance_onTarget(absvalue)
 
     def setPercentTolerance(self, percentage):
         """Set the percentage error which is considered tolerable for use with
@@ -461,8 +462,8 @@ class PIDController(LiveWindowSendable):
         """
         with self.mutex:
             self.onTarget = lambda: \
-                    self.PercentageTolerance_onTarget(percentage)
-                    
+                self.PercentageTolerance_onTarget(percentage)
+
     def setToleranceBuffer(self, bufLength):
         """Set the number of previous error samples to average for tolerancing. When
         determining whether a mechanism is on target, the user may want to use a
@@ -470,13 +471,13 @@ class PIDController(LiveWindowSendable):
         velocity. This is useful for noisy sensors which return a few erroneous
         measurements when the mechanism is on target. However, the mechanism will
         not register as on target for at least the specified bufLength cycles.
-        
+
         :param bufLength: Number of previous cycles to average.
         :type bufLength: int
         """
         with self.mutex:
             self.buf = deque(list(islice(self.buf, bufLength)), maxlen=bufLength)
-        
+
     def onTarget(self):
         """Return True if the error is within the percentage of the total input
         range, determined by setTolerance. This assumes that the maximum and
@@ -530,7 +531,7 @@ class PIDController(LiveWindowSendable):
             Kd = table.getNumber("d", 0.0)
             Kf = table.getNumber("f", 0.0)
             if (self.getP() != Kp or self.getI() != Ki or self.getD() != Kd or
-                self.getF() != Kf):
+                    self.getF() != Kf):
                 self.setPID(Kp, Ki, Kd, Kf)
         elif key == "setpoint":
             if self.getSetpoint() != float(value):

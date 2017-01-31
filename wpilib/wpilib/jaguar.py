@@ -13,6 +13,7 @@ from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Jaguar"]
 
+
 class Jaguar(PWMSpeedController):
     """
         Texas Instruments / Vex Robotics Jaguar Speed Controller as a PWM device.
@@ -35,7 +36,7 @@ class Jaguar(PWMSpeedController):
         self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
         self.setSpeed(0)
         self.setZeroLatch()
-        
+
         hal.report(hal.UsageReporting.kResourceType_Jaguar,
                    self.getChannel())
         LiveWindow.addActuatorChannel("Jaguar", self.getChannel(), self)

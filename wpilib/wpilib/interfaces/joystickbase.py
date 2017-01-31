@@ -10,6 +10,7 @@ from .generichid import GenericHID
 
 __all__ = ["JoystickBase"]
 
+
 class JoystickBase(GenericHID):
     """
     JoystickBase Interface.

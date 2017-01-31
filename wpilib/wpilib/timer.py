@@ -12,15 +12,16 @@ import hal
 
 __all__ = ["Timer"]
 
+
 class Timer:
     """
         Provides time-related functionality for the robot
-        
+
         .. note:: Prefer to use this module for time functions, instead of
                   the :mod:`time` module in the standard library. This will
-                  make it easier for your code to work properly in simulation. 
+                  make it easier for your code to work properly in simulation.
     """
-    
+
     @staticmethod
     def getFPGATimestamp():
         """Return the system clock time in seconds. Return the time from the
@@ -62,14 +63,14 @@ class Timer:
 
         :param seconds: Length of time to pause
         :type seconds: float
-        
+
         .. warning:: If you're tempted to use this function for autonomous
                      mode to time transitions between actions, don't do it!
-                     
+
                      Delaying the main robot thread for more than a few
                      milliseconds is generally discouraged, and will cause
                      problems and possibly leave the robot unresponsive.
-                     
+
         """
         hal.sleep(seconds)
 
@@ -129,22 +130,22 @@ class Timer:
             temp = self.get()
             self.accumulatedTime = temp
             self.running = False
-            
+
     def hasPeriodPassed(self, period):
         """Check if the period specified has passed and if it has, advance the start
         time by that period. This is useful to decide if it's time to do periodic
         work without drifting later by the time it took to get around to checking.
- 
+
         :param period: The period to check for (in seconds).
         :returns: If the period has passed.
         :rtype: bool
         """
-        
+
         with self.mutex:
             if self.get() > period:
                 # Advance the start time by the period
                 # Don't set it to the current time... we want to avoid drift
                 self.startTime += (period * 1000)
                 return True
-            
+
             return False

@@ -7,18 +7,18 @@ import pprint
 log_datefmt = "%H:%M:%S"
 log_format = "%(asctime)s:%(msecs)03d %(levelname)-8s: %(name)-20s: %(message)s"
 
+
 def configure_logging(verbose):
-    
+
     formatter = VerboseExceptionFormatter(fmt=log_format,
                                           datefmt=log_datefmt)
-    
+
     # console logging
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
-    
+
     logging.root.addHandler(handler)
     logging.root.setLevel(logging.DEBUG if verbose else logging.INFO)
-
 
 
 MAX_VARS_LINES = 30
@@ -29,11 +29,11 @@ class VerboseExceptionFormatter(logging.Formatter):
     '''
     Taken from http://word.bitly.com/post/69080588278/logging-locals
     '''
- 
+
     def __init__(self, log_locals_on_exception=True, *args, **kwargs):
         self._log_locals = log_locals_on_exception
         super(VerboseExceptionFormatter, self).__init__(*args, **kwargs)
- 
+
     def formatException(self, exc_info):
         # First get the original formatted exception.
         exc_text = super(VerboseExceptionFormatter, self).formatException(exc_info)
@@ -55,5 +55,3 @@ class VerboseExceptionFormatter(logging.Formatter):
             for line in locals_lines)
         output_lines.append('\n')
         return '\n'.join(output_lines)
-    
-

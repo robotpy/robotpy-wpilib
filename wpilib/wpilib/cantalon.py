@@ -3,8 +3,8 @@
 
 __all__ = ["CANTalon"]
 
+
 class CANTalon:
 
     def __init__(*args, **kwargs):
         raise ValueError("CANTalon has moved to ctre.CANTalon, you must install robotpy-ctre")
-

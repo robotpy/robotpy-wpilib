@@ -12,6 +12,7 @@ from .sensorbase import SensorBase
 
 __all__ = ["PowerDistributionPanel"]
 
+
 class PowerDistributionPanel(SensorBase):
     """
         Use to obtain voltage, current, temperature, power, and energy from the
@@ -55,7 +56,7 @@ class PowerDistributionPanel(SensorBase):
         """
         SensorBase.checkPDPChannel(channel)
         return hal.getPDPChannelCurrent(self.module, channel)
-    
+
     def getTotalCurrent(self):
         """
             Query the current of all monitored PDP channels (0-15)
@@ -64,7 +65,7 @@ class PowerDistributionPanel(SensorBase):
             :rtype: float
         """
         return hal.getPDPTotalCurrent(self.module)
-    
+
     def getTotalPower(self):
         """
             Query the total power drawn from the monitored PDP channels
@@ -73,7 +74,7 @@ class PowerDistributionPanel(SensorBase):
             :rtype: float
         """
         return hal.getPDPTotalPower(self.module)
-    
+
     def getTotalEnergy(self):
         """
             Query the total energy drawn from the monitored PDP channels
@@ -82,13 +83,13 @@ class PowerDistributionPanel(SensorBase):
             :rtype: float
         """
         return hal.getPDPTotalEnergy(self.module)
-    
+
     def resetTotalEnergy(self):
         """
             Reset the total energy to 0
         """
         hal.resetPDPTotalEnergy(self.module)
-    
+
     def clearStickyFaults(self):
         """
             Clear all pdp sticky faults

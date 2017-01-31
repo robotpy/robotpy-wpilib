@@ -23,3 +23,7 @@ if [ "$CONTINUOUS_INTEGRATION" == "true" ]; then
     cd ../..
     curl https://raw.githubusercontent.com/robotpy/examples/master/_remote_tests.sh | bash -s base
 fi
+
+# Check for PEP 8
+
+pycodestyle wpilib/wpilib --count --ignore=E402,E501,E265,E722,E741,E121,E123,E126,E133,E226,E241,E242,E704,W503,W292

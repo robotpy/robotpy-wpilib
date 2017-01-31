@@ -12,34 +12,35 @@ from .livewindowsendable import LiveWindowSendable
 
 __all__ = ["SensorBase"]
 
+
 class SensorBase(LiveWindowSendable):
     """Base class for all sensors
-    
+
     Stores most recent status information as well as containing utility
     functions for checking channels and error processing.
     """
 
     #: Ticks per microsecond
     kSystemClockTicksPerMicrosecond = hal.getSystemClockTicksPerMicrosecond()
-    
+
     #: Number of digital channels per roboRIO
     kDigitalChannels = hal.getNumDigitalChannels()
-    
+
     #: Number of analog input channels per roboRIO
     kAnalogInputChannels = hal.getNumAnalogInputs()
-    
+
     #: Number of analog output channels per roboRIO
     kAnalogOutputChannels = hal.getNumAnalogOutputs()
-    
+
     #: Number of solenoid channels per module
     kSolenoidChannels = hal.getNumSolenoidChannels()
-    
+
     #: Number of PWM channels per roboRIO
     kPwmChannels = hal.getNumPWMChannels()
-    
+
     #: Number of relay channels per roboRIO
     kRelayChannels = hal.getNumRelayHeaders()
-    
+
     #: Number of power distribution channels per PDP
     kPDPChannels = hal.getNumPDPChannels()
 

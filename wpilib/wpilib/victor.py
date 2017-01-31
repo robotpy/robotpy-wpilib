@@ -13,13 +13,14 @@ from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Victor"]
 
+
 class Victor(PWMSpeedController):
     """
         VEX Robotics Victor 888 Speed Controller via PWM
-        
+
         The Vex Robotics Victor 884 Speed Controller can also be used with this
         class but may need to be calibrated per the Victor 884 user manual.
-        
+
         .. note ::
 
             The Victor uses the following bounds for PWM values.  These
@@ -31,16 +32,16 @@ class Victor(PWMSpeedController):
             The calibration procedure can be found in the Victor 884 User
             Manual available from VEX Robotics:
             http://content.vexrobotics.com/docs/ifi-v884-users-manual-9-25-06.pdf
-            
+
             - 2.027ms = full "forward"
             - 1.525ms = the "high end" of the deadband range
             - 1.507ms = center of the deadband range (off)
             - 1.49ms = the "low end" of the deadband range
             - 1.026ms = full "reverse"
-        
+
         .. not_implemented: initVictor
     """
-    
+
     def __init__(self, channel):
         """Constructor.
 

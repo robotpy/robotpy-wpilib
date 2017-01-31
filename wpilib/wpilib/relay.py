@@ -17,6 +17,7 @@ from .sensorbase import SensorBase
 
 __all__ = ["Relay"]
 
+
 def _freeRelay(*handles):
     for handle in handles:
         try:
@@ -26,9 +27,10 @@ def _freeRelay(*handles):
         if handle:
             hal.freeRelayPort(handle)
 
+
 class Relay(SensorBase, LiveWindowSendable, MotorSafety):
     """Controls VEX Robotics Spike style relay outputs.
-    
+
     Relays are intended to be connected to Spikes or similar relays. The relay
     channels controls a pair of channels that are either both off, one on, the
     other on, or both on. This translates into two Spike outputs at 0v, one at
@@ -37,7 +39,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
     variable speed. It also allows the two channels (forward and reverse) to
     be used independently for something that does not care about voltage
     polarity (like a solenoid).
-    
+
     .. not_implemented: initRelay
     """
 
@@ -45,28 +47,28 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
 
     class Value:
         """The state to drive a Relay to."""
-        
+
         #: Off
         kOff = 0
-        
+
         #: On for relays with defined direction
         kOn = 1
-        
+
         #: Forward
         kForward = 2
-        
+
         #: Reverse
         kReverse = 3
 
     class Direction:
         """The Direction(s) that a relay is configured to operate in."""
-        
+
         #: Both directions are valid
         kBoth = 0
-        
+
         #: Only forward is valid
         kForward = 1
-        
+
         #: Only reverse is valid
         kReverse = 2
 
@@ -89,7 +91,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         self._reverseHandle = None
 
         self._initRelay()
-        
+
         self.set(self.Value.kOff)
 
         MotorSafety.__init__(self)
@@ -100,13 +102,13 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
 
         try:
             if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
+                    self.direction == self.Direction.kForward):
                 Relay.relayChannels.allocate(self, self.channel * 2)
                 self._forwardHandle = hal.initializeRelayPort(portHandle, True)
                 hal.report(hal.UsageReporting.kResourceType_Relay, self.channel)
 
             if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
+                    self.direction == self.Direction.kReverse):
                 Relay.relayChannels.allocate(self, self.channel * 2 + 1)
                 self._reverseHandle = hal.initializeRelayPort(portHandle, False)
                 hal.report(hal.UsageReporting.kResourceType_Relay, self.channel + 128)
@@ -116,7 +118,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         self.__finalizer = weakref.finalize(self, _freeRelay, self._forwardHandle, self._reverseHandle)
 
         self.setSafetyEnabled(False)
-        
+
         LiveWindow.addActuatorChannel("Relay", self.channel, self)
 
     @property
@@ -158,23 +160,23 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         """
         if value == self.Value.kOff:
             if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
+                    self.direction == self.Direction.kForward):
                 hal.setRelay(self.forwardHandle, False)
             if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
+                    self.direction == self.Direction.kReverse):
                 hal.setRelay(self.reverseHandle, False)
         elif value == self.Value.kOn:
             if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
+                    self.direction == self.Direction.kForward):
                 hal.setRelay(self.forwardHandle, True)
             if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
+                    self.direction == self.Direction.kReverse):
                 hal.setRelay(self.reverseHandle, True)
         elif value == self.Value.kForward:
             if self.direction == self.Direction.kReverse:
                 raise ValueError("A relay configured for reverse cannot be set to forward")
             if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
+                    self.direction == self.Direction.kForward):
                 hal.setRelay(self.forwardHandle, True)
             if self.direction == self.Direction.kBoth:
                 hal.setRelay(self.reverseHandle, False)
@@ -184,7 +186,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
             if self.direction == self.Direction.kBoth:
                 hal.setRelay(self.forwardHandle, False)
             if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
+                    self.direction == self.Direction.kReverse):
                 hal.setRelay(self.reverseHandle, True)
         else:
             raise ValueError("Invalid value argument '%s'" % value)
@@ -244,7 +246,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         """
         if self.direction == direction:
             return
-        
+
         if direction not in [self.Direction.kBoth,
                              self.Direction.kForward,
                              self.Direction.kReverse]:

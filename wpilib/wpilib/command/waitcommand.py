@@ -10,16 +10,17 @@ from .timedcommand import TimedCommand
 
 __all__ = ["WaitCommand"]
 
+
 class WaitCommand(TimedCommand):
     """A WaitCommand will wait for a certain amount of time before finishing.
     It is useful if you want a :class:`.CommandGroup` to pause for a moment.
-    
+
     .. seealso:: :class:`.CommandGroup`
     """
 
     def __init__(self, timeout, name=None):
         """Instantiates a WaitCommand with the given timeout.
-        
+
         :param timeout: the time the command takes to run
         :param name: the name of the command (optional)
         """

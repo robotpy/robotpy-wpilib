@@ -8,6 +8,7 @@
 
 __all__ = ["Trigger"]
 
+
 class Trigger:
     """This class provides an easy way to link commands to inputs.
 
@@ -20,6 +21,7 @@ class Trigger:
     For this, they only have to write the :func:`get` method to get the full
     functionality of the Trigger class.
     """
+
     def get(self):
         """Returns whether or not the trigger is active
 

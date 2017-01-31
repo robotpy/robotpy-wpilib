@@ -11,15 +11,16 @@ from .safepwm import SafePWM
 
 __all__ = ["PWMSpeedController"]
 
+
 class PWMSpeedController(SafePWM):
     """
         Common base class for all PWM Speed Controllers.
     """
-    
+
     def __init__(self, channel):
         super().__init__(channel)
         self.isInverted = False
-    
+
     def free(self):
         LiveWindow.removeComponent(self)
         super().free()

@@ -13,9 +13,10 @@ from .livewindow import LiveWindow
 
 __all__ = ["DigitalInput"]
 
+
 class DigitalInput(DigitalSource):
     """Reads a digital input.
-    
+
     This class will read digital inputs and return the current value on the
     channel. Other devices such as encoders, gear tooth sensors, etc. that
     are implemented elsewhere will automatically allocate digital inputs
@@ -35,14 +36,14 @@ class DigitalInput(DigitalSource):
         super().__init__(channel, True)
 
         hal.report(hal.UsageReporting.kResourceType_DigitalInput,
-                      channel)
+                   channel)
         LiveWindow.addSensor("DigitalInput", channel, self)
 
     def free(self):
         if self.interrupt:
             self.cancelInterrupts()
 
-        super().free() # This calls hal.freeDIOPort
+        super().free()  # This calls hal.freeDIOPort
 
     def get(self):
         """Get the value from a digital input channel. Retrieve the value of
@@ -105,4 +106,3 @@ class DigitalInput(DigitalSource):
 
     def stopLiveWindowMode(self):
         pass
-

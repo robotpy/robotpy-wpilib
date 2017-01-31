@@ -4,6 +4,7 @@ from .sendable import Sendable
 
 __all__ = ["LiveWindowSendable"]
 
+
 class LiveWindowSendable(Sendable):
     """A special type of object that can be displayed on the live window.
     """

@@ -12,29 +12,30 @@ from .sensorbase import SensorBase
 
 __all__ = ['GyroBase']
 
+
 class GyroBase(SensorBase):
     '''
         GyroBase is the common base class for Gyro implementations such as
         :class:`.AnalogGyro`.
     '''
-    
+
     PIDSourceType = PIDSource.PIDSourceType
-    
+
     def __init__(self):
         self.pidSource = self.PIDSourceType.kDisplacement
-    
+
     def calibrate(self):
         raise NotImplementedError()
-    
+
     def reset(self):
         raise NotImplementedError()
-    
+
     def getAngle(self):
         raise NotImplementedError()
-    
+
     def getRate(self):
         raise NotImplementedError()
-    
+
     def setPIDSourceType(self, pidSource):
         """Set which parameter of the gyro you are using as a process
         control variable. The Gyro class supports the rate and angle
@@ -47,10 +48,10 @@ class GyroBase(SensorBase):
                              self.PIDSourceType.kRate):
             raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
-    
+
     def pidGet(self):
         """Get the output of the gyro for use with PIDControllers. May be
         the angle or rate depending on the set :class:`.PIDSourceType`
@@ -64,7 +65,7 @@ class GyroBase(SensorBase):
             return self.getAngle()
         else:
             return 0.0
-    
+
     # Live Window code, only does anything if live window is activated.
 
     def getSmartDashboardType(self):
@@ -80,6 +81,3 @@ class GyroBase(SensorBase):
 
     def stopLiveWindowMode(self):
         pass
-    
-    
-    

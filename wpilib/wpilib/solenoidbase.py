@@ -12,6 +12,7 @@ from .sensorbase import SensorBase
 
 __all__ = ["SolenoidBase"]
 
+
 class SolenoidBase(SensorBase):
     """SolenoidBase class is the common base class for the Solenoid and
     DoubleSolenoid classes."""
@@ -70,4 +71,3 @@ class SolenoidBase(SensorBase):
         If no sticky faults are set then this call will have no effect.
         """
         hal.clearAllPCMStickyFaults(self.moduleNumber)
-

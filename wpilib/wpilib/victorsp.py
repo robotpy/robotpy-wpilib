@@ -13,6 +13,7 @@ from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["VictorSP"]
 
+
 class VictorSP(PWMSpeedController):
     """
         VEX Robotics Victor SP Speed Controller via PWM
