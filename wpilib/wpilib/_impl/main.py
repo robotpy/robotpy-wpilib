@@ -34,23 +34,11 @@ def _log_versions():
     # Log third party versions
     # -> TODO: in the future, expand 3rd party HAL support here?
     for entry_point in iter_entry_points(group='robotpylib', name=None):
-        try:
-            info_class = entry_point.load()
-        except ImportError:
-            continue
-        else:
-            try:
-                inst = info_class()
-                module_info = inst.module_info()
-                if len(module_info) == 2:
-                    logstr = '%s version %s'
-                elif len(module_info) == 3:
-                    logstr = '%s version %s (%s)'
 
-                logger.info(logstr, *module_info)
-            except Exception:
-                logger.warn("Error loading module info for %s", entry_point.name)
-
+        # Don't actually load the entry points -- just print the
+        # packages unless we need to load them
+        dist = entry_point.dist
+        logger.info("%s version %s", dist.project_name, dist.version)
 
 class _CustomHelpAction(argparse.Action):
 
