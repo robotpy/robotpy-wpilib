@@ -466,8 +466,8 @@ class RobotDrive(MotorSafety):
 
         wheelSpeeds = [0]*self.kMaxNumberOfMotors
         wheelSpeeds[self.MotorType.kFrontLeft] = xIn + yIn + rotation
-        wheelSpeeds[self.MotorType.kFrontRight] = -xIn + yIn - rotation
-        wheelSpeeds[self.MotorType.kRearLeft] = -xIn + yIn + rotation
+        wheelSpeeds[self.MotorType.kFrontRight] = -xIn + yIn + rotation
+        wheelSpeeds[self.MotorType.kRearLeft] = -xIn + yIn - rotation
         wheelSpeeds[self.MotorType.kRearRight] = xIn + yIn - rotation
 
         RobotDrive.normalize(wheelSpeeds)
