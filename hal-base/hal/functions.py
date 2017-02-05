@@ -300,7 +300,15 @@ getJoystickButtons = _RETFUNC("getJoystickButtons", C.c_int32, ("joystickNum", C
 getJoystickDescriptor = _RETFUNC("getJoystickDescriptor", C.c_int32, ("joystickNum", C.c_int32), ("desc", JoystickDescriptor_ptr))
 getJoystickIsXbox = _RETFUNC("getJoystickIsXbox", C.c_bool, ("joystickNum", C.c_int32))
 getJoystickType = _RETFUNC("getJoystickType", C.c_int32, ("joystickNum", C.c_int32))
-getJoystickName = _RETFUNC("getJoystickName", C.c_char_p, ("joystickNum", C.c_int32))
+
+_getJoystickName = _RETFUNC("getJoystickName", C.c_char_p, ("joystickNum", C.c_int32))
+@hal_wrapper
+def getJoystickName(joystickNum):
+    name = _getJoystickName(joystickNum)
+    if name is not None:
+        name = name.decode('utf-8')
+    return name
+
 getJoystickAxisType = _RETFUNC("getJoystickAxisType", C.c_int32, ("joystickNum", C.c_int32), ("axis", C.c_int32))
 setJoystickOutputs = _RETFUNC("setJoystickOutputs", C.c_int32, ("joystickNum", C.c_int32), ("outputs", C.c_int64), ("leftRumble", C.c_int32), ("rightRumble", C.c_int32))
 

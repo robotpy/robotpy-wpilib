@@ -1003,7 +1003,10 @@ def getJoystickType(joystickNum):
     return hal_data["joysticks"][joystickNum]["type"]
 
 def getJoystickName(joystickNum):
-    return hal_data["joysticks"][joystickNum]["name"]
+    name = hal_data["joysticks"][joystickNum]["name"]
+    if not isinstance(name, bytes):
+        name = bytes(name, 'utf-8')
+    return name
 
 def getJoystickAxisType(joystickNum, axis):
     assert False
