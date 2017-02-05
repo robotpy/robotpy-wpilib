@@ -98,6 +98,25 @@ kNumPDPChannels = 16
 
 kAccumulatorChannels = [0, 1]
 
+
+def _initport(name, idx, status):
+    try:
+        if idx < 0:
+            raise IndexError()
+        
+        data = hal_data[name][idx]
+    except IndexError:
+        status.value = PARAMETER_OUT_OF_RANGE
+        return
+        
+    if data['initialized']:
+        status.value = RESOURCE_IS_ALLOCATED
+        return
+    
+    data['initialized'] = True
+    status.value = 0
+    return data
+
 #############################################################################
 # HAL
 #############################################################################
@@ -254,6 +273,7 @@ def report(resource, instanceNumber, context=0, feature=None):
         hal_data['pwm'][instanceNumber]['type'] = 'victorsp'
     
     hal_data['reports'].setdefault(resource, []).append(instanceNumber)
+    return 0
 
 
 #############################################################################
@@ -319,20 +339,11 @@ def getAccumulatorOutput(analog_port, status):
 #############################################################################
 
 def initializeAnalogGyro(handle, status):
-    status.value = 0
     handle = types.GyroHandle(handle)
     
-    try:
-        data = hal_data['analog_gyro'][handle.pin]
-    except IndexError:
-        status.value = PARAMETER_OUT_OF_RANGE
+    data = _initport('analog_gyro', handle.pin, status)
+    if not data:
         return
-        
-    if data['initialized']:
-        status.value = RESOURCE_IS_ALLOCATED
-        return
-    
-    data['initialized'] = True
     
     data['offset'] = 0
     data['deadband'] = 0
@@ -395,10 +406,9 @@ def getAnalogGyroCenter(handle, status):
 # AnalogInput.h
 #############################################################################
 
-def initializeAnalogInputPort(port, status):
-    status.value = 0
-    hal_data['analog_in'][port.pin]['initialized'] = True
-    return types.AnalogInputHandle(port)
+def initializeAnalogInputPort(port, status):    
+    if _initport('analog_in', port.pin, status):
+        return types.AnalogInputHandle(port)
 
 def freeAnalogInputPort(analog_port):
     hal_data['analog_in'][analog_port.pin]['initialized'] = False
@@ -480,9 +490,8 @@ kDefaultAverageBits = 7
 kDefaultSampleRate = 50000.0
 
 def initializeAnalogOutputPort(port, status):
-    status.value = 0
-    hal_data['analog_out'][port.pin]['initialized'] = True
-    return types.AnalogOutputHandle(port)
+    if _initport('analog_out', port.pin, status):
+        return types.AnalogOutputHandle(port)
 
 def freeAnalogOutputPort(analog_port):
     hal_data['analog_out'][analog_port.pin]['initialized'] = False
@@ -598,6 +607,7 @@ def getAnalogTriggerOutput(analog_trigger, type, status):
 def initializeCompressor(module, status):
     status.value = 0
     assert module == 0 # don't support multiple modules for now
+    
     hal_data['compressor']['initialized'] = True
     return types.CompressorHandle(module)
 
@@ -810,46 +820,21 @@ def _remapMXPPWMChannel(pin):
 def _remapSPIChannel(pin):
     return pin - 26
 
-# def allocateDIO(digital_port, input, status):
-#     status.value = 0
-#     if digital_port.pin >= kNumDigitalHeaders:
-#         mxp_port = _remapMXPChannel(digital_port.pin)
-#         if hal_data["mxp"][mxp_port]["initialized"]:
-#             status.value = RESOURCE_IS_ALLOCATED
-#             return False
-#     dio = hal_data['dio'][digital_port.pin]
-#     if dio['initialized']:
-#         status.value = RESOURCE_IS_ALLOCATED
-#         return False
-#     if digital_port.pin >= kNumDigitalHeaders:
-#         hal_data["mxp"][mxp_port]["initialized"] = True
-#     dio['initialized'] = True
-#     dio['is_input'] = input
-
-
-# def freeDIO(digital_port, status):
-#     status.value = 0
-#     hal_data['dio'][digital_port.pin]['initialized'] = False
-#     if digital_port.pin >= kNumDigitalHeaders:
-#         mxp_port = _remapMXPChannel(digital_port.pin)
-#         hal_data["mxp"][mxp_port]["initialized"] = False
-
-
-
 def initializeDIOPort(portHandle, input, status):
     status.value = 0
     if portHandle.pin >= kNumDigitalHeaders:
         mxp_port = _remapMXPChannel(portHandle.pin)
         if hal_data["mxp"][mxp_port]["initialized"]:
             status.value = RESOURCE_IS_ALLOCATED
-            return False
-    dio = hal_data['dio'][portHandle.pin]
-    if dio['initialized']:
-        status.value = RESOURCE_IS_ALLOCATED
-        return False
+            return
+    
+    dio = _initport('dio', portHandle.pin, status)
+    if dio is None:
+        return
+    
     if portHandle.pin >= kNumDigitalHeaders:
         hal_data["mxp"][mxp_port]["initialized"] = True
-    dio['initialized'] = True
+    
     dio['is_input'] = input
     return types.DigitalHandle(portHandle)
 
@@ -957,15 +942,17 @@ def getFilterPeriod(filterIndex, status):
 
 def setErrorData(errors, errorsLength, waitMs):
     # Nothing calls this anymore
-    pass
+    return 0
 
 def sendError(isError, errorCode, isLVCode, details, location, callStack, printMsg):
     # the only thing that calls this is DriverStation.ReportError
     # and it logs by default now
     hal_data['error_data'] = (isError, details, location)
+    return 0
 
 def getControlWord(controlWord):
     controlWord.__dict__.update(hal_data['control'])
+    return 0
 
 def getAllianceStation(status):
     status.value = 0
@@ -974,10 +961,12 @@ def getAllianceStation(status):
 def getJoystickAxes(joystickNum, axes):
     axes.axes = list(map(float, hal_data['joysticks'][joystickNum]['axes']))
     axes.count = len(axes.axes)
+    return 0
 
 def getJoystickPOVs(joystickNum, povs):
     povs.povs = list(map(int, hal_data['joysticks'][joystickNum]['povs']))
     povs.count = len(povs.povs)
+    return 0
 
 def getJoystickButtons(joystickNum, buttons):
     # buttons are stored as booleans for ease of use, convert to integer
@@ -987,6 +976,7 @@ def getJoystickButtons(joystickNum, buttons):
     l = len(b)-1
     buttons.buttons = sum(map(operator.lshift, map(int, b[1:]), range(l)))
     buttons.count = l
+    return 0
 
 def getJoystickDescriptor(joystickNum, desc):
     stick = hal_data["joysticks"][joystickNum]
@@ -995,6 +985,7 @@ def getJoystickDescriptor(joystickNum, desc):
     desc.name = stick["name"]
     desc.axisCount = stick["axisCount"]
     desc.buttonCount = stick["buttonCount"]
+    return 0
 
 def getJoystickIsXbox(joystickNum):
     return hal_data["joysticks"][joystickNum]["isXbox"]
@@ -1015,6 +1006,7 @@ def setJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
     hal_data['joysticks'][joystickNum]["leftRumble"] = leftRumble
     hal_data['joysticks'][joystickNum]["rightRumble"] = rightRumble
     hal_data['joysticks'][joystickNum]["outputs"] = [bool(val) for val in bin(outputs)]
+    return 0
 
 def getMatchTime(status):
     '''
@@ -1312,12 +1304,9 @@ def initializePWMPort(portHandle, status):
             status.value = RESOURCE_IS_ALLOCATED
             return
  
-    if hal_data['pwm'][pwmPortHandle.pin]['initialized']:
-        status.value = RESOURCE_IS_ALLOCATED
+    if _initport('pwm', pwmPortHandle.pin, status) is None:
         return
-     
-    hal_data['pwm'][pwmPortHandle.pin]['initialized'] = True
- 
+    
     if pwmPortHandle.pin >= kNumDigitalHeaders:
         hal_data["mxp"][mxp_port]["initialized"] = True
  
@@ -1554,7 +1543,6 @@ def freeRelayPort(relayPortHandle):
         hal_data['relay'][channel]['fwd'] = False
     else:
         hal_data['relay'][channel]['rev'] = False
-
     
 def checkRelayChannel(channel):
     return 0 <= channel and channel < kNumRelayHeaders
@@ -1576,26 +1564,6 @@ def getRelay(relayPortHandle, status):
         return hal_data['relay'][channel]['fwd']
     else:
         return hal_data['relay'][channel]['rev']
-
-# def setRelayForward(digital_port, on, status):
-#     status.value = 0
-#     relay = hal_data['relay'][digital_port.pin]
-#     relay['initialized'] = True
-#     relay['fwd'] = on
-# 
-# def setRelayReverse(digital_port, on, status):
-#     status.value = 0
-#     relay = hal_data['relay'][digital_port.pin]
-#     relay['initialized'] = True
-#     relay['rev'] = on
-# 
-# def getRelayForward(digital_port, status):
-#     return hal_data['relay'][digital_port.pin]['fwd']
-# 
-# def getRelayReverse(digital_port, status):
-#     status.value = 0
-#     return hal_data['relay'][digital_port.pin]['rev']
-
 
 #############################################################################
 # SPI.h
@@ -1694,18 +1662,11 @@ def getSPIAccumulatorOutput(port, status):
 #############################################################################
 
 def initializeSolenoidPort(port, status):
-    
-    if not checkSolenoidChannel(port.pin):
-        status.value = RESOURCE_OUT_OF_RANGE
+    data = _initport('solenoid', port.pin, status)
+    if data is None:
         return
     
-    if hal_data['solenoid'][port.pin]['initialized']:
-        status.value = RESOURCE_IS_ALLOCATED
-        return
-    
-    status.value = 0
-    hal_data['solenoid'][port.pin]['initialized'] = True
-    hal_data['solenoid'][port.pin]['value'] = False
+    data['value'] = False
     return types.SolenoidHandle(port)
 
 def freeSolenoidPort(port):

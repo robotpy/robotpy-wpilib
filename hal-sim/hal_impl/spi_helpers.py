@@ -120,10 +120,10 @@ class ADXRS450_Gyro_Sim(SPISimBase):
         return 0
     
     def getSPIAccumulatorValue(self, port, status):
-        return hal_data['robot'].get(self.angle_key, 0) / (self.kDegreePerSecondPerLSB * self.kSamplePeriod)
+        return int(hal_data['robot'].get(self.angle_key, 0) / (self.kDegreePerSecondPerLSB * self.kSamplePeriod))
     
     def getSPIAccumulatorLastValue(self, port, status):
-        return hal_data['robot'].get(self.rate_key, 0) / self.kDegreePerSecondPerLSB
+        return int(hal_data['robot'].get(self.rate_key, 0) / self.kDegreePerSecondPerLSB)
     
     # for calibrate
     def writeSPI(self, port, data_to_send, send_size):
