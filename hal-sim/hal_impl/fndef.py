@@ -64,6 +64,9 @@ def gen_check(pname, ptype):
     elif ptype is C.c_uint64:
         return 'isinstance(%s, int) and %s < %d and %s >= 0' % (pname, pname, 1<<64, pname)
 
+    elif ptype is None:
+        return '%s is None' % pname
+
     else:
         # TODO: do validation here
         #return 'isinstance(%s, %s)' % (pname, type(ptype).__name__)
@@ -75,6 +78,7 @@ def gen_func(f, name, restype, params, out, _thunk):
     args = []
     callargs = []
     checks = []
+    retchecks = []
 
     if out is None:
         out = []
@@ -110,17 +114,42 @@ def gen_func(f, name, restype, params, out, _thunk):
     # double check that our simulated HAL is correct
     info = inspect.getfullargspec(f)
     assert info.args == callargs, '%s: %s != %s' % (name, info.args, args)
-
+    
+    # Check the return value, just to be extra pedantic
+    if out:
+        if restype is None:
+            retvals = out[:]
+        else:
+            retvals = [restype] + out
+    else:
+        retvals = [restype]
+        
+    if len(retvals) == 1:
+        check = gen_check('return_value', retvals[0])
+        if check is not None:
+            retchecks.append('assert %s, "Internal Error: Invalid return value from %s (check was: %s); value=%%s, type=%%s" %% (return_value, type(return_value).__name__)' % (check, name, check))
+    else:
+        retchecks.append('assert isinstance(return_value, tuple), "Internal Error: Invalid return value from %s (expected tuple, got %%s)" %% (return_value,)' % name)
+        
+        for i, r in enumerate(retvals):
+            
+            check = gen_check('return_value[%s]' % i, r)
+            if check is not None:
+                retchecks.append('assert %s, "Internal Error: Invalid return value from %s (check was: %s); value=%%s, type=%%s" %% (return_value, type(return_value).__name__)' % (check, name, check))
+    
     # Create the function body to be exec'ed
     # -> optimization: store the function first, instead of looking it up in _dll each time
     return inspect.cleandoc('''
         %s
         def %s(%s):
             %s
-            return %s(%s)
+            return_value = %s(%s)
+            %s
+            return return_value
     ''') % (init, name, ', '.join(args),
             '\n    '.join(checks),
-            fn_call, ', '.join(args))
+            fn_call, ', '.join(args),
+            '\n    '.join(retchecks))
 
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,
