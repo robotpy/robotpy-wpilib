@@ -133,24 +133,24 @@ def test_counter_set_pl_mode(wpilib, hal_data, thresh):
 
 def test_counter_get(wpilib, hal_data):
     ctr = wpilib.Counter()
-    hal_data["counter"][0]["count"] = 4.58
-    assert ctr.get() == 4.58
-    hal_data["counter"][0]["count"] = 2.5
-    assert ctr.get() == 2.5
+    hal_data["counter"][0]["count"] = 4
+    assert ctr.get() == 4
+    hal_data["counter"][0]["count"] = 2
+    assert ctr.get() == 2
 
 def test_counter_get_distance(wpilib, hal_data):
     ctr = wpilib.Counter()
     ctr.setDistancePerPulse(2)
-    hal_data["counter"][0]["count"] = 4.58
-    assert ctr.getDistance() == 4.58*2
+    hal_data["counter"][0]["count"] = 4
+    assert ctr.getDistance() == 4*2
     ctr.setDistancePerPulse(5)
-    hal_data["counter"][0]["count"] = 2.5
-    assert ctr.getDistance() == 2.5*5
+    hal_data["counter"][0]["count"] = 2
+    assert ctr.getDistance() == 2*5
 
 def test_counter_reset(wpilib, hal_data):
     ctr = wpilib.Counter()
-    hal_data["counter"][0]["count"] = 4.58
-    assert ctr.get() == 4.58
+    hal_data["counter"][0]["count"] = 4
+    assert ctr.get() == 4
     ctr.reset()
     assert hal_data["counter"][0]["count"] == 0
     assert ctr.get() == 0
