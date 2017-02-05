@@ -169,34 +169,20 @@ class Encoder(SensorBase):
         self.bSource = bSource
         self.indexSource = indexSource
         self.encodingType = encodingType
-        self.distancePerPulse = 1.0 # distance of travel for each encoder tick
         self.pidSource = self.PIDSourceType.kDisplacement
         self._encoder = None
         self.counter = None
         self.index = 0
-
-        if encodingType == self.EncodingType.k4X:
-            self._encoder, self.index = hal.initializeEncoder(
-                    aSource.getPortHandleForRouting(),
-                    aSource.getAnalogTriggerTypeForRouting(),
-                    bSource.getPortHandleForRouting(),
-                    bSource.getAnalogTriggerTypeForRouting(),
-                    reverseDirection, encodingType)
-            self.__finalizer = \
-                    weakref.finalize(self, _freeEncoder, self._encoder)
-            self.setMaxPeriod(.5)
-            self.encodingScale = 4
-        elif encodingType in (self.EncodingType.k2X, self.EncodingType.k1X):
-            # Use Counter object for 1x and 2x encoding
-            self.counter = Counter(encodingType, aSource, bSource,
-                                   reverseDirection)
-            if encodingType == self.encodingType.k2X:
-                self.encodingScale = 2
-            else:
-                self.encodingScale = 1
-            self.index = self.counter.getFPGAIndex()
-        else:
-            raise ValueError("unrecognized encodingType: %s" % encodingType)
+        
+        self._encoder = hal.initializeEncoder(
+            aSource.getPortHandleForRouting(),
+            aSource.getAnalogTriggerTypeForRouting(),
+            bSource.getPortHandleForRouting(),
+            bSource.getAnalogTriggerTypeForRouting(),
+            reverseDirection, encodingType
+        )
+        
+        self.__finalizer = weakref.finalize(self, _freeEncoder, self._encoder)
         
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
@@ -449,7 +435,7 @@ class Encoder(SensorBase):
         if table is not None:
             table.putNumber("Speed", self.getRate())
             table.putNumber("Distance", self.getDistance())
-            table.putNumber("Distance per Tick", self.distancePerPulse)
+            table.putNumber("Distance per Tick", hal.getEncoderDistancePerPulse(self.encoder))
 
     def startLiveWindowMode(self):
         pass

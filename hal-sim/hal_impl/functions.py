@@ -1067,9 +1067,9 @@ def initializeEncoder(digitalSourceHandleA, analogTriggerTypeA, digitalSourceHan
             enc['config'] = {"ASource_Channel": digitalSourceHandleA.pin, "ASource_AnalogTrigger": analogTriggerTypeA,
                              "BSource_Channel": digitalSourceHandleB.pin, "BSource_AnalogTrigger": analogTriggerTypeB}
             enc['reverse_direction'] = reverseDirection
-            return types.EncoderHandle(idx), idx
+            return types.EncoderHandle(idx)
     status.value = NO_AVAILABLE_RESOURCES
-    return None, -1
+    return None
 
 def freeEncoder(encoder, status):
     status.value = 0
