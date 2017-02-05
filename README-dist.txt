@@ -1,5 +1,5 @@
-RobotPy (http://robotpy.github.io)
-==================================
+RobotPy (https://robotpy.github.io)
+===================================
 
 Welcome to RobotPy! RobotPy is a community of FIRST mentors and students
 dedicated to developing python-related projects for the FIRST Robotics
@@ -7,10 +7,8 @@ Competition.
 
 This package contains the binary packages and source code required to install
 a python interpreter on your roboRIO and the necessary libraries required to
-use WPILib to control your FIRST Robotics Competition robot.
-
-If you want to install robotpy packages on your laptop, check out the pyfrc
-project at https://github.com/robotpy/pyfrc
+use WPILib to control your FIRST Robotics Competition robot. You can also run
+RobotPy on your computer too (see our documentation for details).
 
 License
 =======
@@ -30,7 +28,7 @@ Installation to Robot
 The RobotPy installation process is intended to be quick and painless. Follow
 these steps and you'll be on your way!
 
-* Install Python 3.4
+* Install Python 3.x (latest is always recommended)
 * Extract this zipfile somewhere
 * Run one of the following:
 
@@ -41,6 +39,9 @@ these steps and you'll be on your way!
 Once you answer the questions, your robot has the necessary files to start
 running python robot code! Our documentation site (see above) can help you get
 started writing your code.
+
+The RobotPy installer can install other python packages and binary packages on
+your robot. See the RobotPy documentation for more details.
 
 Support
 =======
@@ -55,10 +56,4 @@ Other sources of support include:
 
 * The RobotPy mailing list: https://groups.google.com/forum/#!forum/robotpy
 * ChiefDelphi: http://www.chiefdelphi.com/forums/forumdisplay.php?f=187
-
-Primary maintainers
-===================
-
-* Peter Johnson, FRC Team 294
-* Dustin Spicuzza, FRC Team 1418/2423
-
+* Gitter: https://gitter.im/robotpy/robotpy-wpilib

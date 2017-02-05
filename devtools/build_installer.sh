@@ -10,14 +10,6 @@ echo "Packaging RobotPy $VERSION"
 cd ..
 [ -d dist ] || mkdir dist
 
-pushd installer
-
-# Download the latest version of the PuTTY tools
-pushd win32
-wget -N http://the.earth.li/~sgtatham/putty/latest/x86/plink.exe
-wget -N http://the.earth.li/~sgtatham/putty/latest/x86/psftp.exe
-popd
-
 # Create a temporary directory, and populate it with things
 tmpdir=`mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir'`
 
@@ -34,18 +26,17 @@ function cleanup {
 trap "cleanup" EXIT
 
 mkdir $rpy_tmpdir
-mkdir $rpy_tmpdir/win32
 
-cp ../wpilib/LICENSE.txt $rpy_tmpdir
-cp installer.py $rpy_tmpdir
 cp README-dist.txt $rpy_tmpdir/README.txt
-cp installer.rst $rpy_tmpdir/installer.txt
-cp win32/plink.exe $rpy_tmpdir/win32
-cp win32/psftp.exe $rpy_tmpdir/win32
-
-popd
+cp wpilib/LICENSE.txt $rpy_tmpdir
 
 pushd $rpy_tmpdir
+
+# Download + extract files from the installer
+pip download --no-cache --disable-pip-version-check robotpy-installer -d .
+tar --strip=2 -xf robotpy-installer*.tar.gz '*/installer.py' '*/win32/*'
+rm robotpy-installer*.tar.gz
+
 find *
 
 # Download the latest release of robotpy from the release sites
