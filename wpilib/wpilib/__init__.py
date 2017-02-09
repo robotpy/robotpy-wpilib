@@ -14,6 +14,7 @@ from .analogpotentiometer import *
 from .analogtrigger import *
 from .analogtriggeroutput import *
 from .builtinaccelerometer import *
+from .cameraserver import *
 from .canjaguar import *
 from .cantalon import *
 from .compressor import *
