@@ -23,7 +23,7 @@ fi
 
 echo "Installing $VERSION"
 
-PIP_CACHE="installer/pip_cache/"
+PIP_CACHE="pip_cache/"
 
 [ -d $PIP_CACHE ] || mkdir $PIP_CACHE
 
@@ -38,4 +38,4 @@ cp hal-roborio/dist/robotpy-hal-roborio-$VERSION.tar.gz $PIP_CACHE
 cp wpilib/dist/wpilib-$VERSION.tar.gz $PIP_CACHE
 
 # Run the install now
-python3 installer/installer.py install -U --no-deps --force-reinstall robotpy-hal-base==$VERSION robotpy-hal-roborio==$VERSION wpilib==$VERSION
+python3 -m robotpy_installer install -U --no-deps --force-reinstall robotpy-hal-base==$VERSION robotpy-hal-roborio==$VERSION wpilib==$VERSION

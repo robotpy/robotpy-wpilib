@@ -69,10 +69,12 @@ class CameraServer:
             ]
             
             if vision_py:
+                if not vision_py.startswith('/'):
+                    vision_py = '/home/lvuser/py/' + vision_py
                 args.append(vision_py)
             
             # We open a pipe to it so that when this process exits, it dies
-            proc = subprocess.Popen(args, close_fds=True, stdin=subprocess.PIPE)
+            proc = subprocess.Popen(args, close_fds=True, stdin=subprocess.PIPE, cwd='/home/lvuser/py')
             th = threading.Thread(target=cls._monitor_child, args=(proc,))
             th.daemon = True
             th.start()
