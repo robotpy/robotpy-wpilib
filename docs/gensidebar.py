@@ -65,6 +65,7 @@ def generate_sidebar(conf, conf_api):
     write("Programmer's Guide", 'guide/index')
     write('Frameworks', 'frameworks/index')
     write('Hardware & Sensors', 'hw')
+    write('Camera & Vision', 'vision/index')
     endl()
     
     toctree('API Reference')
@@ -72,6 +73,7 @@ def generate_sidebar(conf, conf_api):
     write_api('pynetworktables', 'NetworkTables')
     write_api('utilities', 'Utilities')
     write_api('pyfrc', 'PyFRC')
+    write_api('ctre', 'CTRE Libraries')
     endl()
     
     toctree('Additional Info')
