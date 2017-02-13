@@ -36,6 +36,8 @@ class ConditionalCommand(Command):
         :param onTrue: The Command to execute if {@link ConditionalCommand#condition()} returns true
         :param onFalse: The Command to execute if {@link ConditionalCommand#condition()} returns false
         """
+        super().__init__(name)
+
         if onTrue is None:
             onTrue = InstantCommand(None)
         if onFalse is None:
