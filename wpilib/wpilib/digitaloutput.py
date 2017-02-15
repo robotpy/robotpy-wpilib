@@ -63,7 +63,7 @@ class DigitalOutput(DigitalSource):
         :param value: True is on, off is False
         :type  value: bool
         """
-        hal.setDIO(self.port, 1 if value else 0)
+        hal.setDIO(self.handle, value)
 
     def get(self):
         """Gets the value being output from the Digital Output.
