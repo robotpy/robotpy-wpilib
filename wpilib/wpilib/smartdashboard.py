@@ -424,6 +424,60 @@ class SmartDashboard:
             return table.getNumberArray(key)
         else:
             return table.getNumberArray(key, defaultValue)
+    
+    @classmethod
+    def putStringArray(cls, key, value):
+        """Put a string array in the table
+        
+        :param key: the key to be assigned to
+        :type key: str
+        :param value: the value that will be assigned
+        :type value: list(str)
+        
+        :returns: False if the table key already exists with a different type
+        :rtype: bool
+        """
+        table = cls.getTable()
+        return table.putStringArray(key, value)
+    
+    @classmethod
+    def setDefaultStringArray(cls, key, defaultValue):
+        """If the key doesn't currently exist, then the specified value will
+        be assigned to the key.
+        
+        :param key: the key to be assigned to
+        :type key: str
+        :param defaultValue: the default value to set if key doesn't exist.
+        :type defaultValue: list(str)
+        
+        :returns: False if the table key exists with a different type
+        :rtype: bool
+        """
+        table = cls.getTable()
+        return table.setDefaultStringArray(key, defaultValue)
+    
+    @classmethod
+    def getStringArray(cls, key, defaultValue=_defaultValueSentry):
+        """Returns the string array the key maps to. If the key does not exist or is
+        of different type, it will return the default value.
+        
+        :param key: the key to look up
+        :type key: str
+        :param defaultValue: the value to be returned if no value is found
+        :type defaultValue: list(str)
+        
+        :returns: the value associated with the given key or the given default value
+                  if there is no value associated with the key
+        :rtype: list(str)
+        
+        :raises KeyError: If the value doesn't exist and no default is provided, or
+                          if it is the wrong type
+        """
+        table = cls.getTable()
+        if defaultValue is cls._defaultValueSentry:
+            return table.getStringArray(key)
+        else:
+            return table.getStringArray(key, defaultValue)
 
     @classmethod
     def putRaw(cls, key, value):
@@ -445,7 +499,7 @@ class SmartDashboard:
         :returns: False if the table key exists with a different type
         """
         table = cls.getTable()
-        return table.setDefaultNumberArray(key, defaultValue)
+        return table.setDefaultRaw(key, defaultValue)
 
 
     @classmethod
@@ -467,9 +521,9 @@ class SmartDashboard:
         """
         table = cls.getTable()
         if defaultValue is cls._defaultValueSentry:
-            return table.getNumberArray(key)
+            return table.getRaw(key)
         else:
-            return table.getNumberArray(key, defaultValue)
+            return table.getRaw(key, defaultValue)
 
 
 
