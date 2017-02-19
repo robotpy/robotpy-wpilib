@@ -1,4 +1,4 @@
-# validated: 2016-12-31 JW 8f67f2c24cb9 athena/java/edu/wpi/first/wpilibj/I2C.java
+# validated: 2017-02-19 DS 12f759860eea athena/java/edu/wpi/first/wpilibj/I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -138,10 +138,10 @@ class I2C:
         Usage::
         
             # send byte string
-            failed = spi.writeBulk(b'stuff')
+            failed = i2c.writeBulk(b'stuff')
             
             # send list of integers
-            failed = spi.write([0x01, 0x02])
+            failed = i2c.write([0x01, 0x02])
         """
         try:
             hal.writeI2C(self.port, self.deviceAddress, data)
