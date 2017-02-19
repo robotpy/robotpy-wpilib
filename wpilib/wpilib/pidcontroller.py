@@ -1,4 +1,4 @@
-# validated: 2016-11-15 AA 776cb91 shared/java/edu/wpi/first/wpilibj/PIDController.java
+# validated: 2017-02-19 DS 1bdbb5ddcc8b shared/java/edu/wpi/first/wpilibj/PIDController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -506,10 +506,12 @@ class PIDController(LiveWindowSendable):
         if table is not None:
             table.putBoolean("enabled", False)
 
-    def isEnable(self):
+    def isEnabled(self):
         """Return True if PIDController is enabled."""
         with self.mutex:
             return self.enabled
+            
+    isEnable = isEnabled
 
     def reset(self):
         """Reset the previous error, the integral term, and disable the
@@ -536,7 +538,7 @@ class PIDController(LiveWindowSendable):
             if self.getSetpoint() != float(value):
                 self.setSetpoint(float(value))
         elif key == "enabled":
-            if self.isEnable() != bool(value):
+            if self.isEnabled() != bool(value):
                 if bool(value):
                     self.enable()
                 else:
@@ -553,7 +555,7 @@ class PIDController(LiveWindowSendable):
             table.putNumber("d", self.getD())
             table.putNumber("f", self.getF())
             table.putNumber("setpoint", self.getSetpoint())
-            table.putBoolean("enabled", self.isEnable())
+            table.putBoolean("enabled", self.isEnabled())
             table.addTableListener(self.valueChanged, False)
 
     def getContinuousError(self, error):
