@@ -81,7 +81,7 @@ def test_multiple_solenoids(wpilib, hal_data):
 
 def test_solenoidbase_getAll(wpilib, hal_data):
     
-    solenoid = wpilib.SolenoidBase(1)
+    solenoid = wpilib.SolenoidBase(0)
     
     for s in hal_data['solenoid']:
         s['value'] = False
@@ -96,4 +96,22 @@ def test_solenoidbase_getAll(wpilib, hal_data):
     hal_data['solenoid'][0]['value'] = False
     
     assert solenoid.getAll() == 0xFE
+
+def test_pcm_mapping(wpilib, hal_data):
+    assert hal_data['solenoid'] is hal_data['pcm'][0]
+
+def test_multiple_pcm(wpilib, hal_data):
+    
+    s0_1 = wpilib.Solenoid(0, 1)
+    s1_1 = wpilib.Solenoid(1, 1)
+    
+    hal_data['pcm'][0][1]['value'] = True
+    hal_data['pcm'][1][1]['value'] = False
+    assert s0_1.get() == True
+    assert s1_1.get() == False
+    
+    hal_data['pcm'][0][1]['value'] = False
+    hal_data['pcm'][1][1]['value'] = True
+    assert s0_1.get() == False
+    assert s1_1.get() == True
 
