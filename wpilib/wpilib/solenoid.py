@@ -11,6 +11,7 @@ import weakref
 import warnings
 
 from .livewindow import LiveWindow
+from .resource import Resource
 from .sensorbase import SensorBase
 from .solenoidbase import SolenoidBase
 
@@ -80,6 +81,9 @@ class Solenoid(SolenoidBase):
                    moduleNumber)
         
         self.__finalizer = weakref.finalize(self, _freeSolenoid, self._solenoidHandle)
+        
+        # Need this to free on unit test wpilib reset
+        Resource._add_global_resource(self)
         
     @property
     def solenoidHandle(self):

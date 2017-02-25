@@ -41,10 +41,11 @@ def hal_data(_module_patch):
 def wpilib(_module_patch, hal, hal_data):
     """Actual wpilib implementation"""
     import wpilib
-    return wpilib
-
-    # Note: we don't use wpilib.Resource._reset here because the wpilib module
-    # is freshly loaded each time a new test is ran
+    yield wpilib
+    
+    # Note: even though the wpilib module is freshly loaded each time a new
+    # test is ran, we still call _reset() to finish off any finalizers
+    wpilib.Resource._reset()
 
 @pytest.fixture(scope="function")
 def networktables():
