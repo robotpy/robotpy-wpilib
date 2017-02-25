@@ -372,11 +372,15 @@ def _reset_hal_data(current_hooks):
             'user_faults_3v3':  IN(0),
         },
 
+        # This is mapped to pcm[0], if you wish to access multiple
+        # solenoid modules, use the pcm key instead
         # solenoid values are True, False 
         'solenoid': [NotifyDict({
             'initialized': OUT(False),
             'value':       OUT(None)
         }) for _ in range(8)],
+                     
+        'pcm': NotifyDict(),
 
         'pdp': {
             'has_source':    IN(False),
@@ -396,6 +400,8 @@ def _reset_hal_data(current_hooks):
     # Ok, filter out the data into a 'both' and 'in' dictionary, removing
     # the OUT and IN objects
     _filter_hal_data(hal_data, hal_in_data)
+    
+    hal_data['pcm'][0] = hal_data['solenoid']
 
     
 def _filter_hal_data(both_dict, in_dict):

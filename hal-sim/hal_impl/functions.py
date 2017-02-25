@@ -5,7 +5,7 @@ from . import types
 import operator
 
 from . import data
-from .data import hal_data
+from .data import hal_data, NotifyDict
 from hal_impl.sim_hooks import SimHooks
 
 import logging
@@ -99,12 +99,12 @@ kNumPDPChannels = 16
 kAccumulatorChannels = [0, 1]
 
 
-def _initport(name, idx, status):
+def _initport(name, idx, status, root=hal_data):
     try:
         if idx < 0:
             raise IndexError()
         
-        data = hal_data[name][idx]
+        data = root[name][idx]
     except IndexError:
         status.value = PARAMETER_OUT_OF_RANGE
         return
@@ -1661,8 +1661,22 @@ def getSPIAccumulatorOutput(port, status):
 # Solenoid
 #############################################################################
 
+# Note: if you're just using the default solenoid module, you can use
+# hal_data['solenoid'][N] to refer to solenoids -- it's exactly the same
+# data as hal_data['pcm'][0][N]
+
 def initializeSolenoidPort(port, status):
-    data = _initport('solenoid', port.pin, status)
+    if not checkSolenoidModule(port.module):
+        status.value = RESOURCE_OUT_OF_RANGE
+        return
+    
+    if port.module not in hal_data['pcm']:
+        hal_data['pcm'][port.module] = [NotifyDict({
+            'initialized': False,
+            'value':       None
+        }) for _ in range(kNumSolenoidChannels)]
+    
+    data = _initport(port.module, port.pin, status, root=hal_data['pcm'])
     if data is None:
         return
     
@@ -1670,7 +1684,7 @@ def initializeSolenoidPort(port, status):
     return types.SolenoidHandle(port)
 
 def freeSolenoidPort(port):
-    hal_data['solenoid'][port.pin]['initialized'] = False
+    hal_data['pcm'][port.module][port.pin]['initialized'] = False
     port.pin = None
 
 def checkSolenoidModule(module):
@@ -1681,18 +1695,19 @@ def checkSolenoidChannel(channel):
 
 def getSolenoid(solenoid_port, status):
     status.value = 0
-    return hal_data['solenoid'][solenoid_port.pin]['value']
+    return hal_data['pcm'][solenoid_port.module][solenoid_port.pin]['value']
 
 def getAllSolenoids(module, status):
     status.value = 0
     value = 0
-    for i, s in enumerate(hal_data['solenoid']):
-        value |= (1 if s['value'] else 0) << i
+    if module in hal_data['pcm']:
+        for i, s in enumerate(hal_data['pcm'][module]):
+            value |= (1 if s['value'] else 0) << i
     return value
 
 def setSolenoid(solenoid_port, value, status):
     status.value = 0
-    hal_data['solenoid'][solenoid_port.pin]['value'] = value
+    hal_data['pcm'][solenoid_port.module][solenoid_port.pin]['value'] = value
 
 def getPCMSolenoidBlackList(module, status):
     status.value = 0

@@ -208,10 +208,11 @@ class RelayHandle(Handle):
         return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
 
 class SolenoidHandle(Handle):
-    __slots__ = ['pin']
+    __slots__ = ['module', 'pin']
     def __init__(self, port):
+        self.module = port.module
         self.pin = port.pin
         
     def __repr__(self):
-        return "<%s at 0x%x pin=%s>" % (type(self).__qualname__, id(self), self.pin)
+        return "<%s at 0x%x mod=%s pin=%s>" % (type(self).__qualname__, id(self), self.module, self.pin)
 

@@ -1,7 +1,7 @@
 
 def _test_filtered_hal(d):
     for k, v in d.items():
-        assert isinstance(k, str)
+        assert isinstance(k, (int, str))
         
         if isinstance(v, dict):
             _test_filtered_hal(v)
