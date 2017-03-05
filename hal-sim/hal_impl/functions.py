@@ -1658,6 +1658,91 @@ def getSPIAccumulatorOutput(port, status):
 
 
 #############################################################################
+# SerialPort
+#############################################################################
+
+#
+# Serial: These functions should never get called, pass a simPort object
+#         to the SerialPort implementation instead. See serial_helpers.py
+#         for an example.
+#
+#         The simPort object should implement all of thefunctions below
+#
+
+def initializeSerialPort(port, status):
+    status.value = 0
+    assert False
+
+def setSerialBaudRate(port, baud, status):
+    status.value = 0
+    assert False
+
+def setSerialDataBits(port, bits, status):
+    status.value = 0
+    assert False
+
+def setSerialParity(port, parity, status):
+    status.value = 0
+    assert False
+
+def setSerialStopBits(port, stopBits, status):
+    status.value = 0
+    assert False
+
+def setSerialWriteMode(port, mode, status):
+    status.value = 0
+    assert False
+
+def setSerialFlowControl(port, flow, status):
+    status.value = 0
+    assert False
+
+def setSerialTimeout(port, timeout, status):
+    status.value = 0
+    assert False
+
+def enableSerialTermination(port, terminator, status):
+    status.value = 0
+    assert False
+
+def disableSerialTermination(port, status):
+    status.value = 0
+    assert False
+
+def setSerialReadBufferSize(port, size, status):
+    status.value = 0
+    assert False
+
+def setSerialWriteBufferSize(port, size, status):
+    status.value = 0
+    assert False
+
+def getSerialBytesReceived(port, status):
+    status.value = 0
+    assert False
+
+def readSerial(port, count, status):
+    status.value = 0
+    assert False
+
+def writeSerial(port, buffer, count, status):
+    status.value = 0
+    assert False
+
+def flushSerial(port, status):
+    status.value = 0
+    assert False
+
+def clearSerial(port, status):
+    status.value = 0
+    assert False
+
+def closeSerial(port, status):
+    status.value = 0
+    assert False
+
+
+#############################################################################
 # Solenoid
 #############################################################################
 
