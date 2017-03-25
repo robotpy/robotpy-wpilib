@@ -50,7 +50,7 @@ setup(
     url='https://github.com/robotpy/robotpy-wpilib',
     keywords='frc first robotics wpilib',
     packages=find_packages(),
-    install_requires=['pynetworktables>=2017.0.1'] if not os.environ.get('ROBOTPY_NO_DEPS') else None,
+    install_requires=['pynetworktables>=2017.0.8'] if not os.environ.get('ROBOTPY_NO_DEPS') else None,
     license="BSD License",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
