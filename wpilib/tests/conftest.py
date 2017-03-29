@@ -52,7 +52,8 @@ def networktables():
     """Networktables instance"""
     import networktables
     networktables.NetworkTables.setTestMode()
-    return networktables
+    yield networktables
+    networktables.NetworkTables.shutdown()
 
 #
 # Mock fixtures for testing things that don't have to interact with 
