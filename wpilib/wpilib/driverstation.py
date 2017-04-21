@@ -579,10 +579,12 @@ class DriverStation:
         """
         
         # Get the status of all of the joysticks
-        for stick in range(self.kJoystickPorts):
-            hal.getJoystickAxes(stick, self.joystickAxesCache[stick])
-            hal.getJoystickPOVs(stick, self.joystickPOVsCache[stick])
-            hal.getJoystickButtons(stick, self.joystickButtonsCache[stick])
+        with self.mutex:
+            for stick in range(self.kJoystickPorts):
+                hal.getJoystickAxes(stick, self.joystickAxesCache[stick])
+                hal.getJoystickPOVs(stick, self.joystickPOVsCache[stick])
+                hal.getJoystickButtons(stick, self.joystickButtonsCache[stick])
+            self.newControlData = True
         
         # Force a control word update, to make sure the data is the newest.
         self._updateControlWord(True)
@@ -619,6 +621,7 @@ class DriverStation:
         
         while self.threadKeepAlive:
             hal.waitForDSData()
+            print ("waited for data!")
             self._getData()
             
             with self.dataCond:
