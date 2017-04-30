@@ -196,7 +196,7 @@ class SerialPort:
         :param count: The maximum number of bytes to write.
         :returns: The number of bytes actually written into the port.
         """
-        return hal.writeSerial(self.port, buffer, len(buffer))
+        return hal.writeSerial(self.port, buffer)
     
     def writeString(self, data):
         """Write an ASCII encoded string to the serial port

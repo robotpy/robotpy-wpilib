@@ -619,14 +619,18 @@ setSerialReadBufferSize = _TSTATUSFUNC("setSerialReadBufferSize", None, ("port",
 setSerialWriteBufferSize = _TSTATUSFUNC("setSerialWriteBufferSize", None, ("port", C.c_int32), ("size", C.c_int32))
 getSerialBytesReceived = _TSTATUSFUNC("getSerialBytesReceived", C.c_int32, ("port", C.c_int32))
 
-_readSerial = _TSTATUSFUNC("readSerial", C.c_int32, ("port", C.c_int32), ("buffer", C.c_char_p), ("count", C.c_int32), out=["buffer"])
+_readSerial = _TSTATUSFUNC("readSerial", C.c_int32, ("port", C.c_int32), ("buffer", C.c_char_p), ("count", C.c_int32))
 @hal_wrapper
 def readSerial(port, count):
-    buffer = (C.c_uint8 * count)()
+    buffer = C.create_string_buffer(count)
     rv = _readSerial(port, buffer, count)
     return buffer[:rv]
 
-writeSerial = _TSTATUSFUNC("writeSerial", C.c_int32, ("port", C.c_int32), ("buffer", C.c_char_p), ("count", C.c_int32))
+_writeSerial = _TSTATUSFUNC("writeSerial", C.c_int32, ("port", C.c_int32), ("buffer", C.c_char_p), ("count", C.c_int32))
+@hal_wrapper
+def writeSerial(port, buffer):
+    return _writeSerial(port, buffer, len(buffer))
+
 flushSerial = _TSTATUSFUNC("flushSerial", None, ("port", C.c_int32))
 clearSerial = _TSTATUSFUNC("clearSerial", None, ("port", C.c_int32))
 closeSerial = _TSTATUSFUNC("closeSerial", None, ("port", C.c_int32))

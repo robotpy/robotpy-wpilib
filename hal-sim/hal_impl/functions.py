@@ -1721,7 +1721,7 @@ def getSerialBytesReceived(port, status):
     status.value = 0
     assert False
 
-def readSerial(port, count, status):
+def readSerial(port, buffer, count, status):
     status.value = 0
     assert False
 
