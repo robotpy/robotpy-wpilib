@@ -51,15 +51,15 @@ class PIDController(LiveWindowSendable):
     def AbsoluteTolerance_onTarget(self, value):
         return self.isAvgErrorValid() and abs(self.getAvgError()) < value
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, Kp, Ki, Kd, *args, **kwargs):
         """Allocate a PID object with the given constants for P, I, D, and F
 
         Arguments can be structured as follows:
 
-        - Kp, Ki, Kd, Kf, PIDSource, PIDOutput, period
-        - Kp, Ki, Kd, PIDSource, PIDOutput, period
-        - Kp, Ki, Kd, PIDSource, PIDOutput
-        - Kp, Ki, Kd, Kf, PIDSource, PIDOutput
+        - Kp, Ki, Kd, Kf, source, output, period
+        - Kp, Ki, Kd, source, output, period
+        - Kp, Ki, Kd, source, output
+        - Kp, Ki, Kd, Kf, source, output
 
         :param Kp: the proportional coefficient
         :type  Kp: float or int
@@ -79,29 +79,26 @@ class PIDController(LiveWindowSendable):
         :type  period: float or int
         """
 
-        p_arg = ("Kp", [float, int])
-        i_arg = ("Ki", [float, int])
-        d_arg = ("Kd", [float, int])
-        f_arg = ("kf", [float, int])
+        f_arg = ("Kf", [float, int])
         source_arg = ("source", [HasAttribute("pidGet"), HasAttribute("__call__")])
         output_arg = ("output", [HasAttribute("pidWrite"), HasAttribute("__call__")])
         period_arg = ("period", [float, int])
 
-        templates = [[p_arg, i_arg, d_arg, f_arg, source_arg, output_arg, period_arg],
-                     [p_arg, i_arg, d_arg, source_arg, output_arg, period_arg],
-                     [p_arg, i_arg, d_arg, source_arg, output_arg],
-                     [p_arg, i_arg, d_arg, f_arg, source_arg, output_arg]]
+        templates = [[f_arg, source_arg, output_arg, period_arg],
+                     [source_arg, output_arg, period_arg],
+                     [source_arg, output_arg],
+                     [f_arg, source_arg, output_arg]]
 
         _, results = match_arglist('PIDController.__init__',
                                    args, kwargs, templates)
 
-        self.P = results.pop("Kp")     # factor for "proportional" control
-        self.I = results.pop("Ki")     # factor for "integral" control
-        self.D = results.pop("Kd")     # factor for "derivative" control
-        self.F = results.pop("Kf", 0.0)# factor for feedforward term
+        self.P = Kp  # factor for "proportional" control
+        self.I = Ki  # factor for "integral" control
+        self.D = Kd  # factor for "derivative" control
+        self.F = results.pop("Kf", 0.0)  # factor for feedforward term
         self.pidOutput = results.pop("output")
         self.pidInput = results.pop("source")
-        self.period = results.pop("period", PIDController.kDefaultPeriod)
+        self.period = results.pop("period", self.kDefaultPeriod)
         
         self.pidInput = PIDSource.from_obj_or_callable(self.pidInput)
         
