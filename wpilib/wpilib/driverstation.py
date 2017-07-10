@@ -123,7 +123,7 @@ class DriverStation:
 
         :param printTrace: If True, append stack trace to warning string
         """
-        DriverStation._reportErrorImpl(True, 1, error, printTrace)   
+        DriverStation._reportErrorImpl(False, 1, error, printTrace)
         
     @staticmethod
     def _reportErrorImpl(isError, code, error, printTrace):
@@ -149,8 +149,10 @@ class DriverStation:
             errorString += ':\n' + stackstr
             
             logger.exception(error)
-        else:
+        elif isError:
             logger.error(error)
+        else:
+            logger.warning(error)
         
         hal.sendError(isError, code, False,
                       error.encode('utf-8'),
