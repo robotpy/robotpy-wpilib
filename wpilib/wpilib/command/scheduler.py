@@ -235,7 +235,7 @@ class Scheduler(Sendable):
             for command in self.commandTable:
                 if id(command) in self.toCancel:
                     command.cancel()
-            self.toCancel.clear()
+            self.toCancel = []
             self.table.putNumberArray("Cancel", self.toCancel)
 
         if self.runningCommandsChanged:
