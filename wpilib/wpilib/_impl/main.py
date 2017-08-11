@@ -9,6 +9,12 @@ from pkg_resources import iter_entry_points
 from .logconfig import configure_logging
 import hal_impl
 
+from wpilib.driverstation import DriverStation
+
+def my_except_hook(exctype, value, traceback):
+    DriverStation.reportError("ERROR Unhandled {}".format(exctype), True)
+    sys.__excepthook__(exctype, value, traceback)
+sys.excepthook = my_except_hook     
 
 def _log_versions():
     import wpilib
