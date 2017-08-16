@@ -54,7 +54,7 @@ _normalize_type_aliases = [
    ["int32", "int", "i", "int32_t", "c_int", 'CTR_Code'],
    ["double", "d", "c_double"],
    ["float", "f", "c_float"],
-   ["char", "z"],
+   ["char", "z", "c"],
    ["void", "P"],
    ["int8", "int8_t", "c_int8", "b"],
    ["uint8", "uint8_t", "c_uint8", "B"],

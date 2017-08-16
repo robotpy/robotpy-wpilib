@@ -55,6 +55,7 @@ from .sd540 import *
 from .sendable import *
 from .sendablechooser import *
 from .sensorbase import *
+from .serialport import *
 from .servo import *
 from .smartdashboard import *
 from .solenoidbase import *

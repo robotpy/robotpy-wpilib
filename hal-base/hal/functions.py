@@ -601,6 +601,40 @@ getSPIAccumulatorCount = _TSTATUSFUNC("getSPIAccumulatorCount", C.c_int64, ("por
 getSPIAccumulatorAverage = _TSTATUSFUNC("getSPIAccumulatorAverage", C.c_double, ("port", C.c_int32))
 getSPIAccumulatorOutput = _TSTATUSFUNC("getSPIAccumulatorOutput", None, ("port", C.c_int32), ("value", C.POINTER(C.c_int64)), ("count", C.POINTER(C.c_int64)), out=["value", "count"])
 
+#############################################################################
+# SerialPort
+#############################################################################
+
+initializeSerialPort = _TSTATUSFUNC("initializeSerialPort", None, ("port", C.c_int32))
+setSerialBaudRate = _TSTATUSFUNC("setSerialBaudRate", None, ("port", C.c_int32), ("baud", C.c_int32))
+setSerialDataBits = _TSTATUSFUNC("setSerialDataBits", None, ("port", C.c_int32), ("bits", C.c_int32))
+setSerialParity = _TSTATUSFUNC("setSerialParity", None, ("port", C.c_int32), ("parity", C.c_int32))
+setSerialStopBits = _TSTATUSFUNC("setSerialStopBits", None, ("port", C.c_int32), ("stopBits", C.c_int32))
+setSerialWriteMode = _TSTATUSFUNC("setSerialWriteMode", None, ("port", C.c_int32), ("mode", C.c_int32))
+setSerialFlowControl = _TSTATUSFUNC("setSerialFlowControl", None, ("port", C.c_int32), ("flow", C.c_int32))
+setSerialTimeout = _TSTATUSFUNC("setSerialTimeout", None, ("port", C.c_int32), ("timeout", C.c_double))
+enableSerialTermination = _TSTATUSFUNC("enableSerialTermination", None, ("port", C.c_int32), ("terminator", C.c_char))
+disableSerialTermination = _TSTATUSFUNC("disableSerialTermination", None, ("port", C.c_int32))
+setSerialReadBufferSize = _TSTATUSFUNC("setSerialReadBufferSize", None, ("port", C.c_int32), ("size", C.c_int32))
+setSerialWriteBufferSize = _TSTATUSFUNC("setSerialWriteBufferSize", None, ("port", C.c_int32), ("size", C.c_int32))
+getSerialBytesReceived = _TSTATUSFUNC("getSerialBytesReceived", C.c_int32, ("port", C.c_int32))
+
+_readSerial = _TSTATUSFUNC("readSerial", C.c_int32, ("port", C.c_int32), ("buffer", C.c_char_p), ("count", C.c_int32))
+@hal_wrapper
+def readSerial(port, count):
+    buffer = C.create_string_buffer(count)
+    rv = _readSerial(port, buffer, count)
+    return buffer[:rv]
+
+_writeSerial = _TSTATUSFUNC("writeSerial", C.c_int32, ("port", C.c_int32), ("buffer", C.c_char_p), ("count", C.c_int32))
+@hal_wrapper
+def writeSerial(port, buffer):
+    return _writeSerial(port, buffer, len(buffer))
+
+flushSerial = _TSTATUSFUNC("flushSerial", None, ("port", C.c_int32))
+clearSerial = _TSTATUSFUNC("clearSerial", None, ("port", C.c_int32))
+closeSerial = _TSTATUSFUNC("closeSerial", None, ("port", C.c_int32))
+
 
 #############################################################################
 # Solenoid

@@ -38,7 +38,7 @@ def gen_check(pname, ptype):
     elif ptype is C.c_wchar:
         return 'isinstance(%s, str) and len(%s) == 1' % (pname, pname)
     elif ptype is C.c_char_p:
-        return '%s is None or isinstance(%s, bytes)' % (pname, pname)
+        return "%s is None or isinstance(%s, bytes) or getattr(%s, '_type_') is _C.c_char" % (pname, pname, pname)
     elif ptype is C.c_wchar_p:
         return '%s is None or isinstance(%s, bytes)' % (pname, pname)
 
@@ -175,9 +175,9 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
     # exec:
     # TODO: give it a filename?
     if _thunk:
-        elocals = {}
+        elocals = {'_C': C}
     else:
-        elocals = {'_dll': _dll}
+        elocals = {'_dll': _dll, '_C': C}
         
     exec(fn_body, elocals)
 
