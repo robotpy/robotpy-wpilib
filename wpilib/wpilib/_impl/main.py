@@ -11,7 +11,7 @@ import hal_impl
 
 from wpilib.driverstation import DriverStation
 
-def my_except_hook(exctype, value, traceback):
+def ds_except_hook(exctype, value, traceback):
     DriverStation.reportError("ERROR Unhandled {}".format(exctype), True)
     sys.__excepthook__(exctype, value, traceback)
 
@@ -81,7 +81,7 @@ def run(robot_class, **kwargs):
         :returns: This function should never return
     '''
     
-    sys.excepthook = my_except_hook
+    sys.excepthook = ds_except_hook
     # sanity check
     if not hasattr(robot_class, 'main'):
         print("ERROR: run() must be passed a robot class that inherits from RobotBase (or IterativeBase/SampleBase)")
