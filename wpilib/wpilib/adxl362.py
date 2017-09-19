@@ -1,4 +1,4 @@
-# validated: 2016-12-31 JW 8f67f2c24cb9 edu/wpi/first/wpilibj/ADXL362.java
+# validated: 2017-09-20 AA 34c18ef00062 edu/wpi/first/wpilibj/ADXL362.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -184,9 +184,22 @@ class ADXL362(SensorBase):
     def getSmartDashboardType(self):
         return "3AxisAccelerometer"
 
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.xEntry = subtable.getEntry("X")
+            self.yEntry = subtable.getEntry("Y")
+            self.zEntry = subtable.getEntry("Z")
+            self.updateTable()
+        else:
+            self.xEntry = None
+            self.yEntry = None
+            self.zEntry = None
+
     def updateTable(self):
-        if self.table is not None:
-            self.table.putNumber("X", self.getX())
-            self.table.putNumber("Y", self.getY())
-            self.table.putNumber("Z", self.getZ())
+        if self.xEntry is not None:
+            self.xEntry.setDouble(self.getX())
+        if self.yEntry is not None:
+            self.yEntry.setDouble(self.getY())
+        if self.zEntry is not None:
+            self.zEntry.setDouble(self.getZ())
 
