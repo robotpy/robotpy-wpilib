@@ -1,4 +1,4 @@
-# validated: 2016-12-26 JW 0613f1d1827f athena/java/edu/wpi/first/wpilibj/Encoder.java
+# validated: 2016-12-26 JW 0613f1d1827f edu/wpi/first/wpilibj/Encoder.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

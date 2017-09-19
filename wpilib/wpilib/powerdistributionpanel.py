@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS 23ef57561d40 athena/java/edu/wpi/first/wpilibj/PowerDistributionPanel.java
+# validated: 2016-11-26 DS 23ef57561d40 edu/wpi/first/wpilibj/PowerDistributionPanel.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

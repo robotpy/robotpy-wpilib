@@ -1,4 +1,4 @@
-# validated: 2016-11-15 AA 9e99df1 shared/java/edu/wpi/first/wpilibj/SpeedController.java
+# validated: 2016-11-15 AA 9e99df1 edu/wpi/first/wpilibj/SpeedController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

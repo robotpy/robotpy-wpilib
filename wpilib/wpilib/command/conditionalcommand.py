@@ -1,4 +1,4 @@
-# validated: 2017-01-13 DS 7a049c29bdb7 shared/java/edu/wpi/first/wpilibj/command/ConditionalCommand.java
+# validated: 2017-01-13 DS 7a049c29bdb7 edu/wpi/first/wpilibj/command/ConditionalCommand.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2017 All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

@@ -1,4 +1,4 @@
-# validated: 2017-01-22 DS 15e58acc761c shared/java/edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
+# validated: 2017-01-22 DS 15e58acc761c edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

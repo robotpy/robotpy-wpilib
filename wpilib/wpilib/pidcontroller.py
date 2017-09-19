@@ -1,4 +1,4 @@
-# validated: 2017-02-19 DS 1bdbb5ddcc8b shared/java/edu/wpi/first/wpilibj/PIDController.java
+# validated: 2017-02-19 DS 1bdbb5ddcc8b edu/wpi/first/wpilibj/PIDController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

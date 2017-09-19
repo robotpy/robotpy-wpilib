@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af shared/java/edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
+# validated: 2015-12-24 DS 6d854af edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
 
 from .sendable import Sendable
 

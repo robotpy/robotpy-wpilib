@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS 9e99df1cf70a athena/java/edu/wpi/first/wpilibj/PWMSpeedController.java
+# validated: 2016-11-26 DS 9e99df1cf70a edu/wpi/first/wpilibj/PWMSpeedController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

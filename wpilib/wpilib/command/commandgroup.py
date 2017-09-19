@@ -1,4 +1,4 @@
-# validated: 2016-01-09 AG 47961c8 shared/java/edu/wpi/first/wpilibj/command/CommandGroup.java
+# validated: 2016-01-09 AG 47961c8 edu/wpi/first/wpilibj/command/CommandGroup.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

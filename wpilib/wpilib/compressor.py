@@ -1,4 +1,4 @@
-# validated: 2016-12-25 JW 69422dc0636c athena/java/edu/wpi/first/wpilibj/Compressor.java
+# validated: 2016-12-25 JW 69422dc0636c edu/wpi/first/wpilibj/Compressor.java
 import hal
 
 from .sensorbase import SensorBase

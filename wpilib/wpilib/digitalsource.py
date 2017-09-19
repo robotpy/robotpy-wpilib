@@ -1,4 +1,4 @@
-# validated: 2016-12-27 JW aafca4ed7fff athena/java/edu/wpi/first/wpilibj/DigitalSource.java
+# validated: 2016-12-27 JW aafca4ed7fff edu/wpi/first/wpilibj/DigitalSource.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

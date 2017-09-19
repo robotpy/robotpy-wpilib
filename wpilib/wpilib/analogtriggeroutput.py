@@ -1,4 +1,4 @@
-# validated: 2016-12-21 JW 8cec94869980 athena/java/edu/wpi/first/wpilibj/AnalogTriggerOutput.java
+# validated: 2016-12-21 JW 8cec94869980 edu/wpi/first/wpilibj/AnalogTriggerOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

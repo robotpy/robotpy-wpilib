@@ -1,4 +1,4 @@
-# validated: 2016-11-20 KC b25a7cb3704d shared/java/edu/wpi/first/wpilibj/command/TimedCommand.java
+# validated: 2016-11-20 KC b25a7cb3704d edu/wpi/first/wpilibj/command/TimedCommand.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

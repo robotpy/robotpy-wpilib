@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS 6d854af shared/java/edu/wpi/first/wpilibj/NamedSendable.java
+# validated: 2015-12-22 DS 6d854af edu/wpi/first/wpilibj/NamedSendable.java
 from ..sendable import Sendable
 
 __all__ = ["NamedSendable"]

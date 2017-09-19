@@ -1,4 +1,4 @@
-# validated: 2017-01-12 DS 8f67f2c24cb9 athena/java/edu/wpi/first/wpilibj/XboxController.java
+# validated: 2017-01-12 DS 8f67f2c24cb9 edu/wpi/first/wpilibj/XboxController.java
 import hal
 from .driverstation import DriverStation
 from .interfaces.gamepadbase import GamepadBase

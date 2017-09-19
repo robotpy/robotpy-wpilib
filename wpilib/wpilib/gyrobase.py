@@ -1,4 +1,4 @@
-# validated: 2016-12-21 DV be2647d44e13 athena/java/edu/wpi/first/wpilibj/GyroBase.java
+# validated: 2016-12-21 DV be2647d44e13 edu/wpi/first/wpilibj/GyroBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

@@ -1,4 +1,4 @@
-# validated: 2016-12-22 JW e65f9908d774 athena/java/edu/wpi/first/wpilibj/IterativeRobot.java
+# validated: 2016-12-22 JW e65f9908d774 edu/wpi/first/wpilibj/IterativeRobot.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

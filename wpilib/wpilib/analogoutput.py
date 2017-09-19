@@ -1,4 +1,4 @@
-# validated: 2016-12-31 JW 8f67f2c24cb9 athena/java/edu/wpi/first/wpilibj/AnalogOutput.java
+# validated: 2016-12-31 JW 8f67f2c24cb9 edu/wpi/first/wpilibj/AnalogOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

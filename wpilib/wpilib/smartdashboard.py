@@ -1,4 +1,4 @@
-# validated: 2016-11-17 AA 64ebe7f shared/java/edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
+# validated: 2016-11-17 AA 64ebe7f edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

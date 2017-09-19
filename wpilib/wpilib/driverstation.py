@@ -1,4 +1,4 @@
-# validated: 2017-01-22 DS d322342494d6 athena/java/edu/wpi/first/wpilibj/DriverStation.java
+# validated: 2017-01-22 DS d322342494d6 edu/wpi/first/wpilibj/DriverStation.java
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of

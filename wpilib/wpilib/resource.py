@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af athena/java/edu/wpi/first/wpilibj/Resource.java
+# validated: 2015-12-24 DS 6d854af edu/wpi/first/wpilibj/Resource.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

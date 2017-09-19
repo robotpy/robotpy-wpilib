@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS 69422dc0636c athena/java/edu/wpi/first/wpilibj/PWM.java
+# validated: 2016-11-26 DS 69422dc0636c edu/wpi/first/wpilibj/PWM.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

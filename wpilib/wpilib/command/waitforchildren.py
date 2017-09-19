@@ -1,4 +1,4 @@
-# validated: 2016-11-20 KC b78f580d476f shared/java/edu/wpi/first/wpilibj/command/WaitForChildren.java
+# validated: 2016-11-20 KC b78f580d476f edu/wpi/first/wpilibj/command/WaitForChildren.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

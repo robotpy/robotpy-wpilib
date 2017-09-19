@@ -1,4 +1,4 @@
-# validated: 2016-12-20 JW b51e85ae262b athena/java/edu/wpi/first/wpilibj/SPI.java
+# validated: 2016-12-20 JW b51e85ae262b edu/wpi/first/wpilibj/SPI.java
 
 import hal
 import warnings

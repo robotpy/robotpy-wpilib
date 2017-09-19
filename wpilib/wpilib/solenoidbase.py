@@ -1,4 +1,4 @@
-# validated: 2016-12-25 JW 963391cf3916 athena/java/edu/wpi/first/wpilibj/SolenoidBase.java
+# validated: 2016-12-25 JW 963391cf3916 edu/wpi/first/wpilibj/SolenoidBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

@@ -1,4 +1,4 @@
-# validated: 2016-12-01 AA 140c365e4b99 shared/java/edu/wpi/first/wpilibj/JoystickBase.java
+# validated: 2016-12-01 AA 140c365e4b99 edu/wpi/first/wpilibj/JoystickBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
