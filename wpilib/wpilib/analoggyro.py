@@ -1,6 +1,6 @@
-# validated: 2016-12-22 JW 69422dc0636c edu/wpi/first/wpilibj/AnalogGyro.java
+# validated: 2017-09-22 TW e1195e8b9dab edu/wpi/first/wpilibj/AnalogGyro.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
