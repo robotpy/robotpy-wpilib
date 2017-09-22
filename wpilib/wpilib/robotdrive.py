@@ -1,6 +1,6 @@
 # validated: 2017-09-21 TW e1195e8b9dab edu/wpi/first/wpilibj/RobotDrive.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -295,8 +295,8 @@ class RobotDrive(MotorSafety):
         leftValue = RobotDrive.limit(leftValue)
         rightValue = RobotDrive.limit(rightValue)
         if squaredInputs:
-            leftValue = math.copysign(leftValue, leftValue * leftValue)
-            rightValue = math.copysign(rightValue, rightValue * rightValue)
+            leftValue = math.copysign(leftValue * leftValue, leftValue)
+            rightValue = math.copysign(rightValue * rightValue, rightValue)
         
         self.setLeftRightMotorOutputs(leftValue, rightValue)
 
@@ -399,8 +399,8 @@ class RobotDrive(MotorSafety):
         if squaredInputs:
             # square the inputs (while preserving the sign) to increase fine
             # control while permitting full power
-            moveValue = math.copysign(moveValue, moveValue * moveValue)
-            rotateValue = math.copysign(rotateValue, rotateValue * rotateValue)
+            moveValue = math.copysign(moveValue * moveValue, moveValue)
+            rotateValue = math.copysign(rotateValue * rotateValue, rotateValue)
 
         if moveValue > 0.0:
             if rotateValue > 0.0:
