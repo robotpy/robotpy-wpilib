@@ -1,4 +1,4 @@
-# validated: 2017-02-19 DS b573fb65552b edu/wpi/first/wpilibj/RobotDrive.java
+# validated: 2017-09-21 TW e1195e8b9dab edu/wpi/first/wpilibj/RobotDrive.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -295,14 +295,8 @@ class RobotDrive(MotorSafety):
         leftValue = RobotDrive.limit(leftValue)
         rightValue = RobotDrive.limit(rightValue)
         if squaredInputs:
-            if leftValue >= 0.0:
-                leftValue = (leftValue * leftValue)
-            else:
-                leftValue = -(leftValue * leftValue)
-            if rightValue >= 0.0:
-                rightValue = (rightValue * rightValue)
-            else:
-                rightValue = -(rightValue * rightValue)
+            leftValue = math.copysign(leftValue, leftValue * leftValue)
+            rightValue = math.copysign(rightValue, rightValue * rightValue)
         
         self.setLeftRightMotorOutputs(leftValue, rightValue)
 
@@ -405,14 +399,8 @@ class RobotDrive(MotorSafety):
         if squaredInputs:
             # square the inputs (while preserving the sign) to increase fine
             # control while permitting full power
-            if moveValue >= 0.0:
-                moveValue = (moveValue * moveValue)
-            else:
-                moveValue = -(moveValue * moveValue)
-            if rotateValue >= 0.0:
-                rotateValue = (rotateValue * rotateValue)
-            else:
-                rotateValue = -(rotateValue * rotateValue)
+            moveValue = math.copysign(moveValue, moveValue * moveValue)
+            rotateValue = math.copysign(rotateValue, rotateValue * rotateValue)
 
         if moveValue > 0.0:
             if rotateValue > 0.0:
@@ -564,13 +552,13 @@ class RobotDrive(MotorSafety):
         self.feed()
 
     @staticmethod
-    def limit(num):
+    def limit(number):
         """Limit motor values to the -1.0 to +1.0 range."""
-        if num > 1.0:
+        if number > 1.0:
             return 1.0
-        if num < -1.0:
+        if number < -1.0:
             return -1.0
-        return num
+        return number
 
     @staticmethod
     def normalize(wheelSpeeds):
