@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS c3c35c6 edu/wpi/first/wpilibj/Controller.java
+# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/Controller.java
 __all__ = ["Controller"]
 
 class Controller:
