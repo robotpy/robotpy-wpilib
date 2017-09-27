@@ -1,4 +1,4 @@
-# validated: 2016-12-10 AA e44a6e227a89 edu/wpi/first/wpilibj/GamepadBase.java
+# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/GamepadBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS 9b4dd26 edu/wpi/first/wpilibj/interfaces/Gyro.java
+# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/interfaces/Gyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
