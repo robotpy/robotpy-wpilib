@@ -1,4 +1,4 @@
-# validated: 2015-12-22 DS 6d854af edu/wpi/first/wpilibj/interfaces/Potentiometer.java
+# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/interfaces/Potentiometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
