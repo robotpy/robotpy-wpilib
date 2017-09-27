@@ -1,6 +1,6 @@
-# validated: 2016-12-27 JW aafca4ed7fff edu/wpi/first/wpilibj/DigitalSource.java
+# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/DigitalSource.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -25,7 +25,7 @@ class DigitalSource(InterruptableSensorBase):
     then a digital input will be constructed and freed when finished for the
     source. The source can either be a digital input or analog trigger but
     not both.
-    
+
     .. not_implemented: initDigitalPort
     """
 
