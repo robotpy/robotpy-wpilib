@@ -84,11 +84,11 @@ getFPGAButton = _STATUSFUNC("getFPGAButton", C.c_bool)
 getSystemActive = _STATUSFUNC("getSystemActive", C.c_bool)
 getBrownedOut = _STATUSFUNC("getBrownedOut", C.c_bool)
 
-_initialize = _RETFUNC("initialize", C.c_int32, ("mode", C.c_int32))
+_initialize = _RETFUNC("initialize", C.c_bool, ("timeout", C.c_int32),("mode", C.c_int32))
 
 @hal_wrapper
-def initialize(mode = 0):
-    rv = _initialize(mode)
+def initialize(timeout = 0, mode = 0):
+    rv = _initialize(timeout, mode)
     if not rv:
         raise HALError("Could not initialize HAL")
 

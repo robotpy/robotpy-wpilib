@@ -243,7 +243,7 @@ def getBrownedOut(status):
     status.value = 0
     return False
 
-def initialize(mode=0):
+def initialize(timeout=0, mode=0):
     # the real HAL cannot be initialized twice. Neither should this.
     global _initialized
     assert _initialized == False
