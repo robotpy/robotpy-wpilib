@@ -10,7 +10,8 @@ def notify_new_ds_data():
     '''Called when driver station data is modified'''
     
     cond = data.hooks.ds_cond
-    
+    fns.newDSDataCounter += 1
+
     if cond is not None:
         with cond:
             cond.notify_all()

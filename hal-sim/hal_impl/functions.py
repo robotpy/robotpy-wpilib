@@ -9,6 +9,7 @@ from .data import hal_data, NotifyDict
 from hal_impl.sim_hooks import SimHooks
 
 import logging
+from hal_impl.mode_helpers import notify_new_ds_data
 logger = logging.getLogger('hal')
 
 hooks = SimHooks()
@@ -242,6 +243,12 @@ def getSystemActive(status):
 def getBrownedOut(status):
     status.value = 0
     return False
+
+def baseInitialize(status):
+    global _initialized
+    if _initialized:
+        return
+    _initialized = True
 
 def initialize(timeout=0, mode=0):
     # the real HAL cannot be initialized twice. Neither should this.
@@ -999,6 +1006,12 @@ def getJoystickName(joystickNum):
         name = bytes(name, 'utf-8')
     return name
 
+def freeJoystickName(name):
+    for joystick in hal_data["joysticks"]:
+        if joystick["name"] == name:
+            joystick["name"] = None
+            return
+
 def getJoystickAxisType(joystickNum, axis):
     assert False
 
@@ -1023,8 +1036,7 @@ def getMatchTime(status):
         return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
 
 def waitForDSData():
-    with hooks.ds_cond:
-        hooks.ds_cond.wait()
+    waitForDSDataTimeout(None)
 
 def initializeDriverStation():
     hooks.initializeDriverStation()
@@ -1043,6 +1055,30 @@ def observeUserProgramTeleop():
 
 def observeUserProgramTest():
     hal_data['user_program_state'] = 'test'
+
+refNumber = 42
+def newDataOccur(refNum):
+    if refNum is not refNumber:
+        return 0
+    notify_new_ds_data()
+    
+
+def releaseDSMutex():
+    newDataOccur(refNumber)
+
+newDSDataCounter = 0
+lastCount = -1
+def isNewControlData():
+    with hooks.ds_cond:
+        if lastCount != newDSDataCounter:
+            lastCount = newDSDataCounter
+            return True
+
+def waitForDSDataTimeout(timeout):
+    with hooks.ds_cond:
+        hooks.ds_cond.wait(timeout=timeout)
+    return True
+
 
 
 #############################################################################
