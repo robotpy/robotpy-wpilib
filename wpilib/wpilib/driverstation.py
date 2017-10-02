@@ -345,7 +345,7 @@ class DriverStation:
 
         with self.joystickMutex:
             # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
-            if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
+            if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick].axes):
                 self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
                                                    "plugged in.\n".format(stick))
                 return ""
