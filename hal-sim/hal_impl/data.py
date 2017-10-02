@@ -154,7 +154,8 @@ def _reset_hal_data(current_hooks):
             'has_source': IN(False),
             'buttons': IN([None] + [False]*12), # numbered 1-12 -- 0 is ignored
             'axes':    IN([0]*constants.kMaxJoystickAxes),  # x is 0, y is 1, .. 
-            'povs':    IN([-1]*constants.kMaxJoystickPOVs)  # integers
+            'povs':    IN([-1]*constants.kMaxJoystickPOVs), # integers
+            'name':    IN(''),
         
         } for _ in range(6)],
 
