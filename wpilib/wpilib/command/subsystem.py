@@ -1,4 +1,4 @@
-# validated: 2016-01-09 AG b62b606 edu/wpi/first/wpilibj/command/Subsystem.java
+# validated: 2017-10-03 EN 34c18ef00062 edu/wpi/first/wpilibj/command/Subsystem.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -59,6 +59,11 @@ class Subsystem(Sendable):
         """
         pass
 
+    def periodic():
+        """When the run method of the scheduler is called this method will be called.
+        """
+        pass
+
     def setDefaultCommand(self, command):
         """Sets the default command.  If this is not called or is called with
         None, then there will be no default command for the subsystem.
@@ -74,13 +79,12 @@ class Subsystem(Sendable):
             if self not in command.getRequirements():
                 raise ValueError("A default command must require the subsystem")
             self.defaultCommand = command
-        table = self.getTable()
-        if table is not None:
+        if self.hasDefaultEntry is not None and self.defaultEntry is not None:
             if self.defaultCommand is not None:
-                table.putBoolean("hasDefault", True)
-                table.putString("default", self.defaultCommand.getName())
+                self.hasDefaultEntry.setBoolean(True)
+                self.defaultEntry.setString(self.defaultCommand.getName())
             else:
-                table.putBoolean("hasDefault", False)
+                self.hasDefaultEntry.setBoolean(False)
 
     def getDefaultCommand(self):
         """Returns the default command (or None if there is none).
@@ -107,13 +111,12 @@ class Subsystem(Sendable):
         given a new one.  This will avoid that situation.
         """
         if self.currentCommandChanged:
-            table = self.getTable()
-            if table is not None:
+            if self.hasCommandEntry is not None and self.commandEntry is not None:
                 if self.currentCommand is not None:
-                    table.putBoolean("hasCommand", True)
-                    table.putString("command", self.currentCommand.getName())
+                    self.hasCommandEntry.setBoolean(True)
+                    self.commandEntry.setString(self.currentCommand.getName())
                 else:
-                    table.putBoolean("hasCommand", False)
+                    self.hasCommandEntry.setBoolean(False)
             self.currentCommandChanged = False
 
     def getCurrentCommand(self):
@@ -140,14 +143,19 @@ class Subsystem(Sendable):
     def initTable(self, table):
         super().initTable(table)
         if table is not None:
+            self.hasDefaultEntry = table.getEntry("hasDefault")
+            self.defaultEntry = table.getEntry("default")
+            self.hasCommandEntry = table.getEntry("hasCommand")
+            self.commandEntry = table.getEntry("command")
+
             if self.defaultCommand is not None:
-                table.putBoolean("hasDefault", True)
-                table.putString("default", self.defaultCommand.getName())
+                self.hasDefaultEntry.setBoolean(True)
+                self.defaultEntry.setString(self.defaultCommand.getName())
             else:
-                table.putBoolean("hasDefault", False)
+                self.hasDefaultEntry.setBoolean(False)
 
             if self.currentCommand is not None:
-                table.putBoolean("hasCommand", True)
-                table.putString("command", self.currentCommand.getName())
+                self.hasCommandEntry.setBoolean(True)
+                self.commandEntry.setString(self.currentCommand.getName())
             else:
-                table.putBoolean("hasCommand", False)
+                self.hasCommandEntry.setBoolean(False)

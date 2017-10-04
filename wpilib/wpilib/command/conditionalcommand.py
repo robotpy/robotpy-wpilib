@@ -1,4 +1,4 @@
-# validated: 2017-01-13 DS 7a049c29bdb7 edu/wpi/first/wpilibj/command/ConditionalCommand.java
+# validated: 2017-10-03 EN e1195e8b9dab edu/wpi/first/wpilibj/command/ConditionalCommand.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2017 All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -38,21 +38,21 @@ class ConditionalCommand(Command):
         """
         super().__init__(name)
 
-        if onTrue is None:
-            onTrue = InstantCommand(None)
-        if onFalse is None:
-            onFalse = InstantCommand(None)
-            
         self.onTrue = onTrue
         self.onFalse = onFalse
         
         self.chosenCommand = None
         
-        for e in onTrue.getRequirements():
-            self.requires(e)
+        self.requireAll()
+
+    def requireAll(self):
+        if self.onTrue is not None:
+            for e in self.onTrue.getRequirements():
+                self.requires(e)
             
-        for e in onFalse.getRequirements():
-            self.requires(e)
+        if self.onFalse is not None:
+            for e in self.onFalse.getRequirements():
+                self.requires(e)
     
     def condition(self):
         """The Condition to test to determine which Command to run.
@@ -70,10 +70,11 @@ class ConditionalCommand(Command):
         else:
             self.chosenCommand = self.onFalse
             
-        # This is a hack to make cancelling the chosen command inside a CommandGroup work properly
-        self.chosenCommand.clearRequirements()
+        if self.chosenCommand is not None:
+            # This is a hack to make cancelling the chosen command inside a CommandGroup work properly
+            self.chosenCommand.clearRequirements()
         
-        self.chosenCommand.start()
+            self.chosenCommand.start()
     
     def _cancel(self):
         if self.chosenCommand is not None and self.chosenCommand.isRunning():
