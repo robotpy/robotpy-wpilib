@@ -1,4 +1,4 @@
-# validated: 2016-12-31 JW 8f67f2c24cb9 edu/wpi/first/wpilibj/Relay.java
+# validated: 2017-10-07 EN 34c18ef00062 edu/wpi/first/wpilibj/Relay.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -57,6 +57,20 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         
         #: Reverse
         kReverse = 3
+
+        _num_to_name = {
+            Value.kOff: "Off",
+            Value.kOn: "On",
+            Value.kForward: "Forward",
+            Value.kReverse: "Reverse",
+        }
+
+        _name_to_num = {
+            "Off": Value.kOff,
+            "On": Value.kOn,
+            "Forward": Value.kForward,
+            "Reverse": Value.kReverse,
+        }
 
     class Direction:
         """The Direction(s) that a relay is configured to operate in."""
@@ -200,22 +214,27 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         :returns: The current state of the relay
         :rtype: :class:`Relay.Value`
         """
-        if hal.getRelay(self.forwardHandle):
+        if self.direction == self.Direction.kForward:
+            if hal.getRelay(self.forwardHandle):
+                return self.Value.kOn
+            else:
+                return self.Value.kOff
+        elif self.direction == self.Direction.kReverse:
             if hal.getRelay(self.reverseHandle):
                 return self.Value.kOn
             else:
-                if self.direction == self.Direction.kForward:
+                return self.Value.kForward
+        else:
+            if hal.getRelay(self.forwardHandle):
+                if hal.getRelay(self.reverseHandle):
                     return self.Value.kOn
                 else:
                     return self.Value.kForward
-        else:
-            if hal.getRelay(self.reverseHandle):
-                if self.direction == self.Direction.kReverse:
-                    return self.Value.kOn
-                else:
-                    return self.Value.kReverse
             else:
-                return self.Value.kOff
+                if hal.getRelay(self.reverseHandle):
+                    return self.Value.kReverse
+                else:
+                    return self.Value.kOff
 
     def getChannel(self):
         """
@@ -258,26 +277,17 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
     def getSmartDashboardType(self):
         return "Relay"
 
-    def updateTable(self):
-        table = self.getTable()
-        if table is None:
-            return
-        v = self.get()
-        if v == self.Value.kOn:
-            table.putString("Value", "On")
-        elif v == self.Value.kForward:
-            table.putString("Value", "Forward")
-        elif v == self.Value.kReverse:
-            table.putString("Value", "Reverse")
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updatTable()
         else:
-            table.putString("Value", "Off")
+            self.valueEntry = None
+
+    def updateTable(self):
+        if self.valueEntry is None:
+            return
+        self.valueEntry.setString(self.Value._num_to_name.get(self.get()))
 
     def valueChanged(self, itable, key, value, bln):
-        if value == "Off":
-            self.set(self.Value.kOff)
-        elif value == "On":
-            self.set(self.Value.kOn)
-        elif value == "Forward":
-            self.set(self.Value.kForward)
-        elif value == "Reverse":
-            self.set(self.Value.kReverse)
+        self.set(self.Value._name_to_num.get(value, self.Value.kOff))

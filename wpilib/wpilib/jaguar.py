@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS 247cef5ec215 edu/wpi/first/wpilibj/Jaguar.java
+# validated: 2017-10-07 EN e1195e8b9dab edu/wpi/first/wpilibj/Jaguar.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
