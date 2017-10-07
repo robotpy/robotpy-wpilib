@@ -11,6 +11,8 @@ from .button import Button
 __all__ = ["NetworkButton"]
 
 class NetworkButton(Button):
+    """A :class:`.Button` that uses a :class:`NetworkTable` boolean field."""
+
     def __init__(self, table, field):
         from networktables import NetworkTables
         from networktables.networktable import NetworkTable
