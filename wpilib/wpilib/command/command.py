@@ -424,7 +424,7 @@ class Command(Sendable):
         return "Command"
 
     def valueChanged(self, event):
-        if event.value.getBoolean():
+        if event.value:
             self.start()
         else:
             self.cancel()

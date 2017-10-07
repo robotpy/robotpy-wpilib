@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, call
+from ntcore.entry_notifier import _EntryNotification
 
 
 @pytest.fixture(scope="function")
@@ -185,22 +186,22 @@ def test_relay_getSmartDashboardType(relay):
 
 @pytest.mark.parametrize("value", [None, "Off", "On", "Forward", "Reverse"])
 def test_relay_updateTable(value, relay):
-    relay.getTable = MagicMock()
+    relay.valueEntry = MagicMock()
     relay.get = MagicMock()
     if value is None:
-        relay.getTable.return_value = None
+        relay.valueEntry = None
         relay.updateTable()
         assert not relay.get.called
     else:
         relay.get.return_value = getattr(relay.Value, "k"+value)
         relay.updateTable()
-        relay.getTable.return_value.putString.assert_called_once_with("Value", value)
+        relay.valueEntry.setString.assert_called_once_with(value)
 
 @pytest.mark.parametrize("value", ["inv", "Off", "On", "Forward", "Reverse"])
 def test_relay_valueChanged(value, relay):
     relay.set = MagicMock()
-    relay.valueChanged(None, None, value, None)
+    relay.valueChanged(_EntryNotification(name='', value=value, flags=1, local_id=1))
     if value == "inv":
-        assert not relay.set.called
+        relay.set.assert_called_once_with(getattr(relay.Value, "kOff"))
     else:
         relay.set.assert_called_once_with(getattr(relay.Value, "k"+value))

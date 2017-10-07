@@ -1,4 +1,4 @@
-# validated: 2017-01-22 DS 15e58acc761c edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
+# validated: 2017-10-07 EN 34c18ef00062 edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -48,6 +48,9 @@ class SendableChooser(Sendable):
         """
         self.map = {}
         self.defaultChoice = None
+        self.tableOptions = None
+        self.tableDefault = None
+        self.tableSelected = None
 
     def addObject(self, name, object):
         """Adds the given object to the list of options. On the
@@ -59,9 +62,8 @@ class SendableChooser(Sendable):
         """
         self.map[name] = object
 
-        table = self.getTable()
-        if table is not None:
-            table.putStringArray(self.OPTIONS, self.map.keys())
+        if self.tableOptions is not None:
+            self.tableOptions.setStringArray(self.map.keys())
 
     def addDefault(self, name, object):
         """Add the given object to the list of options and marks it as the
@@ -75,9 +77,8 @@ class SendableChooser(Sendable):
         if name is None:
             raise ValueError("Name cannot be None")
         self.defaultChoice = name
-        table = self.getTable()
-        if table is not None:
-            table.putString(self.DEFAULT, self.defaultChoice)
+        if self.tableDefault is not None:
+            self.tableDefault.setString(self.defaultChoice)
         self.addObject(name, object)
 
     def getSelected(self):
@@ -87,18 +88,19 @@ class SendableChooser(Sendable):
 
         :returns: the object associated with the selected option
         """
-        table = self.getTable()
-        if table is None:
-            return self.map[self.defaultChoice]
-        selected = table.getString(self.SELECTED, None)
+        selected = None
+        if self.tableSelected is not None:
+            selected = self.tableSelected.getString(None)
         return self.map.get(selected, self.map[self.defaultChoice])
 
     def getSmartDashboardType(self):
         return "String Chooser"
 
     def initTable(self, table):
-        self.table = table
         if table is not None:
-            table.putStringArray(self.OPTIONS, self.map.keys())
+            self.tableDefault = table.getEntry(self.DEFAULT)
+            self.tableSelected = table.getEntry(self.SELECTED)
+            self.tableOptions = table.getEntry(self.OPTIONS)
+            self.tableOptions.setStringArray(self.map.keys())
             if self.defaultChoice is not None:
-                table.putString(self.DEFAULT, self.defaultChoice)
+                self.tableDefault.setString(self.defaultChoice)

@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
+from ntcore.entry_notifier import _EntryNotification
 
 #
 # Module-specific fixtures
@@ -137,20 +138,20 @@ def test_pwm_getSmartDashboardType(pwm):
     assert pwm.getSmartDashboardType() == "Speed Controller"
 
 def test_pwm_updateTable(pwm):
-    pwm.getTable = MagicMock()
+    pwm.valueEntry = MagicMock()
     pwm.getSpeed = MagicMock()
     # normal case
     pwm.updateTable()
-    pwm.getTable.return_value.putNumber.assert_called_once_with("Value", pwm.getSpeed.return_value)
+    pwm.valueEntry.setDouble.assert_called_once_with(pwm.getSpeed.return_value)
     # None case
     pwm.getSpeed.reset_mock()
-    pwm.getTable.return_value = None
+    pwm.valueEntry = None
     pwm.updateTable()
     assert not pwm.getSpeed.called
 
 def test_pwm_valueChanged(pwm):
     pwm.setSpeed = MagicMock()
-    pwm.valueChanged(None, None, 0.5, None)
+    pwm.valueChanged(_EntryNotification(name='Value', value=0.5, flags=1, local_id=1))
     pwm.setSpeed.assert_called_once_with(0.5)
     
 def test_pwm_startLiveWindowMode(pwm, pwm_data):

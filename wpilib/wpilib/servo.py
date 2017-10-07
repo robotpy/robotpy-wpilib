@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS e44a6e227a89 edu/wpi/first/wpilibj/Servo.java
+# validated: 2017-10-07 EN 4e80570c4c48 edu/wpi/first/wpilibj/Servo.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -112,10 +112,16 @@ class Servo(PWM):
     def getSmartDashboardType(self):
         return "Servo"
 
-    def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Value", self.get())
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
 
-    def valueChanged(self, itable, key, value, bln):
-        self.set(float(value))
+    def updateTable(self):
+        if self.valueEntry is not None:
+            self.valueEntry.setDouble(self.get())
+
+    def valueChanged(self, event):
+        self.set(event.value)

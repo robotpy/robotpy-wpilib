@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS 69422dc0636c edu/wpi/first/wpilibj/PWM.java
+# validated: 2017-10-07 EN 34c18ef00062 edu/wpi/first/wpilibj/PWM.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -25,7 +25,7 @@ class PWM(LiveWindowSendable):
     The values supplied as arguments for PWM outputs range from -1.0 to 1.0. They
     are mapped to the hardware dependent values, in this case 0-2000 for the
     FPGA.  Changes are immediately sent to the FPGA, and the update occurs at
-    the next FPGA cycle. There is no delay.
+    the next FPGA cycle (5.005 ms). There is no delay.
 
     As of revision 0.1.10 of the FPGA, the FPGA interprets the 0-2000 values as
     follows:
@@ -57,13 +57,13 @@ class PWM(LiveWindowSendable):
         period by.
         """
         
-        #: Period Multiplier: don't skip pulses.
+        #: Period Multiplier: don't skip pulses. PWM pulses occur every 5.005 ms
         k1X = 1
         
-        #: Period Multiplier: skip every other pulse.
+        #: Period Multiplier: skip every other pulse. PWM pulses occur every 10.010 ms
         k2X = 2
         
-        #: Period Multiplier: skip three out of four pulses.
+        #: Period Multiplier: skip three out of four pulses. PWM pulses occur every 20.020 ms
         k4X = 4
     
     def __init__(self, channel):
@@ -114,27 +114,6 @@ class PWM(LiveWindowSendable):
         :type eliminateDeadband: bool
         """
         hal.setPWMEliminateDeadband(self.handle, eliminateDeadband)
-
-    def setRawBounds(self, max, deadbandMax, center, deadbandMin, min):
-        """Set the bounds on the PWM values. This sets the bounds on the PWM values for a particular each
-        type of controller. The values determine the upper and lower speeds as well as the deadband
-        bracket.
-        
-        :param max: The Minimum pwm value
-        :type max: int
-        :param deadbandMax: The high end of the deadband range
-        :type deadbandMax: int
-        :param center: The center speed (off)
-        :type center: int
-        :param deadbandMin: The low end of the deadband range
-        :type deadbandMin: int
-        :param min: The minimum pwm value
-        :type min: int
-        
-        .. deprecated:: 2017.0.0
-           Recommended to set bounds in ms using :meth:`setBounds` instead
-        """
-        hal.setPWMConfigRaw(self.handle, max, deadbandMax, center, deadbandMin, min)
 
     def setBounds(self, max, deadbandMax, center, deadbandMin, min):
         """Set the bounds on the PWM pulse widths.
@@ -284,13 +263,20 @@ class PWM(LiveWindowSendable):
     def getSmartDashboardType(self):
         return "Speed Controller"
 
-    def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Value", self.getSpeed())
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
 
-    def valueChanged(self, itable, key, value, bln):
-        self.setSpeed(float(value))
+
+    def updateTable(self):
+        if self.valueEntry is not None:
+            self.valueEntry.setDouble(self.getSpeed())
+
+    def valueChanged(self, entry):
+        self.setSpeed(entry.value)
 
     def startLiveWindowMode(self):
         self.setSpeed(0) # Stop for safety
