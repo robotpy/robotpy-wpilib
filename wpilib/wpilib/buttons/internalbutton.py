@@ -1,6 +1,6 @@
-# validated: 2015-12-22 DS 6d854af edu/wpi/first/wpilibj/buttons/InternalButton.java
+# validated: 2017-10-18 AA e1195e8b9dab edu/wpi/first/wpilibj/buttons/InternalButton.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -12,8 +12,8 @@ __all__ = ["InternalButton"]
 
 class InternalButton(Button):
     """This class is intended to be used within a program.  The programmer can
-    manually set its value. Includes a setting for whether or not it should
-    invert its value.
+    manually set its value.
+    Also includes a setting for whether or not it should invert its value.
     """
 
     def __init__(self, inverted=False):
