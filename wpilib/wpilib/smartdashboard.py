@@ -20,8 +20,8 @@ class SmartDashboard:
     These values can also be accessed by a NetworkTables client via the
     'SmartDashboard' table::
     
-        from networktables import NetworkTable
-        sd = NetworkTable.getTable('SmartDashboard')
+        from networktables import NetworkTables
+        sd = NetworkTables.getTable('SmartDashboard')
         
         # sd.putXXX and sd.getXXX work as expected here
     
@@ -43,8 +43,8 @@ class SmartDashboard:
     @classmethod
     def getTable(cls):
         if cls.table is None:
-            from networktables import NetworkTable
-            cls.table = NetworkTable.getTable("SmartDashboard")
+            from networktables import NetworkTables
+            cls.table = NetworkTables.getTable("SmartDashboard")
             hal.report(hal.UsageReporting.kResourceType_SmartDashboard,
                        hal.UsageReporting.kSmartDashboard_Instance)
         return cls.table

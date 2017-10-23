@@ -1,6 +1,6 @@
 # validated: 2015-12-24 DS 6d854af edu/wpi/first/wpilibj/livewindow/LiveWindow.java
 
-from networktables import NetworkTable
+from networktables import NetworkTables
 from .command import Scheduler
 
 import logging
@@ -49,7 +49,7 @@ class LiveWindow:
         addSensor.
         """
         logger.info("Initializing the components first time")
-        LiveWindow.livewindowTable = NetworkTable.getTable("LiveWindow")
+        LiveWindow.livewindowTable = NetworkTables.getTable("LiveWindow")
         LiveWindow.statusTable = LiveWindow.livewindowTable.getSubTable("~STATUS~")
         for component, c in LiveWindow.components.items():
             logger.info("Initializing table for '%s' '%s'" % (c.subsystem, c.name))

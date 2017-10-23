@@ -8,7 +8,7 @@
 
 import hal
 import warnings
-from networktables import NetworkTables
+from networktables import NetworkTablesInstance
 
 import logging
 logger = logging.getLogger('robotpy')
@@ -40,19 +40,20 @@ class RobotBase:
         # TODO: StartCAPI()
         # TODO: See if the next line is necessary
         # Resource.RestartProgram()
-        
-        NetworkTables.setNetworkIdentity("Robot")
+        inst = NetworkTablesInstance.getDefault()
+        inst.setNetworkIdentity("Robot")
         
         if not RobotBase.isSimulation():
-            NetworkTables.setPersistentFilename("/home/lvuser/networktables.ini")
-        
-        NetworkTables.setServerMode()
+            inst.startServer("/home/lvuser/networktables.ini")
+        else:
+            inst.startServer()
         
         from .driverstation import DriverStation
         self.ds = DriverStation.getInstance()
 
-        NetworkTables.getTable("")   # forces network tables to initialize
-        NetworkTables.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", False)
+        inst.getTable("LiveWindow").getSubTable(".status").getEntry("LW Enabled").setBoolean(False)
+        from .livewindow import LiveWindow
+        LiveWindow.setEnabled(False)
 
         self.__initialized = True
 

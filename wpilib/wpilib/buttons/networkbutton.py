@@ -12,11 +12,13 @@ __all__ = ["NetworkButton"]
 
 class NetworkButton(Button):
     def __init__(self, table, field):
-        from networktables import NetworkTable
+        from networktables import NetworkTables
+        from networktables.networktable import NetworkTable
+        
         if isinstance(table, NetworkTable):
             self.table = table
         else:
-            self.table = NetworkTable.getTable(table)
+            self.table = NetworkTables.getTable(table)
         self.field = field
 
     def get(self):
