@@ -1,6 +1,11 @@
-# validated: 2016-11-17 AA 64ebe7f edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
+# validated: 2017-10-22 DS f0cc62324134 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
+
+# validation note: 2017-10-22: Not using the getEntry() stuff that Java uses,
+#                              as using the existing table stuff is more
+#                              efficient
+
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -32,9 +37,6 @@ class SmartDashboard:
     # objects they came from.
     tablesToData = {}
 
-    class _defaultValueSentry:
-        pass
-    
     @classmethod
     def _reset(cls):
         cls.tablesToData = {}
@@ -83,7 +85,7 @@ class SmartDashboard:
 
         table = cls.getTable()
         dataTable = table.getSubTable(key)
-        dataTable.putString("~TYPE~", data.getSmartDashboardType())
+        dataTable.getEntry(".type").setString(data.getSmartDashboardType())
         data.initTable(dataTable)
         cls.tablesToData[dataTable] = data
 
@@ -103,6 +105,17 @@ class SmartDashboard:
         if data is None:
             raise KeyError("SmartDashboard data does not exist: '%s'" % key)
         return data
+    
+    @classmethod
+    def getEntry(cls, key):
+        """Gets the entry for the specified key. Entries are a more efficient
+        way to manipulate NT data.
+        
+        :param key: the key name
+        :rtype: :class:`.NetworkTableEntry`
+        """
+        table = cls.getTable()
+        return table.getEntry(key)
 
     @classmethod
     def containsKey(cls, key):
@@ -175,7 +188,7 @@ class SmartDashboard:
         :param flags: the flags to clear (bitmask)
         """
         table = cls.getTable()
-        table.clearFlags()
+        table.clearFlags(key, flags)
 
     @classmethod
     def getFlags(cls, key):
@@ -220,7 +233,7 @@ class SmartDashboard:
         return table.setDefaultBoolean(key, defaultValue)
 
     @classmethod
-    def getBoolean(cls, key, defaultValue=_defaultValueSentry):
+    def getBoolean(cls, key, defaultValue):
         """Returns the boolean the key maps to. If the key does not exist or is of
         different type, it will return the default value; if that is not provided,
         it will throw a :exc:`KeyError`.
@@ -232,15 +245,9 @@ class SmartDashboard:
         :param defaultValue: returned if the key doesn't exist
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
-        
-        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
-                 is not provided.
         """
         table = cls.getTable()
-        if defaultValue is cls._defaultValueSentry:
-            return table.getBoolean(key)
-        else:
-            return table.getBoolean(key, defaultValue)
+        return table.getBoolean(key, defaultValue)
 
     @classmethod
     def putNumber(cls, key, value):
@@ -265,7 +272,7 @@ class SmartDashboard:
         return table.setDefaultNumber(key, defaultValue)
 
     @classmethod
-    def getNumber(cls, key, defaultValue=_defaultValueSentry):
+    def getNumber(cls, key, defaultValue):
         """Returns the number the key maps to. If the key does not exist or is of
         different type, it will return the default value; if that is not provided,
         it will throw a :exc:`KeyError`.
@@ -277,15 +284,9 @@ class SmartDashboard:
         :param defaultValue: returned if the key doesn't exist
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
-
-        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
-                 is not provided.
         """
         table = cls.getTable()
-        if defaultValue is cls._defaultValueSentry:
-            return table.getNumber(key)
-        else:
-            return table.getNumber(key, defaultValue)
+        return table.getNumber(key, defaultValue)
 
     @classmethod
     def putString(cls, key, value):
@@ -309,9 +310,8 @@ class SmartDashboard:
         table = cls.getTable()
         return table.setDefaultString(key, defaultValue)
 
-
     @classmethod
-    def getString(cls, key, defaultValue=_defaultValueSentry):
+    def getString(cls, key, defaultValue):
         """Returns the string the key maps to. If the key does not exist or is of
         different type, it will return the default value; if that is not provided,
         it will throw a :exc:`KeyError`.
@@ -323,15 +323,9 @@ class SmartDashboard:
         :param defaultValue: returned if the key doesn't exist
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
-
-        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
-                 is not provided.
         """
         table = cls.getTable()
-        if defaultValue is cls._defaultValueSentry:
-            return table.getString(key)
-        else:
-            return table.getString(key, defaultValue)
+        return table.getString(key, defaultValue)
 
     @classmethod
     def putBooleanArray(cls, key, value):
@@ -355,9 +349,8 @@ class SmartDashboard:
         table = cls.getTable()
         return table.setDefaultBooleanArray(key, defaultValue)
 
-
     @classmethod
-    def getBooleanArray(cls, key, defaultValue=_defaultValueSentry):
+    def getBooleanArray(cls, key, defaultValue):
         """Returns the boolean array the key maps to. If the key does not exist or is of
         different type, it will return the default value; if that is not provided,
         it will throw a :exc:`KeyError`.
@@ -369,15 +362,9 @@ class SmartDashboard:
         :param defaultValue: returned if the key doesn't exist
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
-
-        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
-                 is not provided.
         """
         table = cls.getTable()
-        if defaultValue is cls._defaultValueSentry:
-            return table.getBooleanArray(key)
-        else:
-            return table.getBooleanArray(key, defaultValue)
+        return table.getBooleanArray(key, defaultValue)
 
     @classmethod
     def putNumberArray(cls, key, value):
@@ -401,9 +388,8 @@ class SmartDashboard:
         table = cls.getTable()
         return table.setDefaultNumberArray(key, defaultValue)
 
-
     @classmethod
-    def getNumberArray(cls, key, defaultValue=_defaultValueSentry):
+    def getNumberArray(cls, key, defaultValue):
         """Returns the number array the key maps to. If the key does not exist or is of
         different type, it will return the default value; if that is not provided,
         it will throw a :exc:`KeyError`.
@@ -415,15 +401,9 @@ class SmartDashboard:
         :param defaultValue: returned if the key doesn't exist
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
-
-        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
-                 is not provided.
         """
         table = cls.getTable()
-        if defaultValue is cls._defaultValueSentry:
-            return table.getNumberArray(key)
-        else:
-            return table.getNumberArray(key, defaultValue)
+        return table.getNumberArray(key, defaultValue)
     
     @classmethod
     def putStringArray(cls, key, value):
@@ -457,7 +437,7 @@ class SmartDashboard:
         return table.setDefaultStringArray(key, defaultValue)
     
     @classmethod
-    def getStringArray(cls, key, defaultValue=_defaultValueSentry):
+    def getStringArray(cls, key, defaultValue):
         """Returns the string array the key maps to. If the key does not exist or is
         of different type, it will return the default value.
         
@@ -469,15 +449,9 @@ class SmartDashboard:
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
         :rtype: list(str)
-        
-        :raises KeyError: If the value doesn't exist and no default is provided, or
-                          if it is the wrong type
         """
         table = cls.getTable()
-        if defaultValue is cls._defaultValueSentry:
-            return table.getStringArray(key)
-        else:
-            return table.getStringArray(key, defaultValue)
+        return table.getStringArray(key, defaultValue)
 
     @classmethod
     def putRaw(cls, key, value):
@@ -501,9 +475,8 @@ class SmartDashboard:
         table = cls.getTable()
         return table.setDefaultRaw(key, defaultValue)
 
-
     @classmethod
-    def getRaw(cls, key, defaultValue=_defaultValueSentry):
+    def getRaw(cls, key, defaultValue):
         """Returns the raw value (byte array) the key maps to. If the key does not exist or is of
         different type, it will return the default value; if that is not provided,
         it will throw a :exc:`KeyError`.
@@ -520,15 +493,4 @@ class SmartDashboard:
                  is not provided.
         """
         table = cls.getTable()
-        if defaultValue is cls._defaultValueSentry:
-            return table.getRaw(key)
-        else:
-            return table.getRaw(key, defaultValue)
-
-
-
-    # Deprecated Methods
-    putInt = putNumber
-    getInt = getNumber
-    putDouble = putNumber
-    getDouble = getNumber
+        return table.getRaw(key, defaultValue)

@@ -8,16 +8,15 @@ def test_smartdashboard_basic(networktables, wpilib):
     sd = wpilib.SmartDashboard
     
     ntsd.putBoolean('bool', True)
-    assert sd.getBoolean('bool') == True
+    assert sd.getBoolean('bool', None) == True
     
     sd.putNumber('number', 1)
-    assert ntsd.getNumber('number') == 1
+    assert ntsd.getNumber('number', None) == 1
     
-    with pytest.raises(KeyError):
-        sd.getString("string")
+    assert sd.getString("string", None) == None
         
     ntsd.putString("string", "s")
-    assert sd.getString("string") == "s"
+    assert sd.getString("string", None) == "s"
     
 def test_smartdashboard_chooser(networktables, wpilib):
     

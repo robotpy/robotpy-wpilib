@@ -51,7 +51,7 @@ def wpilib(_module_patch, hal, hal_data):
 def networktables():
     """Networktables instance"""
     import networktables
-    networktables.NetworkTables.setTestMode()
+    networktables.NetworkTables.startTestMode()
     yield networktables
     networktables.NetworkTables.shutdown()
 
