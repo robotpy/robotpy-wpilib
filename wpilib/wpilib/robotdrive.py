@@ -1,4 +1,4 @@
-# validated: 2017-09-21 TW e1195e8b9dab edu/wpi/first/wpilibj/RobotDrive.java
+# validated: 2017-10-23 TW 2fc60680f436 edu/wpi/first/wpilibj/RobotDrive.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -25,11 +25,14 @@ def _freeRobotDrive(allocatedSpeedControllers):
         if hasattr(sc, "free"):
             sc.free()
 
-
 class RobotDrive(MotorSafety):
-    """Operations on a robot drivetrain based on a definition of the motor
+    """
+    .. deprecated:: 2018.0.0
+        Use DifferentialDrive, KilloughDrive, or MecanumDrive instead.
+
+    Operations on a robot drivetrain based on a definition of the motor
     configuration. 
-    
+
     The robot drive class handles basic driving for a robot. Currently, 2
     and 4 motor tank and mecanum drive trains are supported. In the future
     other drive types like swerve might be implemented. Motor channel numbers
@@ -86,6 +89,7 @@ class RobotDrive(MotorSafety):
         numbers are passed, the motorController keyword argument, if present,
         is the motor controller class to use; if unspecified, :class:`.Talon` is used.
         """
+        warnings.warn("Deprecated in 2018.0.0. Use DifferentialDrive, KilloughDrive, or MecanumDrive instead.", DeprecationWarning, stacklevel=2)
         super().__init__()
 
         # keyword arguments

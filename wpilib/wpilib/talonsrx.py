@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS ecb2add79137 edu/wpi/first/wpilibj/TalonSRX.java
+# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/TalonSRX.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

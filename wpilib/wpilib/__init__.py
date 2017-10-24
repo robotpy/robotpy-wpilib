@@ -25,6 +25,7 @@ from .digitalinput import *
 from .digitaloutput import *
 from .digitalsource import *
 from .doublesolenoid import *
+from .drive import *
 from .driverstation import *
 from .encoder import *
 from .filter import *
@@ -61,6 +62,7 @@ from .smartdashboard import *
 from .solenoidbase import *
 from .solenoid import *
 from .spark import *
+from .speedcontrollergroup import *
 from .spi import *
 from .talon import *
 from .talonsrx import *
