@@ -84,11 +84,12 @@ getFPGAButton = _STATUSFUNC("getFPGAButton", C.c_bool)
 getSystemActive = _STATUSFUNC("getSystemActive", C.c_bool)
 getBrownedOut = _STATUSFUNC("getBrownedOut", C.c_bool)
 
-_initialize = _RETFUNC("initialize", C.c_int32, ("mode", C.c_int32))
+baseInitialize = _STATUSFUNC("baseInitialize", None)
+_initialize = _RETFUNC("initialize", C.c_bool, ("timeout", C.c_int32),("mode", C.c_int32))
 
 @hal_wrapper
-def initialize(mode = 0):
-    rv = _initialize(mode)
+def initialize(timeout = 0, mode = 0):
+    rv = _initialize(timeout, mode)
     if not rv:
         raise HALError("Could not initialize HAL")
 
@@ -300,7 +301,7 @@ getJoystickButtons = _RETFUNC("getJoystickButtons", C.c_int32, ("joystickNum", C
 getJoystickDescriptor = _RETFUNC("getJoystickDescriptor", C.c_int32, ("joystickNum", C.c_int32), ("desc", JoystickDescriptor_ptr))
 getJoystickIsXbox = _RETFUNC("getJoystickIsXbox", C.c_bool, ("joystickNum", C.c_int32))
 getJoystickType = _RETFUNC("getJoystickType", C.c_int32, ("joystickNum", C.c_int32))
-
+freeJoystickName = _RETFUNC("freeJoystickName", None, ("name", C.c_char_p))
 _getJoystickName = _RETFUNC("getJoystickName", C.c_char_p, ("joystickNum", C.c_int32))
 @hal_wrapper
 def getJoystickName(joystickNum):
@@ -321,6 +322,11 @@ observeUserProgramDisabled = _RETFUNC("observeUserProgramDisabled", None)
 observeUserProgramAutonomous = _RETFUNC("observeUserProgramAutonomous", None)
 observeUserProgramTeleop = _RETFUNC("observeUserProgramTeleop", None)
 observeUserProgramTest = _RETFUNC("observeUserProgramTest", None)
+
+releaseDSMutex = _RETFUNC("releaseDSMutex", None)
+isNewControlData = _RETFUNC("isNewControlData", C.c_bool)
+waitForDSDataTimeout = _RETFUNC("waitForDSDataTimeout", C.c_bool, ("timeout",C.c_double))
+
 
 
 #############################################################################
