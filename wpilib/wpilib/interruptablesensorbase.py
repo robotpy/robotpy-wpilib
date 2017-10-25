@@ -1,4 +1,4 @@
-# validated: 2016-12-22 JW aafca4ed7fff edu/wpi/first/wpilibj/InterruptableSensorBase.java
+# validated: 2017-10-24 EN 2fc60680f436 edu/wpi/first/wpilibj/InterruptableSensorBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -99,7 +99,11 @@ class InterruptableSensorBase(SensorBase):
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
-        return hal.waitForInterrupt(self.interrupt, timeout, ignorePrevious)
+        result = hal.waitForInterrupt(self.interrupt, timeout, ignorePrevious)
+        rising = 0x1 if (result & 0xFF) else 0x0
+        falling = 0x100 if (result & 0xFF00) else 0x0
+
+        return rising | falling
 
     def enableInterrupts(self):
         """Enable interrupts to occur on this input. Interrupts are disabled
