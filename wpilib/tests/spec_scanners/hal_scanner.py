@@ -22,7 +22,7 @@ arrowtab = "--> "
 
 def get_hal_dirs(hal_dir):
     paths = list()
-    paths.append(join(hal_dir, 'include', 'HAL'))
+    paths.append(join(hal_dir, 'HAL'))
     return paths
 
 
