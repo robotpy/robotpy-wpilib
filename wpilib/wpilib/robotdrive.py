@@ -89,7 +89,7 @@ class RobotDrive(MotorSafety):
         numbers are passed, the motorController keyword argument, if present,
         is the motor controller class to use; if unspecified, :class:`.Talon` is used.
         """
-        warnings.warn("Deprecated in 2018.0.0. Use DifferentialDrive, KilloughDrive, or MecanumDrive instead.", DeprecationWarning, stacklevel=2)
+        warnings.warn("RobotDrive wass deprecated in 2018.0.0. Use DifferentialDrive, KilloughDrive, or MecanumDrive instead.", DeprecationWarning, stacklevel=2)
         super().__init__()
 
         # keyword arguments
