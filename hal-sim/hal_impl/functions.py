@@ -1189,6 +1189,17 @@ def getEncoderEncodingType(encoderHandle, status):
 
 
 #############################################################################
+# Extensions.h
+#############################################################################
+
+def loadOneExtension(library):
+    assert False
+
+def loadExtensions():
+    assert False
+
+
+#############################################################################
 # I2C.h
 #############################################################################
 
@@ -1427,10 +1438,6 @@ def latchPWMZero(pwmPortHandle, status):
 def setPWMPeriodScale(pwmPortHandle, squelchMask, status):
     status.value = 0
     hal_data['pwm'][pwmPortHandle.pin]['period_scale'] = squelchMask
-
-def getLoopTiming(status):
-    status.value = 0
-    return hal_data['pwm_loop_timing']
 
 
 #############################################################################
@@ -1829,6 +1836,14 @@ def getAllSolenoids(module, status):
 def setSolenoid(solenoidPortHandle, value, status):
     status.value = 0
     hal_data['pcm'][solenoidPortHandle.module][solenoidPortHandle.pin]['value'] = value
+
+def setAllSolenoids(module, state, status):
+    status.value = 0
+    if module not in hal_data['pcm']:
+        status.value = RESOURCE_OUT_OF_RANGE
+    else:
+        for i, s in enumerate(hal_data['pcm'][module]):
+            s['value'] = (True if state & (1 << i) else False)
 
 def getPCMSolenoidBlackList(module, status):
     status.value = 0

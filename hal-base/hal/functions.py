@@ -363,6 +363,14 @@ getEncoderEncodingType = _STATUSFUNC("getEncoderEncodingType", C.c_int32, ("enco
 
 
 #############################################################################
+# Extensions.h
+#############################################################################
+
+loadOneExtension = _RETFUNC("loadOneExtension", C.c_int32, ("library", C.c_char_p))
+loadExtensions = _RETFUNC("loadExtensions", C.c_int32)
+
+
+#############################################################################
 # I2C
 #############################################################################
 
@@ -496,7 +504,7 @@ getPWMPosition = _STATUSFUNC("getPWMPosition", C.c_double, ("pwmPortHandle", Dig
 
 latchPWMZero = _STATUSFUNC("latchPWMZero", None, ("pwmPortHandle", DigitalHandle))
 setPWMPeriodScale = _STATUSFUNC("setPWMPeriodScale", None, ("pwmPortHandle", DigitalHandle), ("squelchMask", C.c_int32))
-getLoopTiming = _STATUSFUNC("getLoopTiming", C.c_int32)
+
 
 #############################################################################
 # Ports
@@ -654,8 +662,16 @@ checkSolenoidChannel = _RETFUNC("checkSolenoidChannel", C.c_bool, ("channel", C.
 getSolenoid = _STATUSFUNC("getSolenoid", C.c_bool, ("solenoidPortHandle", SolenoidHandle))
 getAllSolenoids = _STATUSFUNC("getAllSolenoids", C.c_int32, ("module", C.c_int32))
 setSolenoid = _STATUSFUNC("setSolenoid", None, ("solenoidPortHandle", SolenoidHandle), ("value", C.c_bool))
+setAllSolenoids = _STATUSFUNC("setAllSolenoids", None, ("module", C.c_int32), ("state", C.c_int32))
 
 getPCMSolenoidBlackList = _STATUSFUNC("getPCMSolenoidBlackList", C.c_int, ("module", C.c_int32))
 getPCMSolenoidVoltageStickyFault = _STATUSFUNC("getPCMSolenoidVoltageStickyFault", C.c_bool, ("module", C.c_int32))
 getPCMSolenoidVoltageFault = _STATUSFUNC("getPCMSolenoidVoltageFault", C.c_bool, ("module", C.c_int32))
 clearAllPCMStickyFaults = _STATUSFUNC("clearAllPCMStickyFaults", None, ("module", C.c_int32))
+
+
+#############################################################################
+# Threads
+#############################################################################
+
+# Not implemented
