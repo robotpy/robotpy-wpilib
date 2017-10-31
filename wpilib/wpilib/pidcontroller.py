@@ -524,30 +524,29 @@ class PIDController(LiveWindowSendable):
     def getSmartDashboardType(self):
         return "PIDController"
 
-    def pChanged(entry):
+    def pChanged(self, entry, key, value, param):
         with self.mutex:
-            self.P = entry.value
+            self.P = value
 
-    def iChanged(entry):
+    def iChanged(self, entry, key, value, param):
         with self.mutex:
-            self.I = entry.value
+            self.I = value
 
-    def dChanged(entry):
+    def dChanged(self, entry, key, value, param):
         with self.mutex:
-            self.D = entry.value
+            self.D = value
 
-    def fChanged(entry):
+    def fChanged(self, entry, key, value, param):
         with self.mutex:
-            self.F = entry.value
+            self.F = value
 
-    def setpointChanged(entry):
-        if self.getSetpoint() != entry.value:
-            self.setSetpoint(entry.value)
+    def setpointChanged(self, entry, key, value, param):
+        if self.getSetpoint() != value:
+            self.setSetpoint(value)
 
-    def enabledChanged(entry):
-        val = entry.value
-        if self.isEnabled() != val:
-            if val:
+    def enabledChanged(self, entry, key, value, param):
+        if self.isEnabled() != value:
+            if value:
                 self.enable()
             else:
                 self.disable()

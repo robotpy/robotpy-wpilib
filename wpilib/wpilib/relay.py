@@ -290,5 +290,5 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
             return
         self.valueEntry.setString(self.Value._num_to_name.get(self.get()))
 
-    def valueChanged(self, event):
-        self.set(self.Value._name_to_num.get(event.value, self.Value.kOff))
+    def valueChanged(self, entry, key, value, param):
+        self.set(self.Value._name_to_num.get(value, self.Value.kOff))

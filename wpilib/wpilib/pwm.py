@@ -275,8 +275,8 @@ class PWM(LiveWindowSendable):
         if self.valueEntry is not None:
             self.valueEntry.setDouble(self.getSpeed())
 
-    def valueChanged(self, entry):
-        self.setSpeed(entry.value)
+    def valueChanged(self, entry, key, value, param):
+        self.setSpeed(value)
 
     def startLiveWindowMode(self):
         self.setSpeed(0) # Stop for safety

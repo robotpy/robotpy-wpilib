@@ -151,7 +151,7 @@ def test_pwm_updateTable(pwm):
 
 def test_pwm_valueChanged(pwm):
     pwm.setSpeed = MagicMock()
-    pwm.valueChanged(_EntryNotification(name='Value', value=0.5, flags=1, local_id=1))
+    pwm.valueChanged(None, None, 0.5, None)
     pwm.setSpeed.assert_called_once_with(0.5)
     
 def test_pwm_startLiveWindowMode(pwm, pwm_data):

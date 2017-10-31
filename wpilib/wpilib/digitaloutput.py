@@ -191,5 +191,5 @@ class DigitalOutput(DigitalSource):
         # TODO: Put current value.
         pass
 
-    def valueChanged(self, event):
-        self.set(True if event.value else False)
+    def valueChanged(self, entry, key, value, param):
+        self.set(True if value else False)

@@ -200,7 +200,7 @@ def test_relay_updateTable(value, relay):
 @pytest.mark.parametrize("value", ["inv", "Off", "On", "Forward", "Reverse"])
 def test_relay_valueChanged(value, relay):
     relay.set = MagicMock()
-    relay.valueChanged(_EntryNotification(name='', value=value, flags=1, local_id=1))
+    relay.valueChanged(None, None, value, None)
     if value == "inv":
         relay.set.assert_called_once_with(getattr(relay.Value, "kOff"))
     else:

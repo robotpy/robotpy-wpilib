@@ -82,6 +82,9 @@ class Command(Sendable):
         # The CommandGroup this is in
         self.parent = None
 
+        self.runningEntry = None
+        self.isParentedEntry = None
+
     def getName(self):
         """Returns the name of this command. If no name was specified
         in the constructor, then the default is the name of the class.
@@ -423,8 +426,8 @@ class Command(Sendable):
     def getSmartDashboardType(self):
         return "Command"
 
-    def valueChanged(self, event):
-        if event.value:
+    def valueChanged(self, entry, key, value, param):
+        if value:
             self.start()
         else:
             self.cancel()

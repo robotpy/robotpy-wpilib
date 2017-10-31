@@ -148,8 +148,8 @@ class Solenoid(SolenoidBase):
         if self.valueEntry is not None:
             self.valueEntry.setBoolean("Value", self.get())
 
-    def valueChanged(self, event):
-        self.set(True if event.value else False)
+    def valueChanged(self, entry, key, value, param):
+        self.set(True if value else False)
 
     def startLiveWindowMode(self):
         self.set(False) # Stop for safety

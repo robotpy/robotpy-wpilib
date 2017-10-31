@@ -86,7 +86,7 @@ def test_multiple_solenoids(wpilib, hal_data):
 def test_solenoid_valueChanged(value, expected, wpilib, hal_data):
     s1 = wpilib.Solenoid(4)
     s1.set = MagicMock()
-    s1.valueChanged(_EntryNotification(name='Value', value=value, flags=1, local_id=1))
+    s1.valueChanged(None, None, value, None)
 
     s1.set.assert_called_once_with(expected)
 
