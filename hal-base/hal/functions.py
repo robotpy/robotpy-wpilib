@@ -5,7 +5,30 @@ import warnings
 from .exceptions import HALError
 from .constants import *
 
-from hal_impl.types import *
+from hal_impl.types import (
+    ControlWord, ControlWord_ptr,
+    JoystickAxes, JoystickAxes_ptr,
+    JoystickPOVs, JoystickPOVs_ptr,
+    JoystickButtons, JoystickButtons_ptr,
+    JoystickDescriptor, JoystickDescriptor_ptr,
+    
+    Handle,
+    PortHandle,
+    
+    AnalogInputHandle,
+    AnalogOutputHandle,
+    AnalogTriggerHandle,
+    CompressorHandle,
+    CounterHandle,
+    DigitalHandle,
+    DigitalPWMHandle,
+    EncoderHandle,
+    GyroHandle,
+    InterruptHandle,
+    RelayHandle,
+    SolenoidHandle,
+)
+
 from hal_impl.fndef import _RETFUNC, _THUNKFUNC, _VAR, _dll, sleep
 from hal_impl import __hal_simulation__
 
