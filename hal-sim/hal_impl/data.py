@@ -108,7 +108,7 @@ def _reset_hal_data(current_hooks):
     '''
     global hal_data, hooks
     hooks = current_hooks
-    hooks.ds_cond = None
+    hooks.reset()
     
     hal_data.clear()
     hal_in_data.clear()

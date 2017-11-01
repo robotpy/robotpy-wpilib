@@ -9,7 +9,6 @@ from .data import hal_data, NotifyDict
 from hal_impl.sim_hooks import SimHooks
 
 import logging
-from hal_impl.mode_helpers import notify_new_ds_data
 logger = logging.getLogger('hal')
 
 hooks = SimHooks()
@@ -251,10 +250,10 @@ def baseInitialize(status):
     _initialized = True
 
 def initialize(timeout=0, mode=0):
-    # the real HAL cannot be initialized twice. Neither should this.
     global _initialized
-    assert _initialized == False
-    _initialized = True
+    if _initialized:
+        return
+    baseInitialize(None)
     #initializeNotifier()
     initializeDriverStation()
     
@@ -1007,10 +1006,7 @@ def getJoystickName(joystickNum):
     return name
 
 def freeJoystickName(name):
-    for joystick in hal_data["joysticks"]:
-        if joystick["name"] == name:
-            joystick["name"] = None
-            return
+    pass
 
 def getJoystickAxisType(joystickNum, axis):
     assert False
@@ -1035,8 +1031,17 @@ def getMatchTime(status):
     else:
         return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
 
+def releaseDSMutex():
+    hooks.notifyDSData()
+
+def isNewControlData():
+    return hooks.isNewControlData()
+
 def waitForDSData():
-    waitForDSDataTimeout(None)
+    hooks.waitForDSData()
+
+def waitForDSDataTimeout(timeout):
+    return hooks.waitForDSData(timeout)
 
 def initializeDriverStation():
     hooks.initializeDriverStation()
@@ -1055,30 +1060,6 @@ def observeUserProgramTeleop():
 
 def observeUserProgramTest():
     hal_data['user_program_state'] = 'test'
-
-refNumber = 42
-def newDataOccur(refNum):
-    if refNum is not refNumber:
-        return 0
-    notify_new_ds_data()
-    
-
-def releaseDSMutex():
-    newDataOccur(refNumber)
-
-newDSDataCounter = 0
-lastCount = -1
-def isNewControlData():
-    with hooks.ds_cond:
-        if lastCount != newDSDataCounter:
-            lastCount = newDSDataCounter
-            return True
-
-def waitForDSDataTimeout(timeout):
-    with hooks.ds_cond:
-        hooks.ds_cond.wait(timeout=timeout)
-    return True
-
 
 
 #############################################################################
@@ -1438,6 +1419,14 @@ def latchPWMZero(pwmPortHandle, status):
 def setPWMPeriodScale(pwmPortHandle, squelchMask, status):
     status.value = 0
     hal_data['pwm'][pwmPortHandle.pin]['period_scale'] = squelchMask
+
+def getPWMLoopTiming(status):
+    status.value = 0
+    return 0
+
+def getPWMCycleStartTime(status):
+    status.value = 0
+    return 0
 
 
 #############################################################################

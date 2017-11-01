@@ -8,13 +8,7 @@ from . import functions as fns
     
 def notify_new_ds_data():
     '''Called when driver station data is modified'''
-    
-    cond = data.hooks.ds_cond
-    fns.newDSDataCounter += 1
-
-    if cond is not None:
-        with cond:
-            cond.notify_all()
+    data.hooks.notifyDSData()
 
 def set_autonomous(enabled):
     '''Only designed to be called on transition'''

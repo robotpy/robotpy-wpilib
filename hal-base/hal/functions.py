@@ -324,32 +324,44 @@ getJoystickButtons = _RETFUNC("getJoystickButtons", C.c_int32, ("joystickNum", C
 getJoystickDescriptor = _RETFUNC("getJoystickDescriptor", C.c_int32, ("joystickNum", C.c_int32), ("desc", JoystickDescriptor_ptr))
 getJoystickIsXbox = _RETFUNC("getJoystickIsXbox", C.c_bool, ("joystickNum", C.c_int32))
 getJoystickType = _RETFUNC("getJoystickType", C.c_int32, ("joystickNum", C.c_int32))
-freeJoystickName = _RETFUNC("freeJoystickName", None, ("name", C.c_char_p))
-_getJoystickName = _RETFUNC("getJoystickName", C.c_char_p, ("joystickNum", C.c_int32))
+
+# Do not use freeJoystickName directly, we handle that for you here instead
+# -> additionally, the wrapper casts the voidp to a char*
+# TODO: hack
+_joystick_type = C.c_char_p if __hal_simulation__ else C.c_void_p
+
+_getJoystickName = _RETFUNC("getJoystickName", _joystick_type, ("joystickNum", C.c_int32))
+_freeJoystickName = _RETFUNC("freeJoystickName", None, ("name", _joystick_type))
+
 @hal_wrapper
 def getJoystickName(joystickNum):
     name = _getJoystickName(joystickNum)
     if name is not None:
-        name = name.decode('utf-8')
-    return name
+        namestr = C.cast(name, C.c_char_p).value.decode('utf-8')
+        _freeJoystickName(name)
+        return namestr
+    return None
+
+@hal_wrapper
+def freeJoystickName(name):
+    raise ValueError("Do not call this function")
 
 getJoystickAxisType = _RETFUNC("getJoystickAxisType", C.c_int32, ("joystickNum", C.c_int32), ("axis", C.c_int32))
 setJoystickOutputs = _RETFUNC("setJoystickOutputs", C.c_int32, ("joystickNum", C.c_int32), ("outputs", C.c_int64), ("leftRumble", C.c_int32), ("rightRumble", C.c_int32))
 
 getMatchTime = _STATUSFUNC("getMatchTime", C.c_double)
-waitForDSData = _RETFUNC("waitForDSData", None)
 
+releaseDSMutex = _RETFUNC("releaseDSMutex", None)
+isNewControlData = _RETFUNC("isNewControlData", C.c_bool)
+waitForDSData = _RETFUNC("waitForDSData", None)
+waitForDSDataTimeout = _RETFUNC("waitForDSDataTimeout", C.c_bool, ("timeout",C.c_double))
 initializeDriverStation = _RETFUNC("initializeDriverStation", None)
+
 observeUserProgramStarting = _RETFUNC("observeUserProgramStarting", None)
 observeUserProgramDisabled = _RETFUNC("observeUserProgramDisabled", None)
 observeUserProgramAutonomous = _RETFUNC("observeUserProgramAutonomous", None)
 observeUserProgramTeleop = _RETFUNC("observeUserProgramTeleop", None)
 observeUserProgramTest = _RETFUNC("observeUserProgramTest", None)
-
-releaseDSMutex = _RETFUNC("releaseDSMutex", None)
-isNewControlData = _RETFUNC("isNewControlData", C.c_bool)
-waitForDSDataTimeout = _RETFUNC("waitForDSDataTimeout", C.c_bool, ("timeout",C.c_double))
-
 
 
 #############################################################################
@@ -389,8 +401,9 @@ getEncoderEncodingType = _STATUSFUNC("getEncoderEncodingType", C.c_int32, ("enco
 # Extensions.h
 #############################################################################
 
-loadOneExtension = _RETFUNC("loadOneExtension", C.c_int32, ("library", C.c_char_p))
-loadExtensions = _RETFUNC("loadExtensions", C.c_int32)
+if __hal_simulation__:
+    loadOneExtension = _RETFUNC("loadOneExtension", C.c_int32, ("library", C.c_char_p))
+    loadExtensions = _RETFUNC("loadExtensions", C.c_int32)
 
 
 #############################################################################
@@ -528,6 +541,8 @@ getPWMPosition = _STATUSFUNC("getPWMPosition", C.c_double, ("pwmPortHandle", Dig
 latchPWMZero = _STATUSFUNC("latchPWMZero", None, ("pwmPortHandle", DigitalHandle))
 setPWMPeriodScale = _STATUSFUNC("setPWMPeriodScale", None, ("pwmPortHandle", DigitalHandle), ("squelchMask", C.c_int32))
 
+getPWMLoopTiming = _STATUSFUNC("getPWMLoopTiming", C.c_int32)
+getPWMCycleStartTime = _STATUSFUNC("getPWMCycleStartTime", C.c_uint64)
 
 #############################################################################
 # Ports
