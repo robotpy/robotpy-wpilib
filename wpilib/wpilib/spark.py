@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS e44a6e227a89 edu/wpi/first/wpilibj/Spark.java
+# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/Spark.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

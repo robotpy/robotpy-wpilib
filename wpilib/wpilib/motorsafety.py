@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS 952ebb11adfe edu/wpi/first/wpilibj/MotorSafety.java edu/wpi/first/wpilibj/MotorSafetyHelper.java
+# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/MotorSafety.java edu/wpi/first/wpilibj/MotorSafetyHelper.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
