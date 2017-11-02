@@ -1,12 +1,15 @@
-# validated: 2016-12-20 JW a705eb1c61a0 edu/wpi/first/wpilibj/buttons/Trigger.java
+# validated: 2017-10-19 AA 34c18ef00062 edu/wpi/first/wpilibj/buttons/Trigger.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
 
+from networktables.networktable import NetworkTable
+
 __all__ = ["Trigger"]
+
 
 class Trigger:
     """This class provides an easy way to link commands to inputs.
@@ -34,9 +37,9 @@ class Trigger:
         """Returns whether :meth:`get` returns True or the internal table for
         :class:`.SmartDashboard` use is pressed.
         """
-        table = self.getTable()
-        return self.get() or (table is not None and
-                              table.getBoolean("pressed", False))
+        pressedEntry = getattr(self, "pressedEntry", None)
+        return self.get() or (pressedEntry is not None and
+                              pressedEntry.getBoolean(False))
 
     def whenActive(self, command):
         """Starts the given command whenever the trigger just becomes active.
@@ -137,9 +140,8 @@ class Trigger:
         return "Button"
 
     def initTable(self, table):
-        self.table = table
-        if table is not None:
-            table.putBoolean("pressed", self.get())
-
-    def getTable(self):
-        return getattr(self, "table", None)
+        if table is not None and isinstance(table, NetworkTable):
+            self.pressedEntry = table.getEntry("pressed")
+            self.pressedEntry.setBoolean(self.get())
+        else:
+            self.pressedEntry = None
