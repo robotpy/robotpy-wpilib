@@ -1,7 +1,6 @@
 
 import pytest
 from unittest.mock import MagicMock
-from ntcore.entry_notifier import _EntryNotification
 
 def test_doublesolenoid_set(wpilib, hal, hal_data):
     

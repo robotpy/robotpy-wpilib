@@ -38,6 +38,8 @@ class DigitalInput(DigitalSource):
                       channel)
         LiveWindow.addSensor("DigitalInput", channel, self)
 
+        self.valueEntry = None
+
     def free(self):
         if self.interrupt:
             self.cancelInterrupts()

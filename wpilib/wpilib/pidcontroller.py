@@ -10,7 +10,7 @@ from collections import deque
 from itertools import islice
 import threading
 import warnings
-from networktables.instance import NetworkTablesInstance
+from networktables import NetworkTables
 
 import hal
 
@@ -569,22 +569,22 @@ class PIDController(LiveWindowSendable):
 
             self.pListener = self.pEntry.addListener(
                 self.pChanged, 
-                NetworkTablesInstance.NotifyFlags.UPDATE | NetworkTablesInstance.NotifyFlags.NEW)
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
             self.iListener = self.pEntry.addListener(
                 self.iChanged, 
-                NetworkTablesInstance.NotifyFlags.UPDATE | NetworkTablesInstance.NotifyFlags.NEW)
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
             self.dListener = self.pEntry.addListener(
                 self.dChanged, 
-                NetworkTablesInstance.NotifyFlags.UPDATE | NetworkTablesInstance.NotifyFlags.NEW)
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
             self.fListener = self.pEntry.addListener(
                 self.fChanged, 
-                NetworkTablesInstance.NotifyFlags.UPDATE | NetworkTablesInstance.NotifyFlags.NEW)
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
             self.setpointListener = self.pEntry.addListener(
                 self.setpointChanged, 
-                NetworkTablesInstance.NotifyFlags.UPDATE | NetworkTablesInstance.NotifyFlags.NEW)
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
             self.enabledListener = self.pEntry.addListener(
                 self.enabledChanged, 
-                NetworkTablesInstance.NotifyFlags.UPDATE | NetworkTablesInstance.NotifyFlags.NEW)
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
         else:
             self.pEntry = None
             self.iEntry = None

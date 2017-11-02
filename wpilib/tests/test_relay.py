@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import MagicMock, call
-from ntcore.entry_notifier import _EntryNotification
 
 
 @pytest.fixture(scope="function")

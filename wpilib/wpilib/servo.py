@@ -40,6 +40,8 @@ class Servo(PWM):
                        self.kDefaultMinServoPWM)
         self.setPeriodMultiplier(self.PeriodMultiplier.k4X)
 
+        self.valueEntry = None
+
         LiveWindow.addActuatorChannel("Servo", self.getChannel(), self)
         hal.report(hal.UsageReporting.kResourceType_Servo,
                    self.getChannel())

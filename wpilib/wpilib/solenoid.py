@@ -9,7 +9,6 @@
 import hal
 import weakref
 import warnings
-from networktables.instance import NetworkTablesInstance
 
 from .livewindow import LiveWindow
 from .resource import Resource

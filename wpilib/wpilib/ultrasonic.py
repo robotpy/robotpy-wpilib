@@ -125,6 +125,8 @@ class Ultrasonic(SensorBase):
         self.units = units
         self.pidSource = self.PIDSourceType.kDisplacement
         self.enabled = True # make it available for round robin scheduling
+
+        self.valueEntry = None
         
         # set up counter for this sensor
         self.counter = Counter(self.echoChannel)

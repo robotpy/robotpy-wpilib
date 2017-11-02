@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import MagicMock
-from ntcore.entry_notifier import _EntryNotification
 
 #
 # Module-specific fixtures

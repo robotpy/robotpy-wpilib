@@ -77,6 +77,8 @@ class PWM(LiveWindowSendable):
         
         self._handle = hal.initializePWMPort(hal.getPort(channel))
         self.__finalizer = weakref.finalize(self, _freePWM, self._handle)
+
+        self.valueEntry = None
         
         self.setDisabled()
         

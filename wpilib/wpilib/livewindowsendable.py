@@ -1,6 +1,6 @@
 # validated: 2017-10-07 EN e1195e8b9dab edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
 
-from networktables.instance import NetworkTablesInstance
+from networktables import NetworkTables
 from .sendable import Sendable
 
 __all__ = ["LiveWindowSendable"]
@@ -29,9 +29,9 @@ class LiveWindowSendable(Sendable):
                 return
             self.valueListener = valueEntry.addListener(
                 self.valueChanged, 
-                NetworkTablesInstance.NotifyFlags.IMMEDIATE |
-                NetworkTablesInstance.NotifyFlags.NEW |
-                NetworkTablesInstance.NotifyFlags.UPDATE)
+                NetworkTables.NotifyFlags.IMMEDIATE |
+                NetworkTables.NotifyFlags.NEW |
+                NetworkTables.NotifyFlags.UPDATE)
 
     def stopLiveWindowMode(self):
         """Stop having this sendable object automatically respond to value

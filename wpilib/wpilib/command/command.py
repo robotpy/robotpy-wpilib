@@ -10,7 +10,7 @@ from .scheduler import Scheduler
 from ..robotstate import RobotState
 from ..sendable import Sendable
 from ..timer import Timer
-from networktables.instance import NetworkTablesInstance
+from networktables import NetworkTables
 
 import threading
 
@@ -445,9 +445,9 @@ class Command(Sendable):
 
             self.runningListener = self.runningEntry.addListener(
                 self.valueChanged,
-                NetworkTablesInstance.NotifyFlags.IMMEDIATE |
-                NetworkTablesInstance.NotifyFlags.NEW |
-                NetworkTablesInstance.NotifyFlags.UPDATE)
+                NetworkTables.NotifyFlags.IMMEDIATE |
+                NetworkTables.NotifyFlags.NEW |
+                NetworkTables.NotifyFlags.UPDATE)
         else:
             self.runningEntry = None
             self.isParentedEntry = None

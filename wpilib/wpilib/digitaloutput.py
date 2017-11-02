@@ -40,6 +40,8 @@ class DigitalOutput(DigitalSource):
         hal.report(hal.UsageReporting.kResourceType_DigitalOutput,
                       channel)
 
+        self.valueEntry = None
+
     @property
     def pwmGenerator(self):
         if self._pwmGenerator_finalizer is None:

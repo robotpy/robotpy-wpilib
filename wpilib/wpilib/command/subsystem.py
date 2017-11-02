@@ -50,6 +50,11 @@ class Subsystem(Sendable):
         # The default command
         self.defaultCommand = None
 
+        self.hasDefaultEntry = None
+        self.defaultEntry = None
+        self.hasCommandEntry = None
+        self.commandEntry = None
+
     def initDefaultCommand(self):
         """Initialize the default command for a subsystem
         By default subsystems have no default command, but if they do, the
