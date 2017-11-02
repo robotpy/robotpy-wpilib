@@ -59,7 +59,7 @@ class Subsystem(Sendable):
         """
         pass
 
-    def periodic():
+    def periodic(self):
         """When the run method of the scheduler is called this method will be called.
         """
         pass
