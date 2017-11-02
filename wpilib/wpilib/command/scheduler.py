@@ -65,6 +65,10 @@ class Scheduler(Sendable):
         self.buttons = []
         self.runningCommandsChanged = False
 
+        self.namesEntry = None
+        self.idsEntry = None
+        self.cancelEntry = None
+
     def add(self, command):
         """Adds the command to the Scheduler. This will not add the
         :class:`.Command` immediately, but will instead wait for the proper time in
