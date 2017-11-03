@@ -1,6 +1,6 @@
-# validated: 2016-12-31 JW 8f67f2c24cb9 edu/wpi/first/wpilibj/AnalogOutput.java
+# validated: 2017-09-22 TW 34c18ef00062 edu/wpi/first/wpilibj/AnalogOutput.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2014. All Rights Reserved.
+# Copyright (c) FIRST 2014-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -73,10 +73,16 @@ class AnalogOutput(SensorBase):
     def getSmartDashboardType(self):
         return "Analog Output"
 
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
+
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Value", self.getVoltage())
+        if self.valueEntry is not None:
+            self.valueEntry.setDouble(self.getVoltage())
 
     def startLiveWindowMode(self):
         # Analog Channels don't have to do anything special when entering the

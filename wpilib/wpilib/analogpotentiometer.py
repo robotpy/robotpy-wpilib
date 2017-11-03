@@ -1,6 +1,6 @@
-# validated: 2016-12-22 JW 613309c0a236 edu/wpi/first/wpilibj/AnalogPotentiometer.java
+# validated: 2017-09-22 TW 34c18ef00062 edu/wpi/first/wpilibj/AnalogPotentiometer.java
 #----------------------------------------------------------------------------*/
-# Copyright (c) FIRST 2008-2014. All Rights Reserved.                        */
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 # Open Source Software - may be modified and shared by FRC teams. The code   */
 # must be accompanied by the FIRST BSD license file in the root directory of */
 # the project.                                                               */
@@ -89,10 +89,16 @@ class AnalogPotentiometer(LiveWindowSendable):
     def getSmartDashboardType(self):
         return "Analog Input"
 
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
+
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Value", self.get())
+        if self.valueEntry is not None:
+            self.valueEntry.setDouble(self.get())
 
     def startLiveWindowMode(self):
         # don't have to do anything special when entering the LiveWindow
