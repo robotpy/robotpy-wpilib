@@ -5,7 +5,30 @@ import warnings
 from .exceptions import HALError
 from .constants import *
 
-from hal_impl.types import *
+from hal_impl.types import (
+    ControlWord, ControlWord_ptr,
+    JoystickAxes, JoystickAxes_ptr,
+    JoystickPOVs, JoystickPOVs_ptr,
+    JoystickButtons, JoystickButtons_ptr,
+    JoystickDescriptor, JoystickDescriptor_ptr,
+    
+    Handle,
+    PortHandle,
+    
+    AnalogInputHandle,
+    AnalogOutputHandle,
+    AnalogTriggerHandle,
+    CompressorHandle,
+    CounterHandle,
+    DigitalHandle,
+    DigitalPWMHandle,
+    EncoderHandle,
+    GyroHandle,
+    InterruptHandle,
+    RelayHandle,
+    SolenoidHandle,
+)
+
 from hal_impl.fndef import _RETFUNC, _THUNKFUNC, _VAR, _dll, sleep
 from hal_impl import __hal_simulation__
 
@@ -66,8 +89,8 @@ HALIsSimulation = isSimulation
 # HAL
 #############################################################################
 
-getPort = _RETFUNC("getPort", PortHandle, ("pin", C.c_int32))
-getPortWithModule = _RETFUNC("getPortWithModule", PortHandle, ("module", C.c_int32), ("pin", C.c_int32))
+getPort = _RETFUNC("getPort", PortHandle, ("channel", C.c_int32))
+getPortWithModule = _RETFUNC("getPortWithModule", PortHandle, ("module", C.c_int32), ("channel", C.c_int32))
 
 _getErrorMessage = _RETFUNC("getErrorMessage", C.c_char_p, ("code", C.c_int32))
 @hal_wrapper
@@ -84,11 +107,12 @@ getFPGAButton = _STATUSFUNC("getFPGAButton", C.c_bool)
 getSystemActive = _STATUSFUNC("getSystemActive", C.c_bool)
 getBrownedOut = _STATUSFUNC("getBrownedOut", C.c_bool)
 
-_initialize = _RETFUNC("initialize", C.c_int32, ("mode", C.c_int32))
+baseInitialize = _STATUSFUNC("baseInitialize", None)
+_initialize = _RETFUNC("initialize", C.c_bool, ("timeout", C.c_int32),("mode", C.c_int32))
 
 @hal_wrapper
-def initialize(mode = 0):
-    rv = _initialize(mode)
+def initialize(timeout = 0, mode = 0):
+    rv = _initialize(timeout, mode)
     if not rv:
         raise HALError("Could not initialize HAL")
 
@@ -117,14 +141,14 @@ getAccelerometerZ = _RETFUNC("getAccelerometerZ", C.c_double)
 # AnalogAccumulator.h
 #############################################################################
 
-isAccumulatorChannel = _STATUSFUNC("isAccumulatorChannel", C.c_bool, ("analog_port", AnalogInputHandle))
-initAccumulator = _STATUSFUNC("initAccumulator", None, ("analog_port", AnalogInputHandle))
-resetAccumulator = _STATUSFUNC("resetAccumulator", None, ("analog_port", AnalogInputHandle))
-setAccumulatorCenter = _STATUSFUNC("setAccumulatorCenter", None, ("analog_port", AnalogInputHandle), ('center', C.c_int32))
-setAccumulatorDeadband = _STATUSFUNC("setAccumulatorDeadband", None, ("analog_port", AnalogInputHandle), ("deadband", C.c_int32))
-getAccumulatorValue = _STATUSFUNC("getAccumulatorValue", C.c_int64, ("analog_port", AnalogInputHandle))
-getAccumulatorCount = _STATUSFUNC("getAccumulatorCount", C.c_int64, ("analog_port", AnalogInputHandle))
-getAccumulatorOutput = _STATUSFUNC("getAccumulatorOutput", None, ("analog_port", AnalogInputHandle), ("value", C.POINTER(C.c_int64)), ("count", C.POINTER(C.c_int64)), out=["value", "count"])
+isAccumulatorChannel = _STATUSFUNC("isAccumulatorChannel", C.c_bool, ("analogPortHandle", AnalogInputHandle))
+initAccumulator = _STATUSFUNC("initAccumulator", None, ("analogPortHandle", AnalogInputHandle))
+resetAccumulator = _STATUSFUNC("resetAccumulator", None, ("analogPortHandle", AnalogInputHandle))
+setAccumulatorCenter = _STATUSFUNC("setAccumulatorCenter", None, ("analogPortHandle", AnalogInputHandle), ('center', C.c_int32))
+setAccumulatorDeadband = _STATUSFUNC("setAccumulatorDeadband", None, ("analogPortHandle", AnalogInputHandle), ("deadband", C.c_int32))
+getAccumulatorValue = _STATUSFUNC("getAccumulatorValue", C.c_int64, ("analogPortHandle", AnalogInputHandle))
+getAccumulatorCount = _STATUSFUNC("getAccumulatorCount", C.c_int64, ("analogPortHandle", AnalogInputHandle))
+getAccumulatorOutput = _STATUSFUNC("getAccumulatorOutput", None, ("analogPortHandle", AnalogInputHandle), ("value", C.POINTER(C.c_int64)), ("count", C.POINTER(C.c_int64)), out=["value", "count"])
 
 
 #############################################################################
@@ -149,50 +173,50 @@ getAnalogGyroCenter = _STATUSFUNC("getAnalogGyroCenter", C.c_int32, ("handle", G
 # AnalogInput.h
 #############################################################################
 
-initializeAnalogInputPort = _STATUSFUNC("initializeAnalogInputPort", AnalogInputHandle, ("port", PortHandle))
-freeAnalogInputPort = _RETFUNC("freeAnalogInputPort", None, ("analog_port", AnalogInputHandle))
+initializeAnalogInputPort = _STATUSFUNC("initializeAnalogInputPort", AnalogInputHandle, ("portHandle", PortHandle))
+freeAnalogInputPort = _RETFUNC("freeAnalogInputPort", None, ("analogPortHandle", AnalogInputHandle))
 checkAnalogModule = _RETFUNC("checkAnalogModule", C.c_bool, ("module", C.c_int32))
-checkAnalogInputChannel = _RETFUNC("checkAnalogInputChannel", C.c_bool, ("pin", C.c_int32))
+checkAnalogInputChannel = _RETFUNC("checkAnalogInputChannel", C.c_bool, ("channel", C.c_int32))
 
-setAnalogSampleRate = _STATUSFUNC("setAnalogSampleRate", None, ("samples_per_second", C.c_double))
+setAnalogSampleRate = _STATUSFUNC("setAnalogSampleRate", None, ("samplesPerSecond", C.c_double))
 getAnalogSampleRate = _STATUSFUNC("getAnalogSampleRate", C.c_double)
-setAnalogAverageBits = _STATUSFUNC("setAnalogAverageBits", None, ("analog_port", AnalogInputHandle), ("bits", C.c_int32))
-getAnalogAverageBits = _STATUSFUNC("getAnalogAverageBits", C.c_int32, ("analog_port", AnalogInputHandle))
-setAnalogOversampleBits = _STATUSFUNC("setAnalogOversampleBits", None, ("analog_port", AnalogInputHandle), ("bits", C.c_int32))
-getAnalogOversampleBits = _STATUSFUNC("getAnalogOversampleBits", C.c_int32, ("analog_port", AnalogInputHandle))
-getAnalogValue = _STATUSFUNC("getAnalogValue", C.c_int32, ("analog_port", AnalogInputHandle))
-getAnalogAverageValue = _STATUSFUNC("getAnalogAverageValue", C.c_int32, ("analog_port", AnalogInputHandle))
-getAnalogVoltsToValue = _STATUSFUNC("getAnalogVoltsToValue", C.c_int32, ("analog_port", AnalogInputHandle), ("voltage", C.c_double))
-getAnalogVoltage = _STATUSFUNC("getAnalogVoltage", C.c_double, ("analog_port", AnalogInputHandle))
-getAnalogAverageVoltage = _STATUSFUNC("getAnalogAverageVoltage", C.c_double, ("analog_port", AnalogInputHandle))
-getAnalogLSBWeight = _STATUSFUNC("getAnalogLSBWeight", C.c_int32, ("analog_port", AnalogInputHandle))
-getAnalogOffset = _STATUSFUNC("getAnalogOffset", C.c_int32, ("analog_port", AnalogInputHandle))
+setAnalogAverageBits = _STATUSFUNC("setAnalogAverageBits", None, ("analogPortHandle", AnalogInputHandle), ("bits", C.c_int32))
+getAnalogAverageBits = _STATUSFUNC("getAnalogAverageBits", C.c_int32, ("analogPortHandle", AnalogInputHandle))
+setAnalogOversampleBits = _STATUSFUNC("setAnalogOversampleBits", None, ("analogPortHandle", AnalogInputHandle), ("bits", C.c_int32))
+getAnalogOversampleBits = _STATUSFUNC("getAnalogOversampleBits", C.c_int32, ("analogPortHandle", AnalogInputHandle))
+getAnalogValue = _STATUSFUNC("getAnalogValue", C.c_int32, ("analogPortHandle", AnalogInputHandle))
+getAnalogAverageValue = _STATUSFUNC("getAnalogAverageValue", C.c_int32, ("analogPortHandle", AnalogInputHandle))
+getAnalogVoltsToValue = _STATUSFUNC("getAnalogVoltsToValue", C.c_int32, ("analogPortHandle", AnalogInputHandle), ("voltage", C.c_double))
+getAnalogVoltage = _STATUSFUNC("getAnalogVoltage", C.c_double, ("analogPortHandle", AnalogInputHandle))
+getAnalogAverageVoltage = _STATUSFUNC("getAnalogAverageVoltage", C.c_double, ("analogPortHandle", AnalogInputHandle))
+getAnalogLSBWeight = _STATUSFUNC("getAnalogLSBWeight", C.c_int32, ("analogPortHandle", AnalogInputHandle))
+getAnalogOffset = _STATUSFUNC("getAnalogOffset", C.c_int32, ("analogPortHandle", AnalogInputHandle))
 
 
 #############################################################################
 # AnalogOutput.h
 #############################################################################
 
-initializeAnalogOutputPort = _STATUSFUNC("initializeAnalogOutputPort", AnalogOutputHandle, ("port", PortHandle))
-freeAnalogOutputPort = _RETFUNC("freeAnalogOutputPort", None, ("analog_port", AnalogOutputHandle))
-setAnalogOutput = _STATUSFUNC("setAnalogOutput", None, ("analog_port", AnalogOutputHandle), ("voltage", C.c_double))
-getAnalogOutput = _STATUSFUNC("getAnalogOutput", C.c_double, ("analog_port", AnalogOutputHandle))
-checkAnalogOutputChannel = _RETFUNC("checkAnalogOutputChannel", C.c_bool, ("pin", C.c_int32))
+initializeAnalogOutputPort = _STATUSFUNC("initializeAnalogOutputPort", AnalogOutputHandle, ("portHandle", PortHandle))
+freeAnalogOutputPort = _RETFUNC("freeAnalogOutputPort", None, ("analogOutputHandle", AnalogOutputHandle))
+setAnalogOutput = _STATUSFUNC("setAnalogOutput", None, ("analogOutputHandle", AnalogOutputHandle), ("voltage", C.c_double))
+getAnalogOutput = _STATUSFUNC("getAnalogOutput", C.c_double, ("analogOutputHandle", AnalogOutputHandle))
+checkAnalogOutputChannel = _RETFUNC("checkAnalogOutputChannel", C.c_bool, ("channel", C.c_int32))
 
 
 #############################################################################
 # AnalogTrigger.h
 #############################################################################
 
-initializeAnalogTrigger = _STATUSFUNC("initializeAnalogTrigger", AnalogTriggerHandle, ("port", AnalogInputHandle), ("index", C.POINTER(C.c_int32)), out=["index"])
-cleanAnalogTrigger = _STATUSFUNC("cleanAnalogTrigger", None, ("analog_trigger", AnalogTriggerHandle))
-setAnalogTriggerLimitsRaw = _STATUSFUNC("setAnalogTriggerLimitsRaw", None, ("analog_trigger", AnalogTriggerHandle), ("lower", C.c_int32), ("upper", C.c_int32))
-setAnalogTriggerLimitsVoltage = _STATUSFUNC("setAnalogTriggerLimitsVoltage", None, ("analog_trigger", AnalogTriggerHandle), ("lower", C.c_double), ("upper", C.c_double))
-setAnalogTriggerAveraged = _STATUSFUNC("setAnalogTriggerAveraged", None, ("analog_trigger", AnalogTriggerHandle), ("use_averaged_value", C.c_bool))
-setAnalogTriggerFiltered = _STATUSFUNC("setAnalogTriggerFiltered", None, ("analog_trigger", AnalogTriggerHandle), ("use_filtered_value", C.c_bool))
-getAnalogTriggerInWindow = _STATUSFUNC("getAnalogTriggerInWindow", C.c_bool, ("analog_trigger", AnalogTriggerHandle))
-getAnalogTriggerTriggerState = _STATUSFUNC("getAnalogTriggerTriggerState", C.c_bool, ("analog_trigger", AnalogTriggerHandle))
-getAnalogTriggerOutput = _STATUSFUNC("getAnalogTriggerOutput", C.c_bool, ("analog_trigger", AnalogTriggerHandle), ("type", C.c_int))
+initializeAnalogTrigger = _STATUSFUNC("initializeAnalogTrigger", AnalogTriggerHandle, ("portHandle", AnalogInputHandle), ("index", C.POINTER(C.c_int32)), out=["index"])
+cleanAnalogTrigger = _STATUSFUNC("cleanAnalogTrigger", None, ("analogTriggerHandle", AnalogTriggerHandle))
+setAnalogTriggerLimitsRaw = _STATUSFUNC("setAnalogTriggerLimitsRaw", None, ("analogTriggerHandle", AnalogTriggerHandle), ("lower", C.c_int32), ("upper", C.c_int32))
+setAnalogTriggerLimitsVoltage = _STATUSFUNC("setAnalogTriggerLimitsVoltage", None, ("analogTriggerHandle", AnalogTriggerHandle), ("lower", C.c_double), ("upper", C.c_double))
+setAnalogTriggerAveraged = _STATUSFUNC("setAnalogTriggerAveraged", None, ("analogTriggerHandle", AnalogTriggerHandle), ("useAveragedValue", C.c_bool))
+setAnalogTriggerFiltered = _STATUSFUNC("setAnalogTriggerFiltered", None, ("analogTriggerHandle", AnalogTriggerHandle), ("useFilteredValue", C.c_bool))
+getAnalogTriggerInWindow = _STATUSFUNC("getAnalogTriggerInWindow", C.c_bool, ("analogTriggerHandle", AnalogTriggerHandle))
+getAnalogTriggerTriggerState = _STATUSFUNC("getAnalogTriggerTriggerState", C.c_bool, ("analogTriggerHandle", AnalogTriggerHandle))
+getAnalogTriggerOutput = _STATUSFUNC("getAnalogTriggerOutput", C.c_bool, ("analogTriggerHandle", AnalogTriggerHandle), ("type", C.c_int))
 
 
 #############################################################################
@@ -239,25 +263,25 @@ initializeCounter = _STATUSFUNC("initializeCounter", CounterHandle, ("mode", C.c
 freeCounter = _STATUSFUNC("freeCounter", None, ("counterHandle", CounterHandle))
 setCounterAverageSize = _STATUSFUNC("setCounterAverageSize", None, ("counterHandle", CounterHandle), ("size", C.c_int32))
 setCounterUpSource = _STATUSFUNC("setCounterUpSource", None, ("counterHandle", CounterHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32))
-setCounterUpSourceEdge = _STATUSFUNC("setCounterUpSourceEdge", None, ("counterHandle", CounterHandle), ("rising_edge", C.c_bool), ("falling_edge", C.c_bool))
+setCounterUpSourceEdge = _STATUSFUNC("setCounterUpSourceEdge", None, ("counterHandle", CounterHandle), ("risingEdge", C.c_bool), ("fallingEdge", C.c_bool))
 clearCounterUpSource = _STATUSFUNC("clearCounterUpSource", None, ("counterHandle", CounterHandle))
 setCounterDownSource = _STATUSFUNC("setCounterDownSource", None, ("counterHandle", CounterHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32))
-setCounterDownSourceEdge = _STATUSFUNC("setCounterDownSourceEdge", None, ("counterHandle", CounterHandle), ("rising_edge", C.c_bool), ("falling_edge", C.c_bool))
+setCounterDownSourceEdge = _STATUSFUNC("setCounterDownSourceEdge", None, ("counterHandle", CounterHandle), ("risingEdge", C.c_bool), ("fallingEdge", C.c_bool))
 clearCounterDownSource = _STATUSFUNC("clearCounterDownSource", None, ("counterHandle", CounterHandle))
 setCounterUpDownMode = _STATUSFUNC("setCounterUpDownMode", None, ("counterHandle", CounterHandle))
 setCounterExternalDirectionMode = _STATUSFUNC("setCounterExternalDirectionMode", None, ("counterHandle", CounterHandle))
-setCounterSemiPeriodMode = _STATUSFUNC("setCounterSemiPeriodMode", None, ("counterHandle", CounterHandle), ("high_semi_period", C.c_bool))
+setCounterSemiPeriodMode = _STATUSFUNC("setCounterSemiPeriodMode", None, ("counterHandle", CounterHandle), ("highSemiPeriod", C.c_bool))
 setCounterPulseLengthMode = _STATUSFUNC("setCounterPulseLengthMode", None, ("counterHandle", CounterHandle), ("threshold", C.c_double))
 getCounterSamplesToAverage = _STATUSFUNC("getCounterSamplesToAverage", C.c_int32, ("counterHandle", CounterHandle))
-setCounterSamplesToAverage = _STATUSFUNC("setCounterSamplesToAverage", None, ("counterHandle", CounterHandle), ("samples_to_average", C.c_int))
+setCounterSamplesToAverage = _STATUSFUNC("setCounterSamplesToAverage", None, ("counterHandle", CounterHandle), ("samplesToAverage", C.c_int))
 resetCounter = _STATUSFUNC("resetCounter", None, ("counterHandle", CounterHandle))
 getCounter = _STATUSFUNC("getCounter", C.c_int32, ("counterHandle", CounterHandle))
 getCounterPeriod = _STATUSFUNC("getCounterPeriod", C.c_double, ("counterHandle", CounterHandle))
-setCounterMaxPeriod = _STATUSFUNC("setCounterMaxPeriod", None, ("counterHandle", CounterHandle), ("max_period", C.c_double))
+setCounterMaxPeriod = _STATUSFUNC("setCounterMaxPeriod", None, ("counterHandle", CounterHandle), ("maxPeriod", C.c_double))
 setCounterUpdateWhenEmpty = _STATUSFUNC("setCounterUpdateWhenEmpty", None, ("counterHandle", CounterHandle), ("enabled", C.c_bool))
 getCounterStopped = _STATUSFUNC("getCounterStopped", C.c_bool, ("counterHandle", CounterHandle))
 getCounterDirection = _STATUSFUNC("getCounterDirection", C.c_bool, ("counterHandle", CounterHandle))
-setCounterReverseDirection = _STATUSFUNC("setCounterReverseDirection", None, ("counterHandle", CounterHandle), ("reverse_direction", C.c_bool))
+setCounterReverseDirection = _STATUSFUNC("setCounterReverseDirection", None, ("counterHandle", CounterHandle), ("reverseDirection", C.c_bool))
 
 
 #############################################################################
@@ -276,7 +300,7 @@ setDigitalPWMOutputChannel = _STATUSFUNC("setDigitalPWMOutputChannel", None, ("p
 setDIO = _STATUSFUNC("setDIO", None, ("dioPortHandle", DigitalHandle), ("value", C.c_bool))
 getDIO = _STATUSFUNC("getDIO", C.c_bool, ("dioPortHandle", DigitalHandle))
 getDIODirection = _STATUSFUNC("getDIODirection", C.c_bool, ("dioPortHandle", DigitalHandle))
-pulse = _STATUSFUNC("pulse", None, ("dioPortHandle", DigitalHandle), ("pulse_length", C.c_double))
+pulse = _STATUSFUNC("pulse", None, ("dioPortHandle", DigitalHandle), ("pulseLength", C.c_double))
 isPulsing = _STATUSFUNC("isPulsing", C.c_bool, ("dioPortHandle", DigitalHandle))
 isAnyPulsing = _STATUSFUNC("isAnyPulsing", C.c_bool)
 
@@ -301,21 +325,38 @@ getJoystickDescriptor = _RETFUNC("getJoystickDescriptor", C.c_int32, ("joystickN
 getJoystickIsXbox = _RETFUNC("getJoystickIsXbox", C.c_bool, ("joystickNum", C.c_int32))
 getJoystickType = _RETFUNC("getJoystickType", C.c_int32, ("joystickNum", C.c_int32))
 
-_getJoystickName = _RETFUNC("getJoystickName", C.c_char_p, ("joystickNum", C.c_int32))
+# Do not use freeJoystickName directly, we handle that for you here instead
+# -> additionally, the wrapper casts the voidp to a char*
+# TODO: hack
+_joystick_type = C.c_char_p if __hal_simulation__ else C.c_void_p
+
+_getJoystickName = _RETFUNC("getJoystickName", _joystick_type, ("joystickNum", C.c_int32))
+_freeJoystickName = _RETFUNC("freeJoystickName", None, ("name", _joystick_type))
+
 @hal_wrapper
 def getJoystickName(joystickNum):
     name = _getJoystickName(joystickNum)
     if name is not None:
-        name = name.decode('utf-8')
-    return name
+        namestr = C.cast(name, C.c_char_p).value.decode('utf-8')
+        _freeJoystickName(name)
+        return namestr
+    return None
+
+@hal_wrapper
+def freeJoystickName(name):
+    raise ValueError("Do not call this function")
 
 getJoystickAxisType = _RETFUNC("getJoystickAxisType", C.c_int32, ("joystickNum", C.c_int32), ("axis", C.c_int32))
 setJoystickOutputs = _RETFUNC("setJoystickOutputs", C.c_int32, ("joystickNum", C.c_int32), ("outputs", C.c_int64), ("leftRumble", C.c_int32), ("rightRumble", C.c_int32))
 
 getMatchTime = _STATUSFUNC("getMatchTime", C.c_double)
-waitForDSData = _RETFUNC("waitForDSData", None)
 
+releaseDSMutex = _RETFUNC("releaseDSMutex", None)
+isNewControlData = _RETFUNC("isNewControlData", C.c_bool)
+waitForDSData = _RETFUNC("waitForDSData", None)
+waitForDSDataTimeout = _RETFUNC("waitForDSDataTimeout", C.c_bool, ("timeout",C.c_double))
 initializeDriverStation = _RETFUNC("initializeDriverStation", None)
+
 observeUserProgramStarting = _RETFUNC("observeUserProgramStarting", None)
 observeUserProgramDisabled = _RETFUNC("observeUserProgramDisabled", None)
 observeUserProgramAutonomous = _RETFUNC("observeUserProgramAutonomous", None)
@@ -332,28 +373,37 @@ initializeEncoder = _STATUSFUNC("initializeEncoder", EncoderHandle,
             ("digitalSourceHandleB", Handle), ("analogTriggerTypeB", C.c_int32),
             ("reverseDirection", C.c_bool), ("encodingType", C.c_int32))
 
-freeEncoder = _STATUSFUNC("freeEncoder", None, ("encoder", EncoderHandle))
+freeEncoder = _STATUSFUNC("freeEncoder", None, ("encoderHandle", EncoderHandle))
 
-getEncoder = _STATUSFUNC("getEncoder", C.c_int32, ("encoder", EncoderHandle))
+getEncoder = _STATUSFUNC("getEncoder", C.c_int32, ("encoderHandle", EncoderHandle))
 getEncoderRaw = _STATUSFUNC("getEncoderRaw", C.c_int32, ("encoderHandle", EncoderHandle))
 getEncoderEncodingScale = _STATUSFUNC("getEncoderEncodingScale", C.c_int32, ("encoderHandle", EncoderHandle))
-resetEncoder = _STATUSFUNC("resetEncoder", None, ("encoder", EncoderHandle))
-getEncoderPeriod = _STATUSFUNC("getEncoderPeriod", C.c_double, ("encoder", EncoderHandle))
-setEncoderMaxPeriod = _STATUSFUNC("setEncoderMaxPeriod", None, ("encoder", EncoderHandle), ("max_period", C.c_double))
-getEncoderStopped = _STATUSFUNC("getEncoderStopped", C.c_bool, ("encoder", EncoderHandle))
-getEncoderDirection = _STATUSFUNC("getEncoderDirection", C.c_bool, ("encoder", EncoderHandle))
+resetEncoder = _STATUSFUNC("resetEncoder", None, ("encoderHandle", EncoderHandle))
+getEncoderPeriod = _STATUSFUNC("getEncoderPeriod", C.c_double, ("encoderHandle", EncoderHandle))
+setEncoderMaxPeriod = _STATUSFUNC("setEncoderMaxPeriod", None, ("encoderHandle", EncoderHandle), ("maxPeriod", C.c_double))
+getEncoderStopped = _STATUSFUNC("getEncoderStopped", C.c_bool, ("encoderHandle", EncoderHandle))
+getEncoderDirection = _STATUSFUNC("getEncoderDirection", C.c_bool, ("encoderHandle", EncoderHandle))
 getEncoderDistance = _STATUSFUNC("getEncoderDistance", C.c_double, ("encoderHandle", EncoderHandle))
 getEncoderRate = _STATUSFUNC("getEncoderRate", C.c_double, ("encoderHandle", EncoderHandle))
 setEncoderMinRate = _STATUSFUNC("setEncoderMinRate", None, ("encoderHandle", EncoderHandle), ("minRate", C.c_double))
 setEncoderDistancePerPulse = _STATUSFUNC("setEncoderDistancePerPulse", None, ("encoderHandle", EncoderHandle), ("distancePerPulse", C.c_double))
-setEncoderReverseDirection = _STATUSFUNC("setEncoderReverseDirection", None, ("encoder", EncoderHandle), ("reverse_direction", C.c_bool))
-setEncoderSamplesToAverage = _STATUSFUNC("setEncoderSamplesToAverage", None, ("encoder", EncoderHandle), ("samples_to_average", C.c_int32))
-getEncoderSamplesToAverage = _STATUSFUNC("getEncoderSamplesToAverage", C.c_int32, ("encoder", EncoderHandle))
+setEncoderReverseDirection = _STATUSFUNC("setEncoderReverseDirection", None, ("encoderHandle", EncoderHandle), ("reverseDirection", C.c_bool))
+setEncoderSamplesToAverage = _STATUSFUNC("setEncoderSamplesToAverage", None, ("encoderHandle", EncoderHandle), ("samplesToAverage", C.c_int32))
+getEncoderSamplesToAverage = _STATUSFUNC("getEncoderSamplesToAverage", C.c_int32, ("encoderHandle", EncoderHandle))
 setEncoderIndexSource = _STATUSFUNC("setEncoderIndexSource", None, ("encoderHandle", EncoderHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32), ("type", C.c_int32))
 getEncoderFPGAIndex = _STATUSFUNC("getEncoderFPGAIndex", C.c_int32, ("encoderHandle", EncoderHandle))
 getEncoderDecodingScaleFactor = _STATUSFUNC("getEncoderDecodingScaleFactor", C.c_double, ("encoderHandle", EncoderHandle))
 getEncoderDistancePerPulse = _STATUSFUNC("getEncoderDistancePerPulse", C.c_double, ("encoderHandle", EncoderHandle))
 getEncoderEncodingType = _STATUSFUNC("getEncoderEncodingType", C.c_int32, ("encoderHandle", EncoderHandle))
+
+
+#############################################################################
+# Extensions.h
+#############################################################################
+
+if __hal_simulation__:
+    loadOneExtension = _RETFUNC("loadOneExtension", C.c_int32, ("library", C.c_char_p))
+    loadExtensions = _RETFUNC("loadExtensions", C.c_int32)
 
 
 #############################################################################
@@ -407,7 +457,7 @@ _InterruptHandlerFunction._typedef_ = 'InterruptHandlerFunction'
 _interruptHandlers = {}
 
 initializeInterrupts = _STATUSFUNC("initializeInterrupts", InterruptHandle, ("watcher", C.c_bool))
-_cleanInterrupts = _STATUSFUNC("cleanInterrupts", None, ("interrupt", InterruptHandle))
+_cleanInterrupts = _STATUSFUNC("cleanInterrupts", None, ("interruptHandle", InterruptHandle))
 @hal_wrapper
 def cleanInterrupts(interrupt):
     _cleanInterrupts(interrupt)
@@ -415,15 +465,15 @@ def cleanInterrupts(interrupt):
     # remove references to function handlers
     _interruptHandlers.pop(interrupt, None)
 
-waitForInterrupt = _STATUSFUNC("waitForInterrupt", C.c_int64, ("interrupt", InterruptHandle), ("timeout", C.c_double), ("ignorePrevious", C.c_bool))
-enableInterrupts = _STATUSFUNC("enableInterrupts", None, ("interrupt", InterruptHandle))
-disableInterrupts = _STATUSFUNC("disableInterrupts", None, ("interrupt", InterruptHandle))
-readInterruptRisingTimestamp = _STATUSFUNC("readInterruptRisingTimestamp", C.c_double, ("interrupt", InterruptHandle))
-readInterruptFallingTimestamp = _STATUSFUNC("readInterruptFallingTimestamp", C.c_double, ("interrupt", InterruptHandle))
+waitForInterrupt = _STATUSFUNC("waitForInterrupt", C.c_int64, ("interruptHandle", InterruptHandle), ("timeout", C.c_double), ("ignorePrevious", C.c_bool))
+enableInterrupts = _STATUSFUNC("enableInterrupts", None, ("interruptHandle", InterruptHandle))
+disableInterrupts = _STATUSFUNC("disableInterrupts", None, ("interruptHandle", InterruptHandle))
+readInterruptRisingTimestamp = _STATUSFUNC("readInterruptRisingTimestamp", C.c_double, ("interruptHandle", InterruptHandle))
+readInterruptFallingTimestamp = _STATUSFUNC("readInterruptFallingTimestamp", C.c_double, ("interruptHandle", InterruptHandle))
 requestInterrupts = _STATUSFUNC("requestInterrupts", None, ("interruptHandle", InterruptHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32))
 attachInterruptHandlerThreaded = _STATUSFUNC("attachInterruptHandlerThreaded", None, ("interruptHandle", InterruptHandle), ("handler", _InterruptHandlerFunction), ("param", C.POINTER(None)))
 
-_attachInterruptHandler = _STATUSFUNC("attachInterruptHandler", None, ("interrupt", InterruptHandle), ("handler", _InterruptHandlerFunction), ("param", C.c_void_p))
+_attachInterruptHandler = _STATUSFUNC("attachInterruptHandler", None, ("interruptHandle", InterruptHandle), ("handler", _InterruptHandlerFunction), ("param", C.c_void_p))
 @hal_wrapper
 def attachInterruptHandler(interrupt, handler):
     # While attachInterruptHandler provides a param parameter, we use ctypes
@@ -439,7 +489,7 @@ def attachInterruptHandler(interrupt, handler):
     # actually attach
     _attachInterruptHandler(interrupt, cb_func, None)
 
-setInterruptUpSourceEdge = _STATUSFUNC("setInterruptUpSourceEdge", None, ("interrupt", InterruptHandle), ("rising_edge", C.c_bool), ("falling_edge", C.c_bool))
+setInterruptUpSourceEdge = _STATUSFUNC("setInterruptUpSourceEdge", None, ("interruptHandle", InterruptHandle), ("risingEdge", C.c_bool), ("fallingEdge", C.c_bool))
 
 
 #############################################################################
@@ -490,7 +540,9 @@ getPWMPosition = _STATUSFUNC("getPWMPosition", C.c_double, ("pwmPortHandle", Dig
 
 latchPWMZero = _STATUSFUNC("latchPWMZero", None, ("pwmPortHandle", DigitalHandle))
 setPWMPeriodScale = _STATUSFUNC("setPWMPeriodScale", None, ("pwmPortHandle", DigitalHandle), ("squelchMask", C.c_int32))
-getLoopTiming = _STATUSFUNC("getLoopTiming", C.c_int32)
+
+getPWMLoopTiming = _STATUSFUNC("getPWMLoopTiming", C.c_int32)
+getPWMCycleStartTime = _STATUSFUNC("getPWMCycleStartTime", C.c_uint64)
 
 #############################################################################
 # Ports
@@ -640,16 +692,24 @@ closeSerial = _TSTATUSFUNC("closeSerial", None, ("port", C.c_int32))
 # Solenoid
 #############################################################################
 
-initializeSolenoidPort = _STATUSFUNC("initializeSolenoidPort", SolenoidHandle, ("port", PortHandle))
-freeSolenoidPort = _RETFUNC('freeSolenoidPort', None, ('port', SolenoidHandle))
+initializeSolenoidPort = _STATUSFUNC("initializeSolenoidPort", SolenoidHandle, ("portHandle", PortHandle))
+freeSolenoidPort = _RETFUNC('freeSolenoidPort', None, ('solenoidPortHandle', SolenoidHandle))
 checkSolenoidModule = _RETFUNC("checkSolenoidModule", C.c_bool, ("module", C.c_int32))
 checkSolenoidChannel = _RETFUNC("checkSolenoidChannel", C.c_bool, ("channel", C.c_int32))
 
-getSolenoid = _STATUSFUNC("getSolenoid", C.c_bool, ("solenoid_port", SolenoidHandle))
+getSolenoid = _STATUSFUNC("getSolenoid", C.c_bool, ("solenoidPortHandle", SolenoidHandle))
 getAllSolenoids = _STATUSFUNC("getAllSolenoids", C.c_int32, ("module", C.c_int32))
-setSolenoid = _STATUSFUNC("setSolenoid", None, ("solenoid_port", SolenoidHandle), ("value", C.c_bool))
+setSolenoid = _STATUSFUNC("setSolenoid", None, ("solenoidPortHandle", SolenoidHandle), ("value", C.c_bool))
+setAllSolenoids = _STATUSFUNC("setAllSolenoids", None, ("module", C.c_int32), ("state", C.c_int32))
 
 getPCMSolenoidBlackList = _STATUSFUNC("getPCMSolenoidBlackList", C.c_int, ("module", C.c_int32))
 getPCMSolenoidVoltageStickyFault = _STATUSFUNC("getPCMSolenoidVoltageStickyFault", C.c_bool, ("module", C.c_int32))
 getPCMSolenoidVoltageFault = _STATUSFUNC("getPCMSolenoidVoltageFault", C.c_bool, ("module", C.c_int32))
 clearAllPCMStickyFaults = _STATUSFUNC("clearAllPCMStickyFaults", None, ("module", C.c_int32))
+
+
+#############################################################################
+# Threads
+#############################################################################
+
+# Not implemented

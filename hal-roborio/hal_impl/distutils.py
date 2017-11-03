@@ -7,11 +7,17 @@
 #
 
 
-hal_version = '2017.3.1'
+hal_version = '2018.1.1-beta-2-20171031005720-4-g237b2df'
+wpiutil_version = '3.0.0-alpha-2-20171025132427-1-ga6c7789'
 
-hal_site = 'http://first.wpi.edu/FRC/roborio/maven/release/edu/wpi/first/wpilib/athena-runtime'
-hal_zip = 'athena-runtime-%s.zip' % hal_version
+frc_site = 'http://first.wpi.edu/FRC/roborio/maven/development'
 
+hal_site = '%s/edu/wpi/first/hal/hal' % frc_site
+wpiutil_site = '%s/edu/wpi/first/wpiutil/wpiutil-cpp' % frc_site
+
+hal_libs = 'hal-%s-linuxathena.zip' % hal_version
+hal_headers = 'hal-%s-headers.zip' % hal_version
+wpiutil_libs = 'wpiutil-cpp-%s-linuxathena.zip' % wpiutil_version
 
 def _download(url):
     '''
@@ -33,14 +39,32 @@ def _download(url):
     filename, _ = urlretrieve(url, reporthook=_reporthook)
     atexit.register(urlcleanup)
     return filename
-    
-def extract_halzip(to=None):
+
+def extract_hal_headers(to=None):
     '''
-        Downloads the HAL zipfile and extracts it to a specified location
+        Downloads the HAL headers and extracts them to a specified location
+        
+        :param to: is either a string or a dict of {src: dst}
+    '''
+    url = "%s/%s/%s" % (hal_site, hal_version, hal_headers)
+    return download_and_extract_zip(url, to=to)
+
+def extract_hal_libs(to=None):
+    '''
+        Downloads the HAL library zipfile and extracts it to a specified location
     
         :param to: is either a string or a dict of {src: dst}
     '''
-    url = "%s/%s/%s" % (hal_site, hal_version, hal_zip)
+    url = "%s/%s/%s" % (hal_site, hal_version, hal_libs)
+    return download_and_extract_zip(url, to=to)
+
+def extract_wpiutil_libs(to=None):
+    '''
+        Downloads the WPIUtil library zipfile and extracts it to a specified location
+    
+        :param to: is either a string or a dict of {src: dst}
+    '''
+    url = "%s/%s/%s" % (wpiutil_site, wpiutil_version, wpiutil_libs)
     return download_and_extract_zip(url, to=to)
     
 def download_and_extract_zip(url, to=None):

@@ -35,7 +35,7 @@ def _download_hal_includes():
         shutil.rmtree(hal_dir)
     
     # Download the hal zipfile
-    hal_distutils.extract_halzip(hal_dir)
+    hal_distutils.extract_hal_headers(hal_dir)
         
     # write the version to a file
     with open(hal_version_file, 'w') as fp:

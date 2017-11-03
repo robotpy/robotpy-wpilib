@@ -8,7 +8,7 @@ __all__ = ["_dll", "_RETFUNC", "_VAR", "sleep"]
 _module_path = os.path.dirname(sys.modules['hal_impl'].__file__)
 
 C.CDLL(os.path.join(_module_path, "libwpiutil.so"))
-_dll = C.CDLL(os.path.join(_module_path, "libHALAthena.so"), use_errno=True)
+_dll = C.CDLL(os.path.join(_module_path, "libwpiHal.so"), use_errno=True)
 sleep = time.sleep
 
 def _RETFUNC(name, restype, *params, out=None, library=_dll,

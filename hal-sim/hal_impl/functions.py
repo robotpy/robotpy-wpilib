@@ -124,11 +124,11 @@ def _initport(name, idx, status, root=hal_data):
 def sleep(s):
     hooks.delaySeconds(s)
 
-def getPort(pin):
-    return getPortWithModule(0, pin)
+def getPort(channel):
+    return getPortWithModule(0, channel)
 
-def getPortWithModule(module, pin):
-    return types.PortHandle(pin, module)
+def getPortWithModule(module, channel):
+    return types.PortHandle(channel, module)
 
 def _getErrorMessage(code):
     if code == 0:
@@ -243,11 +243,17 @@ def getBrownedOut(status):
     status.value = 0
     return False
 
-def initialize(mode=0):
-    # the real HAL cannot be initialized twice. Neither should this.
+def baseInitialize(status):
     global _initialized
-    assert _initialized == False
+    if _initialized:
+        return
     _initialized = True
+
+def initialize(timeout=0, mode=0):
+    global _initialized
+    if _initialized:
+        return
+    baseInitialize(None)
     #initializeNotifier()
     initializeDriverStation()
     
@@ -299,40 +305,40 @@ def getAccelerometerZ():
 # AnalogAccumulator.h
 #############################################################################
 
-def isAccumulatorChannel(analog_port, status):
+def isAccumulatorChannel(analogPortHandle, status):
     status.value = 0
-    return analog_port.pin in kAccumulatorChannels
+    return analogPortHandle.pin in kAccumulatorChannels
 
-def initAccumulator(analog_port, status):
+def initAccumulator(analogPortHandle, status):
     status.value = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_initialized'] = True
+    hal_data['analog_in'][analogPortHandle.pin]['accumulator_initialized'] = True
 
-def resetAccumulator(analog_port, status):
+def resetAccumulator(analogPortHandle, status):
     status.value = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_center'] = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_count'] = 1
-    hal_data['analog_in'][analog_port.pin]['accumulator_value'] = 0
+    hal_data['analog_in'][analogPortHandle.pin]['accumulator_center'] = 0
+    hal_data['analog_in'][analogPortHandle.pin]['accumulator_count'] = 1
+    hal_data['analog_in'][analogPortHandle.pin]['accumulator_value'] = 0
 
-def setAccumulatorCenter(analog_port, center, status):
+def setAccumulatorCenter(analogPortHandle, center, status):
     status.value = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_center'] = center
+    hal_data['analog_in'][analogPortHandle.pin]['accumulator_center'] = center
 
-def setAccumulatorDeadband(analog_port, deadband, status):
+def setAccumulatorDeadband(analogPortHandle, deadband, status):
     status.value = 0
-    hal_data['analog_in'][analog_port.pin]['accumulator_deadband'] = deadband
+    hal_data['analog_in'][analogPortHandle.pin]['accumulator_deadband'] = deadband
 
-def getAccumulatorValue(analog_port, status):
+def getAccumulatorValue(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['accumulator_value']
+    return hal_data['analog_in'][analogPortHandle.pin]['accumulator_value']
 
-def getAccumulatorCount(analog_port, status):
+def getAccumulatorCount(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['accumulator_count']
+    return hal_data['analog_in'][analogPortHandle.pin]['accumulator_count']
 
-def getAccumulatorOutput(analog_port, status):
+def getAccumulatorOutput(analogPortHandle, status):
     status.value = 0
-    return (hal_data['analog_in'][analog_port.pin]['accumulator_value'],
-           hal_data['analog_in'][analog_port.pin]['accumulator_count'])
+    return (hal_data['analog_in'][analogPortHandle.pin]['accumulator_value'],
+           hal_data['analog_in'][analogPortHandle.pin]['accumulator_count'])
 
 #############################################################################
 # AnalogGyro.h
@@ -406,52 +412,52 @@ def getAnalogGyroCenter(handle, status):
 # AnalogInput.h
 #############################################################################
 
-def initializeAnalogInputPort(port, status):    
-    if _initport('analog_in', port.pin, status):
-        return types.AnalogInputHandle(port)
+def initializeAnalogInputPort(portHandle, status):    
+    if _initport('analog_in', portHandle.pin, status):
+        return types.AnalogInputHandle(portHandle)
 
-def freeAnalogInputPort(analog_port):
-    hal_data['analog_in'][analog_port.pin]['initialized'] = False
+def freeAnalogInputPort(analogPortHandle):
+    hal_data['analog_in'][analogPortHandle.pin]['initialized'] = False
 
 def checkAnalogModule(module):
     return module == 1
 
-def checkAnalogInputChannel(pin):
-    return pin < kNumAnalogInputs and pin >= 0
+def checkAnalogInputChannel(channel):
+    return channel < kNumAnalogInputs and channel >= 0
 
-def setAnalogSampleRate(samples_per_second, status):
+def setAnalogSampleRate(samplesPerSecond, status):
     status.value = 0
-    hal_data['analog_sample_rate'] = samples_per_second
+    hal_data['analog_sample_rate'] = samplesPerSecond
 
 def getAnalogSampleRate(status):
     status.value = 0
     return hal_data['analog_sample_rate']
 
-def setAnalogAverageBits(analog_port, bits, status):
+def setAnalogAverageBits(analogPortHandle, bits, status):
     status.value = 0
-    hal_data['analog_in'][analog_port.pin]['avg_bits'] = bits
+    hal_data['analog_in'][analogPortHandle.pin]['avg_bits'] = bits
 
-def getAnalogAverageBits(analog_port, status):
+def getAnalogAverageBits(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['avg_bits']
+    return hal_data['analog_in'][analogPortHandle.pin]['avg_bits']
 
-def setAnalogOversampleBits(analog_port, bits, status):
+def setAnalogOversampleBits(analogPortHandle, bits, status):
     status.value = 0
-    hal_data['analog_in'][analog_port.pin]['oversample_bits'] = bits
+    hal_data['analog_in'][analogPortHandle.pin]['oversample_bits'] = bits
 
-def getAnalogOversampleBits(analog_port, status):
+def getAnalogOversampleBits(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['oversample_bits']
+    return hal_data['analog_in'][analogPortHandle.pin]['oversample_bits']
 
-def getAnalogValue(analog_port, status):
+def getAnalogValue(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['value']
+    return hal_data['analog_in'][analogPortHandle.pin]['value']
 
-def getAnalogAverageValue(analog_port, status):
+def getAnalogAverageValue(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['avg_value']
+    return hal_data['analog_in'][analogPortHandle.pin]['avg_value']
 
-def getAnalogVoltsToValue(analog_port, voltage, status):
+def getAnalogVoltsToValue(analogPortHandle, voltage, status):
     status.value = 0
     if voltage > 5.0:
         voltage = 5.0
@@ -460,25 +466,25 @@ def getAnalogVoltsToValue(analog_port, voltage, status):
         voltage = 0.0
         status.value = VOLTAGE_OUT_OF_RANGE
 
-    LSBWeight = getAnalogLSBWeight(analog_port, status)
-    offset = getAnalogOffset(analog_port, status)
+    LSBWeight = getAnalogLSBWeight(analogPortHandle, status)
+    offset = getAnalogOffset(analogPortHandle, status)
     return (int)((voltage + offset * 1.0e-9) / (LSBWeight * 1.0e-9))
 
-def getAnalogVoltage(analog_port, status):
+def getAnalogVoltage(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['voltage']
+    return hal_data['analog_in'][analogPortHandle.pin]['voltage']
 
-def getAnalogAverageVoltage(analog_port, status):
+def getAnalogAverageVoltage(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['avg_voltage']
+    return hal_data['analog_in'][analogPortHandle.pin]['avg_voltage']
 
-def getAnalogLSBWeight(analog_port, status):
+def getAnalogLSBWeight(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['lsb_weight']
+    return hal_data['analog_in'][analogPortHandle.pin]['lsb_weight']
 
-def getAnalogOffset(analog_port, status):
+def getAnalogOffset(analogPortHandle, status):
     status.value = 0
-    return hal_data['analog_in'][analog_port.pin]['offset']
+    return hal_data['analog_in'][analogPortHandle.pin]['offset']
 
 #############################################################################
 # AnalogOutput.h
@@ -489,79 +495,79 @@ kDefaultOversampleBits = 0
 kDefaultAverageBits = 7
 kDefaultSampleRate = 50000.0
 
-def initializeAnalogOutputPort(port, status):
-    if _initport('analog_out', port.pin, status):
-        return types.AnalogOutputHandle(port)
+def initializeAnalogOutputPort(portHandle, status):
+    if _initport('analog_out', portHandle.pin, status):
+        return types.AnalogOutputHandle(portHandle)
 
-def freeAnalogOutputPort(analog_port):
-    hal_data['analog_out'][analog_port.pin]['initialized'] = False
+def freeAnalogOutputPort(analogOutputHandle):
+    hal_data['analog_out'][analogOutputHandle.pin]['initialized'] = False
 
-def setAnalogOutput(analog_port, voltage, status):
+def setAnalogOutput(analogOutputHandle, voltage, status):
     status.value = 0
-    hal_data['analog_out'][analog_port.pin]['output'] = voltage
+    hal_data['analog_out'][analogOutputHandle.pin]['output'] = voltage
 
-def getAnalogOutput(analog_port, status):
+def getAnalogOutput(analogOutputHandle, status):
     status.value = 0
-    return hal_data['analog_out'][analog_port.pin]['output']
+    return hal_data['analog_out'][analogOutputHandle.pin]['output']
 
-def checkAnalogOutputChannel(pin):
-    return pin < kNumAnalogOutputs and pin >= 0
+def checkAnalogOutputChannel(channel):
+    return channel < kNumAnalogOutputs and channel >= 0
 
 #############################################################################
 # AnalogTrigger.h
 #############################################################################
 
-def initializeAnalogTrigger(port, status):
+def initializeAnalogTrigger(portHandle, status):
     status.value = 0
     for idx in range(0, len(hal_data['analog_trigger'])):
         cnt = hal_data['analog_trigger'][idx]
         if cnt['initialized'] == False:
             cnt['initialized'] = True
-            cnt['port'] = port
-            return types.AnalogTriggerHandle(port, idx), idx
+            cnt['port'] = portHandle
+            return types.AnalogTriggerHandle(portHandle, idx), idx
 
     status.value = NO_AVAILABLE_RESOURCES
     return None, -1
 
-def cleanAnalogTrigger(analog_trigger, status):
+def cleanAnalogTrigger(analogTriggerHandle, status):
     status.value = 0
-    hal_data['analog_trigger'][analog_trigger.index]['initialized'] = False
+    hal_data['analog_trigger'][analogTriggerHandle.index]['initialized'] = False
 
-def setAnalogTriggerLimitsRaw(analog_trigger, lower, upper, status):
+def setAnalogTriggerLimitsRaw(analogTriggerHandle, lower, upper, status):
     if lower > upper:
         status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR 
     else:
         status.value = 0
-        hal_data['analog_trigger'][analog_trigger.index]['trig_lower'] = lower
-        hal_data['analog_trigger'][analog_trigger.index]['trig_upper'] = upper
+        hal_data['analog_trigger'][analogTriggerHandle.index]['trig_lower'] = lower
+        hal_data['analog_trigger'][analogTriggerHandle.index]['trig_upper'] = upper
 
-def setAnalogTriggerLimitsVoltage(analog_trigger, lower, upper, status):
+def setAnalogTriggerLimitsVoltage(analogTriggerHandle, lower, upper, status):
     if lower > upper:
         status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR 
     else:
         status.value = 0
-        analog_port = hal_data['analog_port'][analog_trigger.pin]
-        hal_data['analog_trigger'][analog_trigger.index]['trig_lower'] = getAnalogVoltsToValue(analog_port, lower, status)
-        hal_data['analog_trigger'][analog_trigger.index]['trig_upper'] = getAnalogVoltsToValue(analog_port, upper, status)
+        analogPortHandle = hal_data['analog_port'][analogTriggerHandle.pin]
+        hal_data['analog_trigger'][analogTriggerHandle.index]['trig_lower'] = getAnalogVoltsToValue(analogPortHandle, lower, status)
+        hal_data['analog_trigger'][analogTriggerHandle.index]['trig_upper'] = getAnalogVoltsToValue(analogPortHandle, upper, status)
     
 
-def setAnalogTriggerAveraged(analog_trigger, use_averaged_value, status):
-    if hal_data['analog_trigger'][analog_trigger.index]['trig_type'] is 'filtered':
+def setAnalogTriggerAveraged(analogTriggerHandle, useAveragedValue, status):
+    if hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] is 'filtered':
         status.value = INCOMPATIBLE_STATE
     else:
         status.value = 0
-        hal_data['analog_trigger'][analog_trigger.index]['trig_type'] = 'averaged' if use_averaged_value else None
+        hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] = 'averaged' if useAveragedValue else None
 
-def setAnalogTriggerFiltered(analog_trigger, use_filtered_value, status):
-    if hal_data['analog_trigger'][analog_trigger.index]['trig_type'] is 'averaged':
+def setAnalogTriggerFiltered(analogTriggerHandle, useFilteredValue, status):
+    if hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] is 'averaged':
         status.value = INCOMPATIBLE_STATE
     else:
         status.value = 0    
-        hal_data['analog_trigger'][analog_trigger.index]['trig_type'] = 'filtered' if use_filtered_value else None
+        hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] = 'filtered' if useFilteredValue else None
 
-def _get_trigger_value(analog_trigger):
-    ain = hal_data['analog_in'][analog_trigger.pin]
-    atr = hal_data['analog_trigger'][analog_trigger.index]
+def _get_trigger_value(analogTriggerHandle):
+    ain = hal_data['analog_in'][analogTriggerHandle.pin]
+    atr = hal_data['analog_trigger'][analogTriggerHandle.index]
     trig_type = atr['trig_type']
     if trig_type is None:
         return atr, ain['value']
@@ -571,16 +577,16 @@ def _get_trigger_value(analog_trigger):
         return atr, ain['value'] # XXX
     assert False
 
-def getAnalogTriggerInWindow(analog_trigger, status):
+def getAnalogTriggerInWindow(analogTriggerHandle, status):
     status.value = 0
-    atr, val = _get_trigger_value(analog_trigger)
+    atr, val = _get_trigger_value(analogTriggerHandle)
     return val >= atr['trig_lower'] and val <= atr['trig_upper']
         
-def getAnalogTriggerTriggerState(analog_trigger, status):
+def getAnalogTriggerTriggerState(analogTriggerHandle, status):
     # To work properly, this needs some other runtime component managing the
     # state variable too, but this works well enough
     status.value = 0
-    atr, val = _get_trigger_value(analog_trigger)
+    atr, val = _get_trigger_value(analogTriggerHandle)
     if val < atr['trig_lower']:
         atr['trig_state'] = False
         return False
@@ -590,11 +596,11 @@ def getAnalogTriggerTriggerState(analog_trigger, status):
     else:
         return atr['trig_state']
 
-def getAnalogTriggerOutput(analog_trigger, type, status):
+def getAnalogTriggerOutput(analogTriggerHandle, type, status):
     if type == constants.AnalogTriggerType.kInWindow:
-        return getAnalogTriggerInWindow(analog_trigger, status)
+        return getAnalogTriggerInWindow(analogTriggerHandle, status)
     if type == constants.AnalogTriggerType.kState:
-        return getAnalogTriggerTriggerState(analog_trigger, status)
+        return getAnalogTriggerTriggerState(analogTriggerHandle, status)
     else:
         status.value = ANALOG_TRIGGER_PULSE_OUTPUT_ERROR
         return False
@@ -704,10 +710,10 @@ def setCounterUpSource(counterHandle, digitalSourceHandle, analogTriggerType, st
        [constants.CounterMode.kTwoPulse, constants.CounterMode.kExternalDirection]:
         setCounterUpSourceEdge(counterHandle, True, False, status) 
 
-def setCounterUpSourceEdge(counterHandle, rising_edge, falling_edge, status):
+def setCounterUpSourceEdge(counterHandle, risingEdge, fallingEdge, status):
     status.value = 0
-    hal_data['counter'][counterHandle.idx]['up_rising_edge'] = rising_edge
-    hal_data['counter'][counterHandle.idx]['up_falling_edge'] = falling_edge
+    hal_data['counter'][counterHandle.idx]['up_rising_edge'] = risingEdge
+    hal_data['counter'][counterHandle.idx]['up_falling_edge'] = fallingEdge
 
 def clearCounterUpSource(counterHandle, status):
     status.value = 0
@@ -729,10 +735,10 @@ def setCounterDownSource(counterHandle, digitalSourceHandle, analogTriggerType, 
         hal_data['counter'][counterHandle.idx]['down_source_channel'] = digitalSourceHandle.pin
     hal_data['counter'][counterHandle.idx]['down_source_trigger'] = analogTriggerType
 
-def setCounterDownSourceEdge(counterHandle, rising_edge, falling_edge, status):
+def setCounterDownSourceEdge(counterHandle, risingEdge, fallingEdge, status):
     status.value = 0
-    hal_data['counter'][counterHandle.idx]['down_rising_edge'] = rising_edge
-    hal_data['counter'][counterHandle.idx]['down_falling_edge'] = falling_edge
+    hal_data['counter'][counterHandle.idx]['down_rising_edge'] = risingEdge
+    hal_data['counter'][counterHandle.idx]['down_falling_edge'] = fallingEdge
 
 def clearCounterDownSource(counterHandle, status):
     status.value = 0
@@ -749,10 +755,10 @@ def setCounterExternalDirectionMode(counterHandle, status):
     status.value = 0
     hal_data['counter'][counterHandle.idx]['mode'] = constants.CounterMode.kExternalDirection
 
-def setCounterSemiPeriodMode(counterHandle, high_semi_period, status):
+def setCounterSemiPeriodMode(counterHandle, highSemiPeriod, status):
     status.value = 0
     hal_data['counter'][counterHandle.idx]['mode'] = constants.CounterMode.kSemiperiod
-    hal_data['counter'][counterHandle.idx]['up_rising_edge'] = high_semi_period
+    hal_data['counter'][counterHandle.idx]['up_rising_edge'] = highSemiPeriod
     hal_data['counter'][counterHandle.idx]['update_when_empty'] = False
 
 def setCounterPulseLengthMode(counterHandle, threshold, status):
@@ -763,9 +769,9 @@ def getCounterSamplesToAverage(counterHandle, status):
     status.value = 0
     return hal_data['counter'][counterHandle.idx]['samples_to_average']
 
-def setCounterSamplesToAverage(counterHandle, samples_to_average, status):
+def setCounterSamplesToAverage(counterHandle, samplesToAverage, status):
     status.value = 0
-    hal_data['counter'][counterHandle.idx]['samples_to_average'] = samples_to_average
+    hal_data['counter'][counterHandle.idx]['samples_to_average'] = samplesToAverage
 
 def resetCounter(counterHandle, status):
     status.value = 0
@@ -779,9 +785,9 @@ def getCounterPeriod(counterHandle, status):
     status.value = 0
     return hal_data['counter'][counterHandle.idx]['period']
 
-def setCounterMaxPeriod(counterHandle, max_period, status):
+def setCounterMaxPeriod(counterHandle, maxPeriod, status):
     status.value = 0
-    hal_data['counter'][counterHandle.idx]['max_period'] = max_period
+    hal_data['counter'][counterHandle.idx]['max_period'] = maxPeriod
 
 def setCounterUpdateWhenEmpty(counterHandle, enabled, status):
     status.value = 0
@@ -796,9 +802,9 @@ def getCounterDirection(counterHandle, status):
     status.value = 0
     return hal_data['counter'][counterHandle.idx]['direction']
 
-def setCounterReverseDirection(counterHandle, reverse_direction, status):
+def setCounterReverseDirection(counterHandle, reverseDirection, status):
     status.value = 0
-    hal_data['counter'][counterHandle.idx]['reverse_direction'] = reverse_direction
+    hal_data['counter'][counterHandle.idx]['reverse_direction'] = reverseDirection
 
 
 
@@ -880,9 +886,9 @@ def getDIODirection(dioPortHandle, status):
     status.value = 0
     return hal_data['dio'][dioPortHandle.pin]['is_input']
 
-def pulse(dioPortHandle, pulse_length, status):
+def pulse(dioPortHandle, pulseLength, status):
     status.value = 0
-    hal_data['dio'][dioPortHandle.pin]['pulse_length'] = pulse_length
+    hal_data['dio'][dioPortHandle.pin]['pulse_length'] = pulseLength
 
 def isPulsing(dioPortHandle, status):
     status.value = 0
@@ -999,6 +1005,9 @@ def getJoystickName(joystickNum):
         name = bytes(name, 'utf-8')
     return name
 
+def freeJoystickName(name):
+    pass
+
 def getJoystickAxisType(joystickNum, axis):
     assert False
 
@@ -1022,9 +1031,17 @@ def getMatchTime(status):
     else:
         return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
 
+def releaseDSMutex():
+    hooks.notifyDSData()
+
+def isNewControlData():
+    return hooks.isNewControlData()
+
 def waitForDSData():
-    with hooks.ds_cond:
-        hooks.ds_cond.wait()
+    hooks.waitForDSData()
+
+def waitForDSDataTimeout(timeout):
+    return hooks.waitForDSData(timeout)
 
 def initializeDriverStation():
     hooks.initializeDriverStation()
@@ -1063,13 +1080,13 @@ def initializeEncoder(digitalSourceHandleA, analogTriggerTypeA, digitalSourceHan
     status.value = NO_AVAILABLE_RESOURCES
     return None
 
-def freeEncoder(encoder, status):
+def freeEncoder(encoderHandle, status):
     status.value = 0
-    hal_data['encoder'][encoder.idx]['initialized'] = False
+    hal_data['encoder'][encoderHandle.idx]['initialized'] = False
 
-def getEncoder(encoder, status):
+def getEncoder(encoderHandle, status):
     status.value = 0
-    return hal_data['encoder'][encoder.idx]['count']
+    return hal_data['encoder'][encoderHandle.idx]['count']
 
 def getEncoderRaw(encoderHandle, status):
     status.value = 0
@@ -1079,26 +1096,26 @@ def getEncoderEncodingScale(encoderHandle, status):
     status.value = 0
     assert False
 
-def resetEncoder(encoder, status):
+def resetEncoder(encoderHandle, status):
     status.value = 0
-    hal_data['encoder'][encoder.idx]['count'] = 0
+    hal_data['encoder'][encoderHandle.idx]['count'] = 0
 
-def getEncoderPeriod(encoder, status):
+def getEncoderPeriod(encoderHandle, status):
     status.value = 0
-    return hal_data['encoder'][encoder.idx]['period']
+    return hal_data['encoder'][encoderHandle.idx]['period']
 
-def setEncoderMaxPeriod(encoder, max_period, status):
+def setEncoderMaxPeriod(encoderHandle, maxPeriod, status):
     status.value = 0
-    hal_data['encoder'][encoder.idx]['max_period'] = max_period
+    hal_data['encoder'][encoderHandle.idx]['max_period'] = maxPeriod
 
-def getEncoderStopped(encoder, status):
+def getEncoderStopped(encoderHandle, status):
     status.value = 0
-    enc = hal_data['encoder'][encoder.idx]
+    enc = hal_data['encoder'][encoderHandle.idx]
     return enc['period'] > enc['max_period']
 
-def getEncoderDirection(encoder, status):
+def getEncoderDirection(encoderHandle, status):
     status.value = 0
-    return hal_data['encoder'][encoder.idx]['direction']
+    return hal_data['encoder'][encoderHandle.idx]['direction']
 
 def getEncoderDistance(encoderHandle, status):
     status.value = 0
@@ -1117,17 +1134,17 @@ def setEncoderDistancePerPulse(encoderHandle, distancePerPulse, status):
     status.value = 0
     hal_data['encoder'][encoderHandle.idx]['distance_per_pulse'] = distancePerPulse
 
-def setEncoderReverseDirection(encoder, reverse_direction, status):
+def setEncoderReverseDirection(encoderHandle, reverseDirection, status):
     status.value = 0
-    hal_data['encoder'][encoder.idx]['reverse_direction'] = reverse_direction
+    hal_data['encoder'][encoderHandle.idx]['reverse_direction'] = reverseDirection
 
-def setEncoderSamplesToAverage(encoder, samples_to_average, status):
+def setEncoderSamplesToAverage(encoderHandle, samplesToAverage, status):
     status.value = 0
-    hal_data['encoder'][encoder.idx]['samples_to_average'] = samples_to_average
+    hal_data['encoder'][encoderHandle.idx]['samples_to_average'] = samplesToAverage
 
-def getEncoderSamplesToAverage(encoder, status):
+def getEncoderSamplesToAverage(encoderHandle, status):
     status.value = 0
-    return hal_data['encoder'][encoder.idx]['samples_to_average']
+    return hal_data['encoder'][encoderHandle.idx]['samples_to_average']
 
 def setEncoderIndexSource(encoderHandle, digitalSourceHandle, analogTriggerType, type, status):
     status.value = 0
@@ -1149,6 +1166,17 @@ def getEncoderDistancePerPulse(encoderHandle, status):
 
 def getEncoderEncodingType(encoderHandle, status):
     status.value = 0
+    assert False
+
+
+#############################################################################
+# Extensions.h
+#############################################################################
+
+def loadOneExtension(library):
+    assert False
+
+def loadExtensions():
     assert False
 
 
@@ -1189,36 +1217,36 @@ def closeI2C(port):
 def initializeInterrupts(watcher, status):
     assert False # TODO
 
-def cleanInterrupts(interrupt, status):
+def cleanInterrupts(interruptHandle, status):
     assert False # TODO
 
-def waitForInterrupt(interrupt, timeout, ignorePrevious, status):
+def waitForInterrupt(interruptHandle, timeout, ignorePrevious, status):
     assert False # TODO
 
-def enableInterrupts(interrupt, status):
+def enableInterrupts(interruptHandle, status):
     assert False # TODO
 
-def disableInterrupts(interrupt, status):
+def disableInterrupts(interruptHandle, status):
     assert False # TODO
 
-def readInterruptRisingTimestamp(interrupt, status):
+def readInterruptRisingTimestamp(interruptHandle, status):
     assert False # TODO
 
-def readInterruptFallingTimestamp(interrupt, status):
+def readInterruptFallingTimestamp(interruptHandle, status):
     assert False # TODO
 
 def requestInterrupts(interruptHandle, digitalSourceHandle, analogTriggerType, status):
     status.value = 0
     assert False
 
-def attachInterruptHandler(interrupt, handler, param, status):
+def attachInterruptHandler(interruptHandle, handler, param, status):
     assert False # TODO
 
 def attachInterruptHandlerThreaded(interruptHandle, handler, param, status):
     status.value = 0
     assert False
 
-def setInterruptUpSourceEdge(interrupt, rising_edge, falling_edge, status):
+def setInterruptUpSourceEdge(interruptHandle, risingEdge, fallingEdge, status):
     assert False # TODO
 
 
@@ -1392,9 +1420,13 @@ def setPWMPeriodScale(pwmPortHandle, squelchMask, status):
     status.value = 0
     hal_data['pwm'][pwmPortHandle.pin]['period_scale'] = squelchMask
 
-def getLoopTiming(status):
+def getPWMLoopTiming(status):
     status.value = 0
-    return hal_data['pwm_loop_timing']
+    return 0
+
+def getPWMCycleStartTime(status):
+    status.value = 0
+    return 0
 
 
 #############################################################################
@@ -1750,27 +1782,27 @@ def closeSerial(port, status):
 # hal_data['solenoid'][N] to refer to solenoids -- it's exactly the same
 # data as hal_data['pcm'][0][N]
 
-def initializeSolenoidPort(port, status):
-    if not checkSolenoidModule(port.module):
+def initializeSolenoidPort(portHandle, status):
+    if not checkSolenoidModule(portHandle.module):
         status.value = RESOURCE_OUT_OF_RANGE
         return
     
-    if port.module not in hal_data['pcm']:
-        hal_data['pcm'][port.module] = [NotifyDict({
+    if portHandle.module not in hal_data['pcm']:
+        hal_data['pcm'][portHandle.module] = [NotifyDict({
             'initialized': False,
             'value':       None
         }) for _ in range(kNumSolenoidChannels)]
     
-    data = _initport(port.module, port.pin, status, root=hal_data['pcm'])
+    data = _initport(portHandle.module, portHandle.pin, status, root=hal_data['pcm'])
     if data is None:
         return
     
     data['value'] = False
-    return types.SolenoidHandle(port)
+    return types.SolenoidHandle(portHandle)
 
-def freeSolenoidPort(port):
-    hal_data['pcm'][port.module][port.pin]['initialized'] = False
-    port.pin = None
+def freeSolenoidPort(solenoidPortHandle):
+    hal_data['pcm'][solenoidPortHandle.module][solenoidPortHandle.pin]['initialized'] = False
+    solenoidPortHandle.pin = None
 
 def checkSolenoidModule(module):
     return module < kNumPCMModules and module >= 0
@@ -1778,9 +1810,9 @@ def checkSolenoidModule(module):
 def checkSolenoidChannel(channel):
     return channel < kNumSolenoidChannels and channel >= 0
 
-def getSolenoid(solenoid_port, status):
+def getSolenoid(solenoidPortHandle, status):
     status.value = 0
-    return hal_data['pcm'][solenoid_port.module][solenoid_port.pin]['value']
+    return hal_data['pcm'][solenoidPortHandle.module][solenoidPortHandle.pin]['value']
 
 def getAllSolenoids(module, status):
     status.value = 0
@@ -1790,9 +1822,17 @@ def getAllSolenoids(module, status):
             value |= (1 if s['value'] else 0) << i
     return value
 
-def setSolenoid(solenoid_port, value, status):
+def setSolenoid(solenoidPortHandle, value, status):
     status.value = 0
-    hal_data['pcm'][solenoid_port.module][solenoid_port.pin]['value'] = value
+    hal_data['pcm'][solenoidPortHandle.module][solenoidPortHandle.pin]['value'] = value
+
+def setAllSolenoids(module, state, status):
+    status.value = 0
+    if module not in hal_data['pcm']:
+        status.value = RESOURCE_OUT_OF_RANGE
+    else:
+        for i, s in enumerate(hal_data['pcm'][module]):
+            s['value'] = (True if state & (1 << i) else False)
 
 def getPCMSolenoidBlackList(module, status):
     status.value = 0
