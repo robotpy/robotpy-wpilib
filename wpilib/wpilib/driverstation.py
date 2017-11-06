@@ -32,7 +32,7 @@ class DriverStation:
         Red = 0
         Blue = 1
         Invalid = 2
-        
+
     @staticmethod
     def _reset():
         if hasattr(DriverStation, 'instance'):
@@ -44,7 +44,7 @@ class DriverStation:
 
     @classmethod
     def getInstance(cls):
-        """Gets the global instance of the DriverStation
+        """Gets the global instance of the DriverStation.
 
         :returns: :class:`DriverStation`
         """
@@ -62,36 +62,30 @@ class DriverStation:
         instance static member variable, you should never create a
         DriverStation instance.
         """
-        
+
         if not hasattr(DriverStation, 'instance') or DriverStation.instance is not None:
             raise ValueError("Do not create DriverStation instances, use DriverStation.getInstance() instead")
-        
-        # Java constructor vars
-        
-        self.mutex = threading.RLock()
-        self.dataCond = threading.Condition(self.mutex)
 
         self.joystickMutex = threading.RLock()
-        self.newControlData = False
 
         self.joystickAxes = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVs = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtons = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
-        
+
         self.joystickAxesCache = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVsCache = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtonsCache = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
-        
+
         self.controlWordMutex = threading.RLock()
         self.controlWordCache = hal.ControlWord()
         self.lastControlWordUpdate = 0
-        
+
         # vars not initialized in constructor
         self.nextMessageTime = 0.0
-        
+
         self.threadKeepAlive = True
         self.waitForDataPredicate = False
-        
+
         self.userInDisabled = False
         self.userInAutonomous = False
         self.userInTeleop = False
@@ -115,7 +109,7 @@ class DriverStation:
         :param printTrace: If True, append stack trace to error string
         """
         DriverStation._reportErrorImpl(True, 1, error, printTrace)
-        
+
     @staticmethod
     def reportWarning(error, printTrace):
         """Report warning to Driver Station, and also prints error to `sys.stderr`.
@@ -124,13 +118,13 @@ class DriverStation:
         :param printTrace: If True, append stack trace to warning string
         """
         DriverStation._reportErrorImpl(False, 1, error, printTrace)
-        
+
     @staticmethod
     def _reportErrorImpl(isError, code, error, printTrace):
         errorString = error
         traceString = ""
         locString = ""
-        
+
         if printTrace:
             exc = sys.exc_info()[0]
             stack = traceback.extract_stack()[:-2]  # last one is this func
@@ -139,26 +133,26 @@ class DriverStation:
                 # will contain the caught exception caller instead
                 del stack[-1]
                 del stack[-1]
-            
+
             locString = "%s.%s:%s" % (stack[-1][0], stack[-1][1], stack[-1][2])
-                
+
             trc = 'Traceback (most recent call last):\n'
             stackstr = trc + ''.join(traceback.format_list(stack))
             if exc is not None:
                 stackstr += '  ' + traceback.format_exc().lstrip(trc)
             errorString += ':\n' + stackstr
-            
+
             logger.exception(error)
         elif isError:
             logger.error(error)
         else:
             logger.warning(error)
-        
+
         hal.sendError(isError, code, False,
                       error.encode('utf-8'),
                       locString.encode('utf-8'),
                       traceString.encode('utf-8'), True)
-    
+
     def getStickAxis(self, stick, axis):
         """Get the value of the axis on a joystick.
         This depends on the mapping of the joystick connected to the specified
@@ -168,7 +162,7 @@ class DriverStation:
         :type stick: int
         :param axis: The analog axis value to read from the joystick.
         :type axis: int
-        
+
         :returns: The value of the axis on the joystick.
         """
 
@@ -183,7 +177,7 @@ class DriverStation:
             if axis >= joystickAxes.count:
                 self._reportJoystickUnpluggedWarning("Joystick axis %d on port %d not available, check if controller is plugged in\n" % (axis, stick))
                 return 0.0
-            
+
             return joystickAxes.axes[axis]
 
     def getStickPOV(self, stick, pov):
@@ -193,7 +187,7 @@ class DriverStation:
         :type stick: int
         :param pov: which POV
         :type pov: int
-        
+
         :returns: The angle of the POV in degrees, or -1 if the POV is not
                   pressed.
         """
@@ -215,7 +209,7 @@ class DriverStation:
 
         :param stick: The joystick port number
         :type stick: int
-        
+
         :returns: The state of all buttons, as a bit array.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
@@ -231,7 +225,7 @@ class DriverStation:
         :type stick: int
         :param button: The button index, beginning at 1.
         :type button: int
-        
+
         :returns: The state of the button.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
@@ -260,7 +254,7 @@ class DriverStation:
 
         with self.joystickMutex:
             return self.joystickAxes[stick].count
-                
+
 
     def getStickPOVCount(self, stick):
         """Returns the number of POVs on a given joystick port
@@ -300,14 +294,14 @@ class DriverStation:
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
-        
+
         with self.joystickMutex:
             # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
             if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
                 self._reportJoystickUnpluggedWarning("WARNING: Joystick on port {} not avaliable, check if controller is "
                                                    "plugged in.\n".format(stick))
                 return False
-    
+
         return hal.getJoystickIsXbox(stick)
 
     def getJoystickType(self, stick):
@@ -321,14 +315,14 @@ class DriverStation:
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
-        
+
         with self.joystickMutex:
             # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
             if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
                 self._reportJoystickUnpluggedWarning("Joystick on port {} not avaliable, check if controller is "
                                                      "plugged in.\n".format(stick))
                 return -1
-    
+
         return hal.getJoystickType(stick)
 
     def getJoystickName(self, stick):
@@ -364,7 +358,7 @@ class DriverStation:
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
-        
+
         with self.joystickMutex:
             return hal.getJoystickAxisType(stick, axis)
 
@@ -416,7 +410,7 @@ class DriverStation:
         with self.controlWordMutex:
             self._updateControlWord(False)
             return self.controlWordCache.test != 0
-    
+
     def isDSAttached(self):
         """Is the driver station attached to the robot?
 
@@ -425,21 +419,18 @@ class DriverStation:
         with self.controlWordMutex:
             self._updateControlWord(False)
             return self.controlWordCache.dsAttached != 0
-    
+
     def isNewControlData(self):
-        """Has a new control packet from the driver station arrived since the
-        last time this function was called?
+        """Gets if a new control packet from the driver station arrived since
+        the last time this function was called.
 
         :returns: True if the control data has been updated since the last
             call.
         """
-        with self.mutex:
-            result = self.newControlData
-            self.newControlData = False
-            return result
-    
+        return hal.isNewControlData()
+
     def isFMSAttached(self):
-        """Is the driver station attached to a Field Management System?
+        """Gets if the driver station attached to a Field Management System.
 
         :returns: True if the robot is competing on a field being controlled
             by a Field Management System
@@ -447,16 +438,17 @@ class DriverStation:
         with self.controlWordMutex:
             self._updateControlWord(False)
             return self.controlWordCache.fmsAttached != 0
-    
+
     def isSysActive(self):
         """
-        Gets a value indicating whether the FPGA outputs are enabled. The outputs may be disabled
-        if the robot is disabled or e-stopped, the watdhog has expired, or if the roboRIO browns out.
+        Gets a value indicating whether the FPGA outputs are enabled. The
+        outputs may be disabled if the robot is disabled or e-stopped, the
+        watchdog has expired, or if the roboRIO browns out.
 
         :returns: True if the FPGA outputs are enabled.
         """
         return hal.getSystemActive()
-    
+
     def isBrownedOut(self):
         """
         Check if the system is browned out.
@@ -464,7 +456,7 @@ class DriverStation:
         :returns: True if the system is browned out.
         """
         return hal.getBrownedOut()
-    
+
     def getAlliance(self):
         """Get the current alliance from the FMS.
 
@@ -473,14 +465,14 @@ class DriverStation:
         """
         allianceStationID = hal.getAllianceStation()
         hAid = hal.AllianceStationID
-        
+
         if allianceStationID in (hAid.kRed1, hAid.kRed2, hAid.kRed3):
             return self.Alliance.Red
         elif allianceStationID in (hAid.kBlue1, hAid.kBlue2, hAid.kBlue3):
             return self.Alliance.Blue
         else:
             return self.Alliance.Invalid
-    
+
     def getLocation(self):
         """Gets the location of the team's driver station controls.
 
@@ -489,7 +481,7 @@ class DriverStation:
         """
         allianceStationID = hal.getAllianceStation()
         hAid = hal.AllianceStationID
-        
+
         if allianceStationID in (hAid.kRed1, hAid.kBlue1):
             return 1
         elif allianceStationID in (hAid.kRed2, hAid.kBlue2):
@@ -498,22 +490,18 @@ class DriverStation:
             return 3
         else:
             return 0
-    
+
     def waitForData(self, timeout = None):
         """Wait for new data or for timeout, which ever comes first.  If
         timeout is None, wait for new data only.
 
         :param timeout: The maximum time in seconds to wait.
-        
+
         :returns: True if there is new data, otherwise False
         """
-        with self.dataCond:
-            return self.dataCond.wait_for(self._waitForDataPredicateFn, timeout)
-            
-    def _waitForDataPredicateFn(self):
-        retval = self.waitForDataPredicate
-        self.waitForDataPredicate = False
-        return retval
+        if timeout is None:
+            timeout = 0
+        return hal.waitForDSDataTimeout(timeout)
 
     def getMatchTime(self):
         """Return the approximate match time.
@@ -579,24 +567,24 @@ class DriverStation:
         If no new data exists, it will just be returned, otherwise
         the data will be copied from the DS polling loop.
         """
-        
+
         # Get the status of all of the joysticks
         for stick in range(self.kJoystickPorts):
             hal.getJoystickAxes(stick, self.joystickAxesCache[stick])
             hal.getJoystickPOVs(stick, self.joystickPOVsCache[stick])
             hal.getJoystickButtons(stick, self.joystickButtonsCache[stick])
-        
+
         # Force a control word update, to make sure the data is the newest.
         self._updateControlWord(True)
-        
+
         # lock joystick mutex to swap cache data
         with self.joystickMutex:
-            
+
             # move cache to actual data
             self.joystickAxes, self.joystickAxesCache = self.joystickAxesCache, self.joystickAxes
             self.joystickButtons, self.joystickButtonsCache = self.joystickButtonsCache, self.joystickButtons
             self.joystickPOVs, self.joystickPOVsCache = self.joystickPOVsCache, self.joystickPOVs
-        
+
     def _reportJoystickUnpluggedError(self, message):
         """
         Reports errors related to unplugged joysticks and throttles them so that they don't overwhelm the DS
@@ -618,39 +606,32 @@ class DriverStation:
     def _run(self):
         """Provides the service routine for the DS polling thread."""
         safetyCounter = 0
-        
+
         while self.threadKeepAlive:
             hal.waitForDSData()
             self._getData()
-            
-            with self.dataCond:
-                self.waitForDataPredicate = True
-                self.dataCond.notify_all()
-            
-            #with self.mutex: # dataCond already holds the mutex
-                self.newControlData = True
-            
+
             safetyCounter += 1
             if safetyCounter >= 4:
                 MotorSafety.checkMotors()
                 safetyCounter = 0
-                
+
             if self.userInDisabled:
                 hal.observeUserProgramDisabled()
-                
+
             if self.userInAutonomous:
                 hal.observeUserProgramAutonomous()
-                
+
             if self.userInTeleop:
                 hal.observeUserProgramTeleop()
-                
+
             if self.userInTest:
                 hal.observeUserProgramTest()
-    
+
     def _updateControlWord(self, force):
         """Updates the data in the control word cache. Updates if the force parameter is set, or if
         50ms have passed since the last update.
-        
+
         :param force: True to force an update to the cache, otherwise update if 50ms have passed.
         """
         now = hal.getFPGATime()
@@ -658,4 +639,4 @@ class DriverStation:
             if now - self.lastControlWordUpdate > 50 or force:
                 hal.getControlWord(self.controlWordCache)
                 self.lastControlWordUpdate = now
-        
+

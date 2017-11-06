@@ -26,10 +26,10 @@ def ds(wpilib, hal_data):
 def test_dup(wpilib):
     '''Don't allow creating a driverStation instance manually'''
     ds = wpilib.DriverStation.getInstance()
-    
+
     with pytest.raises(ValueError):
         _ = wpilib.DriverStation()
-    
+
 
 def test_init(wpimock, halmock):
     with patch("wpilib.driverstation.threading") as mockthread:
@@ -37,14 +37,10 @@ def test_init(wpimock, halmock):
         assert mockthread.Thread.called
         assert mockthread.Thread.return_value.daemon == True
         assert mockthread.Thread.return_value.start.called
-        assert ds.mutex == mockthread.RLock.return_value
-        mockthread.Condition.assert_called_once_with(ds.mutex)
-        assert ds.dataCond == mockthread.Condition.return_value
     assert ds.userInDisabled == False
     assert ds.userInAutonomous == False
     assert ds.userInTeleop == False
     assert ds.userInTest == False
-    assert ds.newControlData == False
     assert ds.threadKeepAlive == True
 
 def test_release(dsmock):
@@ -61,7 +57,6 @@ def test_task(dsmock, halmock):
     dsmock._getData = MagicMock()
     dsmock._run()
     assert dsmock._getData.called
-    assert dsmock.dataCond.notify_all.called
 
 def test_task_safetyCounter(dsmock, halmock):
     # exit function after 5 iterations
@@ -88,14 +83,6 @@ def test_task_usermode(mode, dsmock, halmock):
     setattr(dsmock, "userIn"+mode, True)
     dsmock._run()
     assert getattr(halmock, "observeUserProgram"+mode).called
-
-def test_waitForData(dsmock):
-    dsmock.waitForData()
-    dsmock.dataCond.wait_for.assert_called_once_with(dsmock._waitForDataPredicateFn, None)
-
-def test_waitForData_timeout(dsmock):
-    dsmock.waitForData(5.0)
-    dsmock.dataCond.wait_for.assert_called_once_with(dsmock._waitForDataPredicateFn, 5.0)
 
 def test_getData(dsmock, halmock):
     halmock.getFPGATime.return_value = 1000
@@ -206,13 +193,6 @@ def test_isOperatorControl(auto, test, oper, dsmock, halmock):
     dsmock.controlWordCache.autonomous = auto
     dsmock.controlWordCache.test = test
     assert dsmock.isOperatorControl() == oper
-
-def test_isNewControlData(dsmock):
-    dsmock.newControlData = False
-    assert not dsmock.isNewControlData()
-    dsmock.newControlData = True
-    assert dsmock.isNewControlData()
-    assert not dsmock.newControlData # verify it cleared the flag
 
 @pytest.mark.parametrize("alliance",
         ["red1", "red2", "red3", "blue1", "blue2", "blue3", -1])
