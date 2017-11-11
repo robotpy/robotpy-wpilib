@@ -1,7 +1,7 @@
 *.py[cod]
 __pycache__
 *.egg-info
-venv
+.venv
 .coverage
 htmlcov
 *,cover
@@ -54,3 +54,4 @@ parsetab.py
 
 # deploy files
 .deploy_cfg
+.DS_Store
