@@ -93,7 +93,7 @@ class MotorSafety:
         if not self.safetyEnabled or RobotState.isDisabled() or RobotState.isTest():
             return
         if self.safetyStopTime < Timer.getFPGATimestamp():
-            logger.warn("%s... Output not updated often enough." %
+            logger.warning("%s... Output not updated often enough." %
                         self.getDescription())
 
             self.stopMotor()

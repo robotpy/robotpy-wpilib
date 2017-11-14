@@ -34,7 +34,7 @@ def _log_versions():
     # should we just die here?
     if hal.__version__ != wpilib.__version__ and \
        hal.__version__ != hal_impl.__version__:
-        logger.warn("Core component versions are not identical! This is not a supported configuration, and you may run into errors!")
+        logger.warning("Core component versions are not identical! This is not a supported configuration, and you may run into errors!")
         
     # Log third party versions
     # -> TODO: in the future, expand 3rd party HAL support here?

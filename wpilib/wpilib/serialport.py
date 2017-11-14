@@ -178,7 +178,7 @@ class SerialPort:
         try:
             return self.read(count).decode('ascii')
         except UnicodeDecodeError:
-            logger.warn("Error decoding serial port output")
+            logger.warning("Error decoding serial port output")
             return ''
     
     def read(self, count):

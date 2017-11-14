@@ -49,7 +49,7 @@ class TimerTask(threading.Thread):
                     # only emit warning once per second
                     if now - self.last_warning > 1:
                         self.last_warning = now
-                        self.logger.warn("Delay time was negative (%02f: too much going on?)", delay)
+                        self.logger.warning("Delay time was negative (%02f: too much going on?)", delay)
                 
                 if self.stopped:
                     break
