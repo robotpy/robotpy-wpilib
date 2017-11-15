@@ -248,7 +248,7 @@ class IterativeRobot(RobotBase):
         """
         func = self.teleopPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            self.logger.warn("Default IterativeRobot.teleopPeriodic() method... Overload me!")
+            self.logger.warning("Default IterativeRobot.teleopPeriodic() method... Overload me!")
             func.firstRun = False
 
     def testPeriodic(self):

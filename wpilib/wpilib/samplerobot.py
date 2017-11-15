@@ -81,7 +81,7 @@ class SampleRobot(RobotBase):
 
         Called once each time the robot enters the operator-controlled state.
         """
-        self.logger.warn("Default operatorControl() method running, consider providing your own")
+        self.logger.warning("Default operatorControl() method running, consider providing your own")
 
     def test(self):
         """Test code should go here.
