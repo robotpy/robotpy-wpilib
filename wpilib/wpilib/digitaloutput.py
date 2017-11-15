@@ -1,4 +1,4 @@
-# validated: 2016-12-31 JW 8f67f2c24cb9 edu/wpi/first/wpilibj/DigitalOutput.java
+# validated: 2017-10-24 EN 34c18ef00062 edu/wpi/first/wpilibj/DigitalOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -40,6 +40,8 @@ class DigitalOutput(DigitalSource):
         hal.report(hal.UsageReporting.kResourceType_DigitalOutput,
                       channel)
 
+        self.valueEntry = None
+
     @property
     def pwmGenerator(self):
         if self._pwmGenerator_finalizer is None:
@@ -78,16 +80,12 @@ class DigitalOutput(DigitalSource):
         """
         return self.channel
 
-    def pulse(self, pulseLength, *args):
+    def pulse(self, pulseLength):
         """Generate a single pulse. There can only be a single pulse going at any time.
 
-        :param channel: Unused. Deprecated 2017.1.1.
         :param pulseLength: The length of the pulse.
         :type  pulseLength: float
         """
-        if len(args) > 0:
-            warnings.warn("Use of channel argument is deprecated.", DeprecationWarning)
-            pulseLength = args[0]
         hal.pulse(self.handle, pulseLength)
 
     def isPulsing(self):
@@ -181,8 +179,11 @@ class DigitalOutput(DigitalSource):
         return self.handle
 
     def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
 
     # Live Window code, only does anything if live window is activated.
     def getSmartDashboardType(self):
@@ -192,5 +193,5 @@ class DigitalOutput(DigitalSource):
         # TODO: Put current value.
         pass
 
-    def valueChanged(self, itable, key, value, bln):
+    def valueChanged(self, entry, key, value, param):
         self.set(True if value else False)

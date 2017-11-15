@@ -1,5 +1,6 @@
-# validated: 2015-12-24 DS 6d854af edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
+# validated: 2017-10-07 EN e1195e8b9dab edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
 
+from networktables import NetworkTables
 from .sendable import Sendable
 
 __all__ = ["LiveWindowSendable"]
@@ -22,21 +23,24 @@ class LiveWindowSendable(Sendable):
         as a table listener on "Value".
         """
         if hasattr(self, "valueChanged"):
-            table = getattr(self, "table", None)
-            table_listener = getattr(self, "table_listener", None)
-            if table is None or table_listener is not None:
+            valueEntry = getattr(self, "valueEntry", None)
+            valueListener = getattr(self, "valueListener", None)
+            if valueEntry is None or valueListener is not None:
                 return
-            self.table_listener = self.valueChanged
-            table.addTableListener(self.valueChanged, True, key="Value")
+            self.valueListener = valueEntry.addListener(
+                self.valueChanged, 
+                NetworkTables.NotifyFlags.IMMEDIATE |
+                NetworkTables.NotifyFlags.NEW |
+                NetworkTables.NotifyFlags.UPDATE)
 
     def stopLiveWindowMode(self):
         """Stop having this sendable object automatically respond to value
         changes.
         """
         # TODO: Broken, should only remove the listener from "Value" only.
-        table = getattr(self, "table", None)
-        table_listener = getattr(self, "table_listener", None)
-        if table is None or table_listener is None:
+        valueEntry = getattr(self, "valueEntry", None)
+        valueListener = getattr(self, "valueListener", None)
+        if valueEntry is None or valueListener is None:
             return
-        table.removeTableListener(table_listener)
-        self.table_listener = None
+        valueEntry.removeListener(valueListener)
+        self.valueListener = None

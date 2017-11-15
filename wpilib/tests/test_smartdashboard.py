@@ -38,8 +38,6 @@ def test_smartdashboard_chooser(networktables, wpilib):
     
     wpilib.SmartDashboard.putData('Autonomous Mode', chooser)
     
-    assert chooser.table is not None
-    
     # Default should still work
     assert chooser.getSelected() == o3
     

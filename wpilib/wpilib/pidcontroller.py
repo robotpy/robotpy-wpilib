@@ -1,4 +1,4 @@
-# validated: 2017-02-19 DS 1bdbb5ddcc8b edu/wpi/first/wpilibj/PIDController.java
+# validated: 2017-10-30 EN 2fc60680f436 edu/wpi/first/wpilibj/PIDController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -10,6 +10,7 @@ from collections import deque
 from itertools import islice
 import threading
 import warnings
+from networktables import NetworkTables
 
 import hal
 
@@ -120,6 +121,12 @@ class PIDController(LiveWindowSendable):
         self.result = 0.0
 
         self.mutex = threading.RLock()
+        self.pEntry = None
+        self.iEntry = None
+        self.dEntry = None
+        self.fEntry = None
+        self.setpointEntry = None
+        self.enabledEntry = None
 
         self.pid_task = TimerTask('PIDTask%d' % PIDController.instances, self.period, self._calculate)
         self.pid_task.start()
@@ -141,6 +148,7 @@ class PIDController(LiveWindowSendable):
         with self.mutex:
             self.pidInput = None
             self.pidOutput = None
+        self.removeListeners()
 
     def _calculate(self):
         """Read the input, calculate the output accordingly, and write to the
@@ -243,12 +251,14 @@ class PIDController(LiveWindowSendable):
             self.D = d
             self.F = f
 
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("p", p)
-            table.putNumber("i", i)
-            table.putNumber("d", d)
-            table.putNumber("f", f)
+        if self.pEntry is not None:
+            self.pEntry.setDouble(p)
+        if self.iEntry is not None:
+            self.iEntry.setDouble(i)
+        if self.dEntry is not None:
+            self.dEntry.setDouble(d)
+        if self.fEntry is not None:
+            self.fEntry.setDouble(f)
 
     def getP(self):
         """Get the Proportional coefficient.
@@ -349,9 +359,8 @@ class PIDController(LiveWindowSendable):
             self.buf.clear()
             self.totalError = 0
 
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("setpoint", newsetpoint)
+        if self.setpointEntry is not None:
+            self.setpointEntry.setDouble(newsetpoint)
 
     def getSetpoint(self):
         """Returns the current setpoint of the PIDController.
@@ -422,23 +431,6 @@ class PIDController(LiveWindowSendable):
         with self.mutex:
             return len(self.buf) != 0
 
-    def setTolerance(self, percent):
-        """Set the percentage error which is considered tolerable for use with
-        :func:`onTarget`. (Input of 15.0 = 15 percent)
-
-        :param percent: error which is tolerable
-
-        .. deprecated:: 2015.1
-
-            Use :func:`setPercentTolerance` or :func:`setAbsoluteTolerance`
-            instead.
-        """
-        warnings.warn("use setPercentTolerance or setAbsoluteTolerance instead",
-                      DeprecationWarning)
-        with self.mutex:
-            self.onTarget = lambda: \
-                    self.PercentageTolerance_onTarget(percent)
-
     def setAbsoluteTolerance(self, absvalue):
         """Set the absolute error which is considered tolerable for use with
         :func:`onTarget`.
@@ -488,9 +480,8 @@ class PIDController(LiveWindowSendable):
         with self.mutex:
             self.enabled = True
 
-        table = self.getTable()
-        if table is not None:
-            table.putBoolean("enabled", True)
+        if self.enabledEntry is not None:
+            self.enabledEntry.setBoolean(True)
 
     def disable(self):
         """Stop running the PIDController, this sets the output to zero before
@@ -499,17 +490,14 @@ class PIDController(LiveWindowSendable):
             self.pidOutput(0)
             self.enabled = False
 
-        table = self.getTable()
-        if table is not None:
-            table.putBoolean("enabled", False)
+        if self.enabledEntry is not None:
+            self.enabledEntry.setBoolean(False)
 
     def isEnabled(self):
         """Return True if PIDController is enabled."""
         with self.mutex:
             return self.enabled
             
-    isEnable = isEnabled
-
     def reset(self):
         """Reset the previous error, the integral term, and disable the
         controller."""
@@ -519,41 +507,91 @@ class PIDController(LiveWindowSendable):
             self.totalError = 0
             self.result = 0
 
+    def removeListeners(self):
+        if self.pEntry is not None:
+            self.pEntry.removeListener(self.pListener)
+        if self.iEntry is not None:
+            self.iEntry.removeListener(self.iListener)
+        if self.dEntry is not None:
+            self.dEntry.removeListener(self.dListener)
+        if self.fEntry is not None:
+            self.fEntry.removeListener(self.fListener)
+        if self.setpointEntry is not None:
+            self.setpointEntry.removeListener(self.setpointListener)
+        if self.enabledEntry is not None:
+            self.enabledEntry.removeListener(self.enabledListener)
+
     def getSmartDashboardType(self):
         return "PIDController"
 
-    def valueChanged(self, table, key, value, isNew):
-        if key == "p" or key == "i" or key == "d" or key == "f":
-            Kp = table.getNumber("p", 0.0)
-            Ki = table.getNumber("i", 0.0)
-            Kd = table.getNumber("d", 0.0)
-            Kf = table.getNumber("f", 0.0)
-            if (self.getP() != Kp or self.getI() != Ki or self.getD() != Kd or
-                self.getF() != Kf):
-                self.setPID(Kp, Ki, Kd, Kf)
-        elif key == "setpoint":
-            if self.getSetpoint() != float(value):
-                self.setSetpoint(float(value))
-        elif key == "enabled":
-            if self.isEnabled() != bool(value):
-                if bool(value):
-                    self.enable()
-                else:
-                    self.disable()
+    def pChanged(self, entry, key, value, param):
+        with self.mutex:
+            self.P = value
+
+    def iChanged(self, entry, key, value, param):
+        with self.mutex:
+            self.I = value
+
+    def dChanged(self, entry, key, value, param):
+        with self.mutex:
+            self.D = value
+
+    def fChanged(self, entry, key, value, param):
+        with self.mutex:
+            self.F = value
+
+    def setpointChanged(self, entry, key, value, param):
+        if self.getSetpoint() != value:
+            self.setSetpoint(value)
+
+    def enabledChanged(self, entry, key, value, param):
+        if self.isEnabled() != value:
+            if value:
+                self.enable()
+            else:
+                self.disable()
 
     def initTable(self, table):
-        oldtable = self.getTable()
-        if oldtable is not None:
-            oldtable.removeTableListener(self.valueChanged)
-        self.table = table
+        self.removeListeners()
         if table is not None:
-            table.putNumber("p", self.getP())
-            table.putNumber("i", self.getI())
-            table.putNumber("d", self.getD())
-            table.putNumber("f", self.getF())
-            table.putNumber("setpoint", self.getSetpoint())
-            table.putBoolean("enabled", self.isEnabled())
-            table.addTableListener(self.valueChanged, False)
+            self.pEntry = table.getEntry("p")
+            self.pEntry.setDouble(self.getP())
+            self.iEntry = table.getEntry("i")
+            self.iEntry.setDouble(self.getI())
+            self.dEntry = table.getEntry("d")
+            self.dEntry.setDouble(self.getD())
+            self.fEntry = table.getEntry("f")
+            self.fEntry.setDouble(self.getF())
+            self.setpointEntry = table.getEntry("setpoint")
+            self.setpointEntry.setDouble(self.getSetpoint())
+            self.enabledEntry = table.getEntry("enabled")
+            self.enabledEntry.setBoolean(self.isEnabled())
+
+            self.pListener = self.pEntry.addListener(
+                self.pChanged, 
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
+            self.iListener = self.pEntry.addListener(
+                self.iChanged, 
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
+            self.dListener = self.pEntry.addListener(
+                self.dChanged, 
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
+            self.fListener = self.pEntry.addListener(
+                self.fChanged, 
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
+            self.setpointListener = self.pEntry.addListener(
+                self.setpointChanged, 
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
+            self.enabledListener = self.pEntry.addListener(
+                self.enabledChanged, 
+                NetworkTables.NotifyFlags.UPDATE | NetworkTables.NotifyFlags.NEW)
+        else:
+            self.pEntry = None
+            self.iEntry = None
+            self.dEntry = None
+            self.fEntry = None
+            self.setpointEntry = None
+            self.enabledEntry = None
 
     def getContinuousError(self, error):
         """
@@ -564,12 +602,11 @@ class PIDController(LiveWindowSendable):
         :param error: The current error of the PID controller.
         :return: Error for continuous inputs.
         """
-        if self.continuous:
-            if abs(error) > (self.maximumInput - self.minimumInput) / 2:
-                if error > 0:
-                    return error - (self.maximumInput - self.minimumInput)
-                else:
-                    return error + (self.maximumInput - self.minimumInput)
+        if self.continuous and abs(error) > (self.maximumInput - self.minimumInput) / 2:
+            if error > 0:
+                return error - (self.maximumInput - self.minimumInput)
+            else:
+                return error + (self.maximumInput - self.minimumInput)
         return error
 
     def startLiveWindowMode(self):

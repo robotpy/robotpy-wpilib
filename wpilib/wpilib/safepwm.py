@@ -1,4 +1,4 @@
-# validated: 2017-01-22 DS 8f1b034b2f7d edu/wpi/first/wpilibj/SafePWM.java
+# validated: 2017-10-07 EN e1195e8b9dab edu/wpi/first/wpilibj/SafePWM.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

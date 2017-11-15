@@ -1,4 +1,4 @@
-# validated: 2016-01-09 AG f89c5e1 edu/wpi/first/wpilibj/command/Scheduler.java
+# validated: 2017-10-03 EN 34c18ef00062 edu/wpi/first/wpilibj/command/Scheduler.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -64,6 +64,10 @@ class Scheduler(Sendable):
         # A list of all Buttons. It is created lazily.
         self.buttons = []
         self.runningCommandsChanged = False
+
+        self.namesEntry = None
+        self.idsEntry = None
+        self.cancelEntry = None
 
     def add(self, command):
         """Adds the command to the Scheduler. This will not add the
@@ -148,6 +152,10 @@ class Scheduler(Sendable):
         for button in reversed(self.buttons):
             button()
 
+        # Call every subsystem's periodic method
+        for subsystem in self.subsystems:
+            subsystem.periodic()
+
         # Loop through the commands
         for command in list(self.commandTable):
             if not command.run():
@@ -216,27 +224,35 @@ class Scheduler(Sendable):
         return "Scheduler"
 
     def initTable(self, subtable):
-        self.table = subtable
         self.commands = []
         self.ids = []
         self.toCancel = []
 
-        self.table.putStringArray("Names", self.commands)
-        self.table.putNumberArray("Ids", self.ids)
-        self.table.putNumberArray("Cancel", self.toCancel)
+        if subtable is not None:
+            self.namesEntry = subtable.getEntry("Names")
+            self.idsEntry = subtable.getEntry("Ids")
+            self.cancelEntry = subtable.getEntry("Cancel")
+
+            self.namesEntry.setStringArray(self.commands)
+            self.idsEntry.setDoubleArray(self.ids)
+            self.cancelEntry.setDoubleArray(self.toCancel)
+        else:
+            self.namesEntry = None
+            self.idsEntry = None
+            self.cancelEntry = None
 
     def updateTable(self):
-        table = self.getTable()
-        if table is None:
+        if not (self.namesEntry is not None and self.cancelEntry is not None):
             return
+
         # Get the commands to cancel
-        self.toCancel = self.table.getValue("Cancel")
+        self.toCancel = self.cancelEntry.getDoubleArray([])
         if self.toCancel:
             for command in self.commandTable:
                 if id(command) in self.toCancel:
                     command.cancel()
             self.toCancel = []
-            self.table.putNumberArray("Cancel", self.toCancel)
+            self.cancelEntry.setDoubleArray(toCancel)
 
         if self.runningCommandsChanged:
             self.commands.clear()
@@ -245,8 +261,8 @@ class Scheduler(Sendable):
             for command in self.commandTable:
                 self.commands.append(command.getName())
                 self.ids.append(id(command))
-            self.table.putStringArray("Names", self.commands)
-            self.table.putNumberArray("Ids", self.ids)
+            self.namesEntry.setStringArray(self.commands)
+            self.idsEntry.setDoubleArray(self.ids)
 
     def getSmartDashboardType(self):
         return "Scheduler"
