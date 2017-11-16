@@ -81,7 +81,7 @@ def test_multiple_solenoids(wpilib, hal_data):
     
 
 @pytest.mark.parametrize("value,expected",
-    [(True, True), (False, False)])
+    [(True, True), (False, False), (1, True), (0, False), ([], False)])
 def test_solenoid_valueChanged(value, expected, wpilib, hal_data):
     s1 = wpilib.Solenoid(4)
     s1.set = MagicMock()
