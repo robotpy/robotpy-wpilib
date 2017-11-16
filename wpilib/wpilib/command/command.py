@@ -1,4 +1,4 @@
-# validated: 2017-01-13 DS 7a049c29bdb7 edu/wpi/first/wpilibj/command/Command.java
+# validated: 2017-10-03 EN 34c18ef00062 edu/wpi/first/wpilibj/command/Command.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -10,6 +10,7 @@ from .scheduler import Scheduler
 from ..robotstate import RobotState
 from ..sendable import Sendable
 from ..timer import Timer
+from networktables import NetworkTables
 
 import threading
 
@@ -81,6 +82,9 @@ class Command(Sendable):
         # The CommandGroup this is in
         self.parent = None
 
+        self.runningEntry = None
+        self.isParentedEntry = None
+
     def getName(self):
         """Returns the name of this command. If no name was specified
         in the constructor, then the default is the name of the class.
@@ -145,9 +149,8 @@ class Command(Sendable):
             self.initialized = False
             self.canceled = False
             self.running = False
-        table = self.getTable()
-        if table is not None:
-            table.putBoolean("running", False)
+        if self.runningEntry is not None:
+            self.runningEntry.setBoolean(False)
 
     def run(self):
         """The run method is used internally to actually run the commands.
@@ -275,9 +278,8 @@ class Command(Sendable):
                 raise ValueError("Can not give command to a command group after already being put in a command group")
             self.lockChanges()
             self.parent = parent
-        table = self.getTable()
-        if table is not None:
-            table.putBoolean("isParented", True)
+        if self.isParentedEntry is not None:
+            self.isParentedEntry.setBoolean(True)
             
     def clearRequirements(self):
         """Clears list of subsystem requirements. This is only used by
@@ -312,9 +314,8 @@ class Command(Sendable):
         with self.mutex:
             self.running = True
             self.startTime = None
-        table = self.getTable()
-        if table is not None:
-            table.putBoolean("running", True)
+        if self.runningEntry is not None:
+            self.runningEntry.setBoolean(True)
 
     def isRunning(self):
         """Returns whether or not the command is running.
@@ -425,19 +426,28 @@ class Command(Sendable):
     def getSmartDashboardType(self):
         return "Command"
 
-    def valueChanged(self, itable, key, value, isNew):
+    def valueChanged(self, entry, key, value, param):
         if value:
             self.start()
         else:
             self.cancel()
 
     def initTable(self, table):
-        oldtable = self.getTable()
-        if oldtable is not None:
-            oldtable.removeTableListener(self.valueChanged)
+        if self.runningEntry is not None:
+            self.runningEntry.removeListener(self.runningListener)
         super().initTable(table)
         if table is not None:
-            table.putString("name", self.getName())
-            table.putBoolean("running", self.isRunning())
-            table.putBoolean("isParented", self.parent is not None)
-            table.addTableListener(self.valueChanged, False, key="running")
+            self.runningEntry = table.getEntry("running")
+            self.isParentedEntry = table.getEntry("isParented")
+            table.getEntry("name").setString(self.getName())
+            self.runningEntry.setBoolean(self.isRunning())
+            self.isParentedEntry.setBoolean(self.parent is not None)
+
+            self.runningListener = self.runningEntry.addListener(
+                self.valueChanged,
+                NetworkTables.NotifyFlags.IMMEDIATE |
+                NetworkTables.NotifyFlags.NEW |
+                NetworkTables.NotifyFlags.UPDATE)
+        else:
+            self.runningEntry = None
+            self.isParentedEntry = None
