@@ -22,9 +22,3 @@ def test_set(wpilib, hal_data):
 def test_is_analog_trigger(wpilib):
     di = wpilib.DigitalOutput(2)
     assert not di.isAnalogTrigger()
-
-def test_pulse_deprecated(wpilib):
-    di = wpilib.DigitalOutput(2)
-    with pytest.warns(DeprecationWarning):
-        di.pulse(di.getChannel(), 50)
-
