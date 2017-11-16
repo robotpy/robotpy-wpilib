@@ -1,4 +1,4 @@
-# validated: 2016-12-31 JW 8f67f2c24cb9 edu/wpi/first/wpilibj/Ultrasonic.java
+# validated: 2017-10-24 EN 34c18ef00062 edu/wpi/first/wpilibj/Ultrasonic.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -125,6 +125,8 @@ class Ultrasonic(SensorBase):
         self.units = units
         self.pidSource = self.PIDSourceType.kDisplacement
         self.enabled = True # make it available for round robin scheduling
+
+        self.valueEntry = None
         
         # set up counter for this sensor
         self.counter = Counter(self.echoChannel)
@@ -333,10 +335,16 @@ class Ultrasonic(SensorBase):
     def getSmartDashboardType(self):
         return "Ultrasonic"
 
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
+
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Value", self.getRangeInches())
+        if self.valueEntry is not None:
+            self.valueEntry.setDouble(self.getRangeInches())
 
     def startLiveWindowMode(self):
         pass
