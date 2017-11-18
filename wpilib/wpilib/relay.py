@@ -200,22 +200,27 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         :returns: The current state of the relay
         :rtype: :class:`Relay.Value`
         """
-        if hal.getRelay(self.forwardHandle):
+        if self.direction is self.Direction.kForward:
+            if hal.getRelay(self.forwardHandle):
+                return self.Value.kOn
+            else:
+                return self.Value.kOff
+        elif self.direction is self.Direction.kReverse:
             if hal.getRelay(self.reverseHandle):
                 return self.Value.kOn
             else:
-                if self.direction == self.Direction.kForward:
+                return self.Value.kOff
+        else:
+            if hal.getRelay(self.forwardHandle):
+                if hal.getRelay(self.reverseHandle):
                     return self.Value.kOn
                 else:
                     return self.Value.kForward
-        else:
-            if hal.getRelay(self.reverseHandle):
-                if self.direction == self.Direction.kReverse:
-                    return self.Value.kOn
-                else:
-                    return self.Value.kReverse
             else:
-                return self.Value.kOff
+                if hal.getRelay(self.reverseHandle):
+                    return self.Value.kReverse
+                else:
+                    return self.Value.kOff
 
     def getChannel(self):
         """
