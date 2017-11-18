@@ -1,4 +1,4 @@
-# validated: 2016-01-09 AG 47961c8 edu/wpi/first/wpilibj/command/CommandGroup.java
+# validated: 2017-10-03 EN e1195e8b9dab edu/wpi/first/wpilibj/command/CommandGroup.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -118,12 +118,12 @@ class CommandGroup(Command):
         :param timeout: The timeout (in seconds) (optional)
         """
         with self.mutex:
-            if self.locked:
-                raise ValueError("Can not add new command to command group")
             if command is None:
                 raise ValueError("Given null command")
             if timeout is not None and timeout < 0:
                 raise ValueError("Can not be given a negative timeout")
+            if self.locked:
+                raise ValueError("Can not add new command to command group")
 
             command.setParent(self)
 
