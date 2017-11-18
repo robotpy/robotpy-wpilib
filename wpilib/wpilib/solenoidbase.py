@@ -1,4 +1,4 @@
-# validated: 2016-12-25 JW 963391cf3916 edu/wpi/first/wpilibj/SolenoidBase.java
+# validated: 2017-10-02 EN e1195e8b9dab edu/wpi/first/wpilibj/SolenoidBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -23,42 +23,54 @@ class SolenoidBase(SensorBase):
         """
         self.moduleNumber = moduleNumber
 
-    def getAll(self):
-        """Read all 8 solenoids from the module used by this solenoid as a
+    def getAll(moduleNumber):
+        """Read all 8 solenoids from the specified module as a
         single byte.
 
-        :returns: The current value of all 8 solenoids on this module.
+        :param moduleNumber: in a static context, the module number to read. otherwise don't provide it.
+        :returns: The current value of all 8 solenoids on the module.
         """
-        return hal.getAllSolenoids(self.moduleNumber)
+        if isinstance(moduleNumber, SolenoidBase):
+            moduleNumber = moduleNumber.moduleNumber
+        return hal.getAllSolenoids(moduleNumber)
 
-    def getPCMSolenoidBlackList(self):
+    def getPCMSolenoidBlackList(moduleNumber):
         """
         Reads complete solenoid blacklist for all 8 solenoids as a single byte.
             If a solenoid is shorted, it is added to the blacklist and
             disabled until power cycle, or until faults are cleared. See
             :meth:`clearAllPCMStickyFaults`
 
+        :param moduleNumber: in a static context, the module number to read. otherwise don't provide it.
         :returns: The solenoid blacklist of all 8 solenoids on the module.
         """
-        return hal.getPCMSolenoidBlackList(self.moduleNumber)
+        if isinstance(moduleNumber, SolenoidBase):
+            moduleNumber = moduleNumber.moduleNumber
+        return hal.getPCMSolenoidBlackList(moduleNumber)
 
-    def getPCMSolenoidVoltageStickyFault(self):
+    def getPCMSolenoidVoltageStickyFault(moduleNumber):
         """
+        :param moduleNumber: in a static context, the module number to read. otherwise don't provide it.
         :returns: True if PCM Sticky fault is set : The common
             highside solenoid voltage rail is too low, most likely
             a solenoid channel has been shorted.
         """
-        return hal.getPCMSolenoidVoltageStickyFault(self.moduleNumber)
+        if isinstance(moduleNumber, SolenoidBase):
+            moduleNumber = moduleNumber.moduleNumber
+        return hal.getPCMSolenoidVoltageStickyFault(moduleNumber)
 
-    def getPCMSolenoidVoltageFault(self):
+    def getPCMSolenoidVoltageFault(moduleNumber):
         """
+        :param moduleNumber: in a static context, the module number to read. otherwise don't provide it.
         :returns: True if PCM is in fault state : The common
             highside solenoid voltage rail is too low, most likely
             a solenoid channel has been shorted.
         """
-        return hal.getPCMSolenoidVoltageFault(self.moduleNumber)
+        if isinstance(moduleNumber, SolenoidBase):
+            moduleNumber = moduleNumber.moduleNumber
+        return hal.getPCMSolenoidVoltageFault(moduleNumber)
 
-    def clearAllPCMStickyFaults(self):
+    def clearAllPCMStickyFaults(moduleNumber):
         """
         Clear ALL sticky faults inside the PCM that Solenoid is wired to.
 
@@ -68,6 +80,9 @@ class SolenoidBase(SensorBase):
             may be prevented.
 
         If no sticky faults are set then this call will have no effect.
-        """
-        hal.clearAllPCMStickyFaults(self.moduleNumber)
 
+        :param moduleNumber: in a static context, the module number to read. otherwise don't provide it.
+        """
+        if isinstance(moduleNumber, SolenoidBase):
+            moduleNumber = moduleNumber.moduleNumber
+        hal.clearAllPCMStickyFaults(moduleNumber)

@@ -1,4 +1,4 @@
-# validated: 2016-12-25 JW 963391cf3916 edu/wpi/first/wpilibj/Solenoid.java
+# validated: 2017-10-02 EN 34c18ef00062 edu/wpi/first/wpilibj/Solenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -68,6 +68,7 @@ class Solenoid(SolenoidBase):
 
         super().__init__(moduleNumber)
         self.channel = channel
+        self.valueEntry = None
 
         SensorBase.checkSolenoidModule(moduleNumber)
         SensorBase.checkSolenoidChannel(channel)
@@ -94,6 +95,9 @@ class Solenoid(SolenoidBase):
     def free(self):
         """Mark the solenoid as freed."""
         LiveWindow.removeComponent(self)
+
+        if self.valueEntry is not None:
+            self.valueEntry.removeListener(self.valueListener)
         
         self.__finalizer()
         self._solenoidHandle = None
@@ -133,18 +137,17 @@ class Solenoid(SolenoidBase):
         return "Solenoid"
 
     def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return self.table
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
 
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putBoolean("Value", self.get())
+        if self.valueEntry is not None:
+            self.valueEntry.setBoolean("Value", self.get())
 
-    def valueChanged(self, itable, key, value, bln):
+    def valueChanged(self, entry, key, value, param):
         self.set(True if value else False)
 
     def startLiveWindowMode(self):

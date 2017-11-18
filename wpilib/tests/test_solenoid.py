@@ -1,5 +1,6 @@
 
 import pytest
+from unittest.mock import MagicMock
 
 def test_doublesolenoid_set(wpilib, hal, hal_data):
     
@@ -79,6 +80,15 @@ def test_multiple_solenoids(wpilib, hal_data):
             assert s.get() == nv
     
 
+@pytest.mark.parametrize("value,expected",
+    [(True, True), (False, False), (1, True), (0, False), ([], False)])
+def test_solenoid_valueChanged(value, expected, wpilib, hal_data):
+    s1 = wpilib.Solenoid(4)
+    s1.set = MagicMock()
+    s1.valueChanged(None, None, value, None)
+
+    s1.set.assert_called_once_with(expected)
+
 def test_solenoidbase_getAll(wpilib, hal_data):
     
     solenoid = wpilib.SolenoidBase(0)
@@ -92,10 +102,12 @@ def test_solenoidbase_getAll(wpilib, hal_data):
         s['value'] = True
         
     assert solenoid.getAll() == 0xFF
+    assert wpilib.SolenoidBase.getAll(0) == 0xFF
     
     hal_data['solenoid'][0]['value'] = False
     
     assert solenoid.getAll() == 0xFE
+    assert wpilib.SolenoidBase.getAll(0) == 0xFE
 
 def test_pcm_mapping(wpilib, hal_data):
     assert hal_data['solenoid'] is hal_data['pcm'][0]
