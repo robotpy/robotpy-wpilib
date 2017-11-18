@@ -510,16 +510,22 @@ class PIDController(LiveWindowSendable):
     def removeListeners(self):
         if self.pEntry is not None:
             self.pEntry.removeListener(self.pListener)
+            self.pEntry = None
         if self.iEntry is not None:
             self.iEntry.removeListener(self.iListener)
+            self.iEntry = None
         if self.dEntry is not None:
             self.dEntry.removeListener(self.dListener)
+            self.dEntry = None
         if self.fEntry is not None:
             self.fEntry.removeListener(self.fListener)
+            self.fEntry = None
         if self.setpointEntry is not None:
             self.setpointEntry.removeListener(self.setpointListener)
+            self.setpointEntry = None
         if self.enabledEntry is not None:
             self.enabledEntry.removeListener(self.enabledListener)
+            self.enabledEntry = None
 
     def getSmartDashboardType(self):
         return "PIDController"
