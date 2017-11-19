@@ -54,12 +54,6 @@ def test_GenericHID(wpilib):
         x.getX()
     with pytest.raises(NotImplementedError):
         x.getY()
-    with pytest.raises(NotImplementedError):
-        x.getRawAxis(1)
-    with pytest.raises(NotImplementedError):
-        x.getRawButton(1)
-    with pytest.raises(NotImplementedError):
-        x.getPOV()
 
 def test_NamedSendable(wpilib):
     x = wpilib.interfaces.NamedSendable()

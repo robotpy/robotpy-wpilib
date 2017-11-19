@@ -1,12 +1,15 @@
-# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/GenericHID.java
-#----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# validated: 2017-11-13 TW 21585f70a88e edu/wpi/first/wpilibj/GenericHID.java
+# ----------------------------------------------------------------------------
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+from ..driverstation import DriverStation
+import hal
 
 __all__ = ["GenericHID"]
+
 
 class GenericHID:
     """
@@ -55,6 +58,10 @@ class GenericHID:
 
     def __init__(self, port):
         self.port = port
+        self.ds = DriverStation.getInstance()
+        self.output = 0
+        self.leftRumble = 0
+        self.rightRumble = 0
 
     def getX(self, hand=None):
         """Get the x position of HID.
@@ -72,21 +79,37 @@ class GenericHID:
         """
         raise NotImplementedError
 
-    def getRawAxis(self, which):
-        """Get the raw axis.
-
-        :param which: index of the axis
-        :returns: the raw value of the selected axis
-        """
-        raise NotImplementedError
-
     def getRawButton(self, button):
         """Is the given button pressed.
 
         :param button: which button number
         :returns: the angle of the POV in degrees, or -1 if the POV is not pressed.
         """
-        raise NotImplementedError
+        return self.ds.getStickButton(self.port, button)
+
+    def getRawButtonPressed(self, button):
+        """Whether the button was pressed since the last check. Button indexes begin at 1.
+
+        :param button: The button index, beginning at 1.
+        :returns: Whether the button was pressed since the last check.
+        """
+        return self.ds.getStickButtonPressed(self.port, button)
+
+    def getRawButtonReleased(self, button):
+        """Whether the button was released since the last check. Button indexes begin at 1.
+
+        :param button: The button index, beginning at 1.
+        :returns: Whether the button was released since the last check.
+        """
+        return self.ds.getStickButtonReleased(self.port, button)
+
+    def getRawAxis(self, axis):
+        """Get the raw axis.
+
+        :param axis: index of the axis
+        :returns: the raw value of the selected axis
+        """
+        return self.ds.getStickAxis(self.port, axis)
 
     def getPOV(self, pov=0):
         """Get the angle in degrees of a POV on the HID.
@@ -97,11 +120,18 @@ class GenericHID:
         :param pov: The index of the POV to read (starting at 0)
         :returns: the angle of the POV in degrees, or -1 if the POV is not pressed.
         """
-        raise NotImplementedError
+        return self.ds.getStickPOV(self.port, pov)
+
+    def getAxisCount(self):
+        """Get the number of axes for the HID
+
+        :returns: The number of axis for the current HID
+        """
+        return self.ds.getStickAxisCount(self.port)
 
     def getPOVCount(self):
         """For the current HID, return the number of POVs."""
-        pass
+        return self.ds.getStickPOVCount(self.port)
 
     def getPort(self):
         """Get the port number of the HID.
@@ -115,14 +145,14 @@ class GenericHID:
 
         :returns: the type of the HID.
         """
-        raise NotImplementedError
+        return self.ds.getJoystickType(self.port)
 
     def getName(self):
         """Get the name of the HID.
 
         :returns: the name of the HID.
         """
-        raise NotImplementedError
+        return self.ds.getJoystickName(self.port)
 
     def setOutput(self, outputNumber, value):
         """Set a single HID output value for the HID.
@@ -130,14 +160,16 @@ class GenericHID:
         :param outputNumber: The index of the output to set (1-32)
         :param value: The value to set the output to
         """
-        raise NotImplementedError
+        self.outputs  = (self.outputs & ~(1 << (outputNumber - 1))) | ((1 if value else 0) << (outputNumber - 1))
+        hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
 
     def setOutputs(self, value):
         """Set all HID output values for the HID.
 
         :param value: The 32 bit output value (1 bit for each output)
         """
-        raise NotImplementedError
+        self.outputs = value
+        hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
 
     def setRumble(self, type, value):
         """Set the rumble output for the HID. The DS currently supports 2 rumble values, left rumble and
@@ -146,4 +178,14 @@ class GenericHID:
         :param type: Which rumble value to set
         :param value: The normalized value (0 to 1) to set the rumble to
         """
-        raise NotImplementedError
+        if value < 0:
+            value = 0
+        elif value > 1:
+            value = 1
+
+        if type == self.RumbleType.kLeftRumble:
+            self.leftRumble = int(value * 65535)
+        else:
+            self.rightRumble = int(value * 65535)
+
+        hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
