@@ -1,4 +1,4 @@
-# validated: 2017-10-30 EN 2fc60680f436 edu/wpi/first/wpilibj/PIDController.java
+# validated: 2017-11-19 EN 14fcf3f2f0d9 edu/wpi/first/wpilibj/PIDController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -169,15 +169,10 @@ class PIDController(LiveWindowSendable):
 
                 if self.pidInput.getPIDSourceType() == self.PIDSourceType.kRate:
                     if self.P != 0:
-                        potentialPGain = (self.totalError + self.error) * self.P
-                        if potentialPGain < self.maximumOutput:
-                            if potentialPGain > self.minimumOutput:
-                                self.totalError += self.error
-                            else:
-                                self.totalError = self.minimumOutput / self.P
-                        
-                        else:
-                            self.totalError = self.maximumOutput / self.P
+                        self.totalError = self.clamp(
+                            self.totalError + self.error, 
+                            self.minimumOutput / self.P,
+                            self.maximumOutput / self.P)
                         
                     self.result = self.P * self.totalError + \
                         self.D * self.error + \
@@ -186,14 +181,10 @@ class PIDController(LiveWindowSendable):
                 else:
 
                     if self.I != 0:
-                        potentialIGain = (self.totalError + self.error) * self.I
-                        if potentialIGain < self.maximumOutput:
-                            if potentialIGain > self.minimumOutput:
-                                self.totalError += self.error
-                            else:
-                                self.totalError = self.minimumOutput / self.I
-                        else:
-                            self.totalError = self.maximumOutput / self.I
+                        self.totalError = self.clamp(
+                            self.totalError + self.error,
+                            self.minimumOutput / self.I,
+                            self.maximumOutput / self.I)
 
                     self.result = self.P * self.error + \
                             self.I * self.totalError + \
@@ -202,10 +193,8 @@ class PIDController(LiveWindowSendable):
                             
                 self.prevError = self.error
 
-                if self.result > self.maximumOutput:
-                    self.result = self.maximumOutput
-                elif self.result < self.minimumOutput:
-                    self.result = self.minimumOutput
+                self.result = self.clamp(self.result, self.minimumOutput, self.maximumOutput)
+
                 pidOutput = self.pidOutput
                 result = self.result
                 
@@ -620,3 +609,6 @@ class PIDController(LiveWindowSendable):
 
     def stopLiveWindowMode(self):
         pass
+
+    def clamp(self, value, low, high):
+        return max(low, min(value, high))
