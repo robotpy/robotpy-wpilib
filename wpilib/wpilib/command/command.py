@@ -1,4 +1,4 @@
-# validated: 2017-10-03 EN 34c18ef00062 edu/wpi/first/wpilibj/command/Command.java
+# validated: 2017-11-19 EN 7efab4c43ac5 edu/wpi/first/wpilibj/command/Command.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -67,7 +67,7 @@ class Command(Sendable):
         self.startTime = None
         # Whether or not this command has been initialized
         self.initialized = False
-        # The requirements (or null if no requirements)
+        # The required subsystems.
         self.requirements = set()
         # Whether or not it is running
         self.running = False
@@ -286,7 +286,7 @@ class Command(Sendable):
         :class:`.ConditionalCommand` so cancelling the chosen command works properly
         in :class:`.CommandGroup`.
         """
-        self.requirements = set()
+        self.requirements.clear()
 
     def start(self):
         """Starts up the command.  Gets the command ready to start.
@@ -438,8 +438,8 @@ class Command(Sendable):
         super().initTable(table)
         if table is not None:
             self.runningEntry = table.getEntry("running")
-            self.isParentedEntry = table.getEntry("isParented")
-            table.getEntry("name").setString(self.getName())
+            self.isParentedEntry = table.getEntry(".isParented")
+            table.getEntry(".name").setString(self.getName())
             self.runningEntry.setBoolean(self.isRunning())
             self.isParentedEntry.setBoolean(self.parent is not None)
 
