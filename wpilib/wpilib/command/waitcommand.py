@@ -1,4 +1,4 @@
-# validated: 2016-11-20 KC b78f580d476f edu/wpi/first/wpilibj/command/WaitCommand.java
+# validated: 2017-10-03 EN e1195e8b9dab edu/wpi/first/wpilibj/command/WaitCommand.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -20,7 +20,7 @@ class WaitCommand(TimedCommand):
     def __init__(self, timeout, name=None):
         """Instantiates a WaitCommand with the given timeout.
         
-        :param timeout: the time the command takes to run
+        :param timeout: the time the command takes to run (seconds)
         :param name: the name of the command (optional)
         """
         if name is None:

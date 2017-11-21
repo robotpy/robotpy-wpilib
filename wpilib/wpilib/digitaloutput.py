@@ -1,4 +1,4 @@
-# validated: 2017-10-24 EN 34c18ef00062 edu/wpi/first/wpilibj/DigitalOutput.java
+# validated: 2017-11-19 EN b65447b6f5a8 edu/wpi/first/wpilibj/DigitalOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -103,7 +103,7 @@ class DigitalOutput(DigitalSource):
         The valid range is from 0.6 Hz to 19 kHz. The frequency resolution is
         logarithmic.
 
-        There is only one PWM frequency for all channnels.
+        There is only one PWM frequency for all channels.
 
         :param rate: The frequency to output all digital output PWM signals.
         :type  rate: float
