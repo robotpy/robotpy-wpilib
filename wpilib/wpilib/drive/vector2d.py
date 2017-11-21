@@ -22,8 +22,10 @@ class Vector2d:
         cosA = math.cos(angle)
         sinA = math.sin(angle)
 
-        self.x = self.x * cosA - self.y * sinA
-        self.y = self.x * sinA + self.y * cosA
+        x = self.x * cosA - self.y * sinA
+        y = self.x * sinA + self.y * cosA
+        self.x = x
+        self.y = y
 
     def dot(self, vec):
         """Returns dot product of this vector and argument

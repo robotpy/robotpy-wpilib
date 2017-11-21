@@ -302,8 +302,8 @@ def test_rotateVector(angle, wpimock):
 
     vector = wpimock.Vector2d(x, y)
     vector.rotate(angle)
-    assert vector.x, vector.y == \
-                     ((x * cosA - vector.y * sinA), (x * sinA + y * cosA))
+    assert (vector.x, vector.y) == \
+                     ((x * cosA - y * sinA), (x * sinA + y * cosA))
 
 
 def test_setMaxOutput(drive_diff):
