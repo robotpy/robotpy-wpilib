@@ -1,4 +1,4 @@
-# validated: 2017-10-07 EN e1195e8b9dab edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
+# validated: 2017-11-19 EN e1195e8b9dab edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
 
 from networktables import NetworkTables
 from .sendable import Sendable

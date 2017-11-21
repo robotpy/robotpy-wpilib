@@ -1,4 +1,4 @@
-# validated: 2017-10-24 EN 34c18ef00062 edu/wpi/first/wpilibj/Ultrasonic.java
+# validated: 2017-11-19 EN b65447b6f5a8 edu/wpi/first/wpilibj/Ultrasonic.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -27,7 +27,7 @@ class Ultrasonic(SensorBase):
     the controller.  These sensors use two transducers, a speaker and a
     microphone both tuned to the ultrasonic range. A common ultrasonic
     sensor, the Daventech SRF04 requires a short pulse to be generated on
-    a digital channel. This causes the chirp to be emmitted. A second line
+    a digital channel. This causes the chirp to be emitted. A second line
     becomes high as the ping is transmitted and goes low when the echo is
     received. The time that the line is high determines the round trip
     distance (time of flight).

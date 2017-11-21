@@ -1,4 +1,4 @@
-# validated: 2017-10-03 EN 34c18ef00062 edu/wpi/first/wpilibj/command/Scheduler.java
+# validated: 2017-11-19 EN 7efab4c43ac5 edu/wpi/first/wpilibj/command/Scheduler.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
