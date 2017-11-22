@@ -1,4 +1,4 @@
-# validated: 2016-11-26 DS 23ef57561d40 edu/wpi/first/wpilibj/PowerDistributionPanel.java
+# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/PowerDistributionPanel.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -26,6 +26,9 @@ class PowerDistributionPanel(SensorBase):
         self.module = module
         SensorBase.checkPDPModule(module)
         hal.initializePDP(module)
+        self.chanEntry = None
+        self.voltageEntry = None
+        self.totalCurrentEntry = None
 
     def getVoltage(self):
         """
@@ -100,9 +103,24 @@ class PowerDistributionPanel(SensorBase):
     def getSmartDashboardType(self):
         return "PowerDistributionPanel"
 
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.chanEntry = []
+            for channel in range(16):
+                self.chanEntry.append(subtable.getEntry("Chan" + str(channel)))
+            self.voltageEntry = subtable.getEntry("Voltage")
+            self.totalCurrentEntry = subtable.getEntry("TotalCurrent")
+            self.updateTable()
+        else:
+            self.chanEntry = None
+            self.voltageEntry = None
+            self.totalCurrentEntry = None
+
     def updateTable(self):
-        if self.table is not None:
-            for channel in range(0, 15):
-                self.table.putNumber("Chan" + str(channel), self.getCurrent(channel))
-            self.table.putNumber("Voltage", self.getVoltage())
-            self.table.putNumber("Current", self.getTotalCurrent())
+        if self.chanEntry is not None:
+            for channel in range(16):
+                self.chanEntry[channel].setDouble(self.getCurrent(channel))
+        if self.voltageEntry is not None:
+            self.voltageEntry.setDouble(self.getVoltage())
+        if self.totalCurrentEntry is not None:
+            self.totalCurrentEntry.setDouble(self.getTotalCurrent())
