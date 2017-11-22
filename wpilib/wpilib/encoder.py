@@ -1,4 +1,4 @@
-# validated: 2016-12-26 JW 0613f1d1827f edu/wpi/first/wpilibj/Encoder.java
+# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/Encoder.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -35,8 +35,7 @@ class Encoder(SensorBase):
     supplied that inverts the sense of the output to make code more readable
     if the encoder is mounted such that forward movement generates negative
     values. Quadrature encoders have two digital outputs, an A Channel and a
-    B Channel, that are out of phase with each other to allow the FPGA to do
-    direction sensing.
+    B Channel, that are out of phase with each other for direction sensing.
 
     All encoders will immediately start counting - reset() them if you need
     them to be zeroed before use.
@@ -173,6 +172,9 @@ class Encoder(SensorBase):
         self._encoder = None
         self.counter = None
         self.index = 0
+        self.speedEntry = None
+        self.distanceEntry = None
+        self.distancePerTickEntry = None
         
         self._encoder = hal.initializeEncoder(
             aSource.getPortHandleForRouting(),
@@ -203,6 +205,8 @@ class Encoder(SensorBase):
 
     def getFPGAIndex(self):
         """
+        Get the FPGA Index of the encoder
+
         :returns: The Encoder's FPGA index
         """
         return hal.getEncoderFPGAIndex(self.encoder)
@@ -424,18 +428,23 @@ class Encoder(SensorBase):
         return "Encoder"
 
     def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return self.table
+        if subtable is not None:
+            self.speedEntry = subtable.getEntry("Speed")
+            self.distanceEntry = subtable.getEntry("Distance")
+            self.distancePerTickEntry = subtable.getEntry("Distance Per Tick")
+            self.updateTable()
+        else:
+            self.speedEntry = None
+            self.distanceEntry = None
+            self.distancePerTickEntry = None
 
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Speed", self.getRate())
-            table.putNumber("Distance", self.getDistance())
-            table.putNumber("Distance per Tick", hal.getEncoderDistancePerPulse(self.encoder))
+        if self.speedEntry is not None:
+            self.speedEntry.setDouble(self.getRate())
+        if self.distanceEntry is not None:
+            self.distanceEntry.setDouble(self.getDistance())
+        if self.distancePerTickEntry is not None:
+            self.distancePerTickEntry.setDouble(hal.getEncoderDistancePerPulse(self.encoder))
 
     def startLiveWindowMode(self):
         pass
