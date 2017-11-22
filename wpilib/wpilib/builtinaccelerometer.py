@@ -1,4 +1,4 @@
-# validated: 2016-12-22 JW e44a6e227a89 edu/wpi/first/wpilibj/BuiltInAccelerometer.java
+# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/BuiltInAccelerometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -29,6 +29,9 @@ class BuiltInAccelerometer(LiveWindowSendable):
         :type  range: :class:`.Accelerometer.Range`
         """
         self.setRange(range)
+        self.xEntry = None
+        self.yEntry = None
+        self.zEntry = None
         hal.report(hal.UsageReporting.kResourceType_Accelerometer, 0, 0,
                       "Built-in accelerometer")
         LiveWindow.addSensor("BuiltInAccel", 0, self)
@@ -86,12 +89,24 @@ class BuiltInAccelerometer(LiveWindowSendable):
     def getSmartDashboardType(self):
         return "3AxisAccelerometer"
 
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.xEntry = subtable.getEntry("X")
+            self.yEntry = subtable.getEntry("Y")
+            self.zEntry = subtable.getEntry("Z")
+            self.updateTable()
+        else:
+            self.xEntry = None
+            self.yEntry = None
+            self.zEntry = None
+
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("X", self.getX())
-            table.putNumber("Y", self.getY())
-            table.putNumber("Z", self.getZ())
+        if self.xEntry is not None:
+            self.xEntry.setDouble(self.getX())
+        if self.yEntry is not None:
+            self.yEntry.setDouble(self.getY())
+        if self.zEntry is not None:
+            self.zEntry.setDouble(self.getZ())
 
     def startLiveWindowMode(self): # pragma: no cover
         pass

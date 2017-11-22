@@ -39,22 +39,21 @@ def test_bacc_getZ(acc, acc_data):
 def test_bacc_getSmartDashboardType(acc):
     assert acc.getSmartDashboardType() == "3AxisAccelerometer"
     
-@pytest.mark.parametrize('table', [True, False])
-def test_bacc_updateTable(acc, acc_data, table):
-    acc.getTable = MagicMock()
-    if not table:
-        acc.getTable.return_value = None
-        acc.getX = MagicMock()
-        acc.updateTable()
-        assert not acc.getX.called
-    else:
-        acc_data['x'] = 1
-        acc_data['y'] = 2
-        acc_data['z'] = 3
-        acc.updateTable()
-        acc.getTable.return_value.putNumber.assert_has_calls([call('X', 1),
-                                                              call('Y', 2),
-                                                              call('Z', 3)])
+def test_bacc_updateTable(acc, acc_data):
+    acc.xEntry = MagicMock()
+    acc.yEntry = MagicMock()
+    acc.zEntry = MagicMock()
+    acc_data['x'] = 1
+    acc_data['y'] = 2
+    acc_data['z'] = 3
+    acc.updateTable()
 
-        
-        
+    acc.xEntry.setDouble.assert_has_calls([call(1)])
+    acc.yEntry.setDouble.assert_has_calls([call(2)])
+    acc.zEntry.setDouble.assert_has_calls([call(3)])
+
+def test_bacc_updateTable_uninitialized(acc, acc_data):
+    acc.xEntry = None
+    acc.yEntry = None
+    acc.zEntry = None
+    acc.updateTable()
