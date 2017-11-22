@@ -1,4 +1,4 @@
-# validated: 2016-12-26 JW e44a6e227a89 edu/wpi/first/wpilibj/Counter.java
+# validated: 2017-11-21 EN b65447b6f5a8 edu/wpi/first/wpilibj/Counter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -142,6 +142,7 @@ class Counter(SensorBase):
         self.__finalizer = \
             weakref.finalize(self, _freeCounter, self)
 
+        self.valueEntry = None
         self.setMaxPeriod(.5)
 
         hal.report(hal.UsageReporting.kResourceType_Counter, self.index, mode)
@@ -565,13 +566,12 @@ class Counter(SensorBase):
         return "Counter"
 
     def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return self.table
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
 
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Value", self.get())
+        if self.valueEntry is not None:
+            self.valueEntry.setDouble(self.get())
