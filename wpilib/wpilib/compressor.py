@@ -1,5 +1,6 @@
-# validated: 2016-12-25 JW 69422dc0636c edu/wpi/first/wpilibj/Compressor.java
+# validated: 2017-11-21 EN 423d8f6860d7 edu/wpi/first/wpilibj/Compressor.java
 import hal
+from networktables import NetworkTables
 
 from .sensorbase import SensorBase
 
@@ -28,7 +29,11 @@ class Compressor(SensorBase):
         if module is None:
             module = SensorBase.getDefaultSolenoidModule()
         self.compressorHandle = hal.initializeCompressor(module)
+        hal.report(hal.UsageReporting.kResourceType_Compressor, module)
         self.module = module
+        self.enabledEntry = None
+        self.enabledListener = None
+        self.pressureSwitchEntry = None
 
     def start(self):
         """Start the compressor running in closed loop control mode.
@@ -148,14 +153,35 @@ class Compressor(SensorBase):
         return "Compressor"
 
     def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return self.table
+        if subtable is not None:
+            self.enabledEntry = subtable.getEntry("Enabled")
+            self.pressureSwitchEntry = subtable.getEntry("Pressure Switch")
+            self.updateTable()
+        else:
+            self.enabledEntry = None
+            self.pressureSwitchEntry = None
 
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putBoolean("Enabled", self.enabled())
-            table.putBoolean("Pressure Switch", self.getPressureSwitchValue())
+        if self.enabledEntry is not None:
+            self.enabledEntry.setBoolean(self.enabled())
+        if self.pressureSwitchEntry is not None:
+            self.pressureSwitchEntry.setBoolean(self.getPressureSwitchValue())
+
+    def startLiveWindowMode(self):
+        if self.enabledEntry is not None:
+            self.enabledListener = self.enabledEntry.addListener(
+                self.enabledChanged, 
+                NetworkTables.NotifyFlags.IMMEDIATE |
+                NetworkTables.NotifyFlags.NEW |
+                NetworkTables.NotifyFlags.UPDATE)
+
+    def enabledChanged(self, entry, key, value, param):
+        if value:
+            self.start()
+        else:
+            self.stop()
+
+    def stopLiveWindowMode(self):
+        if self.enabledEntry is not None:
+            self.enabledEntry.removeListener(self.enabledListener)
+            self.enabledListener = None
