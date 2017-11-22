@@ -1,4 +1,4 @@
-# validated: 2016-12-10 AA e44a6e227a89 edu/wpi/first/wpilibj/GearTooth.java
+# validated: 2017-11-21 EN b65447b6f5a8 edu/wpi/first/wpilibj/GearTooth.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

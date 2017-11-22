@@ -1,4 +1,4 @@
-# validated: 2016-01-08 DS e15ca5a edu/wpi/first/wpilibj/filters/Filter.java
+# validated: 2017-11-21 EN e1195e8b9dab edu/wpi/first/wpilibj/filters/Filter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2015-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

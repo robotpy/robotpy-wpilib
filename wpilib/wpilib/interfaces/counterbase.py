@@ -1,4 +1,4 @@
-# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/CounterBase.java
+# validated: 2017-11-21 EN b65447b6f5a8 edu/wpi/first/wpilibj/CounterBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -43,7 +43,7 @@ class CounterBase:
     def getPeriod(self):
         """Get the time between the last two edges counted
         
-        :returns: the time beteween the last two ticks in seconds
+        :returns: the time between the last two ticks in seconds
         """
         raise NotImplementedError
 

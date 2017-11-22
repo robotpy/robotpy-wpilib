@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af edu/wpi/first/wpilibj/Resource.java
+# validated: 2017-11-21 EN b65447b6f5a8 edu/wpi/first/wpilibj/Resource.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -60,7 +60,7 @@ class Resource:
     def __init__(self, size):
         """Allocate storage for a new instance of Resource.
         Allocate a bool array of values that will get initialized to
-        indicate that no resources have been allocated yet. The indicies
+        indicate that no resources have been allocated yet. The indices
         of the resources are 0..size-1.
 
         :param size: The number of blocks to allocate
