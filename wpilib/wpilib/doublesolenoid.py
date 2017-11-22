@@ -1,4 +1,4 @@
-# validated: 2016-12-25 JW 963391cf3916 edu/wpi/first/wpilibj/DoubleSolenoid.java
+# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/DoubleSolenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -75,6 +75,7 @@ class DoubleSolenoid(SolenoidBase):
 
         super().__init__(moduleNumber)
         
+        self.valueEntry = None
         SensorBase.checkSolenoidModule(moduleNumber)
         SensorBase.checkSolenoidChannel(forwardChannel)
         SensorBase.checkSolenoidChannel(reverseChannel)
@@ -180,25 +181,24 @@ class DoubleSolenoid(SolenoidBase):
         return "Double Solenoid"
 
     def initTable(self, subtable):
-        self.table = subtable
-        self.updateTable()
-
-    def getTable(self):
-        return self.table
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable();
+        else:
+            self.valueEntry = None
 
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
+        if self.valueEntry is not None:
             #TODO: this is bad
             val = self.get()
             if val == self.Value.kForward:
-                table.putString("Value", "F")
+                self.valueEntry.setString("F")
             elif val == self.Value.kReverse:
-                table.putString("Value", "R")
+                self.valueEntry.setString("R")
             else:
-                table.putString("Value", "O")
+                self.valueEntry.putString("O")
 
-    def valueChanged(self, itable, key, value, bln):
+    def valueChanged(self, entry, key, value, param):
         #TODO: this is bad also
         if value == "Reverse":
             self.set(self.Value.kReverse)
