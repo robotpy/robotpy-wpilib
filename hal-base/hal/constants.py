@@ -71,6 +71,10 @@ class UsageReporting:
     kResourceType_MindsensorsSD540 = 56
     kResourceType_DigitalFilter = 57
     kResourceType_ADIS16448 = 58
+    kResourceType_PDP = 59
+    kResourceType_PCM = 60
+    kResourceType_PigeonIMU = 61
+    kResourceType_NidecBrushless = 62
 
     # enum tInstances
     kLanguage_LabVIEW = 1
