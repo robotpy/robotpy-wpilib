@@ -1,4 +1,4 @@
-# validated: 2016-12-21 DV be2647d44e13 edu/wpi/first/wpilibj/GyroBase.java
+# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/GyroBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -22,6 +22,7 @@ class GyroBase(SensorBase):
     
     def __init__(self):
         self.pidSource = self.PIDSourceType.kDisplacement
+        self.valueEntry = None
     
     def calibrate(self):
         raise NotImplementedError()
@@ -70,10 +71,16 @@ class GyroBase(SensorBase):
     def getSmartDashboardType(self):
         return "Gyro"
 
+    def initTable(self, subtable):
+        if subtable is not None:
+            self.valueEntry = subtable.getEntry("Value")
+            self.updateTable()
+        else:
+            self.valueEntry = None
+        
     def updateTable(self):
-        table = self.getTable()
-        if table is not None:
-            table.putNumber("Value", self.getAngle())
+        if self.valueEntry is not None:
+            self.valueEntry.setDouble(self.getAngle())
 
     def startLiveWindowMode(self):
         pass
