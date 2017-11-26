@@ -60,31 +60,99 @@
       
       return ret;
     }
-    
+
+    function javaTypeToPython(type) {
+        if (type == "void")
+            return "None";
+        if (type == "byte[]")
+            return "bytes";
+
+        var isArray = false;
+        if (type.endsWith("[]")) {
+            isArray = true;
+            type = type.slice(0, -2);
+        }
+
+        type = type.split(/(\w+)/g);
+        for (var i = 0; i < type.length; i++) {
+            switch (type[i]) {
+                case "ArrayList":
+                    type[i] = "List";
+                    break;
+
+                case "<":
+                    type[i] = "[";
+                    break;
+                case ">":
+                    type[i] = "]";
+                    break;
+
+                case "boolean": case "Boolean":
+                    type[i] = "bool";
+                    break;
+                case "Integer":
+                case "long": case "Long":
+                case "short": case "Short":
+                case "byte": case "Byte":
+                    type[i] = "int";
+                    break;
+                case "double": case "Double":
+                case "Float":
+                    type[i] = "float";
+                    break;
+
+                case "String":
+                    type[i] = "str";
+                    break;
+                case "ByteBuffer":  // java.nio
+                    type[i] = "bytearray";
+                    break;
+            }
+        }
+        type = type.join("");
+        if (isArray) {
+            type = "List[" + type + "]";
+        }
+        return type;
+    }
+
     function process(txt) {
       // try to find a function definition
-      var s = txt.split(/(.*)(public|protected|private|static|final|synchronized|abstract|default|native\s+)+\s+[\w\<\>\[\]]+\s+(\w+)\s*\(([^\)]*)\)/);
+      var s = txt.split(/(.*)\n\s+(?:(?:public|protected|private|static|final|synchronized|abstract|default|native)\s+)+(?:([\w<>[\]]+)\s+)?(\w+)\s*\(([^)]*)\)/);
       var t = processDoc(s[0]);
       
       // add the function definition in if present
       if (s.length > 1) {
-        if (s[4] != ""){
-          var new_str = "";
-          args = s[4].split(", ")
+        var retType = s[2];
+        var funcName = s[3];
+        var args = s[4];
+
+        if (args) {
+          var pyArgs = [];
+          args = args.split(", ");
           for (var i = 0; i<args.length; i++) {
               var split = args[i].split(" ");
+              var argName, argType;
               if (split[0] != "final") {
-                  new_str = new_str + ", " + split[1];
+                  argType = split[0];
+                  argName = split[1];
               } else {
-                  new_str = new_str + ", " + split[2];
+                  argType = split[1];
+                  argName = split[2];
               }
+              pyArgs.push(argName + ": " + javaTypeToPython(argType));
           }
-          s[4] = new_str;
-          
+          args = ", " + pyArgs.join(", ");
         }
-        
-        t[0] = "def " + s[3] + "(self" + s[4] +
-            "):\n        " + t[0];
+        if (retType) {
+            retType = javaTypeToPython(retType);
+        } else {
+            funcName = "__init__";
+            retType = "None";
+        }
+
+        t[0] = "def " + funcName + "(self" + args +
+              ") -> " + retType + ":\n        " + t[0];
       }
       return t;
     }
