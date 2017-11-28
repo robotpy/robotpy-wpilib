@@ -56,6 +56,8 @@ class MecanumDrive(RobotDriveBase):
         :param y: The speed that the robot should drive in the Y direction. [-1.0..1.0]
         :param rotation: The rate of rotation for the robot that is completely independent of the
         translation. [-1.0..1.0]
+        :param gyroAngle: The current angle reading from the gyro in degrees around the Z axis. Use 
+        this to implement field-oriented controls.
         """
         if not self.reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,
