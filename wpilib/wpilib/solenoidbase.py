@@ -1,4 +1,4 @@
-# validated: 2017-10-02 EN e1195e8b9dab edu/wpi/first/wpilibj/SolenoidBase.java
+# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/SolenoidBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,11 +8,11 @@
 
 import hal
 
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["SolenoidBase"]
 
-class SolenoidBase(SensorBase):
+class SolenoidBase(SendableBase):
     """SolenoidBase class is the common base class for the Solenoid and
     DoubleSolenoid classes."""
 

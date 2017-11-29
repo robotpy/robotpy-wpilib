@@ -1,6 +1,26 @@
-
 import pytest
 from unittest.mock import MagicMock
+
+
+@pytest.fixture(scope='function')
+def doublesolenoid(wpilib):
+    return wpilib.DoubleSolenoid(0, 1)
+
+
+@pytest.fixture(scope='function')
+def doublesolenoid_table(networktables):
+    return networktables.NetworkTables.getTable("/LiveWindow/Ungrouped/DoubleSolenoid[0,0]")
+
+
+@pytest.fixture(scope='function')
+def solenoid(wpilib):
+    return wpilib.Solenoid(4)
+
+
+@pytest.fixture(scope='function')
+def solenoid_table(networktables):
+    return networktables.NetworkTables.getTable("/LiveWindow/Ungrouped/Solenoid[0,4]")
+
 
 def test_doublesolenoid_set(wpilib, hal, hal_data):
     
@@ -29,8 +49,45 @@ def test_doublesolenoid_set(wpilib, hal, hal_data):
     ds.free()
     
     ds = wpilib.DoubleSolenoid(0, 1)
+
+
+def test_doublesolenoid_blacklisted(doublesolenoid):
+    # ?hal?
+    assert doublesolenoid.isFwdSolenoidBlackListed() == False
+    assert doublesolenoid.isRevSolenoidBlackListed() == False
+
+
+def test_doublesolenoid_initTable_null(doublesolenoid):
+    doublesolenoid.initTable(None)
+
+
+@pytest.mark.parametrize("value_name, expected_output", [
+    ('kReverse', 'R'),
+    ('kForward', 'F'),
+    ('kOff', 'O'),
+    ])
+def test_doublesolenoid_initSendable_update(doublesolenoid, sendablebuilder, value_name, expected_output):
+    doublesolenoid.set(getattr(doublesolenoid.Value, value_name))
+
+    doublesolenoid.initSendable(sendablebuilder)
+    prop = sendablebuilder.properties[0]
+    assert prop.key == "Value"
+
+    sendablebuilder.updateTable()
+    assert sendablebuilder.getTable().getString("Value", "") == expected_output
     
-    
+
+@pytest.mark.parametrize("input, expected_value_name", [
+    ('Reverse', 'kReverse'),
+    ('Forward', 'kForward'),
+    ('Off', 'kOff'),
+    ])
+def test_doublesolenoid_initSendable_setter(doublesolenoid, sendablebuilder, input, expected_value_name):
+    doublesolenoid.initSendable(sendablebuilder)
+    prop = sendablebuilder.properties[0]
+    prop.setter(input)
+    assert doublesolenoid.get() == getattr(doublesolenoid.Value, expected_value_name)
+
 
 def test_solenoid(wpilib, hal, hal_data):
 
@@ -80,14 +137,63 @@ def test_multiple_solenoids(wpilib, hal_data):
             assert s.get() == nv
     
 
-@pytest.mark.parametrize("value,expected",
-    [(True, True), (False, False), (1, True), (0, False), ([], False)])
-def test_solenoid_valueChanged(value, expected, wpilib, hal_data):
-    s1 = wpilib.Solenoid(4)
-    s1.set = MagicMock()
-    s1.valueChanged(None, None, value, None)
+def test_solenoid_isblacklisted(solenoid):
+    # ?hal?
+    assert solenoid.isBlackListed() == False
 
-    s1.set.assert_called_once_with(expected)
+
+def test_solenoid_pulseduration(solenoid):
+    solenoid.setPulseDuration(0.5)
+
+
+def test_solenoid_startpulse(solenoid):
+    # ?hal?
+    #solenoid.startPulse()
+    pass
+
+
+def test_solenoid_initSendable_update(solenoid, sendablebuilder, hal_data):
+
+    solenoid.initSendable(sendablebuilder)
+    prop = sendablebuilder.properties[0]
+
+    assert prop.key == "Value"
+    hal_data['solenoid'][4]['value'] = True
+    sendablebuilder.updateTable()
+
+    assert sendablebuilder.getTable().getBoolean("Value", False) == True
+
+
+@pytest.mark.parametrize("value", [
+    (True ), 
+    (False )])
+def test_solenoid_initSendable_setter(solenoid, sendablebuilder, hal_data, value):
+    solenoid.initSendable(sendablebuilder)
+
+    prop = sendablebuilder.properties[0]
+    prop.setter(value)
+    assert hal_data['solenoid'][4]['value'] == value
+
+
+@pytest.mark.parametrize("value", [
+    (1,), 
+    (0,), 
+    ([],)])
+def test_solenoid_initSendable_setter_invalid(solenoid, sendablebuilder, value):
+    solenoid.initSendable(sendablebuilder)
+    prop = sendablebuilder.properties[0]
+
+    with pytest.raises(AssertionError):
+        prop.setter(value)
+
+
+def test_solenoid_initSendable_safe(solenoid, sendablebuilder, hal_data):
+    hal_data['solenoid'][4]['value'] == True
+    solenoid.initSendable(sendablebuilder)
+    sendablebuilder.startLiveWindowMode()
+
+    assert hal_data['solenoid'][4]['value'] == False
+
 
 def test_solenoidbase_getAll(wpilib, hal_data):
     
@@ -109,8 +215,10 @@ def test_solenoidbase_getAll(wpilib, hal_data):
     assert solenoid.getAll() == 0xFE
     assert wpilib.SolenoidBase.getAll(0) == 0xFE
 
+
 def test_pcm_mapping(wpilib, hal_data):
     assert hal_data['solenoid'] is hal_data['pcm'][0]
+
 
 def test_multiple_pcm(wpilib, hal_data):
     
