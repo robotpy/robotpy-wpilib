@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/TalonSRX.java
+# validated: 2017-11-29 DV ba3a85d0ccab edu/wpi/first/wpilibj/PWMTalonSRX.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -11,24 +11,24 @@ import hal
 from .livewindow import LiveWindow
 from .pwmspeedcontroller import PWMSpeedController
 
-__all__ = ["TalonSRX"]
+__all__ = ["PWMTalonSRX"]
 
-class TalonSRX(PWMSpeedController):
+class PWMTalonSRX(PWMSpeedController):
     """
-        Cross the Road Electronics (CTRE) Talon SRX Speed Controller via PWM
-        
-        .. seealso:: See :class:`.CANTalon` for CAN control of Talon SRX.
+    Cross the Road Electronics (CTRE) Talon SRX Speed Controller with PWM control.
+
+    .. seealso:: See :class:`ctre.cantalon.CANTalon` for CAN control of Talon SRX.
     """
 
     def __init__(self, channel):
         """Constructor for a TalonSRX connected via PWM.
 
-        :param channel: The PWM channel that the TalonSRX is attached to. 0-9 are on-board, 10-19 are on the MXP port.
+        :param channel: The PWM channel that the PWMTalonSRX is attached to. 0-9 are on-board, 10-19 are on the MXP port.
         :type  channel: int
 
         .. note ::
 
-            The TalonSRX uses the following bounds for PWM values. These values
+            The PWMTalonSRX uses the following bounds for PWM values. These values
             should work reasonably well for most controllers, but if users
             experience issues such as asymmetric behavior around the deadband
             or inability to saturate the controller in either direction,
@@ -47,6 +47,6 @@ class TalonSRX(PWMSpeedController):
         self.setSpeed(0)
         self.setZeroLatch()
 
-        LiveWindow.addActuatorChannel("TalonSRX", self.getChannel(), self)
-        hal.report(hal.UsageReporting.kResourceType_TalonSRX,
+        LiveWindow.addActuatorChannel("PWMTalonSRX", self.getChannel(), self)
+        hal.report(hal.UsageReporting.kResourceType_PWMTalonSRX,
                    self.getChannel())

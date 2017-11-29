@@ -63,7 +63,7 @@ class UsageReporting:
     kResourceType_SRF08 = 48
     kResourceType_AnalogOutput = 49
     kResourceType_VictorSP = 50
-    kResourceType_TalonSRX = 51
+    kResourceType_PWMTalonSRX = 51
     kResourceType_CANTalonSRX = 52
     kResourceType_ADXL362 = 53
     kResourceType_ADXRS450 = 54

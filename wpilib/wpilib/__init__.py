@@ -45,6 +45,7 @@ from .powerdistributionpanel import *
 from .preferences import *
 from .pwm import *
 from .pwmspeedcontroller import *
+from .pwmtalonsrx import *
 from .relay import *
 from .resource import *
 from .robotbase import *
@@ -65,7 +66,6 @@ from .spark import *
 from .speedcontrollergroup import *
 from .spi import *
 from .talon import *
-from .talonsrx import *
 from .timer import *
 from .ultrasonic import *
 from .utility import *

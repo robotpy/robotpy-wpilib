@@ -7,7 +7,7 @@ import pytest
 
 @pytest.mark.parametrize('clsname, ',
                          ['Jaguar', 'SD540', 'Spark', 'Talon',
-                          'TalonSRX', 'Victor', 'VictorSP'])
+                          'PWMTalonSRX', 'Victor', 'VictorSP'])
 def test_controller(wpilib, hal_data, clsname):
     
     # create object/helper function

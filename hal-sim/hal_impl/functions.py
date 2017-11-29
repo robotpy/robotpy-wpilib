@@ -271,8 +271,8 @@ def report(resource, instanceNumber, context=0, feature=None):
         hal_data['pwm'][instanceNumber]['type'] = 'spark'
     elif resource == hur.kResourceType_Talon:
         hal_data['pwm'][instanceNumber]['type'] = 'talon'
-    elif resource == hur.kResourceType_TalonSRX:
-        hal_data['pwm'][instanceNumber]['type'] = 'talonsrx'
+    elif resource == hur.kResourceType_PWMTalonSRX:
+        hal_data['pwm'][instanceNumber]['type'] = 'pwmtalonsrx'
     elif resource == hur.kResourceType_Victor:
         hal_data['pwm'][instanceNumber]['type'] = 'victor'
     elif resource == hur.kResourceType_VictorSP:
