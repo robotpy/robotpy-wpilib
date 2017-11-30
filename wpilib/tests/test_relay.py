@@ -1,14 +1,21 @@
 import pytest
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock, call, patch
 
 
 @pytest.fixture(scope="function")
 def relay(request, wpilib):
     return wpilib.Relay(2)
 
+
 @pytest.fixture(scope="function")
 def relay_data(request, hal_data):
     return hal_data['relay'][2]
+
+
+@pytest.fixture(scope="function")
+def relay_table(networktables):
+    return networktables.NetworkTables.getTable("/LiveWindow/Ungrouped/Relay[2]")
+
 
 def check_initRelay(channel, direction, relay, relay_data, hal, hal_data, wpilib, init=None):
     assert relay.channel == channel
@@ -43,6 +50,7 @@ def check_initRelay(channel, direction, relay, relay_data, hal, hal_data, wpilib
         #hal.setRelayReverse.assert_called_once_with(relay._port, False)
         #hal.HALReport.assert_called_once_with(hal.HALUsageReporting.kResourceType_Relay, relay.channel + 128)
 
+
 @pytest.mark.parametrize("direction", [None, "None", "kBoth", "kForward", "kReverse"])
 def test_relay_create(direction, hal, hal_data, wpilib, relay_data):
     relay_data['fwd'] = None
@@ -59,6 +67,7 @@ def test_relay_create(direction, hal, hal_data, wpilib, relay_data):
         relay = wpilib.Relay(2, direction)
 
     check_initRelay(2, direction, relay, relay_data, hal, hal_data, wpilib)
+
 
 def test_relay_create_all(wpilib):
     relays = []
@@ -90,6 +99,7 @@ def test_relay_free(relay, hal, wpilib):
     # try to re-grab
     _ = wpilib.Relay(2)
    
+
 @pytest.mark.parametrize("dir,value,fwd,rev",
         [("kBoth",      "kOff",     False,  False),
          ("kBoth",      "kOn",      True,   True),
@@ -117,10 +127,12 @@ def test_relay_set(dir, value, fwd, rev, wpilib, relay_data):
     assert relay_data['fwd'] is fwd
     assert relay_data['rev'] is rev
 
+
 def test_relay_set_badvalue(relay):
     with pytest.raises(ValueError):
         relay.set(4)
     #assert not hal.setRelayForward.called and not hal.setRelayReverse.called
+
 
 def test_relay_set_freed(relay):
     relay.free()
@@ -128,6 +140,7 @@ def test_relay_set_freed(relay):
     with pytest.raises(ValueError):
         relay.set(relay.Value.kOff)
     #assert not hal.setRelayForward.called and not hal.setRelayReverse.called
+
 
 @pytest.mark.parametrize("dir,value,fwd,rev",
         [("kBoth",      "kOff",     False,  False),
@@ -155,12 +168,56 @@ def test_relay_get(dir, value, fwd, rev, wpilib, relay_data):
     #hal.getRelayForward.assert_called_once_with(relay._port)
     #hal.getRelayReverse.assert_called_once_with(relay._port)
 
+
 def test_relay_get_freed(relay, hal):
     relay.free()
     #hal.reset_mock()
     with pytest.raises(ValueError):
         relay.get()
     #assert not hal.setRelayForward.called and not hal.setRelayReverse.called
+
+
+def test_relay_getChannel(relay):
+    assert relay.getChannel() == 2
+
+
+def test_relay_expiration(relay):
+    relay.setExpiration(111)
+    assert relay.getExpiration() == 111
+
+
+def test_relay_isAlive1(relay):
+    relay.setSafetyEnabled(False)
+    assert relay.isAlive()
+    relay.setSafetyEnabled(True)
+    assert not relay.isAlive()
+
+
+def test_relay_isAlive2(wpilib, sim_hooks):
+    relay = wpilib.Relay(2)
+
+    relay.setSafetyEnabled(True)
+    sim_hooks.time = 1.0
+    assert not relay.isAlive()
+    relay.feed()
+    assert relay.isAlive()
+    
+
+def test_relay_stopMotor(relay, wpilib):
+    relay.set = MagicMock()
+    relay.stopMotor()
+    relay.set.assert_called_with(wpilib.Relay.Value.kOff)
+
+
+@pytest.mark.parametrize('value', [True, False])
+def test_relay_isSafetyEnabled(relay, value):
+    relay.setSafetyEnabled(value)
+    assert relay.isSafetyEnabled() == value
+
+
+def test_relay_getDescription(relay):
+    assert relay.getDescription() == "Relay ID 2"
+
 
 @pytest.mark.parametrize("origdir,newdir",
         [("kBoth", "kBoth"), ("kBoth", "kForward"), ("kBoth", "kReverse"),
@@ -180,31 +237,44 @@ def test_relay_setDirection(origdir, newdir, hal, hal_data, wpilib, relay_data):
     #else:
         #hal.assert_has_calls([])
 
+
 def test_relay_getSmartDashboardType(relay):
     assert relay.getSmartDashboardType() == "Relay"
 
-@pytest.mark.parametrize("value", [None, "Off", "On", "Forward", "Reverse"])
-def test_relay_updateTable(value, relay):
-    relay.valueEntry = MagicMock()
+
+def test_relay_initTable_null(relay):
     relay.get = MagicMock()
-    if value is None:
-        relay.valueEntry = None
-        relay.updateTable()
-        assert not relay.get.called
-    else:
-        relay.get.return_value = getattr(relay.Value, "k"+value)
-        relay.updateTable()
-        relay.valueEntry.setString.assert_called_once_with(value)
+    relay.initTable(None)
+    assert relay.valueEntry is None
+    assert relay.valueListener is None
+    assert not relay.get.called
 
-def test_relay_initTable(relay):
-    subtable = MagicMock()
-    relay.initTable(subtable)
 
-@pytest.mark.parametrize("value", ["inv", "Off", "On", "Forward", "Reverse"])
-def test_relay_valueChanged(value, relay):
+@pytest.mark.parametrize("value", ["Off", "On", "Forward", "Reverse"])
+def test_relay_initTable(relay, relay_table, value):
+    v = getattr(relay.Value, 'k' + value)
+    relay.set(v)
+    assert relay.get() == v
+    relay.initTable(relay_table)
+    assert relay_table.getString("Value", "") == value
+
+
+def test_relay_livewindowmode(relay, relay_table):
+    relay.initTable(relay_table)
+    relay.startLiveWindowMode()
+    
+    assert relay.valueListener is not None
+    relay.stopLiveWindowMode()
+    assert relay.valueListener is None
+
+
+@pytest.mark.parametrize("value, expected_name", [
+    ("inv", "kOff"), 
+    ("Off", "kOff"), 
+    ("On", "kOn"), 
+    ("Forward", "kForward"), 
+    ("Reverse", "kReverse")])
+def test_relay_valueChanged(value, expected_name, relay):
     relay.set = MagicMock()
     relay.valueChanged(None, None, value, None)
-    if value == "inv":
-        relay.set.assert_called_once_with(getattr(relay.Value, "kOff"))
-    else:
-        relay.set.assert_called_once_with(getattr(relay.Value, "k"+value))
+    relay.set.assert_called_once_with(getattr(relay.Value, expected_name))

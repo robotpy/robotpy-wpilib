@@ -1,7 +1,10 @@
-
 import sys
 import pytest
 from unittest.mock import MagicMock, patch
+import hal
+import hal_impl
+from hal_impl.sim_hooks import SimHooks as BaseSimHooks
+
 
 @pytest.fixture(scope="function")
 def _module_patch(request):
@@ -17,17 +20,20 @@ def _module_patch(request):
     m.start()
     request.addfinalizer(m.stop)
 
+
 @pytest.fixture(scope="function")
 def hal(_module_patch):
     """Simulated hal module"""
     import hal
     return hal
 
+
 @pytest.fixture(scope="function")
 def hal_impl_mode_helpers(_module_patch):
     """Simulated hal module"""
     from hal_impl import mode_helpers
     return mode_helpers
+
 
 @pytest.fixture(scope="function")
 def hal_data(_module_patch):
@@ -36,6 +42,7 @@ def hal_data(_module_patch):
     import hal_impl.data
     hal_impl.functions.reset_hal()
     return hal_impl.data.hal_data
+
 
 @pytest.fixture(scope="function")
 def wpilib(_module_patch, hal, hal_data):
@@ -46,6 +53,7 @@ def wpilib(_module_patch, hal, hal_data):
     # Note: even though the wpilib module is freshly loaded each time a new
     # test is ran, we still call _reset() to finish off any finalizers
     wpilib.Resource._reset()
+
 
 @pytest.fixture(scope="function")
 def networktables():
@@ -84,6 +92,7 @@ def halmock(request):
     hal.kMaxJoystickPOVs = 12
     return hal
 
+
 @pytest.fixture(scope="function")
 def wpimock(request, halmock):
     """Monkeypatches sys.modules hal and loads wpilib."""
@@ -98,5 +107,17 @@ def wpimock(request, halmock):
     return wpilib
 
 
+class SimHooks(BaseSimHooks):
+    def __init__(self):
+        super().__init__()
+        self.time = 0.0
+
+    def getTime(self):
+        return self.time
 
 
+@pytest.fixture(scope='function')
+def sim_hooks():
+    with patch('hal_impl.functions.hooks', new=SimHooks()) as hooks:
+        hal_impl.functions.reset_hal()
+        yield hooks
