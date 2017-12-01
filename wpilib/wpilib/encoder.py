@@ -431,7 +431,7 @@ class Encoder(SensorBase):
         if subtable is not None:
             self.speedEntry = subtable.getEntry("Speed")
             self.distanceEntry = subtable.getEntry("Distance")
-            self.distancePerTickEntry = subtable.getEntry("Distance Per Tick")
+            self.distancePerTickEntry = subtable.getEntry("Distance per Tick")
             self.updateTable()
         else:
             self.speedEntry = None
