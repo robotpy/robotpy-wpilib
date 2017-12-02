@@ -102,6 +102,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         self._forwardHandle = None
         self._reverseHandle = None
         self.valueEntry = None
+        self.valueListener = None
 
         self._initRelay()
         
