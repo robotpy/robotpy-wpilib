@@ -1848,7 +1848,6 @@ def getPCMSolenoidVoltageFault(module, status):
 
 def clearAllPCMStickyFaults(module, status):
     status.value = 0
-    return False
 
 # This needs to be here otherwise tests will fail, as hal.initialize() does not call this
 data._reset_hal_data(hooks)
