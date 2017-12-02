@@ -41,6 +41,7 @@ class Servo(PWM):
         self.setPeriodMultiplier(self.PeriodMultiplier.k4X)
 
         self.valueEntry = None
+        self.valueListener = None
 
         LiveWindow.addActuatorChannel("Servo", self.getChannel(), self)
         hal.report(hal.UsageReporting.kResourceType_Servo,
@@ -125,5 +126,5 @@ class Servo(PWM):
         if self.valueEntry is not None:
             self.valueEntry.setDouble(self.get())
 
-    def valueChanged(self, event):
-        self.set(event.value)
+    def valueChanged(self, entry, key, value, param):
+        self.set(value)
