@@ -856,7 +856,25 @@ def freeDIOPort(dioPortHandle):
 
 def allocateDigitalPWM(status):
     status.value = 0
-    return types.DigitalPWMHandle()
+    handle = 0
+    dio = None
+    for i, port in enumerate(hal_data["dio"]):
+        if i >= kNumDigitalHeaders:
+            if not hal_data["mxp"][i]["initialized"]:
+                dio = _initport('dio', i, status)
+                hal_data["mxp"][i]["initialized"] = True
+                handle = i
+                break
+        if not port['initialized']:
+            dio = _initport('dio', i, status)
+            handle = i
+            break
+
+    if dio is None:
+        status.value = NO_AVAILABLE_RESOURCES
+        return None
+
+    return types.DigitalPWMHandle(getPort(handle))
 
 def freeDigitalPWM(pwmGenerator, status):
     status.value = 0
