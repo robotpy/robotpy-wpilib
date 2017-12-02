@@ -11,6 +11,7 @@ from hal_impl.types import (
     JoystickPOVs, JoystickPOVs_ptr,
     JoystickButtons, JoystickButtons_ptr,
     JoystickDescriptor, JoystickDescriptor_ptr,
+    MatchInfo, MatchInfo_ptr,
     
     Handle,
     PortHandle,
@@ -31,6 +32,9 @@ from hal_impl.types import (
 
 from hal_impl.fndef import _RETFUNC, _THUNKFUNC, _VAR, _dll, sleep
 from hal_impl import __hal_simulation__
+
+# This monkeypatch allows us to treat ctypes values like bytes
+C.c_char_p.decode = lambda self, encoding: self.value.decode(encoding)
 
 def hal_wrapper(f):
     '''Decorator to support introspection. The wrapped function must be
@@ -314,7 +318,6 @@ getFilterPeriod = _STATUSFUNC("getFilterPeriod", C.c_int64, ("filterIndex", C.c_
 # DriverStation.h
 #############################################################################
 
-setErrorData = _RETFUNC("setErrorData", C.c_int32, ("errors", C.c_char_p), ("errorsLength", C.c_int32), ("waitMs", C.c_int32))
 sendError = _RETFUNC("sendError", C.c_int32, ("isError", C.c_bool), ("errorCode", C.c_int32), ("isLVCode", C.c_bool), ("details", C.c_char_p), ("location", C.c_char_p), ("callStack", C.c_char_p), ("printMsg", C.c_bool))
 getControlWord = _RETFUNC("getControlWord", C.c_int32, ("controlWord", ControlWord_ptr))
 getAllianceStation = _STATUSFUNC("getAllianceStation", C.c_int32)
@@ -337,7 +340,7 @@ _freeJoystickName = _RETFUNC("freeJoystickName", None, ("name", _joystick_type))
 def getJoystickName(joystickNum):
     name = _getJoystickName(joystickNum)
     if name is not None:
-        namestr = C.cast(name, C.c_char_p).value.decode('utf-8')
+        namestr = name.decode('utf-8')
         _freeJoystickName(name)
         return namestr
     return None
@@ -350,6 +353,29 @@ getJoystickAxisType = _RETFUNC("getJoystickAxisType", C.c_int32, ("joystickNum",
 setJoystickOutputs = _RETFUNC("setJoystickOutputs", C.c_int32, ("joystickNum", C.c_int32), ("outputs", C.c_int64), ("leftRumble", C.c_int32), ("rightRumble", C.c_int32))
 
 getMatchTime = _STATUSFUNC("getMatchTime", C.c_double)
+
+# TODO: hack
+_matchInfo_type = MatchInfo_ptr if __hal_simulation__ else C.c_void_p
+
+_getMatchInfo = _RETFUNC("getMatchInfo", C.c_int32, ("info", MatchInfo_ptr), out=["info"])
+_freeMatchInfo = _RETFUNC("freeMatchInfo", None, ("info", _matchInfo_type))
+
+@hal_wrapper
+def getMatchInfo(cachedInfo):
+    ret, info = _getMatchInfo()
+    if ret == 0:
+        cachedInfo.eventName = info.eventName.decode('utf-8')
+        cachedInfo.matchType = info.matchType
+        cachedInfo.matchNumber = info.matchNumber
+        cachedInfo.replayNumber = info.replayNumber
+        cachedInfo.gameSpecificMessage = info.gameSpecificMessage.decode('utf-8')
+        _freeMatchInfo(info)
+    return ret
+    
+
+@hal_wrapper
+def freeMatchInfo(info):
+    raise ValueError("Do not call this function")
 
 releaseDSMutex = _RETFUNC("releaseDSMutex", None)
 isNewControlData = _RETFUNC("isNewControlData", C.c_bool)
@@ -706,7 +732,8 @@ getPCMSolenoidBlackList = _STATUSFUNC("getPCMSolenoidBlackList", C.c_int, ("modu
 getPCMSolenoidVoltageStickyFault = _STATUSFUNC("getPCMSolenoidVoltageStickyFault", C.c_bool, ("module", C.c_int32))
 getPCMSolenoidVoltageFault = _STATUSFUNC("getPCMSolenoidVoltageFault", C.c_bool, ("module", C.c_int32))
 clearAllPCMStickyFaults = _STATUSFUNC("clearAllPCMStickyFaults", None, ("module", C.c_int32))
-
+setOneShotDuration = _STATUSFUNC("setOneShotDuration", None, ("solenoidPortHandle", SolenoidHandle), ("durMS", C.c_int32))
+fireOneShot = _STATUSFUNC("fireOneShot", None, ("solenoidPortHandle", SolenoidHandle))
 
 #############################################################################
 # Threads

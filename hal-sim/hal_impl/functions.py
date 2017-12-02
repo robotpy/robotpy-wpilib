@@ -1031,6 +1031,19 @@ def getMatchTime(status):
     else:
         return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
 
+def getMatchInfo():
+    evt = hal_data['event']
+    info = types.MatchInfo()
+    info.eventName = bytes(evt['name'], 'utf-8')
+    info.matchType = evt['match_type']
+    info.matchNumber = evt['match_number']
+    info.replayNumber = evt['replay_number']
+    info.gameSpecificMessage = bytes(evt['game_specific_message'], 'utf-8')
+    return 0, info
+
+def freeMatchInfo(info):
+    pass
+
 def releaseDSMutex():
     hooks.notifyDSData()
 
@@ -1849,6 +1862,15 @@ def getPCMSolenoidVoltageFault(module, status):
 def clearAllPCMStickyFaults(module, status):
     status.value = 0
     return False
+
+def setOneShotDuration(solenoidPortHandle, durMS, status):
+    status.value = 0
+    hal_data['pcm'][solenoidPortHandle.module][solenoidPortHandle.pin]['one_shot_duration'] = durMS
+
+def fireOneShot(solenoidPortHandle, status):
+    status.value = 0
+    # TODO: need to schedule a callback to implement this somehow
+    assert False
 
 # This needs to be here otherwise tests will fail, as hal.initialize() does not call this
 data._reset_hal_data(hooks)
