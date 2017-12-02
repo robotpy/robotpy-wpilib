@@ -1861,7 +1861,6 @@ def getPCMSolenoidVoltageFault(module, status):
 
 def clearAllPCMStickyFaults(module, status):
     status.value = 0
-    return False
 
 def setOneShotDuration(solenoidPortHandle, durMS, status):
     status.value = 0
