@@ -99,6 +99,16 @@ class JoystickDescriptor:
         self.buttonCount = d.get("buttonCount", 0)
 JoystickDescriptor_ptr = fake_pointer(JoystickDescriptor)
 
+class MatchInfo:
+    __slots__ = [
+        'eventName',
+        'matchType',
+        'matchNumber',
+        'replayNumber',
+        'gameSpecificMessage'
+    ]
+MatchInfo_ptr = fake_pointer(MatchInfo)
+
 #############################################################################
 # Opaque handles
 #############################################################################

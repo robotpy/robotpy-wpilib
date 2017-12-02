@@ -257,3 +257,21 @@ def test_InTest(dsmock):
     dsmock.InTest(False)
     assert not dsmock.userInTest
 
+
+# HAL-only tests
+
+def test_event_data(hal, hal_data):
+    hal_data['event']['name'] = 'my-event'
+    info = hal.MatchInfo()
+    ret = hal.getMatchInfo(info)
+    assert ret == 0
+    assert info.eventName == 'my-event'
+
+def test_joystick_name(hal, hal_data):
+    hal_data['joysticks'][0]['name'] = 'joy0'
+    hal_data['joysticks'][1]['name'] = 'joy1'
+
+    assert hal.getJoystickName(0) == 'joy0'
+    assert hal.getJoystickName(1) == 'joy1'
+
+

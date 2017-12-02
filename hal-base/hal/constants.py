@@ -159,6 +159,12 @@ class AllianceStationID:
     kBlue2 = 4
     kBlue3 = 5
 
+class MatchType:
+    kMatchType_none = 0
+    kMatchType_practice = 1
+    kMatchType_qualification = 2
+    kMatchType_elimination = 3
+
 kMaxJoystickAxes = 12
 kMaxJoystickPOVs = 12
 

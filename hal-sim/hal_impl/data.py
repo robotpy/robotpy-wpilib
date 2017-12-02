@@ -126,8 +126,15 @@ def _reset_hal_data(current_hooks):
             # Used to compute getMatchTime -- set to return value of getFPGATime()
             'match_start': OUT(None),
         },
-        
 
+        # HAL MatchInfo data
+        'event': {
+            'name': OUT('sim-event'),
+            'match_type': OUT(0),
+            'match_number': OUT(0),
+            'replay_number': OUT(0),
+            'game_specific_message': OUT('')
+        },
 
         # You should not modify these directly, instead use the mode_helpers!
         'control': {
@@ -378,7 +385,8 @@ def _reset_hal_data(current_hooks):
         # solenoid values are True, False 
         'solenoid': [NotifyDict({
             'initialized': OUT(False),
-            'value':       OUT(None)
+            'value':       OUT(None),
+            'one_shot_duration': IN(0),
         }) for _ in range(8)],
                      
         'pcm': NotifyDict(),
