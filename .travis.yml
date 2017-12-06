@@ -10,9 +10,11 @@ python:
 install:
   - pip install -U pip
   - "pushd wpilib; pip install -r travis-requirements.txt; popd"
+  - "pushd docs; pip install -r requirements.txt; popd"
 # command to run tests
 script:
   - wpilib/tests/run_tests.sh
+  - "pushd docs && make html && popd"
 git:
   depth: 200
 notifications:
