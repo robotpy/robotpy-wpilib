@@ -1,4 +1,4 @@
-# validated: 2016-12-31 JW 8f67f2c24cb9 edu/wpi/first/wpilibj/RobotBase.java
+# validated: 2017-12-06 DV dd7563376bf6 edu/wpi/first/wpilibj/RobotBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -7,8 +7,7 @@
 #----------------------------------------------------------------------------
 
 import hal
-import warnings
-from networktables import NetworkTablesInstance
+from networktables import NetworkTables
 
 import logging
 logger = logging.getLogger('robotpy')
@@ -37,21 +36,17 @@ class RobotBase:
     """
 
     def __init__(self):
-        # TODO: StartCAPI()
-        # TODO: See if the next line is necessary
-        # Resource.RestartProgram()
-        inst = NetworkTablesInstance.getDefault()
-        inst.setNetworkIdentity("Robot")
+        NetworkTables.setNetworkIdentity("Robot")
         
-        if not RobotBase.isSimulation():
-            inst.startServer("/home/lvuser/networktables.ini")
+        if self.isReal():
+            NetworkTables.startServer("/home/lvuser/networktables.ini")
         else:
-            inst.startServer()
+            NetworkTables.startServer()
         
         from .driverstation import DriverStation
         self.ds = DriverStation.getInstance()
 
-        inst.getTable("LiveWindow").getSubTable(".status").getEntry("LW Enabled").setBoolean(False)
+        NetworkTables.getTable("LiveWindow").getSubTable(".status").getEntry("LW Enabled").setBoolean(False)
         from .livewindow import LiveWindow
         LiveWindow.setEnabled(False)
 
@@ -59,76 +54,67 @@ class RobotBase:
 
     def free(self):
         """Free the resources for a RobotBase class."""
-        # TODO: delete?
         pass
 
     @staticmethod
-    def isSimulation():
-        """
-            :returns: If the robot is running in simulation.
-            :rtype: bool
+    def isSimulation() -> bool:
+        """Get if the robot is a simulation.
+
+        :returns: If the robot is running in simulation.
         """
         return hal.isSimulation()
 
     @staticmethod
-    def isReal():
-        """
-            :returns: If the robot is running in the real world.
-            :rtype: bool
+    def isReal() -> bool:
+        """Get if the robot is real.
+
+        :returns: If the robot is running in the real world.
         """
         return not hal.isSimulation()
 
-    def isDisabled(self):
+    def isDisabled(self) -> bool:
         """Determine if the Robot is currently disabled.
 
-        :returns: True if the Robot is currently disabled by the field
-            controls.
-        :rtype: bool
+        :returns: True if the Robot is currently disabled by the field controls.
         """
         return self.ds.isDisabled()
 
-    def isEnabled(self):
+    def isEnabled(self) -> bool:
         """Determine if the Robot is currently enabled.
 
-        :returns: True if the Robot is currently enabled by the field
-            controls.
-        :rtype: bool
+        :returns: True if the Robot is currently enabled by the field controls.
         """
         return self.ds.isEnabled()
 
-    def isAutonomous(self):
+    def isAutonomous(self) -> bool:
         """Determine if the robot is currently in Autonomous mode as
         determined by the field controls.
 
         :returns: True if the robot is currently operating Autonomously
-        :rtype: bool
         """
         return self.ds.isAutonomous()
 
-    def isTest(self):
+    def isTest(self) -> bool:
         """Determine if the robot is currently in Test mode as
         determined by the driver station.
 
         :returns: True if the robot is currently operating in Test mode.
-        :rtype: bool
         """
         return self.ds.isTest()
 
-    def isOperatorControl(self):
+    def isOperatorControl(self) -> bool:
         """Determine if the robot is currently in Operator Control mode as
         determined by the field controls.
 
         :returns: True if the robot is currently operating in Tele-Op mode
-        :rtype: bool
         """
         return self.ds.isOperatorControl()
 
-    def isNewDataAvailable(self):
+    def isNewDataAvailable(self) -> bool:
         """Indicates if new data is available from the driver station.
 
         :returns: Has new data arrived over the network since the last time
-            this function was called?
-        :rtype: bool
+                  this function was called?
         """
         return self.ds.isNewControlData()
 
@@ -160,9 +146,9 @@ class RobotBase:
             robot = robot_cls()
         except:
             from .driverstation import DriverStation
-            DriverStation.reportError("ERROR Could not instantiate robot", True)
-            logger.exception("Robots don't quit!")
-            logger.exception("Could not instantiate robot "+robot_cls.__name__+"!")
+            DriverStation.reportError("Unhandled exception instantiating robot " + robot_cls.__name__, True)
+            DriverStation.reportWarning("Robots should not quit, but yours did!")
+            DriverStation.reportError("Could not instantiate robot "+robot_cls.__name__+"!")
             return False
         
         # Add a check to see if the user forgot to call super().__init__()
@@ -185,15 +171,14 @@ class RobotBase:
             logger.info("Exiting because of keyboard interrupt")
             return True
         except:
-            logger.warning("Robots don't quit!")
             from .driverstation import DriverStation
-            DriverStation.reportError("ERROR Unhandled exception", True)
-            logger.error("---> The startCompetition() method (or methods called by it) should have handled the exception.")
+            DriverStation.reportError("Unhandled exception", True)
+            DriverStation.reportWarning("Robots should not quit, but yours did!")
+            DriverStation.reportError("The startCompetition() method (or methods called by it) should have handled the exception above.")
             return False
         else:
             # startCompetition never returns unless exception occurs....
             from .driverstation import DriverStation
-            DriverStation.reportError("ERROR startCompetition() returned", False)
-            logger.warning("Robots don't quit!")
-            logger.error("---> Unexpected return from startCompetition() method.")
+            DriverStation.reportWarning("Robots should not quit, but yours did!")
+            DriverStation.reportError("Unexpected return from startCompetition() method.")
             return False
