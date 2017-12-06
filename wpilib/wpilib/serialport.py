@@ -151,7 +151,7 @@ class SerialPort:
         the :meth:`read` or :meth:`readString` will return fewer bytes than requested, stopping after the
         terminator.
         
-        :param terminator: The character to use for termination (default is '\n').
+        :param terminator: The character to use for termination (default is ``\\n``).
         """
         hal.enableSerialTermination(self.port, terminator)
     

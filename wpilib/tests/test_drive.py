@@ -10,10 +10,10 @@ def test_init_diffdrive(wpimock, halmock):
     left = MagicMock()
     right = MagicMock()
 
-    drive = wpimock.DifferentialDrive(left, right)
+    drive = wpimock.drive.DifferentialDrive(left, right)
 
-    assert drive.maxOutput == wpimock.RobotDriveBase.maxOutput
-    assert drive.deadband == wpimock.RobotDriveBase.deadband
+    assert drive.maxOutput == wpimock.drive.RobotDriveBase.maxOutput
+    assert drive.deadband == wpimock.drive.RobotDriveBase.deadband
 
     # TODO: test hal.setPWM() outputs
 
@@ -26,10 +26,10 @@ def test_init_killough(wpimock, halmock):
     right = MagicMock()
     back = MagicMock()
 
-    drive = wpimock.KilloughDrive(left, right, back)
+    drive = wpimock.drive.KilloughDrive(left, right, back)
 
-    assert drive.maxOutput == wpimock.RobotDriveBase.maxOutput
-    assert drive.deadband == wpimock.RobotDriveBase.deadband
+    assert drive.maxOutput == wpimock.drive.RobotDriveBase.maxOutput
+    assert drive.deadband == wpimock.drive.RobotDriveBase.deadband
 
     assert drive.leftMotor == left
     assert drive.rightMotor == right
@@ -47,25 +47,25 @@ def test_init_mecanum(wpimock, halmock):
     rleft = MagicMock()
     rright = MagicMock()
 
-    drive = wpimock.MecanumDrive(fleft, rleft, fright, rright)
+    drive = wpimock.drive.MecanumDrive(fleft, rleft, fright, rright)
     assert drive.frontLeftMotor == fleft
     assert drive.rearLeftMotor == rleft
     assert drive.frontRightMotor == fright
     assert drive.rearRightMotor == rright
 
-    assert drive.maxOutput == wpimock.RobotDriveBase.maxOutput
-    assert drive.deadband == wpimock.RobotDriveBase.deadband
+    assert drive.maxOutput == wpimock.drive.RobotDriveBase.maxOutput
+    assert drive.deadband == wpimock.drive.RobotDriveBase.deadband
 
 
 def test_init_error(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
 
     with pytest.raises(TypeError):
-        wpimock.DifferentialDrive()
+        wpimock.drive.DifferentialDrive()
     with pytest.raises(TypeError):
-        wpimock.KilloughDrive()
+        wpimock.drive.KilloughDrive()
     with pytest.raises(TypeError):
-        wpimock.MecanumDrive()
+        wpimock.drive.MecanumDrive()
 
 
 @pytest.fixture(scope="function")
@@ -74,7 +74,7 @@ def drive_diff(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
     left = MagicMock()
     right = MagicMock()
-    drive = wpimock.DifferentialDrive(left, right)
+    drive = wpimock.drive.DifferentialDrive(left, right)
     drive.leftMotor.set = MagicMock()
     drive.rightMotor.set = MagicMock()
     left.reset_mock()
@@ -89,7 +89,7 @@ def drive_killough(wpimock, halmock):
     m1 = MagicMock()
     m2 = MagicMock()
     m3 = MagicMock()
-    drive = wpimock.KilloughDrive(m1, m2, m3)
+    drive = wpimock.drive.KilloughDrive(m1, m2, m3)
     drive._test_motors = [m1, m2, m3]  # ordered by MotorType
     m1.reset_mock()
     m2.reset_mock()
@@ -105,7 +105,7 @@ def drive_mecanum(wpimock, halmock):
     m2 = MagicMock()
     m3 = MagicMock()
     m4 = MagicMock()
-    drive = wpimock.MecanumDrive(m1, m2, m3, m4)
+    drive = wpimock.drive.MecanumDrive(m1, m2, m3, m4)
     drive._test_motors = [m1, m3, m2, m4]  # ordered by MotorType
     m1.reset_mock()
     m2.reset_mock()
@@ -116,13 +116,13 @@ def drive_mecanum(wpimock, halmock):
 
 def check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn):
     quickStopAccumulator = 0
-    y = wpimock.RobotDriveBase.limit(y)
-    y = wpimock.RobotDriveBase.applyDeadband(y, drive_diff.deadband)
+    y = wpimock.drive.RobotDriveBase.limit(y)
+    y = wpimock.drive.RobotDriveBase.applyDeadband(y, drive_diff.deadband)
 
     if isQuickTurn:
         if abs(y) < .2:
             alpha = .1
-            quickStopAccumulator = (1 - alpha) * quickStopAccumulator + alpha * wpimock.RobotDriveBase.limit(
+            quickStopAccumulator = (1 - alpha) * quickStopAccumulator + alpha * wpimock.drive.RobotDriveBase.limit(
                 rotation) * 2
 
         overPower = True
@@ -180,10 +180,10 @@ def test_drive(y, rotation, isQuickTurn, drive_diff, wpimock):
 
 
 def check_tank(wpimock, drive_diff, lv, rv, sq):
-    lv = wpimock.RobotDriveBase.limit(lv)
-    lv = wpimock.RobotDriveBase.applyDeadband(lv, drive_diff.deadband)
-    rv = wpimock.RobotDriveBase.limit(rv)
-    rv = wpimock.RobotDriveBase.applyDeadband(rv, drive_diff.deadband)
+    lv = wpimock.drive.RobotDriveBase.limit(lv)
+    lv = wpimock.drive.RobotDriveBase.applyDeadband(lv, drive_diff.deadband)
+    rv = wpimock.drive.RobotDriveBase.limit(rv)
+    rv = wpimock.drive.RobotDriveBase.applyDeadband(rv, drive_diff.deadband)
 
     if sq:
         lv = math.copysign(lv * lv, lv)
@@ -209,11 +209,11 @@ def test_tankDrive_error(drive_diff):
 
 
 def check_arcade(wpimock, drive_diff, y, rotation, sq):
-    y = wpimock.RobotDriveBase.limit(y)
-    y = wpimock.RobotDriveBase.applyDeadband(y, drive_diff.deadband)
+    y = wpimock.drive.RobotDriveBase.limit(y)
+    y = wpimock.drive.RobotDriveBase.applyDeadband(y, drive_diff.deadband)
 
-    rotation = wpimock.RobotDriveBase.limit(rotation)
-    rotation = wpimock.RobotDriveBase.applyDeadband(rotation, drive_diff.deadband)
+    rotation = wpimock.drive.RobotDriveBase.limit(rotation)
+    rotation = wpimock.drive.RobotDriveBase.applyDeadband(rotation, drive_diff.deadband)
 
     if sq:
         # square the inputs (while preserving the sign) to increase fine
@@ -280,7 +280,7 @@ def test_mecanumDrive_Polar(drive_mecanum):
 @pytest.mark.parametrize("val,result",
                          [(1.1, 1.0), (-1.1, -1.0), (0.9, 0.9), (-0.9, -0.9)])
 def test_limit(val, result, wpimock):
-    assert wpimock.RobotDriveBase.limit(val) == result
+    assert wpimock.drive.RobotDriveBase.limit(val) == result
 
 
 @pytest.mark.parametrize("val,result",
@@ -289,7 +289,7 @@ def test_limit(val, result, wpimock):
                           ((-2.0, -0.5, 0.0, 1.0), (-1.0, -0.25, 0.0, 0.5))])
 def test_normalize(val, result, wpimock):
     speeds = list(val)
-    wpimock.RobotDriveBase.normalize(speeds)
+    wpimock.drive.RobotDriveBase.normalize(speeds)
     assert tuple(speeds) == result
 
 
@@ -300,7 +300,7 @@ def test_rotateVector(angle, wpimock):
     cosA = math.cos(math.radians(angle))
     sinA = math.sin(math.radians(angle))
 
-    vector = wpimock.Vector2d(x, y)
+    vector = wpimock.drive.Vector2d(x, y)
     vector.rotate(angle)
     assert (vector.x, vector.y) == \
                      ((x * cosA - y * sinA), (x * sinA + y * cosA))

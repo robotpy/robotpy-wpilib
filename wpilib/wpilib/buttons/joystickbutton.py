@@ -11,7 +11,7 @@ from .button import Button
 __all__ = ["JoystickButton"]
 
 class JoystickButton(Button):
-    """A :class:`.Button` that gets its state from a :class:`GenericHID`."""
+    """A :class:`.button.Button` that gets its state from a :class:`.GenericHID`."""
 
     def __init__(self, joystick, buttonNumber):
         """Create a joystick button for triggering commands.
@@ -19,7 +19,7 @@ class JoystickButton(Button):
         :param joystick: The GenericHID object that has the button (e.g.
                          :class:`.Joystick`, :class:`.KinectStick`, etc)
         :param buttonNumber: The button number
-                             (see :meth:`GenericHID.getRawButton`)
+                             (see :meth:`.GenericHID.getRawButton`)
         """
         super().__init__()
         self.joystick = joystick

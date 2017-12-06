@@ -129,11 +129,13 @@ def main():
     import wpilib
     import wpilib.buttons
     import wpilib.command
+    import wpilib.drive
     import wpilib.interfaces
     
     gen_package(wpilib)
     gen_package(wpilib.buttons)
     gen_package(wpilib.command)
+    gen_package(wpilib.drive)
     gen_package(wpilib.interfaces)
     
 

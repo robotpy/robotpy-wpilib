@@ -14,7 +14,8 @@ __all__ = ["DifferentialDrive"]
 
 
 class DifferentialDrive(RobotDriveBase):
-    """A class for driving differential drive/skid-steer drive platforms such as the Kit of Parts drive
+    """
+        A class for driving differential drive/skid-steer drive platforms such as the Kit of Parts drive
         base, "tank drive", or West Coast Drive.
 
         These drive bases typically have drop-center / skid-steer with two or more wheels per side
@@ -22,16 +23,16 @@ class DifferentialDrive(RobotDriveBase):
 
         A differential drive robot has left and right wheels separated by an arbitrary width.
 
-        Drive base diagram:
+        Drive base diagram::
 
-        |_______|
-        | |   | |
-          |   |
-        |_|___|_|
-        |       |
+            |_______|
+            | |   | |
+              |   |
+            |_|___|_|
+            |       |
 
 
-        Each drive() function provides different inverse kinematic relations for a differential drive
+        Each ``drive()`` function provides different inverse kinematic relations for a differential drive
         robot. Motor outputs for the right side are negated, so motor direction inversion by the user is
         usually unnecessary.
     """
@@ -40,10 +41,10 @@ class DifferentialDrive(RobotDriveBase):
         """Constructor for DifferentialDrive.
 
         This class takes in a SpeedController per side. For two and four motor drivetrains
-         construct and pass in  :class:`..SpeedControllerGroup` instances as follows.
+        construct and pass in  :class:`..SpeedControllerGroup` instances as follows.
 
-         :param leftMotor: Left motor SpeedController
-         :param rightMotor: Right motor SpeedController
+        :param leftMotor: Left motor SpeedController
+        :param rightMotor: Right motor SpeedController
         """
         super().__init__()
 

@@ -13,7 +13,8 @@ from .gyrobase import GyroBase
 from .livewindow import LiveWindow
 from .spi import SPI
 from .timer import Timer
-    
+
+__all__ = ['ADXRS450_Gyro']
 
 class ADXRS450_Gyro(GyroBase):
     """

@@ -9,6 +9,8 @@
 from .command import Command
 from .instantcommand import InstantCommand
 
+__all__ = ['ConditionalCommand']
+
 class ConditionalCommand(Command):
     """
         A ConditionalCommand is a :class:`.Command` that starts one of two commands.

@@ -9,6 +9,7 @@ import hal
 from .driverstation import DriverStation
 from .interfaces.generichid import GenericHID
 
+__all__ = ['XboxController']
 
 class XboxController(GenericHID):
     """

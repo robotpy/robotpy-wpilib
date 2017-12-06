@@ -71,7 +71,7 @@ class AnalogTriggerOutput(DigitalSource):
         """Get the state of the analog trigger output.
 
         :returns: The state of the analog trigger output.
-        :rtype: :class:`.AnalogTriggerType`
+        :rtype: :class:`.AnalogTriggerOutput.AnalogTriggerType`
         """
         return hal.getAnalogTriggerOutput(self.trigger.port, self.outputType)
 

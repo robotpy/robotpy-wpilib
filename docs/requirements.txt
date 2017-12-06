@@ -1,3 +1,4 @@
+sphinx
 sphinx-rtd-theme
 mock
-pynetworktables >= 2017.0.0a1
+git+git://github.com/robotpy/pynetworktables.git
