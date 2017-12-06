@@ -48,6 +48,11 @@ def hal_data(_module_patch):
 def wpilib(_module_patch, hal, hal_data):
     """Actual wpilib implementation"""
     import wpilib
+    import wpilib.buttons
+    import wpilib.command
+    import wpilib.drive
+    import wpilib.interfaces
+    
     yield wpilib
     
     # Note: even though the wpilib module is freshly loaded each time a new
@@ -104,6 +109,11 @@ def wpimock(request, halmock):
     m.start()
     request.addfinalizer(m.stop)
     import wpilib
+    import wpilib.buttons
+    import wpilib.command
+    import wpilib.drive
+    import wpilib.interfaces
+    
     return wpilib
 
 

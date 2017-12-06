@@ -48,7 +48,7 @@ help:
 
 clean:
 	rm -rf $(BUILDDIR)/*
-	rf -rf __pycache__
+	rm -rf __pycache__
 	rm -rf wpilib/*.rst
 	rm -rf wpilib.buttons/*.rst
 	rm -rf wpilib.command/*.rst
