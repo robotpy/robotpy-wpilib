@@ -195,6 +195,7 @@ class Joystick(GenericHID):
         :type  axis: int
         :returns: The channel for the axis.
         :rtype: int
+        
         ..deprecated:: 2018.0.0
             Use the more specific axis channel getter functions
         """

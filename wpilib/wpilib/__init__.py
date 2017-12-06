@@ -25,7 +25,6 @@ from .digitalinput import *
 from .digitaloutput import *
 from .digitalsource import *
 from .doublesolenoid import *
-from .drive import *
 from .driverstation import *
 from .encoder import *
 from .filter import *

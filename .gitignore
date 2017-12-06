@@ -20,6 +20,8 @@ MANIFEST
 /docs/wpilib.buttons
 /docs/wpilib.command.rst
 /docs/wpilib.command
+/docs/wpilib.drive.rst
+/docs/wpilib.drive
 /docs/wpilib.interfaces
 /docs/wpilib.interfaces.rst
 

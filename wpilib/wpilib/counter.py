@@ -77,7 +77,6 @@ class Counter(SensorBase):
         - (none)
         - upSource
         - upSource, down source
-        And, to keep consistency with Java wpilib.
         - encodingType, up source, down source, inverted
 
         If the passed object has a
@@ -214,7 +213,7 @@ class Counter(SensorBase):
         :param triggerType:
             The analog trigger output that will trigger the counter.
             Defaults to kState if not specified.
-        :type triggerType: AnalogTriggerType
+        :type triggerType: AnalogTrigger.AnalogTriggerType
         """
 
         #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
@@ -301,7 +300,7 @@ class Counter(SensorBase):
         :param triggerType:
             The analog trigger output that will trigger the counter.
             Defaults to kState if not specified.
-        :type triggerType: AnalogTriggerType
+        :type triggerType: AnalogTrigger.AnalogTriggerType
         """
 
         #TODO Both this and the java implementation should probably not allow setting a source if one is already set.

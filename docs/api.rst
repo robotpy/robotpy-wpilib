@@ -24,4 +24,5 @@ The library is designed to:
     wpilib
     wpilib.buttons
     wpilib.command
+    wpilib.drive
     wpilib.interfaces
