@@ -5,18 +5,60 @@ __all__ = ["Sendable"]
 class Sendable:
     """The base interface for objects that can be sent over the network
     through network tables"""
-
-    def initTable(self, subtable):
-        """Initializes a table for this sendable object.
-
-        :param subtable: The table to put the values in.
+    
+    def getName(self):
         """
-        if hasattr(self, "updateTable"):
-            self.updateTable()
+        Gets the name of this Sendable object.
 
-    def getSmartDashboardType(self):
+        :returns: Name
+        :rtype: str
         """
-            :returns: the string representation of the named data type that
-                will be used by the smart dashboard for this sendable
+        raise NotImplementedError
+
+    def setName(self, subsystem, name=None):
+        """
+        Sets the name of this Sendable object.
+
+        :param name: Name
+        :type name: str
+        """
+        raise NotImplementedError
+
+    def _setNameAndSubsystem(self, subsystem, name):
+        """
+        Sets both the subsystem name and device name of this Sendable object.
+
+        :param subsystem: subsystem name
+        :type subsystem: str
+        :param name: Name
+        :type name: str
+        """
+        self.setSubsystem(subsystem)
+        self.setName(name)
+
+    def getSubsystem(self):
+        """
+        Gets the subsystem name of this Sendable object.
+
+        :returns: subsystem name
+        :rtype: str
+        """
+        raise NotImplementedError
+
+    def setSubsystem(self, subsystem):
+        """
+        Sets the subsystem name of this Sendable object.
+
+        :param subsystem: subsystem name
+        :type subsystem: str
+        """
+        raise NotImplementedError
+
+    def initSendable(self, builder):
+        """
+        Initializes this Sendable object.
+
+        :param builder: sendable builder
+        :type builder: :class:`wpilib.SendableBuilder`
         """
         raise NotImplementedError
