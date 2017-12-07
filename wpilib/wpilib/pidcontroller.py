@@ -389,7 +389,7 @@ class PIDController(LiveWindowSendable):
         """
         self.pidInput.setPIDSourceType(pidSourceType)
         
-    def getPIDSourceType(self, pidSourceType):
+    def getPIDSourceType(self):
         """Returns the type of input the PID controller is using
         
         :returns: the PID controller input type

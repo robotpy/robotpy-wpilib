@@ -45,7 +45,7 @@ def hal_data(_module_patch):
 
 
 @pytest.fixture(scope="function")
-def wpilib(_module_patch, hal, hal_data):
+def wpilib(_module_patch, hal, hal_data, networktables):
     """Actual wpilib implementation"""
     import wpilib
     import wpilib.buttons
