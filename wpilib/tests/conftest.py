@@ -125,6 +125,12 @@ class SimHooks(BaseSimHooks):
     def getTime(self):
         return self.time
 
+    def delayMillis(self, ms):
+        self.time += ms / 1000.0
+
+    def delaySeconds(self, s):
+        self.time += s
+
 
 @pytest.fixture(scope='function')
 def sim_hooks():
