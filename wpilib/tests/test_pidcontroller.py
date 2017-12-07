@@ -19,7 +19,7 @@ def SimTimerTask(wpilib):
 
 @pytest.fixture(scope='function')
 def sim_print():
-    with patch("wpilib._impl.utils.print", new=MagicMock()) as sim_print:
+    with patch("wpilib._impl.utils._print", new=MagicMock()) as sim_print:
         yield sim_print
 
 

@@ -26,24 +26,29 @@ def match_arglist(name, args, kwargs, templates, allow_extra_kwargs=False):
     """
     return __match_arglist(name, args, kwargs, templates, False, allow_extra_kwargs)
     
+
+def _print(*args, **kwargs):
+    print(*args, **kwargs)
+
+
 def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False):
 
     # TODO: we can do better at giving the user an error message...
     
     if err:
-        print("*"*50)
-        print("ERROR: Invalid arguments passed to %s()!!" % name)
-        print("       checking args against %s possible templates" % len(templates))
-        print("*"*50)
+        _print("*"*50)
+        _print("ERROR: Invalid arguments passed to %s()!!" % name)
+        _print("       checking args against %s possible templates" % len(templates))
+        _print("*"*50)
         if len(args):
-            print("Your non-keyword arguments: ")
+            _print("Your non-keyword arguments: ")
             for i, arg in enumerate(args):
-                print("  #%d: value %s, type %s" % (i, arg, type(arg)))
+                _print("  #%d: value %s, type %s" % (i, arg, type(arg)))
         if len(kwargs):
-            print("Your keyword args: ")
+            _print("Your keyword args: ")
             for k, v in kwargs.items():
-                print("  %s: value %s, type %s" % (k, v, type(v)))
-        print("*"*50)
+                _print("  %s: value %s, type %s" % (k, v, type(v)))
+        _print("*"*50)
     
     #Try each template until we find one that works
     for i, template in enumerate(templates):
@@ -54,7 +59,7 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
         results = dict()
         
         if err:
-            print("Checking template %s: %s" % (i, ', '.join(an for an, _ in template)))
+            _print("Checking template %s: %s" % (i, ', '.join(an for an, _ in template)))
             showed_error = False
 
         #Scan through all arguments and set valid to false if we find an issue.
@@ -78,9 +83,9 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
             #Check to see if identities match:
             if not types_match(value, arg_type_condition):
                 if err:
-                    print("- Error at arg %d: %s != %s" % (j, arg_name, typematch_to_str(arg_type_condition)))
-                    print("     your arg: %s; value %s %s" % (match_type, value, type(value)) )
-                    print()
+                    _print("- Error at arg %d: %s != %s" % (j, arg_name, typematch_to_str(arg_type_condition)))
+                    _print("     your arg: %s; value %s %s" % (match_type, value, type(value)) )
+                    _print()
                     showed_error = True
                 break
 
@@ -93,23 +98,23 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
         
         if err and not showed_error:
             if len(args_copy) != 0:
-                print("- Error: too many arguments")
+                _print("- Error: too many arguments")
             elif len(kwargs_copy):
-                print("- Error: unused parameters: %s" % ', '.join('%s' % s for s in kwargs_copy))
+                _print("- Error: unused parameters: %s" % ', '.join('%s' % s for s in kwargs_copy))
                 
-            print()
-        #    print("Template %s unmatched:" % i)
+            _print()
+        #    _print("Template %s unmatched:" % i)
         #    if len(args_copy):
-        #        print("- Args: %s" % (' '.join('%s' % s for s in args_copy)))
+        #        _print("- Args: %s" % (' '.join('%s' % s for s in args_copy)))
         #    if len(kwargs_copy):
-        #        print("- Kwargs: %s" % (' '.join('%s' % s for s in kwargs_copy)))
+        #        _print("- Kwargs: %s" % (' '.join('%s' % s for s in kwargs_copy)))
 
     # We found nothing, then... but we need to give the user a good
     # error message, so run it again in verbose mode, then raise the error!
     if not err:
         __match_arglist(name, args, kwargs, templates, True)
     else:
-        print("*"*50)
+        _print("*"*50)
         raise ValueError("Attribute error, attributes given did not match any argument templates. See messages above for more info")
 
 def types_match(object, type_structure):
