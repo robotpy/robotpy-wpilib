@@ -62,3 +62,12 @@ class Sendable:
         :type builder: :class:`wpilib.SendableBuilder`
         """
         raise NotImplementedError
+
+    # todo: remove
+    def initTable(self, subtable):
+        """Initializes a table for this sendable object.
+
+        :param subtable: The table to put the values in.
+        """
+        if hasattr(self, "updateTable"):
+            self.updateTable()
