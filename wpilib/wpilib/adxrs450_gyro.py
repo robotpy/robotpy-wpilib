@@ -50,6 +50,7 @@ class ADXRS450_Gyro(GyroBase):
             :param port: The SPI port that the gyro is connected to
             :type port: :class:`.SPI.Port`
         """
+        super().__init__()
         
         if port is None:
             port = SPI.Port.kOnboardCS0
