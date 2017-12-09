@@ -9,7 +9,7 @@
 import hal
 import weakref
 
-from .livewindowsendable import LiveWindowSendable
+from .sendablebase import SendableBase
 from .resource import Resource
 from .sensorbase import SensorBase
 
@@ -19,7 +19,7 @@ def _freePWM(handle):
     hal.setPWMDisabled(handle)
     hal.freePWMPort(handle)
 
-class PWM(LiveWindowSendable):
+class PWM(SendableBase):
     """Raw interface to PWM generation in the FPGA.
     
     The values supplied as arguments for PWM outputs range from -1.0 to 1.0. They
@@ -72,6 +72,7 @@ class PWM(LiveWindowSendable):
         :param channel: The PWM channel number. 0-9 are on-board, 10-19 are on the MXP port
         :type channel: int
         """
+        super().__init__()
         SensorBase.checkPWMChannel(channel)
         self.channel = channel
         
@@ -85,6 +86,7 @@ class PWM(LiveWindowSendable):
         hal.setPWMEliminateDeadband(self.handle, False)
         
         hal.report(hal.UsageReporting.kResourceType_PWM, channel)
+        self.setName("PWM", channel)
                 
         # Python-specific: Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
@@ -102,6 +104,7 @@ class PWM(LiveWindowSendable):
         Free the resource associated with the PWM channel and set the value
         to 0.
         """
+        super().free()
         if self._handle is None:
             return
         self.__finalizer()
@@ -258,32 +261,7 @@ class PWM(LiveWindowSendable):
     def setZeroLatch(self):
         hal.latchPWMZero(self.handle)
 
-    #
-    # Live Window code, only does anything if live window is activated.
-    #
-
-    def getSmartDashboardType(self):
-        return "Speed Controller"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.getSpeed())
-
-    def valueChanged(self, entry, key, value, param):
-        self.setSpeed(value)
-
-    def startLiveWindowMode(self):
-        self.setSpeed(0) # Stop for safety
-        super().startLiveWindowMode()
-
-    def stopLiveWindowMode(self):
-        super().stopLiveWindowMode()
-        self.setSpeed(0) # Stop for safety
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Speed Controller")
+        builder.setSafeState(self.setDisabled)
+        builder.addDoubleProperty("Value", self.getSpeed, self.setSpeed)

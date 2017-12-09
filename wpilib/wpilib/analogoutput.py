@@ -28,6 +28,7 @@ class AnalogOutput(SensorBase):
 
         :param channel: The channel number to represent.
         """
+        super().__init__()
         SensorBase.checkAnalogOutputChannel(channel)
         
         self.channel = channel
@@ -50,7 +51,7 @@ class AnalogOutput(SensorBase):
     def free(self):
         """Channel destructor.
         """
-        LiveWindow.removeComponent(self)
+        super().free()
         if self.channel is None:
             return
         AnalogOutput.channels.free(self.channel)

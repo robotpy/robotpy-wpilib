@@ -15,6 +15,11 @@ __all__ = ['SendableBase']
 
 
 class SendableBase(Sendable):
+    """
+    Base class for all sensors. Stores most recent status information as well as containing utility
+    functions for checking channels and error processing.
+    """
+
     def __init__(self, addLiveWindow=True):
         """
         Creates an instance of the sensor base.

@@ -15,7 +15,7 @@ from networktables import NetworkTables
 import hal
 
 from .interfaces import PIDSource
-from .livewindowsendable import LiveWindowSendable
+from .sendablebase import SendableBase
 from .resource import Resource
 from .timer import Timer
 from ._impl.timertask import TimerTask
@@ -23,7 +23,7 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["PIDController"]
 
-class PIDController(LiveWindowSendable):
+class PIDController(SendableBase):
     """Can be used to control devices via a PID Control Loop.
 
     Creates a separate thread which reads the given :class:`.PIDSource` and takes
@@ -80,6 +80,7 @@ class PIDController(LiveWindowSendable):
         :type  period: float or int
         """
 
+        super().__init__()
         f_arg = ("Kf", [float, int])
         source_arg = ("source", [HasAttribute("pidGet"), HasAttribute("__call__")])
         output_arg = ("output", [HasAttribute("pidWrite"), HasAttribute("__call__")])

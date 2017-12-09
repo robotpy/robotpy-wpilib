@@ -86,41 +86,15 @@ def test_ultrasonic_pidget_invalid(ultrasonic):
         ultrasonic.setDistanceUnits(-1)
 
 
-def test_ultrasonic_initTable_nullentry(ultrasonic):
-    ultrasonic.getRangeInches = MagicMock()
-    ultrasonic.initTable(None)
+def test_ultrasonic_initSendable1(ultrasonic, sendablebuilder, hal_data):
+    ultrasonic.initSendable(sendablebuilder)
 
-    assert ultrasonic.valueEntry is None
-    assert not ultrasonic.getRangeInches.called
+    assert sendablebuilder.getTable().getString(".type", None) == "Ultrasonic"
 
-
-def test_ultrasonic_initTable(ultrasonic, networktables, hal_data):
     ultrasonic.ping()
     hal_data['counter'][0]['count'] = 2
     hal_data['counter'][0]['period'] = 0.0012
 
-    table = networktables.NetworkTables.getTable("whereitwouldreallybetodo")
-    ultrasonic.initTable(table)
+    sendablebuilder.updateTable()
 
-    assert table.getNumber("Value", 0) == pytest.approx(8.13, 0.01)
-
-
-def test_stoplivewindowmode(ultrasonic):
-    ultrasonic.valueEntry = MagicMock()
-
-    ultrasonic.startLiveWindowMode()
-
-    assert not hasattr(ultrasonic, 'valueListener')
-
-    ultrasonic.stopLiveWindowMode()
-
-    assert not hasattr(ultrasonic, 'valueListener')
-
-
-def test_stoplivewindowmode_null_entry(ultrasonic):
-    ultrasonic.valueEntry = None
-
-    ultrasonic.startLiveWindowMode()
-
-    ultrasonic.stopLiveWindowMode()
-
+    assert sendablebuilder.getTable().getNumber("Value", 0) == pytest.approx(8.13, 0.01)

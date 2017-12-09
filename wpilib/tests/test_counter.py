@@ -289,29 +289,3 @@ def test_counter_pidget_rate(wpilib):
     ctr.getRate.return_value = 7.0
     ctr.setPIDSourceType(wpilib.interfaces.PIDSource.PIDSourceType.kRate)
     assert ctr.pidGet() == pytest.approx(7.0, 0.01)
-
-
-def test_counter_initTable_null(wpilib):
-    ctr = wpilib.Counter()
-
-    ctr.initTable(None)
-    assert ctr.valueEntry is None
-
-
-def test_counter_initTable(wpilib, counter_table, hal_data):
-    ctr = wpilib.Counter()
-
-    hal_data["counter"][0]["count"] = 4
-    ctr.initTable(counter_table)
-
-    assert counter_table.getNumber("Value", 0.0) == 4
-
-
-def test_counter_livewindowmode(wpilib, counter_table):
-    ctr = wpilib.Counter()
-
-    ctr.initTable(counter_table)
-    ctr.startLiveWindowMode()
-    assert not hasattr(ctr, 'valueListener')
-    ctr.stopLiveWindowMode()
-    assert not hasattr(ctr, 'valueListener')

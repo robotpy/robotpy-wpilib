@@ -10,7 +10,6 @@ import hal
 import weakref
 
 from .livewindow import LiveWindow
-from .livewindowsendable import LiveWindowSendable
 from .motorsafety import MotorSafety
 from .resource import Resource
 from .sensorbase import SensorBase
@@ -26,7 +25,7 @@ def _freeRelay(*handles):
         if handle:
             hal.freeRelayPort(handle)
 
-class Relay(SensorBase, LiveWindowSendable, MotorSafety):
+class Relay(SensorBase, MotorSafety):
     """Controls VEX Robotics Spike style relay outputs.
     
     Relays are intended to be connected to Spikes or similar relays. The relay
@@ -95,6 +94,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
             If not specified, defaults to allowing both directions.
         :type  direction: :class:`Relay.Direction`
         """
+        super().__init__()
         if direction is None:
             direction = self.Direction.kBoth
         self.channel = channel
@@ -148,7 +148,7 @@ class Relay(SensorBase, LiveWindowSendable, MotorSafety):
         return self._reverseHandle
 
     def free(self):
-        LiveWindow.removeComponent(self)
+        super().free()
 
         self.__finalizer()
         Relay.relayChannels.free(self.channel * 2)

@@ -11,12 +11,12 @@ import hal
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
 from .livewindow import LiveWindow
-from .livewindowsendable import LiveWindowSendable
+from .sensorbase import SensorBase
 from networktables import NetworkTables
 
 __all__ = ["AnalogAccelerometer"]
 
-class AnalogAccelerometer(LiveWindowSendable):
+class AnalogAccelerometer(SensorBase):
     """Analog Accelerometer
     
     The accelerometer reads acceleration directly through the sensor. Many
@@ -34,6 +34,7 @@ class AnalogAccelerometer(LiveWindowSendable):
 
         :param channel: port index or an already initialized :class:`.AnalogInput`
         """
+        super().__init__()
         if not hasattr(channel, "getAverageVoltage"):
             channel = AnalogInput(channel)
         self.analogChannel = channel

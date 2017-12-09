@@ -93,9 +93,9 @@ class Solenoid(SolenoidBase):
         return self._solenoidHandle
 
     def free(self):
-        """Mark the solenoid as freed."""
-        LiveWindow.removeComponent(self)
-
+        """
+        Mark the solenoid as freed.
+        """
         if self.valueEntry is not None:
             self.valueEntry.removeListener(self.valueListener)
         
