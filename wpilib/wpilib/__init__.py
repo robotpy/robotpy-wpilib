@@ -54,6 +54,7 @@ from .safepwm import *
 from .samplerobot import *
 from .sd540 import *
 from .sendable import *
+from .sendablebase import *
 from .sendablechooser import *
 from .sensorbase import *
 from .serialport import *
