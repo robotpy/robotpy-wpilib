@@ -43,6 +43,19 @@ def test_servo_angle(param, expected, expectedAngle, servo, servo_data):
     assert servo.getAngle() == expectedAngle
 
 
-def test_servo_getservoanglerange(servo):
-    assert servo.getServoAngleRange() == pytest.approx(180, 0.01)
+def test_servo_getServoAngleRange(servo):
+    assert servo.getServoAngleRange() == pytest.approx(180.0, 0.01)
 
+
+def test_servo_initSendable(servo, sendablebuilder):
+    servo.set(0.5)
+    servo.initSendable(sendablebuilder)
+
+    assert sendablebuilder.properties[0].key == "Value"
+
+    sendablebuilder.updateTable()
+
+    assert sendablebuilder.getTable().getNumber("Value", 0.0) == pytest.approx(0.5)
+
+    sendablebuilder.properties[0].setter(2.0)
+    assert servo.get() == pytest.approx(1.0)
