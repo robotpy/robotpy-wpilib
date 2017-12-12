@@ -60,32 +60,3 @@ def test_pdp_resetTotalEnergy(pdp, pdp_data):
 
 def test_pdp_clearStickyFaults(pdp):
     pdp.clearStickyFaults()
-
-
-def test_pdp_initTable_null(pdp):
-    pdp.initTable(None)
-
-
-def test_pdp_initTable_null(pdp, pdp_data, pdp_table):
-    pdp_data['current'][0] = 15
-    pdp_data['current'][15] = 25
-    pdp_data['voltage'] = 3.14
-    pdp_data['total_current'] = 42
-    pdp.initTable(pdp_table)
-
-    assert pdp_table.getNumber("Chan0", 0.0) == pytest.approx(15, 0.01)
-    assert pdp_table.getNumber("Chan15", 0.0) == pytest.approx(25, 0.01)
-    assert pdp_table.getNumber("Voltage", 0.0) == pytest.approx(3.14, 0.01)
-    assert pdp_table.getNumber("TotalCurrent", 0.0) == pytest.approx(42, 0.01)
-
-
-def test_pdp_livewindowmode(pdp, pdp_table):
-
-    pdp.initTable(pdp_table)
-
-    pdp.startLiveWindowMode()
-    assert not hasattr(pdp, 'valueListener')
-    assert not hasattr(pdp, 'voltageListener')
-    assert not hasattr(pdp, 'totalCurrentListener')
-    pdp.stopLiveWindowMode()
-

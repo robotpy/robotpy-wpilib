@@ -21,6 +21,7 @@ class SolenoidBase(SensorBase):
 
         :param moduleNumber: The PCM CAN ID
         """
+        super().__init__()
         self.moduleNumber = moduleNumber
 
     def getAll(moduleNumber):

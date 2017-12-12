@@ -117,6 +117,14 @@ def wpimock(request, halmock):
     return wpilib
 
 
+@pytest.fixture(scope='function')
+def sendablebuilder(wpilib, networktables):
+    builder = wpilib.SendableBuilder()
+    table = networktables.NetworkTables.getTable("component")
+    builder.setTable(table)
+    return builder
+
+
 class SimHooks(BaseSimHooks):
     def __init__(self):
         super().__init__()

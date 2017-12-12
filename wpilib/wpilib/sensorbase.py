@@ -8,11 +8,11 @@
 
 import hal
 
-from .livewindowsendable import LiveWindowSendable
+from .sendablebase import SendableBase
 
 __all__ = ["SensorBase"]
 
-class SensorBase(LiveWindowSendable):
+class SensorBase(SendableBase):
     """Base class for all sensors
     
     Stores most recent status information as well as containing utility

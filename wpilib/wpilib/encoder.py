@@ -113,6 +113,7 @@ class Encoder(SensorBase):
             spec'd count.  Defaults to k4X if unspecified.
         :type encodingType: :class:`Encoder.EncodingType`
         """
+        super().__init__()
         a_source_arg = ("aSource", HasAttribute("getPortHandleForRouting"))
         b_source_arg = ("bSource", HasAttribute("getPortHandleForRouting"))
         index_source_arg = ("indexSource", HasAttribute("getPortHandleForRouting"))
@@ -219,7 +220,7 @@ class Encoder(SensorBase):
         return hal.getEncoderEncodingScale(self.encoder)
 
     def free(self):
-        LiveWindow.removeComponent(self)
+        super().free()
         if self.aSource is not None and self.allocatedA:
             self.aSource.free()
             self.allocatedA = False

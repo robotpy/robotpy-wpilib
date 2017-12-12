@@ -112,8 +112,6 @@ class DoubleSolenoid(SolenoidBase):
 
     def free(self):
         """Mark the solenoid as freed."""
-        LiveWindow.removeComponent(self)
-        
         self.__finalizer()
         self.forwardHandle = None
         self.reverseHandle = None

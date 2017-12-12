@@ -10,11 +10,11 @@ import hal
 
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
-from .livewindowsendable import LiveWindowSendable
+from .sendablebase import SendableBase
 
 __all__ = ["AnalogPotentiometer"]
 
-class AnalogPotentiometer(LiveWindowSendable):
+class AnalogPotentiometer(SendableBase):
     """Reads a potentiometer via an :class:`.AnalogInput`
     
     Analog potentiometers read
@@ -46,6 +46,7 @@ class AnalogPotentiometer(LiveWindowSendable):
         :type  offset: float
         """
 
+        super().__init__()
         if not hasattr(channel, "getVoltage"):
             channel = AnalogInput(channel)
         self.analog_input = channel

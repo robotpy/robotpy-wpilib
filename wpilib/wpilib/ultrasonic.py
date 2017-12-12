@@ -1,4 +1,4 @@
-# validated: 2017-11-19 EN b65447b6f5a8 edu/wpi/first/wpilibj/Ultrasonic.java
+# validated: 2017-12-09 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Ultrasonic.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -106,6 +106,7 @@ class Ultrasonic(SensorBase):
             trip time of the ping, and the distance.
         :param units: The units returned in either kInches or kMillimeters
         """
+        super().__init__()
         # Convert to DigitalInput and DigitalOutput if necessary
         self.pingAllocated = False
         self.echoAllocated = False
@@ -172,7 +173,6 @@ class Ultrasonic(SensorBase):
             self.counter.free()
             self.counter = None
         
-        LiveWindow.removeComponent(self)
         super().free()
 
     def setAutomaticMode(self, enabling):
@@ -331,23 +331,6 @@ class Ultrasonic(SensorBase):
         """
         self.enabled = bool(enable)
 
-    # Live Window code, only does anything if live window is activated.
-    def getSmartDashboardType(self):
-        return "Ultrasonic"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.getRangeInches())
-
-    def startLiveWindowMode(self):
-        pass
-
-    def stopLiveWindowMode(self):
-        pass
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Ultrasonic")
+        builder.addDoubleProperty("Value", self.getRangeInches, None)
