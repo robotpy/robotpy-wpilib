@@ -1,4 +1,4 @@
-# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/PowerDistributionPanel.java
+# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/PowerDistributionPanel.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,6 +8,7 @@
 
 import hal
 
+from functools import partial
 from .sensorbase import SensorBase
 
 __all__ = ["PowerDistributionPanel"]
@@ -23,12 +24,11 @@ class PowerDistributionPanel(SensorBase):
             :param module: CAN ID of the PDP
             :type module: int
         """
+        super().__init__()
         self.module = module
         SensorBase.checkPDPModule(module)
         hal.initializePDP(module)
-        self.chanEntry = None
-        self.voltageEntry = None
-        self.totalCurrentEntry = None
+        self.setName("PowerDistributionPanel", module)
 
     def getVoltage(self):
         """
@@ -98,29 +98,9 @@ class PowerDistributionPanel(SensorBase):
         """
         hal.clearPDPStickyFaults(self.module)
 
-    # Live Window code, only does anything if live window is activated.
-
-    def getSmartDashboardType(self):
-        return "PowerDistributionPanel"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.chanEntry = []
-            for channel in range(16):
-                self.chanEntry.append(subtable.getEntry("Chan" + str(channel)))
-            self.voltageEntry = subtable.getEntry("Voltage")
-            self.totalCurrentEntry = subtable.getEntry("TotalCurrent")
-            self.updateTable()
-        else:
-            self.chanEntry = None
-            self.voltageEntry = None
-            self.totalCurrentEntry = None
-
-    def updateTable(self):
-        if self.chanEntry is not None:
-            for channel in range(16):
-                self.chanEntry[channel].setDouble(self.getCurrent(channel))
-        if self.voltageEntry is not None:
-            self.voltageEntry.setDouble(self.getVoltage())
-        if self.totalCurrentEntry is not None:
-            self.totalCurrentEntry.setDouble(self.getTotalCurrent())
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("PowerDistributionPanel")
+        for chan in range(self.kPDPChannels):
+            builder.addDoubleProperty("Chan%s" % (chan,), partial(self.getCurrent, chan), None)
+        builder.addDoubleProperty("Voltage", self.getVoltage, None)
+        builder.addDoubleProperty("TotalCurrent", self.getTotalCurrent, None)
