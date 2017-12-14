@@ -1,4 +1,4 @@
-# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/Encoder.java
+# validated: 2017-12-13 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Encoder.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -63,7 +63,7 @@ class Encoder(SensorBase):
         The encoder will start counting immediately.
 
         The a, b, and optional index channel arguments may be either channel
-        numbers or `DigitalSource` sources. There may also be a boolean
+        numbers or :class:`.DigitalSource` sources. There may also be a boolean
         reverseDirection, and an encodingType according to the following
         list.
         
@@ -155,14 +155,17 @@ class Encoder(SensorBase):
                 raise ValueError("didn't specify A channel")
             aSource = DigitalInput(aChannel)
             self.allocatedA = True
+            self.addChild(aSource)
         if bSource is None:
             if bChannel is None:
                 raise ValueError("didn't specify B channel")
             bSource = DigitalInput(bChannel)
             self.allocatedB = True
+            self.addChild(bSource)
         if indexSource is None and indexChannel is not None:
             indexSource = DigitalInput(indexChannel)
             self.allocatedIndex = True
+            self.addChild(indexSource)
 
         # save to instance variables
         self.aSource = aSource
@@ -172,7 +175,6 @@ class Encoder(SensorBase):
         self.pidSource = self.PIDSourceType.kDisplacement
         self._encoder = None
         self.counter = None
-        self.index = 0
         self.speedEntry = None
         self.distanceEntry = None
         self.distancePerTickEntry = None
@@ -193,10 +195,10 @@ class Encoder(SensorBase):
         if self.indexSource is not None:
             self.setIndexSource(self.indexSource)
 
+        self.index = self.getFPGAIndex()
         hal.report(hal.UsageReporting.kResourceType_Encoder,
                       self.index, encodingType)
-        LiveWindow.addSensorChannel("Encoder", aSource.getChannel(),
-                                    self)
+        self.setName("Encoder", self.index)
 
     @property
     def encoder(self):
@@ -343,6 +345,14 @@ class Encoder(SensorBase):
         """
         hal.setEncoderDistancePerPulse(self.encoder, distancePerPulse)
 
+    def getDistancePerPulse(self): 
+        """ 
+        Get the distance per pulse for this encoder.
+
+        :returns: The scale factor that will be used to convert pulses to useful units.
+        """
+        return hal.getEncoderDistancePerPulse(self.encoder)
+
     def setReverseDirection(self, reverseDirection):
         """Set the direction sensing for this encoder. This sets the direction
         sensing on the encoder so that it could count in the correct software
@@ -409,9 +419,9 @@ class Encoder(SensorBase):
         Set the index source for the encoder. When this source rises, the encoder count automatically resets.
 
         :param source: Either an initialized DigitalSource or a DIO channel number
-        :type: Either a :class:`wpilib.DigitalInput` or number
+        :type: Either a :class:`.DigitalInput` or number
         :param indexing_type: The state that will cause the encoder to reset
-        :type: A value from :class:`wpilib.DigitalInput.IndexingType`
+        :type: A value from :class:`.IndexingType`
         """
         if hasattr(source, "getPortHandleForRouting"):
             self.indexSource = source
@@ -421,34 +431,12 @@ class Encoder(SensorBase):
         hal.setEncoderIndexSource(self.encoder, self.indexSource.getPortHandleForRouting(),
                                   self.indexSource.getAnalogTriggerTypeForRouting(), indexing_type)
 
-    # Live Window code, only does anything if live window is activated.
-
-    def getSmartDashboardType(self):
+    def initSendable(self, builder):
         if self.encodingType == self.EncodingType.k4X:
-            return "Quadrature Encoder"
-        return "Encoder"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.speedEntry = subtable.getEntry("Speed")
-            self.distanceEntry = subtable.getEntry("Distance")
-            self.distancePerTickEntry = subtable.getEntry("Distance per Tick")
-            self.updateTable()
+            builder.setSmartDashboardType("Quadrature Encoder")
         else:
-            self.speedEntry = None
-            self.distanceEntry = None
-            self.distancePerTickEntry = None
+            builder.setSmartDashboardType("Encoder")
 
-    def updateTable(self):
-        if self.speedEntry is not None:
-            self.speedEntry.setDouble(self.getRate())
-        if self.distanceEntry is not None:
-            self.distanceEntry.setDouble(self.getDistance())
-        if self.distancePerTickEntry is not None:
-            self.distancePerTickEntry.setDouble(hal.getEncoderDistancePerPulse(self.encoder))
-
-    def startLiveWindowMode(self):
-        pass
-
-    def stopLiveWindowMode(self):
-        pass
+        builder.addDoubleProperty("Speed", self.getRate, None)
+        builder.addDoubleProperty("Distance", self.getDistance, None)
+        builder.addDoubleProperty("Distance per Tick", self.getDistancePerPulse, None)
