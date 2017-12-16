@@ -1,4 +1,4 @@
-# validated: 2017-10-22 DS f0cc62324134 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
+# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
 
 # validation note: 2017-10-22: Not using the getEntry() stuff that Java uses,
 #                              as using the existing table stuff is more
@@ -12,8 +12,18 @@
 #----------------------------------------------------------------------------
 
 import hal
+import threading
+from ._impl.utils import match_arglist, HasAttribute
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["SmartDashboard"]
+
+
+class Data:
+    def __init__(self):
+        self.sendable = None
+        self.builder = SendableBuilder()
+
 
 class SmartDashboard:
     """The bridge between robot programs and the SmartDashboard on the laptop
@@ -36,6 +46,7 @@ class SmartDashboard:
     # A table linking tables in the SmartDashboard to the SmartDashboardData
     # objects they came from.
     tablesToData = {}
+    mutex = threading.RLock()
 
     @classmethod
     def _reset(cls):
@@ -67,27 +78,35 @@ class SmartDashboard:
         
         :param value: the named value (getName is called to retrieve the value)
         """
-        # NOTE: mix of args and kwargs not allowed
-        if kwargs and not args:
-            if "value" in kwargs:
-                data = kwargs["value"]
+        with cls.mutex:
+            key_arg = ("key", [str])
+            data_arg = ("data", [HasAttribute("initSendable")])
+            value_arg = ("value", [HasAttribute("initSendable")])
+            templates = [[key_arg, data_arg],
+                         [value_arg],]
+
+            index, results = match_arglist('SmartDashboard.putData',
+                                       args, kwargs, templates)
+            if index == 0:
+                key = results['key']
+                data = results["data"]
+            elif index == 1:
+                data = results["value"]
                 key = data.getName()
             else:
-                key = kwargs["key"]
-                data = kwargs["data"]
-        elif len(args) == 1 and not kwargs:
-            data = args[0]
-            key = data.getName()
-        elif len(args) == 2 and not kwargs:
-            key, data = args
-        else:
-            raise ValueError("only key, data or value accepted")
+                raise ValueError("only (key, data) or (value) accepted")
 
-        table = cls.getTable()
-        dataTable = table.getSubTable(key)
-        dataTable.getEntry(".type").setString(data.getSmartDashboardType())
-        data.initTable(dataTable)
-        cls.tablesToData[dataTable] = data
+            sddata = cls.tablesToData.get(key, None)
+            if sddata is None:
+                sddata = Data()
+                cls.tablesToData[key] = sddata
+
+            if sddata.sendable is None or sddata.sendable != data:
+                sddata.sendable = data
+                sddata.builder.setTable(cls.getTable().getSubTable(key))
+                data.initSendable(sddata.builder)
+
+            sddata.builder.updateTable()
 
     @classmethod
     def getData(cls, key):
@@ -100,12 +119,10 @@ class SmartDashboard:
         
         :raises: :exc:`KeyError` if the key doesn't exist
         """
-        table = cls.getTable()
-        subtable = table.getSubTable(key)
-        data = cls.tablesToData.get(subtable)
+        data = cls.tablesToData.get(subtable, None)
         if data is None:
             raise KeyError("SmartDashboard data does not exist: '%s'" % key)
-        return data
+        return data.sendable
     
     @classmethod
     def getEntry(cls, key):
