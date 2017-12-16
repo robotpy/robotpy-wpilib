@@ -1,4 +1,4 @@
-# validated: 2017-11-19 EN 7efab4c43ac5 edu/wpi/first/wpilibj/command/Command.java
+# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/command/Command.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,7 +8,7 @@
 
 from .scheduler import Scheduler
 from ..robotstate import RobotState
-from ..sendable import Sendable
+from ..sendablebase import SendableBase
 from ..timer import Timer
 from networktables import NetworkTables
 
@@ -16,7 +16,7 @@ import threading
 
 __all__ = ["Command"]
 
-class Command(Sendable):
+class Command(SendableBase):
     """The Command class is at the very core of the entire command framework.
     Every command can be started with a call to start().
     Once a command is started it will call :meth:`initialize`, and then
@@ -49,18 +49,21 @@ class Command(Sendable):
         :param timeout: The time (in seconds) before this command "times out".
                         Default is no timeout.  See isTimedOut().
         """
+        super().__init__(False)
         self.mutex = threading.RLock()
 
         # The name of this command
         if name is None:
-            self.name = self.__class__.__name__
-        else:
-            self.name = name
+            name = self.__class__.__name__
+
+        self.setName(name)
 
         # The time (in seconds) before this command "times out" (or None if no
         # timeout)
         if timeout is not None and timeout < 0:
             raise ValueError("Timeout must not be negative")
+        if timeout is None:
+            timeout = -1.0
         self.timeout = timeout
 
         # The time since this command was initialized
@@ -81,17 +84,6 @@ class Command(Sendable):
         self.runWhenDisabled = False
         # The CommandGroup this is in
         self.parent = None
-
-        self.runningEntry = None
-        self.isParentedEntry = None
-
-    def getName(self):
-        """Returns the name of this command. If no name was specified
-        in the constructor, then the default is the name of the class.
-        
-        :returns: the name of this command
-        """
-        return self.name
 
     def setTimeout(self, seconds):
         """Sets the timeout of this command.
@@ -149,8 +141,6 @@ class Command(Sendable):
             self.initialized = False
             self.canceled = False
             self.running = False
-        if self.runningEntry is not None:
-            self.runningEntry.setBoolean(False)
 
     def run(self):
         """The run method is used internally to actually run the commands.
@@ -278,9 +268,16 @@ class Command(Sendable):
                 raise ValueError("Can not give command to a command group after already being put in a command group")
             self.lockChanges()
             self.parent = parent
-        if self.isParentedEntry is not None:
-            self.isParentedEntry.setBoolean(True)
             
+    def isParented(self):
+        """
+        Returns whether the command has a parent.
+
+        :returns: True if the command has a parent.
+        """
+        with self.mutex:
+            return self.parent is not None
+
     def clearRequirements(self):
         """Clears list of subsystem requirements. This is only used by
         :class:`.ConditionalCommand` so cancelling the chosen command works properly
@@ -314,8 +311,6 @@ class Command(Sendable):
         with self.mutex:
             self.running = True
             self.startTime = None
-        if self.runningEntry is not None:
-            self.runningEntry.setBoolean(True)
 
     def isRunning(self):
         """Returns whether or not the command is running.
@@ -423,31 +418,16 @@ class Command(Sendable):
         """
         return self.getName()
 
-    def getSmartDashboardType(self):
-        return "Command"
-
-    def valueChanged(self, entry, key, value, param):
+    def runningChanged(self, value):
         if value:
-            self.start()
+            if not self.isRunning():
+                self.start()
         else:
-            self.cancel()
+            if self.isRunning():
+                self.cancel()
 
-    def initTable(self, table):
-        if self.runningEntry is not None:
-            self.runningEntry.removeListener(self.runningListener)
-        super().initTable(table)
-        if table is not None:
-            self.runningEntry = table.getEntry("running")
-            self.isParentedEntry = table.getEntry(".isParented")
-            table.getEntry(".name").setString(self.getName())
-            self.runningEntry.setBoolean(self.isRunning())
-            self.isParentedEntry.setBoolean(self.parent is not None)
-
-            self.runningListener = self.runningEntry.addListener(
-                self.valueChanged,
-                NetworkTables.NotifyFlags.IMMEDIATE |
-                NetworkTables.NotifyFlags.NEW |
-                NetworkTables.NotifyFlags.UPDATE)
-        else:
-            self.runningEntry = None
-            self.isParentedEntry = None
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Command")
+        builder.addStringProperty(".name", self.getName, None)
+        builder.addBooleanProperty("running", self.isRunning, self.runningChanged)
+        builder.addBooleanProperty(".isParented", self.isParented, None)
