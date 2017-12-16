@@ -132,34 +132,3 @@ def test_pwm_setZeroLatch_freed(pwm, pwm_data):
     with pytest.raises(ValueError):
         pwm.setZeroLatch()
     assert pwm_data['zero_latch'] == False
-
-def test_pwm_getSmartDashboardType(pwm):
-    assert pwm.getSmartDashboardType() == "Speed Controller"
-
-def test_pwm_updateTable(pwm):
-    pwm.valueEntry = MagicMock()
-    pwm.getSpeed = MagicMock()
-    # normal case
-    pwm.updateTable()
-    pwm.valueEntry.setDouble.assert_called_once_with(pwm.getSpeed.return_value)
-    # None case
-    pwm.getSpeed.reset_mock()
-    pwm.valueEntry = None
-    pwm.updateTable()
-    assert not pwm.getSpeed.called
-
-def test_pwm_valueChanged(pwm):
-    pwm.setSpeed = MagicMock()
-    pwm.valueChanged(None, None, 0.5, None)
-    pwm.setSpeed.assert_called_once_with(0.5)
-    
-def test_pwm_startLiveWindowMode(pwm, pwm_data):
-    pwm_data['value'] = 2
-    pwm.startLiveWindowMode()
-    assert pwm_data['value'] == 0
-    
-def test_pwm_stopLiveWindowMode(pwm, pwm_data):
-    pwm_data['value'] = 2
-    pwm.stopLiveWindowMode()
-    assert pwm_data['value'] == 0
-

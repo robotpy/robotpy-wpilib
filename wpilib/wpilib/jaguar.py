@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/Jaguar.java
+# validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Jaguar.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,7 +8,6 @@
 
 import hal
 
-from .livewindow import LiveWindow
 from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Jaguar"]
@@ -38,4 +37,4 @@ class Jaguar(PWMSpeedController):
         
         hal.report(hal.UsageReporting.kResourceType_Jaguar,
                    self.getChannel())
-        LiveWindow.addActuatorChannel("Jaguar", self.getChannel(), self)
+        self.setName("Jaguar", self.getChannel())

@@ -15,13 +15,13 @@ class MecanumDrive(RobotDriveBase):
     should form an X across the robot. Each drive() function provides different inverse kinematic
     relations for a Mecanum drive robot.
 
-    Drive base diagram:
+    Drive base diagram::
 
-    \\_______//
-    \\ |   | //
-       |   |
-    //_|___|_\\
-    //       \\
+        \\_______//
+        \\ |   | //
+           |   |
+        //_|___|_\\
+        //       \\
 
 
     Each drive() function provides different inverse kinematic relations for a Mecanum drive
@@ -29,7 +29,7 @@ class MecanumDrive(RobotDriveBase):
     usually unnecessary.
     """
     def __init__(self, frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor):
-        """Construct a MecanumDrive.
+        """Constructor for MecanumDrive.
 
         If motors need to be inverted, do so beforehand.
         Motor outputs for the right side are negated, so motor direction inversion
@@ -52,12 +52,12 @@ class MecanumDrive(RobotDriveBase):
     def driveCartesian(self, x, y, rotation, gyroAngle=0.0):
         """Drive method for Mecanum platform.
 
-        :param x: The speed that the robot should drive in the X direction. [-1.0..1.0]
-        :param y: The speed that the robot should drive in the Y direction. [-1.0..1.0]
+        :param x: The speed that the robot should drive in the X direction. ``[-1.0..1.0]``
+        :param y: The speed that the robot should drive in the Y direction. ``[-1.0..1.0]``
         :param rotation: The rate of rotation for the robot that is completely independent of the
-        translation. [-1.0..1.0]
+                         translation. ``[-1.0..1.0]``
         :param gyroAngle: The current angle reading from the gyro in degrees around the Z axis. Use 
-        this to implement field-oriented controls.
+                          this to implement field-oriented controls.
         """
         if not self.reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,
@@ -100,11 +100,11 @@ class MecanumDrive(RobotDriveBase):
     def drivePolar(self, magnitude, angle, rotation):
         """Drive method for Mecanum platform.
 
-        :param magnitude: The speed that the robot should drive in a given direction. [-1.0..1.0]
+        :param magnitude: The speed that the robot should drive in a given direction. ``[-1.0..1.0]``
         :param angle: The direction the robot should drive in degrees. 0.0 is straight ahead. The
-        direction and maginitude are independent of the rotation rate.
+                      direction and maginitude are independent of the rotation rate.
         :param rotation: The rate of rotation for the robot that is completely independent of the
-        magnitude or direction. [-1.0..1.0]
+                         magnitude or direction. ``[-1.0..1.0]``
         """
         if not self.reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,

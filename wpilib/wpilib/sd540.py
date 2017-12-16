@@ -1,4 +1,4 @@
-# validated: 2017-10-07 EN e1195e8b9dab edu/wpi/first/wpilibj/SD540.java
+# validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/SD540.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,7 +8,6 @@
 
 import hal
 
-from .livewindow import LiveWindow
 from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["SD540"]
@@ -47,6 +46,6 @@ class SD540(PWMSpeedController):
         self.setSpeed(0)
         self.setZeroLatch()
 
-        LiveWindow.addActuatorChannel("SD540", self.getChannel(), self)
         hal.report(hal.UsageReporting.kResourceType_MindsensorsSD540,
                    self.getChannel())
+        self.setName("SD540", self.getChannel())

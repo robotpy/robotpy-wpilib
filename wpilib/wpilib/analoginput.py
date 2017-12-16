@@ -47,6 +47,7 @@ class AnalogInput(SensorBase):
         :param channel: The channel number to represent. 0-3 are on-board 4-7 are on the MXP port.
         """
         
+        super().__init__()
         SensorBase.checkAnalogInputChannel(channel)
         
         self.channel = channel
@@ -69,7 +70,7 @@ class AnalogInput(SensorBase):
         return self._port
 
     def free(self):
-        LiveWindow.removeComponent(self)
+        super().free()
         if self.channel is None:
             return
         AnalogInput.channels.free(self.channel)

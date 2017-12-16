@@ -45,9 +45,14 @@ def hal_data(_module_patch):
 
 
 @pytest.fixture(scope="function")
-def wpilib(_module_patch, hal, hal_data):
+def wpilib(_module_patch, hal, hal_data, networktables):
     """Actual wpilib implementation"""
     import wpilib
+    import wpilib.buttons
+    import wpilib.command
+    import wpilib.drive
+    import wpilib.interfaces
+    
     yield wpilib
     
     # Note: even though the wpilib module is freshly loaded each time a new
@@ -104,7 +109,20 @@ def wpimock(request, halmock):
     m.start()
     request.addfinalizer(m.stop)
     import wpilib
+    import wpilib.buttons
+    import wpilib.command
+    import wpilib.drive
+    import wpilib.interfaces
+    
     return wpilib
+
+
+@pytest.fixture(scope='function')
+def sendablebuilder(wpilib, networktables):
+    builder = wpilib.SendableBuilder()
+    table = networktables.NetworkTables.getTable("component")
+    builder.setTable(table)
+    return builder
 
 
 class SimHooks(BaseSimHooks):
@@ -114,6 +132,12 @@ class SimHooks(BaseSimHooks):
 
     def getTime(self):
         return self.time
+
+    def delayMillis(self, ms):
+        self.time += ms / 1000.0
+
+    def delaySeconds(self, s):
+        self.time += s
 
 
 @pytest.fixture(scope='function')

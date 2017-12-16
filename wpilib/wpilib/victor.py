@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/Victor.java
+# validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Victor.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,7 +8,6 @@
 
 import hal
 
-from .livewindow import LiveWindow
 from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Victor"]
@@ -53,6 +52,6 @@ class Victor(PWMSpeedController):
         self.setSpeed(0)
         self.setZeroLatch()
 
-        LiveWindow.addActuatorChannel("Victor", self.getChannel(), self)
         hal.report(hal.UsageReporting.kResourceType_Victor,
                    self.getChannel())
+        self.setName('Victor', self.getChannel())

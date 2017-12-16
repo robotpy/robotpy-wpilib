@@ -27,7 +27,7 @@ class MotorSafety:
     expires. The motor object is expected to call the feed() method whenever
     the motors value is updated.
     
-    .. robotpy-specific:: In the Java implementation this is MotorSafetyHelper
+    .. robotpy-specific: In the Java implementation this is MotorSafetyHelper
     """
     DEFAULT_SAFETY_EXPIRATION = 0.1
     helpers = weakref.WeakSet()

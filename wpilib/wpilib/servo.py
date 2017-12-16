@@ -1,4 +1,4 @@
-# validated: 2017-10-07 EN 4e80570c4c48 edu/wpi/first/wpilibj/Servo.java
+# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Servo.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -43,13 +43,9 @@ class Servo(PWM):
         self.valueEntry = None
         self.valueListener = None
 
-        LiveWindow.addActuatorChannel("Servo", self.getChannel(), self)
         hal.report(hal.UsageReporting.kResourceType_Servo,
                    self.getChannel())
-
-    def free(self):
-        LiveWindow.removeComponent(self)
-        super().free()
+        self.setName("Servo", self.getChannel())
 
     def set(self, value):
         """Set the servo position.
@@ -110,21 +106,6 @@ class Servo(PWM):
     def getServoAngleRange(self):
         return self.kMaxServoAngle - self.kMinServoAngle
 
-    # Live Window code, only does anything if live window is activated.
-
-    def getSmartDashboardType(self):
-        return "Servo"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.get())
-
-    def valueChanged(self, entry, key, value, param):
-        self.set(value)
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Servo")
+        builder.addDoubleProperty("Value", self.get, self.set)

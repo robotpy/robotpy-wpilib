@@ -1,4 +1,4 @@
-# validated: 2017-11-29 DV ba3a85d0ccab edu/wpi/first/wpilibj/PWMTalonSRX.java
+# validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/PWMTalonSRX.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,7 +8,6 @@
 
 import hal
 
-from .livewindow import LiveWindow
 from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["PWMTalonSRX"]
@@ -47,6 +46,6 @@ class PWMTalonSRX(PWMSpeedController):
         self.setSpeed(0)
         self.setZeroLatch()
 
-        LiveWindow.addActuatorChannel("PWMTalonSRX", self.getChannel(), self)
         hal.report(hal.UsageReporting.kResourceType_PWMTalonSRX,
                    self.getChannel())
+        self.setName("PWMTalonSRX", self.getChannel())

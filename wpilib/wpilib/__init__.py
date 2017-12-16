@@ -25,7 +25,6 @@ from .digitalinput import *
 from .digitaloutput import *
 from .digitalsource import *
 from .doublesolenoid import *
-from .drive import *
 from .driverstation import *
 from .encoder import *
 from .filter import *
@@ -55,6 +54,8 @@ from .safepwm import *
 from .samplerobot import *
 from .sd540 import *
 from .sendable import *
+from .sendablebase import *
+from .sendablebuilder import *
 from .sendablechooser import *
 from .sensorbase import *
 from .serialport import *

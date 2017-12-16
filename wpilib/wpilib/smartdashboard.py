@@ -95,6 +95,7 @@ class SmartDashboard:
         
         :param key: the key
         :type  key: str
+        
         :returns: the value
         
         :raises: :exc:`KeyError` if the key doesn't exist
@@ -122,7 +123,8 @@ class SmartDashboard:
         """Checks the table and tells if it contains the specified key.
 
         :param key: key the key to search for
-        :return: true if the table as a value assigned to the given key
+        
+        :returns: true if the table as a value assigned to the given key
         """
         table = cls.getTable()
         return table.containsKey(key)
@@ -132,7 +134,8 @@ class SmartDashboard:
         """Get array of keys in the table.
 
         :param types: bitmask of types; 0 is treated as a "don't care".
-        :return: keys currently in the table
+        
+        :returns: keys currently in the table
         """
         table = cls.getTable()
         return table.getKeys(types)
@@ -163,7 +166,8 @@ class SmartDashboard:
         The key cannot be null.
 
         :param key: the key name
-        :return: True if the value is persistent.
+        
+        :returns: True if the value is persistent.
         """
         table = cls.getTable()
         return table.isPersistent(key)
@@ -195,7 +199,8 @@ class SmartDashboard:
         """ Returns the flags for the specified key.
 
         :param key: the key name
-        :return: the flags, or 0 if the key is not defined
+        
+        :returns: the flags, or 0 if the key is not defined
         """
         table = cls.getTable()
         return table.getFlags(key)
@@ -216,6 +221,7 @@ class SmartDashboard:
 
         :param key: the key to be assigned to
         :param value: the value that will be assigned
+        
         :return False if the table key already exists with a different type
         """
         table = cls.getTable()
@@ -227,6 +233,7 @@ class SmartDashboard:
         
         :param key: the key
         :param defaultValue: the default value to set if key doens't exist.
+        
         :returns: False if the table key exists with a different type
         """
         table = cls.getTable()
@@ -243,6 +250,7 @@ class SmartDashboard:
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
+        
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
         """
@@ -255,6 +263,7 @@ class SmartDashboard:
         
         :param key: the key to be assigned to
         :param value: the value that will be assigned
+        
         :returns: False if the table key already exists with a different type
         """
         table = cls.getTable()
@@ -266,6 +275,7 @@ class SmartDashboard:
         
         :param key: the key
         :param defaultValue: the default value to set if key doens't exist.
+        
         :returns: False if the table key exists with a different type
         """
         table = cls.getTable()
@@ -282,6 +292,7 @@ class SmartDashboard:
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
+        
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
         """
@@ -294,6 +305,7 @@ class SmartDashboard:
         
         :param key: the key to be assigned to
         :param value: the value that will be assigned
+        
         :returns: False if the table key already exists with a different type
         """
         table = cls.getTable()
@@ -305,6 +317,7 @@ class SmartDashboard:
         
         :param key: the key
         :param defaultValue: the default value to set if key doens't exist.
+        
         :returns: False if the table key exists with a different type
         """
         table = cls.getTable()
@@ -321,6 +334,7 @@ class SmartDashboard:
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
+        
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
         """
@@ -333,6 +347,7 @@ class SmartDashboard:
         
         :param key: the key to be assigned to
         :param value: the value that will be assigned
+        
         :returns: False if the table key already exists with a different type
         """
         table = cls.getTable()
@@ -344,6 +359,7 @@ class SmartDashboard:
         
         :param key: the key
         :param defaultValue: the default value to set if key doens't exist.
+        
         :returns: False if the table key exists with a different type
         """
         table = cls.getTable()
@@ -360,6 +376,7 @@ class SmartDashboard:
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
+        
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
         """
@@ -372,6 +389,7 @@ class SmartDashboard:
         
         :param key: the key to be assigned to
         :param value: the value that will be assigned
+        
         :returns: False if the table key already exists with a different type
         """
         table = cls.getTable()
@@ -383,6 +401,7 @@ class SmartDashboard:
         
         :param key: the key
         :param defaultValue: the default value to set if key doens't exist.
+        
         :returns: False if the table key exists with a different type
         """
         table = cls.getTable()
@@ -399,6 +418,7 @@ class SmartDashboard:
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
+        
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
         """
@@ -459,6 +479,7 @@ class SmartDashboard:
         
         :param key: the key to be assigned to
         :param value: the value that will be assigned
+        
         :returns: False if the table key already exists with a different type
         """
         table = cls.getTable()
@@ -470,6 +491,7 @@ class SmartDashboard:
         
         :param key: the key
         :param defaultValue: the default value to set if key doens't exist.
+        
         :returns: False if the table key exists with a different type
         """
         table = cls.getTable()
@@ -486,6 +508,7 @@ class SmartDashboard:
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
+        
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
 

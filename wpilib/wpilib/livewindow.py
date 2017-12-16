@@ -1,12 +1,29 @@
-# validated: 2015-12-24 DS 6d854af edu/wpi/first/wpilibj/livewindow/LiveWindow.java
+# validated: 2017-12-09 EN f9bece2ffbf7 edu/wpi/first/wpilibj/livewindow/LiveWindow.java
+# ----------------------------------------------------------------------------
+#  Copyright (c) 2008-2017 FIRST. All Rights Reserved.                        
+#  Open Source Software - may be modified and shared by FRC teams. The code   
+#  must be accompanied by the FIRST BSD license file in the root directory of 
+#  the project.                                                               
+# ----------------------------------------------------------------------------
+import threading
+from networktables import NetworkTablesInstance
+from .sendablebuilder import SendableBuilder
 
-from networktables import NetworkTables
-from .command import Scheduler
-
+import warnings
 import logging
 logger = logging.getLogger(__name__)
 
 __all__ = ["LiveWindow"]
+
+
+class Component:
+    def __init__(self, sendable, parent):
+        self.sendable = sendable
+        self.parent = parent
+        self.builder = SendableBuilder()
+        self.firstTime = True
+        self.telemetryEnabled = True
+
 
 class _LiveWindowComponent:
     """A LiveWindow component is a device (sensor or actuator) that should be
@@ -22,48 +39,49 @@ class LiveWindow:
     """The public interface for putting sensors and
     actuators on the LiveWindow."""
 
-    sensors = set()
-    #actuators = set()
     components = {}
-    livewindowTable = None
-    statusTable = None
+    _liveWindowTable = None
+    _statusTable = None
+    _enabledEntry = None
+    startLiveWindow = False
     liveWindowEnabled = False
-    firstTime = True
+    telemetryEnabled = True
+    mutex = threading.RLock()
+
+    @classmethod
+    def liveWindowTable(cls):
+        if cls._liveWindowTable is None:
+            cls._liveWindowTable = NetworkTablesInstance.getDefault().getTable("LiveWindow")
+        return cls._liveWindowTable
+
+    @classmethod
+    def statusTable(cls):
+        if cls._statusTable is None: 
+            cls._statusTable = cls.liveWindowTable().getSubTable(".status")
+        return cls._statusTable
+
+    @classmethod
+    def enabledEntry(cls):
+        if cls._enabledEntry is None:
+            cls._enabledEntry = cls.statusTable().getEntry("LW Enabled")
+        return cls._enabledEntry
     
-    @staticmethod
-    def _reset():
-        LiveWindow.sensors = set()
-        LiveWindow.components = {}
-        LiveWindow.livewindowTable = None
-        LiveWindow.statusTable = None
-        LiveWindow.liveWindowEnabled = False
-        LiveWindow.firstTime = True
+    @classmethod
+    def _reset(cls):
+        cls.components = {}
+        cls._liveWindowTable = None
+        cls._statusTable = None
+        cls._enabledEntry = None
+        cls.startLiveWindow = False
+        cls.liveWindowEnabled = False
+        cls.telemetryEnabled = True
 
-    @staticmethod
-    def initializeLiveWindowComponents():
-        """Initialize all the LiveWindow elements the first time we enter
-        LiveWindow mode. By holding off creating the NetworkTable entries, it
-        allows them to be redefined before the first time in LiveWindow mode.
-        This allows default sensor and actuator values to be created that are
-        replaced with the custom names from users calling addActuator and
-        addSensor.
-        """
-        logger.info("Initializing the components first time")
-        LiveWindow.livewindowTable = NetworkTables.getTable("LiveWindow")
-        LiveWindow.statusTable = LiveWindow.livewindowTable.getSubTable("~STATUS~")
-        for component, c in LiveWindow.components.items():
-            logger.info("Initializing table for '%s' '%s'" % (c.subsystem, c.name))
-            LiveWindow.livewindowTable.getSubTable(c.subsystem).putString("~TYPE~", "LW Subsystem")
-            table = LiveWindow.livewindowTable.getSubTable(c.subsystem).getSubTable(c.name)
-            table.putString("~TYPE~", component.getSmartDashboardType())
-            table.putString("Name", c.name)
-            table.putString("Subsystem", c.subsystem)
-            component.initTable(table)
-            if c.isSensor:
-                LiveWindow.sensors.add(component)
+    @classmethod
+    def isEnabled(cls):
+        return cls.liveWindowEnabled
 
-    @staticmethod
-    def setEnabled(enabled):
+    @classmethod
+    def setEnabled(cls, enabled):
         """Set the enabled state of LiveWindow. If it's being enabled, turn
         off the scheduler and remove all the commands from the queue and
         enable all the components registered for LiveWindow. If it's being
@@ -75,41 +93,36 @@ class LiveWindow:
         rescheduled. This prevents arms from starting to move around, etc.
         after a period of adjusting them in LiveWindow mode.
         """
-        if LiveWindow.liveWindowEnabled != enabled:
+        from .command import Scheduler
+        if cls.liveWindowEnabled != enabled:
+            scheduler = Scheduler.getInstance()
             if enabled:
                 logger.info("Starting live window mode.")
-                if LiveWindow.firstTime:
-                    LiveWindow.initializeLiveWindowComponents()
-                    LiveWindow.firstTime = False
-                Scheduler.getInstance().disable()
-                Scheduler.getInstance().removeAll()
-                bad_components = []
-                for component in LiveWindow.components.keys():
-                    try:
-                        component.startLiveWindowMode()
-                    except Exception as e:
-                        logger.error("Exception running startLiveWindowMode() on {}, removing from component list.".format(component))
-                        logger.exception(e)
-                        bad_components.append(component)
-                for component in bad_components:
-                    del(LiveWindow.components[component])
+                scheduler.disable()
+                scheduler.removeAll()
             else:
                 logger.info("Stopping live window mode.")
-                for component in LiveWindow.components.keys():
-                    component.stopLiveWindowMode()
-                Scheduler.getInstance().enable()
-            LiveWindow.liveWindowEnabled = enabled
-            LiveWindow.statusTable.putBoolean("LW Enabled", enabled)
+                for component in cls.components.values():
+                    component.builder.stopLiveWindowMode()
+                scheduler.enable()
+            cls.startLiveWindow = enabled
+            cls.liveWindowEnabled = enabled
+            cls.enabledEntry().setBoolean(enabled)
 
-    @staticmethod
-    def run():
+    @classmethod
+    def run(cls):
         """The run method is called repeatedly to keep the values refreshed
         on the screen in test mode.
-        """
-        LiveWindow.updateValues()
 
-    @staticmethod
-    def addSensor(subsystem, name, component):
+        .. deprecated:: 2018.0.0
+            No longer required
+        """
+        warnings.warn("run is deprecated. It is no longer required.",
+                      DeprecationWarning, stacklevel=2)
+        cls.updateValues()
+
+    @classmethod
+    def addSensor(cls, subsystem, name, component):
         """Add a Sensor associated with the subsystem and with call it by the
         given name.
 
@@ -117,35 +130,38 @@ class LiveWindow:
         :param name: The name of this component.
         :param component: A LiveWindowSendable component that represents a
             sensor.
-        """
-        LiveWindow.components[component] = \
-                _LiveWindowComponent(subsystem, name, True)
-        LiveWindow.sensors.add(component)
 
-    @staticmethod
-    def addActuator(subsystem, name, component):
+        .. deprecated:: 2018.0.0
+            Use :meth:`.Sendable.setName` instead.
+        """
+        warnings.warn("addSensor is deprecated. " + 
+                      "Use Sendable.setName(subsystem, name) instead.",
+                      DeprecationWarning, stacklevel=2)
+        with cls.mutex:
+            cls.add(component)
+            component.setName(subsystem, name)
+
+    @classmethod
+    def addActuator(cls, subsystem, name, component):
         """Add an Actuator associated with the subsystem and with call it by
         the given name.
 
         :param subsystem: The subsystem this component is part of.
         :param name: The name of this component.
-        :param component: A LiveWindowSendable component that represents a
-            actuator.
+        :param component: A LiveWindowSendable component that represents a actuator.
+
+        .. deprecated:: 2018.0.0
+            Use :meth:`.Sendable.setName` instead.
         """
-        LiveWindow.components[component] = \
-                _LiveWindowComponent(subsystem, name, False)
+        warnings.warn("addActuator is deprecated. " +
+                      "Use Sendable.setName(subsystem, name) instead.",
+                      DeprecationWarning, stacklevel=2)
+        with cls.mutex:
+            cls.add(component)
+            component.setName(subsystem, name)
 
-    @staticmethod
-    def updateValues():
-        """Puts all sensor values on the live window."""
-        # TODO: gross - needs to be sped up
-        for lws in LiveWindow.sensors:
-            lws.updateTable()
-        # TODO: Add actuators?
-        # TODO: Add better rate limiting.
-
-    @staticmethod
-    def addSensorChannel(moduleType, channel, component):
+    @classmethod
+    def addSensorChannel(cls, moduleType, channel, component):
         """Add Sensor to LiveWindow. The components are shown with the type
         and channel like this: Gyro[0] for a gyro object connected to the
         first analog channel.
@@ -154,12 +170,18 @@ class LiveWindow:
             the naming (above)
         :param channel: The channel number the device is connected to
         :param component: A reference to the object being added
-        """
-        LiveWindow.addSensor("Ungrouped", "%s[%s]" % (moduleType, channel),
-                             component)
 
-    @staticmethod
-    def addActuatorChannel(moduleType, channel, component):
+        .. deprecated:: 2018.0.0
+            Use :meth:`.SendableBase.setName` instead.
+        """
+        warnings.warn("addSensorChannel is deprecated. "+ 
+                      "Use SendableBase.setName(moduleType, channel) instead.",
+                      DeprecationWarning, stacklevel=2)
+        cls.add(component)
+        component.setName("Ungrouped", "%s[%s]" % (moduleType, channel))
+
+    @classmethod
+    def addActuatorChannel(cls, moduleType, channel, component):
         """Add Actuator to LiveWindow. The components are shown with the
         module type, slot and channel like this: Servo[0,2] for a servo
         object connected to the first digital module and PWM port 2.
@@ -169,12 +191,18 @@ class LiveWindow:
         :param channel: The channel number the device is plugged into
             (usually PWM)
         :param component: The reference to the object being added
-        """
-        LiveWindow.addActuator("Ungrouped", "%s[%s]" % (moduleType, channel),
-                               component)
 
-    @staticmethod
-    def addActuatorModuleChannel(moduleType, moduleNumber, channel, component):
+        .. deprecated:: 2018.0.0
+            Use :meth:`.SendableBase.setName` instead.
+        """
+        warnings.warn("addActuatorChannel is deprecated. " + 
+                      "Use SendableBase.setName(moduleType, channel) instead.",
+                      DeprecationWarning, stacklevel=2)
+        cls.add(component)
+        component.setName("Ungrouped", "%s[%s]" % (moduleType, channel))
+
+    @classmethod
+    def addActuatorModuleChannel(cls, moduleType, moduleNumber, channel, component):
         """Add Actuator to LiveWindow. The components are shown with the
         module type, slot and channel like this: Servo[0,2] for a servo
         object connected to the first digital module and PWM port 2.
@@ -185,19 +213,124 @@ class LiveWindow:
         :param channel: The channel number the device is plugged into
             (usually PWM)
         :param component: The reference to the object being added
-        """
-        LiveWindow.addActuator(
-                "Ungrouped",
-                "%s[%s,%s]" % (moduleType, moduleNumber, channel),
-                component)
 
-    @staticmethod
-    def removeComponent(component):
-        """Removes a component from LiveWindow.
-
-        :param component: The reference to the object being removed.
+        .. deprecated:: 2018.0.0
+            Use :meth:`.SendableBase.setName` instead.
         """
-        if component in LiveWindow.components:
-            if LiveWindow.components[component].isSensor:
-                LiveWindow.sensors.remove(component)
-            del(LiveWindow.components[component])
+        warnings.warn("addActuatorModuleChannel is deprecated. " + 
+                      "Use SendableBase.setName(moduleType, moduleNumber, channel) instead.",
+                      DeprecationWarning, stacklevel=2)
+        cls.add(component)
+        component.setName("Ungrouped", "%s[%s,%s]" % (moduleType, moduleNumber, channel))
+
+    @classmethod
+    def add(cls, sendable):
+        """
+        Add a component to the LiveWindow.
+
+        :param sendable: component to add
+        """
+        with cls.mutex:
+            if sendable not in cls.components:
+                cls.components[sendable] = Component(sendable, None)
+
+    @classmethod
+    def addChild(cls, parent, child):
+        """
+        Add a child component to a component.
+
+        :param parent: parent component
+        :param child: child component
+        """
+        with cls.mutex:
+            component = cls.components.get(child, None)
+            if component is None:
+                component = Component(None, parent)
+                cls.components[child] = component
+            else:
+                component.parent = parent
+            component.telemetryEnabled = False
+        
+    @classmethod
+    def remove(cls, sendable):
+        """
+        Remove a component from the LiveWindow.
+
+        @param sendable component to remove
+        """
+        with cls.mutex:
+            if sendable in cls.components:
+                component = cls.components[sendable]
+                del cls.components[sendable]
+                if cls.isEnabled():
+                    component.builder.stopLiveWindowMode()
+
+    @classmethod
+    def enableTelemetry(cls, sendable):
+        """
+        Enable telemetry for a single component.
+
+        :param sendable: component
+        """
+        with cls.mutex:
+            cls.telemetryEnabled = True
+            component = cls.components.get(sendable, None)
+            if component is not None:
+                component.telemetryEnabled = True
+
+    @classmethod
+    def disableTelemetry(cls, sendable):
+        """
+        Disable telemetry for a single component.  
+
+        :param sendable: component
+        """
+        with cls.mutex:
+            component = cls.components.get(sendable, None)
+            if component is not None:
+                component.telemetryEnabled = False
+
+    @classmethod
+    def disableAllTelemetry(cls):
+        """ Disable ALL telemetry """
+        with cls.mutex:
+            cls.telemetryEnabled = False
+            for component in cls.components.values():
+                component.telemetryEnabled = False
+
+    @classmethod
+    def updateValues(cls):
+        with cls.mutex:
+            # only do this if either LiveWindow mode or telemetry is enabled
+            if not cls.liveWindowEnabled and not cls.telemetryEnabled:
+                return
+
+            for component in cls.components.values():
+                if component.sendable is not None and component.parent is None and (cls.liveWindowEnabled or component.telemetryEnabled):
+                    if component.firstTime:
+                        # By holding off creating the NetworkTable entries, it allows the
+                        # components to be redefined. This allows default sensor and actuator
+                        # values to be created that are replaced with the custom names from
+                        # users calling setName.
+                        name = component.sendable.getName()
+                        if name == "":
+                            continue
+                        subsystem = component.sendable.getSubsystem()
+                        ssTable = cls.liveWindowTable().getSubTable(subsystem)
+                        if name == subsystem:
+                            table = ssTable
+                        else:
+                            table = ssTable.getSubTable(name)
+                        table.getEntry(".name").setString(name)
+                        component.builder.setTable(table)
+                        component.sendable.initSendable(component.builder)
+                        ssTable.getEntry(".type").setString("LW Subsystem")
+
+                        component.firstTime = False
+
+                    if cls.startLiveWindow:
+                        component.builder.startLiveWindowMode()
+                    component.builder.updateTable()
+
+            cls.startLiveWindow = False
+

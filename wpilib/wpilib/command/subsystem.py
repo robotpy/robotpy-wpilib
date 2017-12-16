@@ -9,11 +9,11 @@
 import logging
 
 from .scheduler import Scheduler
-from ..sendable import Sendable
+from ..sendablebase import SendableBase
 
 __all__ = ["Subsystem"]
 
-class Subsystem(Sendable):
+class Subsystem(SendableBase):
     """This class defines a major component of the robot.
 
     A good example of a subsystem is the driveline, or a claw if the robot has
@@ -36,6 +36,7 @@ class Subsystem(Sendable):
         :param name: the name of the subsystem; if None, it will be set to the
                      name to the name of the class.
         """
+        super().__init__()
         # The name
         if name is None:
             self.name = self.__class__.__name__

@@ -1,4 +1,4 @@
-# validated: 2017-11-19 EN 2fc60680f436 edu/wpi/first/wpilibj/Timer.java
+# validated: 2017-12-02 EN 614093c0c4fc edu/wpi/first/wpilibj/Timer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -34,19 +34,18 @@ class Timer:
     @staticmethod
     def getMatchTime():
         """Return the approximate match time.
-        The FMS does not currently send the official match time to the robots.
-        This returns the time since the enable signal sent from the Driver
-        Station.
-        At the beginning of autonomous, the time is reset to 0.0 seconds.
-        At the beginning of teleop, the time is reset to +15.0 seconds.
-        If the robot is disabled, this returns 0.0 seconds.
-
+        The FMS does not currently send the official match time to the robots,
+        but does send an approximate match time. The value will count down
+        the time remaining in the current period (auto or teleop). 
+        
         .. warning::
+            This is not an official time (so it cannot be used to dispute ref
+            calls or guarantee that a function will trigger before the match ends).
 
-            This is not an official time (so it cannot be used to argue with
-            referees).
+        The Practice Match function of the DS approximates the behavior seen
+        on the field.
 
-        :returns: Match time in seconds since the beginning of autonomous
+        :returns: Time remaining in current match period (auto or teleop) in seconds
         :rtype: float
         """
         from .driverstation import DriverStation

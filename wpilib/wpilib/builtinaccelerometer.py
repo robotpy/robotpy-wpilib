@@ -8,12 +8,12 @@
 import hal
 
 from .interfaces import Accelerometer
-from .livewindowsendable import LiveWindowSendable
+from .sensorbase import SensorBase
 from .livewindow import LiveWindow
 
 __all__ = ["BuiltInAccelerometer"]
 
-class BuiltInAccelerometer(LiveWindowSendable):
+class BuiltInAccelerometer(SensorBase):
     """Built-in accelerometer device
 
     This class allows access to the roboRIO's internal accelerometer.
@@ -28,6 +28,7 @@ class BuiltInAccelerometer(LiveWindowSendable):
             +/-8g if unspecified.
         :type  range: :class:`.Accelerometer.Range`
         """
+        super().__init__()
         self.setRange(range)
         self.xEntry = None
         self.yEntry = None
@@ -35,9 +36,6 @@ class BuiltInAccelerometer(LiveWindowSendable):
         hal.report(hal.UsageReporting.kResourceType_Accelerometer, 0, 0,
                       "Built-in accelerometer")
         LiveWindow.addSensor("BuiltInAccel", 0, self)
-
-    def free(self):
-        LiveWindow.removeComponent(self)
 
     def setRange(self, range):
         """Set the measuring range of the accelerometer.

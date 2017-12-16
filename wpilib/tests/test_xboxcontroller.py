@@ -12,8 +12,8 @@ def test_joystick(wpilib, hal_data, port):
 
     ds = wpilib.DriverStation.getInstance()
     j = wpilib.XboxController(port)
-    left = wpilib.GenericHID.Hand.kLeft
-    right = wpilib.GenericHID.Hand.kRight
+    left = wpilib.interfaces.GenericHID.Hand.kLeft
+    right = wpilib.interfaces.GenericHID.Hand.kRight
 
     # X axis left
     data['axes'][0] = 0.5
@@ -116,17 +116,17 @@ def test_joystick(wpilib, hal_data, port):
         assert j.getRawButton(i) == False
 
     # Rumble
-    j.setRumble(wpilib.GenericHID.RumbleType.kLeftRumble, .5)
+    j.setRumble(wpilib.interfaces.GenericHID.RumbleType.kLeftRumble, .5)
     assert data['leftRumble'] == 32767
 
-    j.setRumble(wpilib.GenericHID.RumbleType.kLeftRumble, -.5)
+    j.setRumble(wpilib.interfaces.GenericHID.RumbleType.kLeftRumble, -.5)
     assert data['leftRumble'] == 0
 
     # Rumble
-    j.setRumble(wpilib.GenericHID.RumbleType.kRightRumble, .5)
+    j.setRumble(wpilib.interfaces.GenericHID.RumbleType.kRightRumble, .5)
     assert data['rightRumble'] == 32767
 
-    j.setRumble(wpilib.GenericHID.RumbleType.kRightRumble, -.5)
+    j.setRumble(wpilib.interfaces.GenericHID.RumbleType.kRightRumble, -.5)
     assert data['rightRumble'] == 0
 
     # Name

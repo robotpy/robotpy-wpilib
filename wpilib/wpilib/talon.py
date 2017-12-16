@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/Talon.java
+# validated: 2017-12-09 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Talon.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,7 +8,6 @@
 
 import hal
 
-from .livewindow import LiveWindow
 from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Talon"]
@@ -45,6 +44,6 @@ class Talon(PWMSpeedController):
         self.setSpeed(0.0)
         self.setZeroLatch()
 
-        LiveWindow.addActuatorChannel("Talon", self.getChannel(), self)
         hal.report(hal.UsageReporting.kResourceType_Talon,
                    self.getChannel())
+        self.setName("Talon", self.getChannel())

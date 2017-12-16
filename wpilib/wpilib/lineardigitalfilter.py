@@ -1,4 +1,4 @@
-# validated: 2017-11-21 EN e1195e8b9dab edu/wpi/first/wpilibj/filters/LinearDigitalFilter.java
+# validated: 2017-12-08 DV 85157a56c3a7 edu/wpi/first/wpilibj/filters/LinearDigitalFilter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

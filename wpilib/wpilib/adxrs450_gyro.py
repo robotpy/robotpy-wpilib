@@ -13,7 +13,8 @@ from .gyrobase import GyroBase
 from .livewindow import LiveWindow
 from .spi import SPI
 from .timer import Timer
-    
+
+__all__ = ['ADXRS450_Gyro']
 
 class ADXRS450_Gyro(GyroBase):
     """
@@ -49,6 +50,7 @@ class ADXRS450_Gyro(GyroBase):
             :param port: The SPI port that the gyro is connected to
             :type port: :class:`.SPI.Port`
         """
+        super().__init__()
         
         if port is None:
             port = SPI.Port.kOnboardCS0

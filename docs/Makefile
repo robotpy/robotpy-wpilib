@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    =
+SPHINXOPTS    = -W
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
@@ -48,6 +48,7 @@ help:
 
 clean:
 	rm -rf $(BUILDDIR)/*
+	rm -rf __pycache__
 	rm -rf wpilib/*.rst
 	rm -rf wpilib.buttons/*.rst
 	rm -rf wpilib.command/*.rst

@@ -20,10 +20,6 @@ class PWMSpeedController(SafePWM):
         super().__init__(channel)
         self.isInverted = False
     
-    def free(self):
-        LiveWindow.removeComponent(self)
-        super().free()
-
     def set(self, speed):
         """Set the PWM value.
 

@@ -45,6 +45,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
+    'sphinx_autodoc_typehints',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -59,7 +60,6 @@ master_doc = 'index'
 # General information about the project.
 project = 'RobotPy WPILib'
 copyright = '2014-2016, RobotPy development team'
-
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -61,31 +61,27 @@ def test_pdp_resetTotalEnergy(pdp, pdp_data):
 def test_pdp_clearStickyFaults(pdp):
     pdp.clearStickyFaults()
 
-
-def test_pdp_initTable_null(pdp):
-    pdp.initTable(None)
-
-
-def test_pdp_initTable_null(pdp, pdp_data, pdp_table):
+def test_pdp_initSendable(pdp, pdp_data, sendablebuilder):
     pdp_data['current'][0] = 15
-    pdp_data['current'][15] = 25
-    pdp_data['voltage'] = 3.14
-    pdp_data['total_current'] = 42
-    pdp.initTable(pdp_table)
+    pdp_data['current'][15] = 1
+    pdp_data['voltage'] = 11.50
+    pdp_data['total_current'] = 46
+    pdp.initSendable(sendablebuilder)
+    assert sendablebuilder.properties[0].key == "Chan0"
+    assert sendablebuilder.properties[1].key == "Chan1"
+    assert sendablebuilder.properties[15].key == "Chan15"
+    assert sendablebuilder.properties[16].key == "Voltage"
+    assert sendablebuilder.properties[17].key == "TotalCurrent"
 
-    assert pdp_table.getNumber("Chan0", 0.0) == pytest.approx(15, 0.01)
-    assert pdp_table.getNumber("Chan15", 0.0) == pytest.approx(25, 0.01)
-    assert pdp_table.getNumber("Voltage", 0.0) == pytest.approx(3.14, 0.01)
-    assert pdp_table.getNumber("TotalCurrent", 0.0) == pytest.approx(42, 0.01)
+    prop = sendablebuilder.properties[0]
+    assert prop.setter is None
+    prop = sendablebuilder.properties[16]
+    assert prop.setter is None
+    prop = sendablebuilder.properties[17]
+    assert prop.setter is None
 
+    sendablebuilder.updateTable()
 
-def test_pdp_livewindowmode(pdp, pdp_table):
-
-    pdp.initTable(pdp_table)
-
-    pdp.startLiveWindowMode()
-    assert not hasattr(pdp, 'valueListener')
-    assert not hasattr(pdp, 'voltageListener')
-    assert not hasattr(pdp, 'totalCurrentListener')
-    pdp.stopLiveWindowMode()
-
+    assert sendablebuilder.getTable().getNumber("Chan0", 0.0) == 15
+    assert sendablebuilder.getTable().getNumber("Voltage", 0.0) == pytest.approx(11.50)
+    assert sendablebuilder.getTable().getNumber("TotalCurrent", 0.0) == 46

@@ -15,13 +15,13 @@ __all__ = ["NetworkButton"]
 
 
 class NetworkButton(Button):
-    """A :class:`.Button` that uses a :class:`NetworkTable` boolean field."""
+    """A :class:`.button.Button` that uses a :class:`.NetworkTable` boolean field."""
 
     def __init__(self, table, field):
         """Initialize the NetworkButton.
 
-        :param table: the NetworkTable instance to use, or the name of the
-        table to use.
+        :param table: the :class:`.NetworkTable` instance to use, or the name of the
+                      table to use.
         :param field: field to use.
         """
 
