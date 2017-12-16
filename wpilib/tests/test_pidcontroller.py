@@ -25,7 +25,9 @@ def sim_print():
 
 @pytest.fixture(scope='function')
 def pid(wpilib, SimTimerTask):
-    return wpilib.PIDController(Kp = 1.0, Ki = 0.25, Kd = 0.75, source=MagicMock(), output=MagicMock())
+    _pid = wpilib.PIDController(Kp = 1.0, Ki = 0.25, Kd = 0.75, source=MagicMock(), output=MagicMock())
+    _pid.pidInput = MagicMock()
+    return _pid
 
 
 @pytest.fixture(scope='function')
@@ -284,14 +286,12 @@ def test_pidcontroller_free(pid, SimTimerTask):
     assert pid.pid_task.start.called
     assert pid.pidInput is not None
     assert pid.pidOutput is not None
-    assert not pid.removeListeners.called
 
     pid.free()
 
     assert pid.pid_task.cancel.called
     assert pid.pidInput is None
     assert pid.pidOutput is None
-    assert pid.removeListeners.called
 
 
 def test_pidcontroller_calculate_disabled(pid):
@@ -358,8 +358,6 @@ def test_pidcontroller_calculate_rate3(pid):
     pid.pidOutput.assert_called_with(0.0)
     assert pid.get() == 0.0
 
-
-
 @pytest.mark.parametrize('source, p, output1, output2', [
     (49.5, 1.0, 0.5, 1.0),
     (49.5, 0.5, 0.25, 0.5),
@@ -410,7 +408,7 @@ def test_pidcontroller_calculate_rate5(pid):
     assert pid.get() == pytest.approx(0.075, 0.01)
 
 
-def test_pidcontroller_calculate_rate5(pid):
+def test_pidcontroller_calculate_rate6(pid):
     # F is coeff for some feed forward calc for kRate
     pid.pidInput.getPIDSourceType.return_value = pid.PIDSourceType.kRate
     pid.pidInput.pidGet.return_value = 49.5
@@ -442,7 +440,7 @@ def test_pidcontroller_calculate_rate5(pid):
     (True, 360.5, 179.9, 179.4, 1.0),
     (True, 0.5, 179.9, 179.4, 1.0),
     ])
-def test_pidcontroller_calculate_rate6(pid, continuous, input, setpoint, expected_error, expected_output):
+def test_pidcontroller_calculate_rate7(pid, continuous, input, setpoint, expected_error, expected_output):
     pid.pidInput.getPIDSourceType.return_value = pid.PIDSourceType.kRate
     pid.pidInput.pidGet.return_value = input
     pid.setContinuous(continuous)
@@ -457,34 +455,6 @@ def test_pidcontroller_calculate_rate6(pid, continuous, input, setpoint, expecte
     assert pid.error == pytest.approx(expected_error, 0.01)
     pid.pidOutput.assert_called_with(pytest.approx(expected_output, 0.01))
     assert pid.get() == pytest.approx(expected_output, 0.01)
-
-
-@pytest.mark.parametrize('p, source1, source2, output1, output2', [
-    (1.0, 49.5, 49.9, 0.5, 0.1),
-    (0.5, 49.5, 49.9, 0.25, 0.05),
-    ])
-def test_pidcontroller_calculate_displacement1(pid, p, source1, source2, output1, output2):
-    # P is proportional error coeff for kDisplacement
-    pid.pidInput.getPIDSourceType.return_value = pid.PIDSourceType.kDisplacement
-    pid.pidInput.pidGet.return_value = source1
-    pid.setInputRange(0, 100.0)
-    pid.setOutputRange(-1, 1)
-    pid.setSetpoint(50.0)
-    pid.setPID(p=p, i=0.0, d=0.00, f=0.0)
-    pid.enable()
-    
-    pid._calculate()
-    pid.pidOutput.assert_called_with(pytest.approx(output1, 0.01))
-    assert pid.get() == pytest.approx(output1, 0.01)
-
-    pid._calculate()
-    pid.pidOutput.assert_called_with(pytest.approx(output1, 0.01))
-    assert pid.get() == pytest.approx(output1, 0.01)
-
-    pid.pidInput.pidGet.return_value = source2
-    pid._calculate()
-    pid.pidOutput.assert_called_with(pytest.approx(output2, 0.01))
-    assert pid.get() == pytest.approx(output2, 0.01)
 
 
 @pytest.mark.parametrize('p, source1, source2, output1, output2', [
@@ -578,7 +548,7 @@ def test_pidcontroller_calculate_displacement3(pid, d, source1, source2, output1
     (0.5, 49.5, 49.9, 1.0, 0.0, 0.0),
     (1.0, 49.5, 50.6, 1.0, 0.0, 0.0),
     ])
-def test_pidcontroller_calculate_displacement3(pid, f, source1, source2, output1, output2, output3):
+def test_pidcontroller_calculate_displacement4(pid, f, source1, source2, output1, output2, output3):
     # F is coeff for some feed forward calc for kDisplacement
     pid.pidInput.getPIDSourceType.return_value = pid.PIDSourceType.kDisplacement
     pid.pidInput.pidGet.return_value = source1
@@ -652,22 +622,6 @@ def test_pidcontroller_setPID(pid, p, i, d, f):
     assert pid.getF() == f
 
 
-@pytest.mark.parametrize("p,i,d,f", [
-    (1.5, 2.0, 3.0, 4.0),
-    ])
-def test_pidcontroller_setPID_table(pid, pid_table, wpilib, p, i, d, f):
-    pid.initTable(pid_table)
-    assert pid_table.getNumber("p", 0.0) != pytest.approx(p, 0.01)
-    assert pid_table.getNumber("i", 0.0) != pytest.approx(i, 0.01)
-    assert pid_table.getNumber("d", 0.0) != pytest.approx(d, 0.01)
-    assert pid_table.getNumber("f", 0.0) != pytest.approx(f, 0.01)
-    pid.setPID(p, i, d, f)
-    assert pid_table.getNumber("p", 0.0) == pytest.approx(p, 0.01)
-    assert pid_table.getNumber("i", 0.0) == pytest.approx(i, 0.01)
-    assert pid_table.getNumber("d", 0.0) == pytest.approx(d, 0.01)
-    assert pid_table.getNumber("f", 0.0) == pytest.approx(f, 0.01)
-
-
 @pytest.mark.parametrize("setpoint, lower, upper, new_setpoint", [
     (1.5, 1.0, 2.0, 1.5),
     (3.0, 1.0, 2.0, 2.0),
@@ -710,11 +664,12 @@ def test_pidcontroller_setSetpoint1(pid):
     assert pid.getSetpoint() == 1.0
 
 
-def test_pidcontroller_setSetpoint2(pid, pid_table):
-    pid.initTable(pid_table)
-    assert pid_table.getNumber('setpoint', 0.0) == 0.0
+def test_pidcontroller_setSetpoint2(pid, sendablebuilder):
+    pid.initSendable(sendablebuilder)
+    assert sendablebuilder.getTable().getNumber('setpoint', 0.0) == 0.0
     pid.setSetpoint(1.0)
-    assert pid_table.getNumber('setpoint', 0.0) == 1.0
+    sendablebuilder.updateTable()
+    assert sendablebuilder.getTable().getNumber('setpoint', 0.0) == 1.0
 
 
 def test_pidcontroller_setPIDSourceType1(wpilib, SimTimerTask):
@@ -752,3 +707,71 @@ def test_pidcontroller_getPIDSourceType2(wpilib, SimTimerTask):
     pid.getPIDSourceType()
 
     assert source.getPIDSourceType.called
+
+
+@pytest.mark.parametrize("p,i,d,f,setpoint,enabled", [
+    (1.0, 2.0, 3.0, 4.0, 5.0, True)
+    ])
+def test_pidcontroller_initSendable_update(pid, sendablebuilder, p, i, d, f, setpoint, enabled):
+    pid.initSendable(sendablebuilder)
+    assert sendablebuilder.getTable().getNumber("p", 0.0) == 0.0
+    assert sendablebuilder.getTable().getNumber("i", 0.0) == 0.0
+    assert sendablebuilder.getTable().getNumber("d", 0.0) == 0.0
+    assert sendablebuilder.getTable().getNumber("f", 0.0) == 0.0
+    assert sendablebuilder.getTable().getNumber("setpoint", 0.0) == 0.0
+    assert sendablebuilder.getTable().getBoolean("enabled", None) is None
+    pid.setSetpoint(setpoint)
+    pid.setEnabled(enabled)
+    pid.setPID(p, i, d, f)
+    sendablebuilder.updateTable()
+    assert sendablebuilder.getTable().getNumber("p", 0.0) == pytest.approx(p, 0.01)
+    assert sendablebuilder.getTable().getNumber("i", 0.0) == pytest.approx(i, 0.01)
+    assert sendablebuilder.getTable().getNumber("d", 0.0) == pytest.approx(d, 0.01)
+    assert sendablebuilder.getTable().getNumber("f", 0.0) == pytest.approx(f, 0.01)
+    assert sendablebuilder.getTable().getNumber("setpoint", 0.0) == pytest.approx(setpoint, 0.01)
+    assert sendablebuilder.getTable().getBoolean("enabled", None) == enabled
+
+
+@pytest.mark.parametrize("p,i,d,f,setpoint,enabled", [
+    (1.0, 2.0, 3.0, 4.0, 5.0, True)
+    ])
+def test_pidcontroller_initSendable_setter(pid, sendablebuilder, p, i, d, f, setpoint, enabled):
+    pid.initSendable(sendablebuilder)
+    [p_prop, i_prop, d_prop, f_prop, setpoint_prop, enabled_prop] = sendablebuilder.properties
+    assert p_prop.key == "p"
+    assert i_prop.key == "i"
+    assert d_prop.key == "d"
+    assert f_prop.key == "f"
+    assert setpoint_prop.key == "setpoint"
+    assert enabled_prop.key == "enabled"
+
+    p_prop.setter(p)
+    assert pid.getP() == p
+
+    i_prop.setter(i)
+    assert pid.getI() == i
+
+    d_prop.setter(d)
+    assert pid.getD() == d
+
+    f_prop.setter(f)
+    assert pid.getF() == f
+
+    setpoint_prop.setter(setpoint)
+    assert pid.getSetpoint() == setpoint
+
+    enabled_prop.setter(enabled)
+    assert pid.isEnabled() == enabled
+
+
+def test_pidcontroller_initSendable_safe(pid, sendablebuilder):
+    pid.reset = MagicMock()
+    pid.initSendable(sendablebuilder)
+    sendablebuilder.startLiveWindowMode()
+    assert pid.reset.called
+
+
+def test_pidcontroller_reset(pid):
+    pid.setEnabled(True)
+    pid.reset()
+    assert not pid.isEnabled()
