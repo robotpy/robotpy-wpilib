@@ -1,4 +1,4 @@
-# validated: 2017-10-07 EN 34c18ef00062 edu/wpi/first/wpilibj/PWM.java
+# validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/PWM.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -79,8 +79,6 @@ class PWM(SendableBase):
         self._handle = hal.initializePWMPort(hal.getPort(channel))
         self.__finalizer = weakref.finalize(self, _freePWM, self._handle)
 
-        self.valueEntry = None
-        
         self.setDisabled()
         
         hal.setPWMEliminateDeadband(self.handle, False)
