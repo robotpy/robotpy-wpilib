@@ -219,10 +219,16 @@ def test_relay_getDescription(relay):
     assert relay.getDescription() == "Relay ID 2"
 
 
-@pytest.mark.parametrize("origdir,newdir",
-        [("kBoth", "kBoth"), ("kBoth", "kForward"), ("kBoth", "kReverse"),
-         ("kForward", "kBoth"), ("kForward", "kForward"), ("kForward", "kReverse"),
-         ("kReverse", "kBoth"), ("kReverse", "kForward"), ("kReverse", "kReverse")])
+@pytest.mark.parametrize("origdir,newdir", [
+    ("kBoth", "kBoth"), 
+    ("kBoth", "kForward"), 
+    ("kBoth", "kReverse"),
+    ("kForward", "kBoth"), 
+    ("kForward", "kForward"), 
+    ("kForward", "kReverse"), 
+    ("kReverse", "kBoth"), 
+    ("kReverse", "kForward"), 
+    ("kReverse", "kReverse")])
 def test_relay_setDirection(origdir, newdir, hal, hal_data, wpilib, relay_data):
     relay_data['fwd'] = None
     relay_data['rev'] = None
@@ -234,5 +240,96 @@ def test_relay_setDirection(origdir, newdir, hal, hal_data, wpilib, relay_data):
     
     init = False if origdir != newdir else None
     check_initRelay(2, newdir, relay, relay_data, hal, hal_data, wpilib, init=init)
-    #else:
-        #hal.assert_has_calls([])
+
+@pytest.mark.parametrize("origdir,newdir", [
+    ("kBoth", 0), 
+    ("kBoth", 1), 
+    ("kBoth", 2),
+    ("kForward", 0), 
+    ("kForward", 1), 
+    ("kForward", 2), 
+    ("kReverse", 0), 
+    ("kReverse", 1), 
+    ("kReverse", 2)])
+def test_relay_setDirection_int(origdir, newdir, hal, hal_data, wpilib, relay_data):
+    relay_data['fwd'] = None
+    relay_data['rev'] = None
+    origdir = getattr(wpilib.Relay.Direction, origdir)
+    relay = wpilib.Relay(2, origdir)
+    relay.setDirection(newdir)
+    
+    init = False if origdir != newdir else None
+    check_initRelay(2, newdir, relay, relay_data, hal, hal_data, wpilib, init=init)
+
+@pytest.mark.parametrize("origdir,newdir", [
+    ("kBoth", "kBoth"), 
+    ])
+def test_relay_setDirection_invalid(origdir, newdir, hal, hal_data, wpilib, relay_data):
+    relay_data['fwd'] = None
+    relay_data['rev'] = None
+    origdir = getattr(wpilib.Relay.Direction, origdir)
+    newdir = getattr(wpilib.Relay.Direction, newdir)
+    relay = wpilib.Relay(2, origdir)
+    #hal.reset_mock()
+    with pytest.raises(ValueError) as excinfo:
+        relay.setDirection("INVALID")
+
+    assert excinfo.value.args[0] == "Invalid direction argument 'INVALID'"
+
+@pytest.mark.parametrize("dir,expected_value,fwd,rev",
+        [("kBoth",      "Off",     False,  False),
+         ("kBoth",      "On",      True,   True),
+         ("kBoth",      "Forward", True,   False),
+         ("kBoth",      "Reverse", False,  True),
+         ("kForward",   "Off",     False,  False),
+         ("kForward",   "On",      True,   False),
+         ("kReverse",   "Off",     False,  False),
+         ("kReverse",   "On",      False,  True),
+         ])
+def test_relay_initSendable_update(wpilib, relay_data, sendablebuilder, dir, expected_value, fwd, rev):
+    relay = wpilib.Relay(2, getattr(wpilib.Relay.Direction, dir))
+    relay_data['fwd'] = fwd
+    relay_data['rev'] = rev
+    relay.initSendable(sendablebuilder)
+
+    prop = sendablebuilder.properties[0]
+
+    assert prop.key == "Value"
+    sendablebuilder.updateTable()
+    assert sendablebuilder.getTable().getString("Value", "") == expected_value
+
+@pytest.mark.parametrize("dir,value,expected_fwd,expected_rev",
+        [("kBoth",      "Off",     False,  False),
+         ("kBoth",      "On",      True,   True),
+         ("kBoth",      "Forward", True,   False),
+         ("kBoth",      "Reverse", False,  True),
+         ("kBoth",      "INVALID", False,  False),
+         ("kForward",   "Off",     False,  None),
+         ("kForward",   "On",      True,   None),
+         ("kForward",   "Forward", True,   None),
+         ("kForward",   "INVALID", False,   None),
+         ("kReverse",   "Off",     None,   False),
+         ("kReverse",   "On",      None,   True),
+         ("kReverse",   "Reverse", None,   True),
+         ("kReverse",   "INVALID", None,   False)])
+def test_relay_initSendable_set(wpilib, relay_data, sendablebuilder, dir, value, expected_fwd, expected_rev):
+    relay = wpilib.Relay(2, getattr(wpilib.Relay.Direction, dir))
+    relay_data['fwd'] = None
+    relay_data['rev'] = None
+    relay.initSendable(sendablebuilder)
+
+    prop = sendablebuilder.properties[0]
+
+    prop.setter(value)
+
+    assert relay_data['fwd'] == expected_fwd
+    assert relay_data['rev'] == expected_rev
+
+def test_relay_initSendable_safe(relay, sendablebuilder):
+    relay.set = MagicMock()
+    relay.initSendable(sendablebuilder)
+
+    sendablebuilder.startLiveWindowMode()
+
+    assert relay.set.called_with(relay.Value.kOff)
+

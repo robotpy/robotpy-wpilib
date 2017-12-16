@@ -1,4 +1,4 @@
-# validated: 2017-10-07 EN 34c18ef00062 edu/wpi/first/wpilibj/Relay.java
+# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Relay.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,11 +8,13 @@
 
 import hal
 import weakref
+from enum import IntEnum
 
 from .livewindow import LiveWindow
 from .motorsafety import MotorSafety
 from .resource import Resource
 from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["Relay"]
 
@@ -25,7 +27,7 @@ def _freeRelay(*handles):
         if handle:
             hal.freeRelayPort(handle)
 
-class Relay(SensorBase, MotorSafety):
+class Relay(SendableBase, MotorSafety):
     """Controls VEX Robotics Spike style relay outputs.
     
     Relays are intended to be connected to Spikes or similar relays. The relay
@@ -42,7 +44,7 @@ class Relay(SensorBase, MotorSafety):
 
     relayChannels = Resource(SensorBase.kRelayChannels * 2)
 
-    class Value:
+    class Value(IntEnum):
         """The state to drive a Relay to."""
         
         #: Off
@@ -57,21 +59,14 @@ class Relay(SensorBase, MotorSafety):
         #: Reverse
         kReverse = 3
 
-        _num_to_name = {
-            kOff: "Off",
-            kOn: "On",
-            kForward: "Forward",
-            kReverse: "Reverse",
-        }
+        def getPrettyValue(self):
+            return self.name[1:]
 
-        _name_to_num = {
-            "Off": kOff,
-            "On": kOn,
-            "Forward": kForward,
-            "Reverse": kReverse,
-        }
+        @classmethod
+        def getValueOf(cls, name):
+            return getattr(cls, 'k' + name, cls.kOff)
 
-    class Direction:
+    class Direction(IntEnum):
         """The Direction(s) that a relay is configured to operate in."""
         
         #: Both directions are valid
@@ -101,8 +96,6 @@ class Relay(SensorBase, MotorSafety):
         self.direction = direction
         self._forwardHandle = None
         self._reverseHandle = None
-        self.valueEntry = None
-        self.valueListener = None
 
         self._initRelay()
         
@@ -133,7 +126,7 @@ class Relay(SensorBase, MotorSafety):
 
         self.setSafetyEnabled(False)
         
-        LiveWindow.addActuatorChannel("Relay", self.channel, self)
+        self.setName("Relay", self.channel)
 
     @property
     def forwardHandle(self):
@@ -149,7 +142,9 @@ class Relay(SensorBase, MotorSafety):
 
     def free(self):
         super().free()
+        self.freeRelay()
 
+    def freeRelay(self):
         self.__finalizer()
         Relay.relayChannels.free(self.channel * 2)
         Relay.relayChannels.free(self.channel * 2 + 1)
@@ -266,30 +261,16 @@ class Relay(SensorBase, MotorSafety):
         if self.direction == direction:
             return
         
-        if direction not in [self.Direction.kBoth,
-                             self.Direction.kForward,
-                             self.Direction.kReverse]:
+        if direction not in list(self.Direction):
             raise ValueError("Invalid direction argument '%s'" % direction)
 
-        self.free()
+        self.freeRelay()
         self.direction = direction
         self._initRelay()
 
-    # Live Window code, only does anything if live window is activated.
-    def getSmartDashboardType(self):
-        return "Relay"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is None:
-            return
-        self.valueEntry.setString(self.Value._num_to_name.get(self.get()))
-
-    def valueChanged(self, entry, key, value, param):
-        self.set(self.Value._name_to_num.get(value, self.Value.kOff))
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Relay")
+        builder.setSafeState(lambda: self.set(self.Value.kOff))
+        builder.addStringProperty("Value", 
+            lambda: self.get().getPrettyValue(), 
+            lambda value: self.set(self.Value.getValueOf(value)))
