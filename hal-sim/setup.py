@@ -39,26 +39,45 @@ else:
 with open(join(setup_dir, 'README.rst'), 'r') as readme_file:
     long_description = readme_file.read()
 
-setup(
-    name='robotpy-hal-sim',
-    version=__version__,
-    description='WPILib HAL layer for simulations',
-    long_description=long_description,
-    author='Peter Johnson, Dustin Spicuzza',
-    author_email='robotpy@googlegroups.com',
-    url='https://github.com/robotpy/robotpy-wpilib',
-    keywords='frc first robotics hal can',
-    packages=['hal_impl'],
-    install_requires='robotpy-hal-base==' + __version__, # is this a bad idea?
-    license="BSD License",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "Intended Audience :: Education",
-        "License :: OSI Approved :: BSD License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Topic :: Scientific/Engineering"
-    ]
-    )
+if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] == 'install':
+        # setuptools doesn't seem to have a nice way of running checks before
+        # an install script runs, so I'm just going to do this and hope it works
+
+        # Check to see if the RoboRIO HAL is installed before installing the
+        # simulated HAL:
+        freeze_out = subprocess.check_output(['pip3', 'freeze'])
+        installed_packages = [
+            line.decode().split('==')[0]
+            for line in freeze_out.splitlines()
+        ]
+
+        if 'robotpy-hal-roborio' in installed_packages:
+            raise RuntimeError("The simulation HAL cannot be installed alongside the RoboRIO HAL.")
+
+        if exists('/etc/natinst/share/scs_imagemetadata.ini'):
+            raise RuntimeError("The simulation HAL should not be installed onto the RoboRIO. Perhaps try the `robotpy-hal-roborio` package?")
+
+    setup(
+        name='robotpy-hal-sim',
+        version=__version__,
+        description='WPILib HAL layer for simulations',
+        long_description=long_description,
+        author='Peter Johnson, Dustin Spicuzza',
+        author_email='robotpy@googlegroups.com',
+        url='https://github.com/robotpy/robotpy-wpilib',
+        keywords='frc first robotics hal can',
+        packages=['hal_impl'],
+        install_requires='robotpy-hal-base==' + __version__, # is this a bad idea?
+        license="BSD License",
+        classifiers=[
+            "Development Status :: 5 - Production/Stable",
+            "Intended Audience :: Developers",
+            "Intended Audience :: Education",
+            "License :: OSI Approved :: BSD License",
+            "Operating System :: OS Independent",
+            "Programming Language :: Python :: 3.4",
+            "Programming Language :: Python :: 3.5",
+            "Topic :: Scientific/Engineering"
+        ]
+        )
