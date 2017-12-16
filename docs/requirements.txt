@@ -1,4 +1,4 @@
 sphinx
 sphinx-rtd-theme
-mock
+sphinx-autodoc-typehints
 git+git://github.com/robotpy/pynetworktables.git
