@@ -55,6 +55,8 @@ if __name__ == '__main__':
         if 'robotpy-hal-roborio' in installed_packages:
             raise RuntimeError("The simulation HAL cannot be installed alongside the RoboRIO HAL.")
 
+        # Another check to see if we're on a RoboRIO.
+        # NOTE: may have false positives, but it should work well enough
         if exists('/etc/natinst/share/scs_imagemetadata.ini'):
             raise RuntimeError("The simulation HAL should not be installed onto the RoboRIO. Perhaps try the `robotpy-hal-roborio` package?")
 

@@ -42,6 +42,7 @@ def _log_versions():
         logger.info("Running with simulated HAL.")
 
         # check to see if we're on a RoboRIO
+        # NOTE: may have false positives, but it should work well enough
         if exists('/etc/natinst/share/scs_imagemetadata.ini'):
             logger.warning("Running simulation HAL on actual RoboRIO! This probably isn't what you want, and will probably cause difficult-to-debug issues!")
 
