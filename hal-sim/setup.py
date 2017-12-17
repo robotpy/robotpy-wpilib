@@ -3,6 +3,7 @@
 from os.path import dirname, exists, join
 import sys, subprocess
 from setuptools import setup
+import pip
 
 setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')
@@ -46,10 +47,9 @@ if __name__ == '__main__':
 
         # Check to see if the RoboRIO HAL is installed before installing the
         # simulated HAL:
-        freeze_out = subprocess.check_output(['pip3', 'freeze'])
         installed_packages = [
-            line.decode().split('==')[0]
-            for line in freeze_out.splitlines()
+            dist.project_name
+            for dist in pip.utils.get_installed_distributions()
         ]
 
         if 'robotpy-hal-roborio' in installed_packages:
