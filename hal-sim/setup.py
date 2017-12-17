@@ -3,7 +3,6 @@
 from os.path import dirname, exists, join
 import sys, subprocess
 from setuptools import setup
-import pip
 
 setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')
