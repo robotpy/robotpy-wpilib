@@ -45,17 +45,6 @@ if __name__ == '__main__':
         # setuptools doesn't seem to have a nice way of running checks before
         # an install script runs, so I'm just going to do this and hope it works
 
-        # Check to see if the RoboRIO HAL is installed before installing the
-        # simulated HAL:
-        installed_packages = [
-            dist.project_name
-            for dist in pip.utils.get_installed_distributions()
-        ]
-
-        if 'robotpy-hal-roborio' in installed_packages:
-            raise RuntimeError("The simulation HAL cannot be installed alongside the RoboRIO HAL.")
-
-        # Another check to see if we're on a RoboRIO.
         # NOTE: may have false positives, but it should work well enough
         if exists('/etc/natinst/share/scs_imagemetadata.ini'):
             raise RuntimeError("The simulation HAL should not be installed onto the RoboRIO. Perhaps try the `robotpy-hal-roborio` package?")
