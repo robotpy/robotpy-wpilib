@@ -38,7 +38,7 @@ def _log_versions():
        hal.__version__ != hal_impl.__version__:
         logger.warning("Core component versions are not identical! This is not a supported configuration, and you may run into errors!")
 
-    if hal_impl.__hal_simulation__:
+    if hal.isSimulation():
         logger.info("Running with simulated HAL.")
 
         # check to see if we're on a RoboRIO
