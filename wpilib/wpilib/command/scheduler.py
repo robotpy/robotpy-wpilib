@@ -1,4 +1,4 @@
-# validated: 2017-11-19 EN 7efab4c43ac5 edu/wpi/first/wpilibj/command/Scheduler.java
+# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/command/Scheduler.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,14 +8,14 @@
 
 import hal
 
-from ..sendable import Sendable
+from ..sendablebase import SendableBase
 
 import collections
 import warnings
 
 __all__ = ["Scheduler"]
 
-class Scheduler(Sendable):
+class Scheduler(SendableBase):
     """The Scheduler is a singleton which holds the top-level running commands.
     It is in charge of both calling the command's run() method and to make
     sure that there are no two commands with conflicting requirements running.
@@ -48,8 +48,10 @@ class Scheduler(Sendable):
     def __init__(self):
         """Instantiates a Scheduler.
         """
+        super().__init__()
         hal.report(hal.UsageReporting.kResourceType_Command,
                    hal.UsageReporting.kCommand_Scheduler)
+        self.setName("Scheduler")
 
         # Active Commands
         self.commandTable = collections.OrderedDict()
@@ -173,8 +175,6 @@ class Scheduler(Sendable):
                 self._add(lock.getDefaultCommand())
             lock.confirmCommand()
 
-        self.updateTable()
-
     def registerSubsystem(self, system):
         """Registers a :class:`.Subsystem` to this Scheduler, so that the
         Scheduler might know if a default Command needs to be
@@ -217,52 +217,31 @@ class Scheduler(Sendable):
         """
         self.disabled = False
 
-    def getName(self):
-        return "Scheduler"
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Scheduler")
+        self.namesEntry = builder.getEntry("Names")
+        self.idsEntry = builder.getEntry("Ids")
+        self.cancelEntry = builder.getEntry("Cancel")
+        builder.setUpdateTable(self._updateTable)
 
-    def getType(self):
-        return "Scheduler"
-
-    def initTable(self, subtable):
-        self.commands = []
-        self.ids = []
-        self.toCancel = []
-
-        if subtable is not None:
-            self.namesEntry = subtable.getEntry("Names")
-            self.idsEntry = subtable.getEntry("Ids")
-            self.cancelEntry = subtable.getEntry("Cancel")
-
-            self.namesEntry.setStringArray(self.commands)
-            self.idsEntry.setDoubleArray(self.ids)
-            self.cancelEntry.setDoubleArray(self.toCancel)
-        else:
-            self.namesEntry = None
-            self.idsEntry = None
-            self.cancelEntry = None
-
-    def updateTable(self):
-        if not (self.namesEntry is not None and self.cancelEntry is not None):
+    def _updateTable(self):
+        if not (self.namesEntry is not None and self.idsEntry is not None and self.cancelEntry is not None):
             return
 
-        # Get the commands to cancel
-        self.toCancel = self.cancelEntry.getDoubleArray([])
-        if self.toCancel:
+        toCancel = self.cancelEntry.getDoubleArray([])
+        if toCancel:
             for command in self.commandTable:
-                if id(command) in self.toCancel:
+                if float(id(command)) in toCancel:
                     command.cancel()
-            self.toCancel = []
-            self.cancelEntry.setDoubleArray(toCancel)
+            self.cancelEntry.setDoubleArray([])
 
         if self.runningCommandsChanged:
-            self.commands.clear()
-            self.ids.clear()
-            # Set the the running commands
-            for command in self.commandTable:
-                self.commands.append(command.getName())
-                self.ids.append(id(command))
-            self.namesEntry.setStringArray(self.commands)
-            self.idsEntry.setDoubleArray(self.ids)
+            commands = []
+            ids = []
 
-    def getSmartDashboardType(self):
-        return "Scheduler"
+            for command in self.commandTable:
+                commands.append(command.getName())
+                ids.append(id(command))
+
+            self.namesEntry.setStringArray(commands)
+            self.idsEntry.setDoubleArray(ids)
