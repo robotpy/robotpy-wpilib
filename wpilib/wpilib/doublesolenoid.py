@@ -1,4 +1,4 @@
-# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/DoubleSolenoid.java
+# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/DoubleSolenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -33,6 +33,10 @@ class DoubleSolenoid(SolenoidBase):
         kOff = 0
         kForward = 1
         kReverse = 2
+
+        @classmethod
+        def name(cls, val):
+            return {cls.kOff: "O", cls.kForward: "F", cls.kReverse: "R"}.get(val, "O")
 
     def __init__(self, *args, **kwargs):
         """Constructor.
@@ -112,11 +116,10 @@ class DoubleSolenoid(SolenoidBase):
 
     def free(self):
         """Mark the solenoid as freed."""
+        super().free()
         self.__finalizer()
         self.forwardHandle = None
         self.reverseHandle = None
-        
-        super().free()
 
     def set(self, value):
         """Set the value of a solenoid.
@@ -173,30 +176,12 @@ class DoubleSolenoid(SolenoidBase):
 
         return blacklist & (1 << self.reverseMask) != 0
 
-    # Live Window code, only does anything if live window is activated.
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Double Solenoid")
+        builder.setSafeState(lambda: self.set(self.Value.kOff))
+        builder.addStringProperty("Value", lambda: self.Value.name(self.get()), self.valueChanged)
 
-    def getSmartDashboardType(self):
-        return "Double Solenoid"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable();
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            #TODO: this is bad
-            val = self.get()
-            if val == self.Value.kForward:
-                self.valueEntry.setString("F")
-            elif val == self.Value.kReverse:
-                self.valueEntry.setString("R")
-            else:
-                self.valueEntry.putString("O")
-
-    def valueChanged(self, entry, key, value, param):
+    def valueChanged(self, value):
         #TODO: this is bad also
         if value == "Reverse":
             self.set(self.Value.kReverse)
@@ -204,11 +189,3 @@ class DoubleSolenoid(SolenoidBase):
             self.set(self.Value.kForward)
         else:
             self.set(self.Value.kOff)
-
-    def startLiveWindowMode(self):
-        self.set(self.Value.kOff) # Stop for safety
-        super().startLiveWindowMode()
-
-    def stopLiveWindowMode(self):
-        super().stopLiveWindowMode()
-        self.set(self.Value.kOff) # Stop for safety
