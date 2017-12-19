@@ -289,3 +289,16 @@ def test_counter_pidget_rate(wpilib):
     ctr.getRate.return_value = 7.0
     ctr.setPIDSourceType(wpilib.interfaces.PIDSource.PIDSourceType.kRate)
     assert ctr.pidGet() == pytest.approx(7.0, 0.01)
+
+def test_counter_initSendable(wpilib, sendablebuilder, hal_data):
+    hal_data["counter"][0]["count"] = 4
+    ctr = wpilib.Counter()
+    ctr.initSendable(sendablebuilder)
+
+    assert sendablebuilder.properties[0].key == "Value"
+    assert sendablebuilder.properties[0].setter is None
+
+    sendablebuilder.updateTable()
+
+    assert sendablebuilder.getTable().getNumber("Value", 0.0) == 4
+    assert sendablebuilder.getTable().getString(".type", "") == "Counter"

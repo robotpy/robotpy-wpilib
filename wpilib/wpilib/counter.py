@@ -1,4 +1,4 @@
-# validated: 2017-11-21 EN b65447b6f5a8 edu/wpi/first/wpilibj/Counter.java
+# validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Counter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,6 +8,7 @@
 
 import hal
 import weakref
+from enum import IntEnum
 
 from .interfaces.counterbase import CounterBase
 from .interfaces.pidsource import PIDSource
@@ -44,7 +45,7 @@ class Counter(SensorBase):
     .. not_implemented: initCounter
     """
 
-    class Mode:
+    class Mode(IntEnum):
         """Mode determines how and what the counter counts"""
         
         #: two pulse mode
@@ -105,6 +106,7 @@ class Counter(SensorBase):
         :type encodingType: :class:`.Counter.EncodingType`
         """
 
+        super().__init__()
         source_identifier = [int, HasAttribute("getPortHandleForRouting"), HasAttribute("createOutput")]
 
         argument_templates = [[],
@@ -141,10 +143,10 @@ class Counter(SensorBase):
         self.__finalizer = \
             weakref.finalize(self, _freeCounter, self)
 
-        self.valueEntry = None
         self.setMaxPeriod(.5)
 
         hal.report(hal.UsageReporting.kResourceType_Counter, self.index, mode)
+        self.setName("Counter", self.index)
 
         # Set sources
         if upSource is not None:
@@ -174,6 +176,7 @@ class Counter(SensorBase):
         return self._counter
 
     def free(self):
+        super().free()
         self.__finalizer()
 
     def getFPGAIndex(self):
@@ -237,6 +240,7 @@ class Counter(SensorBase):
             if channel is not None:
                 source = DigitalInput(channel)
                 self.allocatedUpSource = True
+                self.addChild(source)
             elif analogTrigger is not None and triggerType is not None:
                 source = analogTrigger.createOutput(triggerType)
             else:
@@ -324,6 +328,7 @@ class Counter(SensorBase):
             if channel is not None:
                 source = DigitalInput(channel)
                 self.allocatedDownSource = True
+                self.addChild(source)
             elif analogTrigger is not None and triggerType is not None:
                 source = analogTrigger.createOutput(triggerType)
             else:
@@ -559,18 +564,6 @@ class Counter(SensorBase):
         else:
             return 0.0
 
-    # Live Window code, only does anything if live window is activated.
-
-    def getSmartDashboardType(self):
-        return "Counter"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.get())
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Counter")
+        builder.addDoubleProperty("Value", self.get, None)
