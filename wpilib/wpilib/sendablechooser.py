@@ -12,12 +12,12 @@ __all__ = ["SendableChooser"]
 
 class SendableChooser(SendableBase):
     """A useful tool for presenting a selection of options to be displayed on
-    the SmartDashboard
+    the :class:`.SmartDashboard`
 
     For instance, you may wish to be able to select between multiple
-    autonomous modes. You can do this by putting every possible Command
+    autonomous modes. You can do this by putting every possible :class:`.Command`
     you want to run as an autonomous into a SendableChooser and then put
-    it into the SmartDashboard to have a list of options appear on the
+    it into the :class:`.SmartDashboard` to have a list of options appear on the
     laptop. Once autonomous starts, simply ask the SendableChooser what
     the selected value is.
 
@@ -53,7 +53,7 @@ class SendableChooser(SendableBase):
 
     def addObject(self, name, object):
         """Adds the given object to the list of options. On the
-        SmartDashboard on the desktop, the object will appear as the
+        :class:`.SmartDashboard` on the desktop, the object will appear as the
         given name.
 
         :param name: the name of the option
@@ -63,7 +63,7 @@ class SendableChooser(SendableBase):
 
     def addDefault(self, name, object):
         """Add the given object to the list of options and marks it as the
-        default.  Functionally, this is very close to addObject(...) except
+        default.  Functionally, this is very close to :meth:`.addObject` except
         that it will use this as the default option if none other is
         explicitly selected.
 
