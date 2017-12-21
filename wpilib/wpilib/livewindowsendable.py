@@ -1,4 +1,12 @@
-# validated: 2017-11-19 EN e1195e8b9dab edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
+# validated: 2017-12-21 DV de134a5c608d edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
+#----------------------------------------------------------------------------
+# Copyright (c) 2008-2017 FIRST. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+#----------------------------------------------------------------------------
+
+import warnings
 
 from networktables import NetworkTables
 from .sendable import Sendable
@@ -7,13 +15,21 @@ __all__ = ["LiveWindowSendable"]
 
 class LiveWindowSendable(Sendable):
     """A special type of object that can be displayed on the live window.
+
+    .. deprecated:: 2018.0
+        Use :class:`.Sendable` directly instead.
     """
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        warnings.warn('LiveWindowSendable is deprecated, use Sendable directly instead',
+                      DeprecationWarning, stacklevel=2)
 
     def updateTable(self):
         """Update the table for this sendable object with the latest
         values.
         """
-        pass
+        raise NotImplementedError
 
     def startLiveWindowMode(self):
         """Start having this sendable object automatically respond to
@@ -44,3 +60,18 @@ class LiveWindowSendable(Sendable):
             return
         valueEntry.removeListener(valueListener)
         self.valueListener = None
+
+    def getName(self):
+        return ""
+
+    def setName(self, name):
+        pass
+
+    def getSubsystem(self):
+        return ""
+
+    def setSubsystem(self, subsystem):
+        pass
+
+    def initSendable(self, builder):
+        builder.setUpdateTable(self.updateTable)
