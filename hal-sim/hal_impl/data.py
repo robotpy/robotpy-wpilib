@@ -283,7 +283,10 @@ def _reset_hal_data(current_hooks):
         'pwm_loop_timing': IN(40), # this is the value the roboRIO returns
                
         # for pwm attached to a DIO
-        'd0_pwm':       OUT([None]*6), # dict with keys: duty_cycle, pin
+        'd0_pwm':       [NotifyDict({
+            'duty_cycle':  OUT(None),
+            'pin':         OUT(None),
+        }) for _ in range(26)], # dict with keys: duty_cycle, pin
         'd0_pwm_rate':  OUT(None),
                 
         'relay': [NotifyDict({
