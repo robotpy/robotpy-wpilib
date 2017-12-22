@@ -1,4 +1,4 @@
-# validated: 2017-09-22 TW 34c18ef00062 edu/wpi/first/wpilibj/AnalogInput.java
+# validated: 2017-12-22 EN f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogInput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -44,6 +44,7 @@ class AnalogInput(SensorBase):
 
     def __init__(self, channel):
         """Construct an analog channel.
+
         :param channel: The channel number to represent. 0-3 are on-board 4-7 are on the MXP port.
         """
         
@@ -57,9 +58,9 @@ class AnalogInput(SensorBase):
         port = hal.getPort(channel)
         self._port = hal.initializeAnalogInputPort(port)
 
-        LiveWindow.addSensorChannel("AnalogInput", channel, self)
         hal.report(hal.UsageReporting.kResourceType_AnalogChannel,
                       channel)
+        self.setName("AnalogInput", self.channel)
         
         self.__finalizer = weakref.finalize(self, _freeAnalogInput, self._port)
         
@@ -70,6 +71,7 @@ class AnalogInput(SensorBase):
         return self._port
 
     def free(self):
+        """ Channel destructor """
         super().free()
         if self.channel is None:
             return
@@ -249,15 +251,15 @@ class AnalogInput(SensorBase):
         Read the value that has been accumulating. The accumulator
         is attached after the oversample and average engine.
 
-        :returns: The 64-bit value accumulated since the last :func:`reset`.
+        :returns: The 64-bit value accumulated since the last call to :func:`resetAccumulator`.
         """
         return hal.getAccumulatorValue(self.port) + self.accumulatorOffset
 
     def getAccumulatorCount(self):
         """Read the number of accumulated values.
 
-        Read the count of the accumulated values since the accumulator was
-        last :func:`reset`.
+        Read the count of the accumulated values since the last call to
+        :func:`resetAccumulator`.
 
         :returns: The number of times samples from the channel were
             accumulated.
@@ -275,7 +277,9 @@ class AnalogInput(SensorBase):
         """
         if not self.isAccumulatorChannel():
             raise IndexError("Channel %d is not an accumulator channel." % self.channel)
-        return hal.getAccumulatorOutput(self.port)
+        (value, count) = hal.getAccumulatorOutput(self.port)
+
+        return (value + self.accumulatorOffset, count)
 
     def isAccumulatorChannel(self):
         """Is the channel attached to an accumulator.
@@ -322,28 +326,6 @@ class AnalogInput(SensorBase):
         """
         return self.getAverageVoltage()
 
-    # Live Window code, only does anything if live window is activated.
-
-    def getSmartDashboardType(self):
-        return "Analog Input"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.getAverageVoltage())
-
-    def startLiveWindowMode(self):
-        # Analog Channels don't have to do anything special when entering the
-        # LiveWindow.
-        pass
-
-    def stopLiveWindowMode(self):
-        # Analog Channels don't have to do anything special when exiting the
-        # LiveWindow.
-        pass
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Analog Input")
+        builder.addDoubleProperty("Value", self.getAverageVoltage, None)
