@@ -39,7 +39,6 @@ from .lineardigitalfilter import *
 from .livewindow import *
 from .livewindowsendable import *
 from .motorsafety import *
-from .nidecbrushless import *
 from .pidcontroller import *
 from .powerdistributionpanel import *
 from .preferences import *
