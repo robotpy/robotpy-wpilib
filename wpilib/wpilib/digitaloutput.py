@@ -1,10 +1,10 @@
-# validated: 2017-11-19 EN b65447b6f5a8 edu/wpi/first/wpilibj/DigitalOutput.java
-#----------------------------------------------------------------------------
+# validated: 2017-11-23 TW b65447b6f5a8 edu/wpi/first/wpilibj/DigitalOutput.java
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import warnings
 import weakref
@@ -28,14 +28,21 @@ class DigitalOutput(DigitalSource):
     digital inputs and outputs as required.
     """
 
+    invalidPwmGenerator = None
+
     def __init__(self, channel):
         """Create an instance of a digital output.
 
         :param channel: the DIO channel for the digital output. 0-9 are on-board, 10-25 are on the MXP
         """
-        super().__init__(channel, False)
+
         self._pwmGenerator = None
         self._pwmGenerator_finalizer = None
+
+        self.checkDigitalChannel(channel)
+        self.channel = channel
+
+        self.handle = hal.initializeDIOPort(hal.getPort(channel), False)
 
         hal.report(hal.UsageReporting.kResourceType_DigitalOutput,
                       channel)
@@ -56,8 +63,10 @@ class DigitalOutput(DigitalSource):
         if self.pwmGenerator is not None:
             self._pwmGenerator_finalizer()
         self._pwmGenerator = None
-        super().free()
-        self._handle = None
+        if self.pwmGenerator is not self.invalidPwmGenerator:
+            self.disablePWM()
+        hal.freeDIOPort(self.handle)
+        self.handle = 0
 
     def set(self, value):
         """Set the value of a digital output.
@@ -65,7 +74,7 @@ class DigitalOutput(DigitalSource):
         :param value: True is on, off is False
         :type  value: bool
         """
-        hal.setDIO(self.handle, value)
+        hal.setDIO(self.handle, bool(value))
 
     def get(self):
         """Gets the value being output from the Digital Output.
@@ -124,7 +133,7 @@ class DigitalOutput(DigitalSource):
         :param initialDutyCycle: The duty-cycle to start generating. [0..1]
         :type  initialDutyCycle: float
         """
-        if self.pwmGenerator is not None:
+        if self.pwmGenerator is not self.invalidPwmGenerator:
             return
         self._pwmGenerator = hal.allocateDigitalPWM()
         hal.setDigitalPWMDutyCycle(self._pwmGenerator, initialDutyCycle)
@@ -138,8 +147,10 @@ class DigitalOutput(DigitalSource):
 
         Free up one of the 6 DO PWM generator resources that were in use.
         """
-        if self.pwmGenerator is None:
+        if self.pwmGenerator is not self.invalidPwmGenerator:
             return
+        hal.setDigitalPWMOutputChannel(self._pwmGenerator, self.kDigitalChannels)
+        hal.freeDigitalPWM(self._pwmGenerator)
         self._pwmGenerator_finalizer()
 
     def updateDutyCycle(self, dutyCycle):
@@ -151,9 +162,9 @@ class DigitalOutput(DigitalSource):
         :param dutyCycle: The duty-cycle to change to. [0..1]
         :type  dutyCycle: float
         """
-        if self.pwmGenerator is None:
+        if self.pwmGenerator is self.invalidPwmGenerator:
             return
-        hal.setDigitalPWMDutyCycle(self.pwmGenerator, dutyCycle)
+        hal.setDigitalPWMDutyCycle(self._pwmGenerator, dutyCycle)
 
     def getAnalogTriggerTypeForRouting(self):
         """Get the analog trigger type.
@@ -166,7 +177,7 @@ class DigitalOutput(DigitalSource):
     def isAnalogTrigger(self):
         """Is this an analog trigger.
 
-        :returns: true if this is an analog trigger
+        :returns: False
         :rtype: bool
         """
         return False

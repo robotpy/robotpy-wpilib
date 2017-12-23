@@ -1,10 +1,10 @@
-# validated: 2017-10-24 EN 34c18ef00062 edu/wpi/first/wpilibj/DigitalInput.java
-#----------------------------------------------------------------------------
+# validated: 2017-11-23 TW 34c18ef00062 edu/wpi/first/wpilibj/DigitalInput.java
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -12,6 +12,7 @@ from .digitalsource import DigitalSource
 from .livewindow import LiveWindow
 
 __all__ = ["DigitalInput"]
+
 
 class DigitalInput(DigitalSource):
     """Reads a digital input.
@@ -30,13 +31,16 @@ class DigitalInput(DigitalSource):
         :param channel: the DIO channel for the digital input. 0-9 are on-board, 10-25 are on the MXP
         :type  channel: int
         """
-        # Store the channel and generate the handle in the constructor of the parent class
-        # This is different from the Java implementation
-        super().__init__(channel, True)
 
-        hal.report(hal.UsageReporting.kResourceType_DigitalInput,
-                      channel)
+        super().__init__()
+        self.checkDigitalChannel(channel)
+        self.channel = channel
+
+        self.handle = hal.initializeDIOPort(hal.getPort(channel), True)
+
         LiveWindow.addSensor("DigitalInput", channel, self)
+        hal.report(hal.UsageReporting.kResourceType_DigitalInput,
+                   channel)
 
         self.valueEntry = None
 
@@ -44,7 +48,7 @@ class DigitalInput(DigitalSource):
         if self.interrupt:
             self.cancelInterrupts()
 
-        super().free() # This calls hal.freeDIOPort
+        hal.freeDIOPort(self.handle)
 
     def get(self):
         """Get the value from a digital input channel. Retrieve the value of
@@ -106,4 +110,3 @@ class DigitalInput(DigitalSource):
 
     def stopLiveWindowMode(self):
         pass
-
