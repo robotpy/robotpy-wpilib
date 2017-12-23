@@ -22,16 +22,22 @@
           
           line = line.trim();
           
+          if (line == "<p>")
+            line = "";
+          
           line = line.replace("/*", "").replace("*/", "");
           line = line.replace(/@param\W+(\w+?)\W+/, ':param $1: ');
           line = line.replace("@returns", ":returns:").replace("@return", ":returns:")
           
+          line = line.replace(/{@link\W+#(\w+?)\(.*?\)\W*}/g, `:meth:\`.$1\``)
+          line = line.replace(/{@link\W+(\w+)#(\w+)\(.*?\)\W*}/g, `:meth:\`.$1.$2\``)
+          line = line.replace(/{@link\W+(\w+?)\W*}/g, `:class:\`.$1\``)
+          
+          line = line.replace('<p>', '');
+          
           if (line.startsWith("*"))
             line = line.slice(1);
-            
-          if (line == "<p>")
-            line = "";
-            
+          
           line = line.trim();
           
           lines[i] = line;
