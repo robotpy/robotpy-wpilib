@@ -1,4 +1,4 @@
-# validated: 2017-11-23 TW 34c18ef00062 edu/wpi/first/wpilibj/DigitalInput.java
+# validated: 2017-12-23 EN f9bece2ffbf7 edu/wpi/first/wpilibj/DigitalInput.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -9,7 +9,6 @@
 import hal
 
 from .digitalsource import DigitalSource
-from .livewindow import LiveWindow
 
 __all__ = ["DigitalInput"]
 
@@ -38,13 +37,12 @@ class DigitalInput(DigitalSource):
 
         self.handle = hal.initializeDIOPort(hal.getPort(channel), True)
 
-        LiveWindow.addSensor("DigitalInput", channel, self)
         hal.report(hal.UsageReporting.kResourceType_DigitalInput,
                    channel)
-
-        self.valueEntry = None
+        self.setName("DigitalInput", channel)
 
     def free(self):
+        super().free()
         if self.interrupt:
             self.cancelInterrupts()
 
@@ -90,23 +88,6 @@ class DigitalInput(DigitalSource):
         """
         return self.handle
 
-    # Live Window code, only does anything if live window is activated.
-    def getSmartDashboardType(self):
-        return "Digital Input"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setBoolean(self.get())
-
-    def startLiveWindowMode(self):
-        pass
-
-    def stopLiveWindowMode(self):
-        pass
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Digital Input")
+        builder.addBooleanProperty("Value", self.get, None)
