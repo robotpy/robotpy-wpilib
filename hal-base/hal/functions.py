@@ -227,7 +227,8 @@ getAnalogTriggerOutput = _STATUSFUNC("getAnalogTriggerOutput", C.c_bool, ("analo
 # CAN.h
 #############################################################################
 
-# Not implemented 
+# Mostly not implemented 
+CAN_GetCANStatus = _STATUSFUNC("CAN_GetCANStatus", None, ("percentBusUtilization", C.POINTER(C.c_float)), ("busOffCount", C.POINTER(C.c_uint32)), ("txFullCount", C.POINTER(C.c_uint32)), ("receiveErrorCount", C.POINTER(C.c_uint32)), ("transmitErrorCount", C.POINTER(C.c_uint32)), out=["percentBusUtilization", "busOffCount", "txFullCount", "receiveErrorCount", "transmitErrorCount"])
 
 
 #############################################################################
