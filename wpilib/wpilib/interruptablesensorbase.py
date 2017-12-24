@@ -6,10 +6,10 @@
 # the project.
 # ----------------------------------------------------------------------------
 
-import hal
-import weakref
 import enum
+import weakref
 
+import hal
 from .sensorbase import SensorBase
 
 __all__ = ["InterruptableSensorBase"]
@@ -28,9 +28,18 @@ class InterruptableSensorBase(SensorBase):
         """Create a new InterrupatableSensorBase"""
         super().__init__()
         # The interrupt resource
-        self.interrupt = None
+        self._interrupt = None
+        self._interrupt_finalizer = None
         # Flags if the interrupt being allocated is synchronous
         self.isSynchronousInterrupt = False
+
+    @property
+    def interrupt(self):
+        if self._interrupt_finalizer is None:
+            return None
+        if not self._interrupt_finalizer.alive:
+            return None
+        return self._interrupt
 
     def getAnalogTriggerTypeForRouting(self):
         raise NotImplementedError
@@ -70,7 +79,8 @@ class InterruptableSensorBase(SensorBase):
         """
 
         self.isSynchronousInterrupt = watcher
-        self.interrupt = hal.initializeInterrupts(watcher)
+        self._interrupt = hal.initializeInterrupts(watcher)
+        self._interrupt_finalizer = weakref.finalize(self, hal.cleanInterrupts, self._interrupt)
 
     def cancelInterrupts(self):
         """Cancel interrupts on this device. This deallocates all the
