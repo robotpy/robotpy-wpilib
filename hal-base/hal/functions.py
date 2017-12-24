@@ -26,6 +26,7 @@ from hal_impl.types import (
     EncoderHandle,
     GyroHandle,
     InterruptHandle,
+    NotifierHandle,
     RelayHandle,
     SolenoidHandle,
 )
@@ -523,7 +524,12 @@ setInterruptUpSourceEdge = _STATUSFUNC("setInterruptUpSourceEdge", None, ("inter
 # Notifier
 #############################################################################
 
-# Not implemented
+initializeNotifier = _STATUSFUNC("initializeNotifier", NotifierHandle)
+stopNotifier = _STATUSFUNC("stopNotifier", None, ("notifierHandle", NotifierHandle))
+cleanNotifier = _STATUSFUNC("cleanNotifier", None, ("notifierHandle", NotifierHandle))
+updateNotifierAlarm = _STATUSFUNC("updateNotifierAlarm", None, ("notifierHandle", NotifierHandle), ("triggerTime", C.c_uint64))
+cancelNotifierAlarm = _STATUSFUNC("cancelNotifierAlarm", None, ("notifierHandle", NotifierHandle))
+waitForNotifierAlarm = _STATUSFUNC("waitForNotifierAlarm", C.c_uint64, ("notifierHandle", NotifierHandle))
 
 
 #############################################################################

@@ -207,7 +207,12 @@ class InterruptHandle(Handle):
     pass
 
 class NotifierHandle(Handle):
-    pass
+    def __init__(self):
+        self.waitTime = None
+        self.updatedAlarm = None
+        self.active = True
+        self.running = False
+        self.lock = None
 
 class RelayHandle(Handle):
     __slots__ = ['pin']

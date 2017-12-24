@@ -40,6 +40,7 @@ from .livewindow import *
 from .livewindowsendable import *
 from .motorsafety import *
 from .nidecbrushless import *
+from .notifier import *
 from .pidcontroller import *
 from .powerdistributionpanel import *
 from .preferences import *
