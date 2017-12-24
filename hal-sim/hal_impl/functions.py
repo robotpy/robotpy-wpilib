@@ -605,6 +605,13 @@ def getAnalogTriggerOutput(analogTriggerHandle, type, status):
         status.value = ANALOG_TRIGGER_PULSE_OUTPUT_ERROR
         return False
 
+#############################################################################
+# CAN.h
+#############################################################################
+
+def CAN_GetCANStatus(status):
+    status.value = 0
+    return 0.0, 0, 0, 0, 0
 
 #############################################################################
 # Compressor.h
