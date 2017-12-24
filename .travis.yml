@@ -3,7 +3,6 @@ sudo: false
 env:
   - RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
 python:
-  - "3.4"
   - "3.5"
   - "3.6"
 # command to install dependencies
