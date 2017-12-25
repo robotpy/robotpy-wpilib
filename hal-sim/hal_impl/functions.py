@@ -1292,20 +1292,64 @@ def setInterruptUpSourceEdge(interruptHandle, risingEdge, fallingEdge, status):
 # Notifier
 #############################################################################
 
-# def initializeNotifier(processQueue, param, status):
-#     assert False # TODO
-# 
-# def cleanNotifier(notifier, status):
-#     assert False # TODO
-#     
-# def getNotifierParam(notifier, status):
-#     assert False # TODO
-# 
-# def updateNotifierAlarm(notifier, triggerTime, status):
-#     assert False # TODO
-# 
-# def stopNotifierAlarm(notifier, status):
-#     assert False # TODO
+def initializeNotifier(status):
+    status.value = 0
+    handle = types.NotifierHandle()
+    handle.lock = hooks.createCondition()
+    return handle
+
+def stopNotifier(notifierHandle, status):
+    status.value = 0
+    with notifierHandle.lock:
+        notifierHandle.active = False
+        notifierHandle.running = False
+        notifierHandle.lock.notify_all()
+
+def cleanNotifier(notifierHandle, status):
+    status.value = 0
+    with notifierHandle.lock:
+        notifierHandle.active = False
+        notifierHandle.running = False
+        notifierHandle.lock.notify_all()
+
+def updateNotifierAlarm(notifierHandle, triggerTime, status):
+    status.value = 0
+    with notifierHandle.lock:
+        notifierHandle.waitTime = triggerTime
+        notifierHandle.running = True
+        notifierHandle.updatedAlarm = True
+        notifierHandle.lock.notify_all()
+
+def cancelNotifierAlarm(notifierHandle, status):
+    status.value = 0
+    with notifierHandle.lock:
+        notifierHandle.running = False
+        notifierHandle.lock.notify_all()
+
+def waitForNotifierAlarm(notifierHandle, status):
+    status.value = 0
+    with notifierHandle.lock:
+        while notifierHandle.active:
+            if not notifierHandle.running:
+                waitTime = 1000.0
+            else:
+                waitTime = (notifierHandle.waitTime - hooks.getFPGATime()) * 1e-6
+            
+            notifierHandle.lock.wait(timeout=waitTime)
+            if notifierHandle.updatedAlarm:
+                notifierHandle.updatedAlarm = False
+                continue
+            
+            if not notifierHandle.running:
+                continue
+            if not notifierHandle.active:
+                break
+            
+            notifierHandle.running = False
+            return hooks.getFPGATime()
+    
+    return 0
+
 
 #############################################################################
 # PDP
