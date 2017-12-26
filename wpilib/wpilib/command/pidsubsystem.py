@@ -1,4 +1,4 @@
-# validated: 2017-09-24 AA 4e80570c4c48 edu/wpi/first/wpilibj/command/PIDSubsystem.java
+# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/command/PIDSubsystem.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -41,6 +41,7 @@ class PIDSubsystem(Subsystem):
             period = PIDController.kDefaultPeriod
         self.controller = PIDController(p, i, d, f, self.returnPIDInput,
                                         self.usePIDOutput, period)
+        self.addChild(self.controller)
 
     def getPIDController(self):
         """Returns the PIDController used by this PIDSubsystem.
@@ -166,10 +167,3 @@ class PIDSubsystem(Subsystem):
         """Disables the internal :class:`.PIDController`
         """
         self.controller.disable()
-
-    def getSmartDashboardType(self):
-        return "PIDSubsystem"
-
-    def initTable(self, table):
-        self.controller.initTable(table)
-        super().initTable(table)

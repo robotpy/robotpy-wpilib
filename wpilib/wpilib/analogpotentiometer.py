@@ -1,4 +1,4 @@
-# validated: 2017-09-22 TW 34c18ef00062 edu/wpi/first/wpilibj/AnalogPotentiometer.java
+# validated: 2017-12-20 EN f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogPotentiometer.java
 #----------------------------------------------------------------------------*/
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 # Open Source Software - may be modified and shared by FRC teams. The code   */
@@ -10,11 +10,11 @@ import hal
 
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
-from .sendablebase import SendableBase
+from .sensorbase import SensorBase
 
 __all__ = ["AnalogPotentiometer"]
 
-class AnalogPotentiometer(SendableBase):
+class AnalogPotentiometer(SensorBase):
     """Reads a potentiometer via an :class:`.AnalogInput`
     
     Analog potentiometers read
@@ -49,11 +49,13 @@ class AnalogPotentiometer(SendableBase):
         super().__init__()
         if not hasattr(channel, "getVoltage"):
             channel = AnalogInput(channel)
+            self.addChild(channel)
         self.analog_input = channel
         self.fullRange = fullRange
         self.offset = offset
         self.init_analog_input = True
         self.pidSource = self.PIDSourceType.kDisplacement
+        self.setName("AnalogPotentiometer", self.analog_input.getChannel())
 
     def get(self):
         """Get the current reading of the potentiometer.
@@ -61,6 +63,8 @@ class AnalogPotentiometer(SendableBase):
         :returns: The current position of the potentiometer.
         :rtype: float
         """
+        if self.analog_input is None:
+            return self.offset
         return (self.analog_input.getVoltage() / hal.getUserVoltage5V()) * self.fullRange + self.offset
     
     def setPIDSourceType(self, pidSource):
@@ -85,31 +89,12 @@ class AnalogPotentiometer(SendableBase):
         """
         return self.get()
 
-    # Live Window code, only does anything if live window is activated.
-
-    def getSmartDashboardType(self):
-        return "Analog Input"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.get())
-
-    def startLiveWindowMode(self):
-        # don't have to do anything special when entering the LiveWindow
-        pass
-
-    def stopLiveWindowMode(self):
-        # don't have to do anything special when exiting the LiveWindow
-        pass
+    def initSendable(self, builder):
+        if self.analog_input is not None:
+            self.analog_input.initSendable(builder)
 
     def free(self):
+        super().free()
         if self.init_analog_input:
             self.analog_input.free()
             del self.analog_input
