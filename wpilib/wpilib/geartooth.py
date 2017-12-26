@@ -1,4 +1,4 @@
-# validated: 2017-11-21 EN b65447b6f5a8 edu/wpi/first/wpilibj/GearTooth.java
+# validated: 2017-12-26 EN f9bece2ffbf7 edu/wpi/first/wpilibj/GearTooth.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -32,7 +32,7 @@ class GearTooth(Counter):
 
         :param channel: The DIO channel index or DigitalSource that the sensor
             is connected to.
-        :type channel: int
+        :type channel: int or :class:`.DigitalSource`
         :param directionSensitive: True to enable the pulse length decoding in
             hardware to specify count direction.  Defaults to False.
         :type directionSensitive: bool
@@ -46,14 +46,8 @@ class GearTooth(Counter):
             else:
                 hal.report(hal.UsageReporting.kResourceType_GearTooth,
                            self.upSource.getChannel(), 0)
-        LiveWindow.addSensorChannel("GearTooth", self.upSource.getChannel(),
-                                    self)
+        self.setName("GearTooth", self.upSource.getChannel())
 
-    def free(self):
-        LiveWindow.removeComponent(self)
-        super().free()
-
-    # Live Window code, only does anything if live window is activated.
-
-    def getSmartDashboardType(self):
-        return "Gear Tooth"
+    def initSendable(self, builder):
+        super().initSendable(builder)
+        builder.setSmartDashboardType("Gear Tooth")
