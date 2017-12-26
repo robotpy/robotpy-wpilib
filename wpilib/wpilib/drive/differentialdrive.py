@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW 19addb04cf4a edu/wpi/first/wpilibj/drive/DifferentialDrive.java
+# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,8 +6,9 @@
 # the project.
 # ----------------------------------------------------------------------------
 
-import hal
 import math
+
+import hal
 from .robotdrivebase import RobotDriveBase
 
 __all__ = ["DifferentialDrive"]
@@ -35,61 +36,69 @@ class DifferentialDrive(RobotDriveBase):
         Each ``drive()`` function provides different inverse kinematic relations for a differential drive
         robot. Motor outputs for the right side are negated, so motor direction inversion by the user is
         usually unnecessary.
+
+        This library uses the NED axes convention (North-East-Down as external reference in the world
+        frame): http://www.nuclearprojects.com/ins/images/axis_big.png.
+
+        The positive X axis points ahead, the positive Y axis points right, and the positive Z axis
+        points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is
+        positive.
+
+        Inputs smaller then `.02` will
+        be set to 0, and larger values will be scaled so that the full range is still used. This
+        deadband value can be changed with :meth:`.RobotDriveBase.setDeadband`.
+
+        RobotDrive porting guide:
+
+        :meth:`.tankDrive` is equivalent to
+        :meth:`.RobotDrive.tankDrive` if a deadband of 0 is used.
+
+        :meth:`.arcadeDrive` is equivalent to
+        :meth:`.RobotDrive.arcadeDrive` if a deadband of 0 is used
+        and the the rotation input is inverted (i.e ``arcadeDrive(y, -rotation)``)
+
+        :meth:`.curvatureDrive` is similar in concept to
+        :meth:`.RobotDrive.drive` with the addition of a quick turn
+        mode. However, it is not designed to give exactly the same response.
     """
+
+    kDefaultQuickStopThreshold = .2
+    kDefaultQuickStopAlpha = .1
+
+    instances = 0
 
     def __init__(self, leftMotor, rightMotor):
         """Constructor for DifferentialDrive.
 
-        This class takes in a SpeedController per side. For two and four motor drivetrains
-        construct and pass in  :class:`..SpeedControllerGroup` instances as follows.
+        .. note:: This class takes in a SpeedController per side. For two and four motor drivetrains,
+                  construct and pass in  :class:`.SpeedControllerGroup` instances as follows.
 
         :param leftMotor: Left motor SpeedController
         :param rightMotor: Right motor SpeedController
+        :type leftMotor: :class:`.SpeedController` or :class:`.SpeedControllerGroup`
+        :type rightMotor: :class:`.SpeedController` or :class:`.SpeedControllerGroup`
         """
         super().__init__()
 
         self.leftMotor = leftMotor
         self.rightMotor = rightMotor
 
-        self.reported = False
+        self.quickStopThreshold = self.kDefaultQuickStopThreshold
+        self.quickStopAlpha = self.kDefaultQuickStopAlpha
         self.quickStopAccumulator = 0.0
+        self.reported = False
 
-    def tankDrive(self, left, right, squaredInputs=True):
-        """Provide tank steering using the stored robot configuration.
+        self.addChild(self.leftMotor)
+        self.addChild(self.rightMotor)
+        self.instances += 1
+        self.setName("DifferentialDrive", self.instances)
 
-        :param left: The value to use for the left side motors. [-1.0..1.0]
-        :param right: The value to use for the right side motors. [-1.0..1.0]
-        :param squaredInputs: If set, decreases the input sensitivity at low speeds
-        """
+    def arcadeDrive(self, xSpeed, zRotation, squaredInputs=True):
+        """Arcade drive method for differential drive platform.
+        The calculated values will be squared to decrease sensitivity at low speeds
 
-        if not self.reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       2,
-                       hal.UsageReporting.kRobotDrive_Tank)
-            self.reported = True
-
-        left = RobotDriveBase.limit(left)
-        left = RobotDriveBase.applyDeadband(left, self.deadband)
-
-        right = RobotDriveBase.limit(right)
-        right = RobotDriveBase.applyDeadband(right, self.deadband)
-
-        # square the inputs (while preserving the sign) to increase fine
-        # control while permitting full power
-        if squaredInputs:
-            left = math.copysign(left * left, left)
-            right = math.copysign(right * right, right)
-
-        self.leftMotor.set(left * self.maxOutput)
-        self.rightMotor.set(-right * self.maxOutput)
-
-        self.feed()
-
-    def arcadeDrive(self, y, rotation, squaredInputs=True):
-        """Provide arcade steering using the stored robot configuration.
-
-        :param y: The value to use for forwards/backwards. [-1.0..1.0]
-        :param rotation: The value to use for the rotation right/left. [-1.0..1.0)
+        :param xSpeed: The robot's speed along the X axis `[-1.0..1.0]`. Forward is positive
+        :param zRotation: The robot's zRotation rate around the Z axis `[-1.0..1.0]`. Clockwise is positive
         :param squaredInputs: If set, decreases the sensitivity at low speeds.
         """
 
@@ -99,34 +108,34 @@ class DifferentialDrive(RobotDriveBase):
                        hal.UsageReporting.kRobotDrive_ArcadeStandard)
             self.reported = True
 
-        y = RobotDriveBase.limit(y)
-        y = RobotDriveBase.applyDeadband(y, self.deadband)
+        xSpeed = RobotDriveBase.limit(xSpeed)
+        xSpeed = RobotDriveBase.applyDeadband(xSpeed, self.deadband)
 
-        rotation = RobotDriveBase.limit(rotation)
-        rotation = RobotDriveBase.applyDeadband(rotation, self.deadband)
+        zRotation = RobotDriveBase.limit(zRotation)
+        zRotation = RobotDriveBase.applyDeadband(zRotation, self.deadband)
 
         if squaredInputs:
-            # square the inputs (while preserving the sign) to increase fine
-            # control while permitting full power
-            y = math.copysign(y * y, y)
-            rotation = math.copysign(rotation * rotation, rotation)
+            # Square the inputs (while preserving the sign) to increase fine
+            # control while permitting full power.
+            xSpeed = math.copysign(xSpeed * xSpeed, xSpeed)
+            zRotation = math.copysign(zRotation * zRotation, zRotation)
 
-        maxInput = math.copysign(max(abs(y), abs(rotation)), y)
+        maxInput = math.copysign(max(abs(xSpeed), abs(zRotation)), xSpeed)
 
-        if y > 0.0:
-            if rotation > 0.0:
+        if xSpeed >= 0.0:
+            if zRotation >= 0.0:
                 leftMotorSpeed = maxInput
-                rightMotorSpeed = y - rotation
+                rightMotorSpeed = xSpeed - zRotation
             else:
-                leftMotorSpeed = y + rotation
+                leftMotorSpeed = xSpeed + zRotation
                 rightMotorSpeed = maxInput
         else:
-            if rotation > 0.0:
-                leftMotorSpeed = y + rotation
+            if zRotation >= 0.0:
+                leftMotorSpeed = xSpeed + zRotation
                 rightMotorSpeed = maxInput
             else:
                 leftMotorSpeed = maxInput
-                rightMotorSpeed = y - rotation
+                rightMotorSpeed = xSpeed - zRotation
 
         leftMotorSpeed = RobotDriveBase.limit(leftMotorSpeed) * self.maxOutput
         rightMotorSpeed = RobotDriveBase.limit(rightMotorSpeed) * self.maxOutput
@@ -136,17 +145,17 @@ class DifferentialDrive(RobotDriveBase):
 
         self.feed()
 
-    def curvatureDrive(self, y, rotation, isQuickTurn):
+    def curvatureDrive(self, xSpeed, zRotation, isQuickTurn):
         """
         Curvature drive method for differential drive platform.
 
-        The rotation argument controls the curvature of the robot's path rather than its rate
+        The zRotation argument controls the curvature of the robot's path rather than its rate
         of heading change. This makes the robot more controllable at high speeds. Also handles
         the robot's quick turn functionality - "quick turn" overrides constant-curvature turning
         for turn-in-place maneuvers
 
-        :param y: The value to use for forwards/backwards. [-1.0..1.0]
-        :param rotation:  The value to use for rotation left/right [-1.0..1.0]
+        :param xSpeed: The robot's speed along the X axis `[-1.0..1.0]`. Forward is positive.
+        :param zRotation:  The robot's rotation rate around the Z axis `[-1.0..1.0]`. Clockwise is positive.
         :param isQuickTurn: If set, overrides constant-curvature turning for
                           turn-in-place maneuvers.
         """
@@ -156,21 +165,21 @@ class DifferentialDrive(RobotDriveBase):
             #           hal.UsageReporting.kRobotDrive_Curvature)
             self.reported = True
 
-        y = RobotDriveBase.limit(y)
-        y = RobotDriveBase.applyDeadband(y, self.deadband)
+        xSpeed = RobotDriveBase.limit(xSpeed)
+        xSpeed = RobotDriveBase.applyDeadband(xSpeed, self.deadband)
 
         if isQuickTurn:
-            if abs(y) < .2:
+            if abs(xSpeed) < .2:
                 alpha = .1
                 self.quickStopAccumulator = (1 - alpha) * self.quickStopAccumulator + alpha * RobotDriveBase.limit(
-                    rotation) * 2
+                    zRotation) * 2
 
             overPower = True
-            angularPower = rotation
+            angularPower = zRotation
 
         else:
             overPower = False
-            angularPower = abs(y) * rotation - self.quickStopAccumulator
+            angularPower = abs(xSpeed) * zRotation - self.quickStopAccumulator
 
             if self.quickStopAccumulator > 1:
                 self.quickStopAccumulator -= 1
@@ -179,8 +188,8 @@ class DifferentialDrive(RobotDriveBase):
             else:
                 self.quickStopAccumulator = 0
 
-        leftMotorSpeed = y + angularPower
-        rightMotorSpeed = y - angularPower
+        leftMotorSpeed = xSpeed + angularPower
+        rightMotorSpeed = xSpeed - angularPower
 
         if overPower:
             if leftMotorSpeed > 1.0:
@@ -201,11 +210,73 @@ class DifferentialDrive(RobotDriveBase):
 
         self.feed()
 
-    def getDescription(self):
-        return "Differential Drive"
+    def tankDrive(self, leftSpeed, rightSpeed, squaredInputs=True):
+        """Provide tank steering using the stored robot configuration.
+
+        :param leftSpeed: The robot's left side speed along the X axis `[-1.0..1.0]`. Forward is positive.
+        :param rightSpeed: The robot's right side speed along the X axis`[-1.0..1.0]`. Forward is positive.
+        :param squaredInputs: If set, decreases the input sensitivity at low speeds
+        """
+
+        if not self.reported:
+            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
+                       2,
+                       hal.UsageReporting.kRobotDrive_Tank)
+            self.reported = True
+
+        leftSpeed = RobotDriveBase.limit(leftSpeed)
+        leftSpeed = RobotDriveBase.applyDeadband(leftSpeed, self.deadband)
+
+        rightSpeed = RobotDriveBase.limit(rightSpeed)
+        rightSpeed = RobotDriveBase.applyDeadband(rightSpeed, self.deadband)
+
+        # square the inputs (while preserving the sign) to increase fine
+        # control while permitting full power
+        if squaredInputs:
+            leftSpeed = math.copysign(leftSpeed * leftSpeed, leftSpeed)
+            rightSpeed = math.copysign(rightSpeed * rightSpeed, rightSpeed)
+
+        self.leftMotor.set(leftSpeed * self.maxOutput)
+        self.rightMotor.set(-rightSpeed * self.maxOutput)
+
+        self.feed()
+
+    def setQuickStopThreshold(self, threshold):
+        """Sets the QuickStop speed threshold in curvature drive.
+
+        QuickStop compensates for the robot's moment of inertia when stopping after a QuickTurn.
+
+        While QuickTurn is enabled, the QuickStop accumulator takes on the rotation rate value
+        outputted by the low-pass filter when the robot's speed along the X axis is below the
+        threshold. When QuickTurn is disabled, the accumulator's value is applied against the computed
+        angular power request to slow the robot's rotation.
+
+        :param threshold: X speed below which quick stop accumulator will receive rotation rate values `[0..1.0]`.
+        """
+        self.quickStopThreshold = threshold
+
+    def setQuickStopAlpha(self, alpha):
+        """Sets the low-pass filter gain for QuickStop in curvature drive.
+
+        The low-pass filter filters incoming rotation rate commands to smooth out high frequency
+        changes.
+
+        :param alpha: Low-pass filter gain [0.0..2.0]. Smaller values result in slower output changes.
+                      Values between 1.0 and 2.0 result in output oscillation. Values below 0.0 and
+                      above 2.0 are unstable.
+        """
+        self.quickStopAlpha = alpha
 
     def stopMotor(self):
         self.leftMotor.stopMotor()
         self.rightMotor.stopMotor()
 
         self.feed()
+
+    def getDescription(self):
+        return "Differential Drive"
+
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("DifferentialDrive")
+        builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
+        builder.addDoubleProperty("Right Motor Speed", self.rightMotor.get, self.rightMotor.set)

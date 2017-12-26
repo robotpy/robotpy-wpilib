@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW 877a9eae1fcc edu/wpi/first/wpilibj/SpeedControllerGroup.java
+# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/SpeedControllerGroup.java
 
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
@@ -7,14 +7,32 @@
 # the project.
 # ----------------------------------------------------------------------------
 from .interfaces.speedcontroller import SpeedController
+from .sendablebase import SendableBase
 
 __all__ = ["SpeedControllerGroup"]
 
 
-class SpeedControllerGroup(SpeedController):
+class SpeedControllerGroup(SendableBase, SpeedController):
+    """Allows multiple :class:`.SpeedController` objects to be linked together"""
+
+    instances = 0
+
     def __init__(self, *args):
+        """Create a new SpeedControllerGroup with the provided SpeedControllers.
+
+        :param args: SpeedControllers to add
+        :type args: :class:`.SpeedController`
+        """
+        SendableBase.__init__(self)
+        SpeedController.__init__(self)
+
+        for speedController in args:
+            self.addChild(speedController)
         self.speedControllers = args
         self.isInverted = False
+
+        self.instances += 1
+        self.setName("SpeedControllerGroup", self.instances)
 
     def set(self, speed):
         for speedController in self.speedControllers:
@@ -42,3 +60,8 @@ class SpeedControllerGroup(SpeedController):
     def pidWrite(self, output):
         for speedController in self.speedControllers:
             speedController.pidWrite(output)
+
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Speed Controller")
+        builder.setSafeState(self.stopMotor)
+        builder.addDoubleProperty("Value", self.get, self.set)
