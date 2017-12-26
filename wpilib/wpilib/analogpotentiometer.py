@@ -1,4 +1,4 @@
-# validated: 2017-12-20 EN f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogPotentiometer.java
+# validated: 2017-12-26 EN 8b7aa61091df edu/wpi/first/wpilibj/AnalogPotentiometer.java
 #----------------------------------------------------------------------------*/
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 # Open Source Software - may be modified and shared by FRC teams. The code   */
