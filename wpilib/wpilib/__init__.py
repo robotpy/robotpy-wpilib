@@ -2,6 +2,7 @@
     This is the core of WPILib.
 '''
 
+from .accumulatorresult import *
 from .adxl345_i2c import *
 from .adxl345_spi import *
 from .adxl362 import *
