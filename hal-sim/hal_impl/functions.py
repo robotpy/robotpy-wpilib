@@ -1192,7 +1192,7 @@ def setEncoderIndexSource(encoderHandle, digitalSourceHandle, analogTriggerType,
 
 def getEncoderFPGAIndex(encoderHandle, status):
     status.value = 0
-    assert False
+    return encoderHandle.idx
 
 def getEncoderDecodingScaleFactor(encoderHandle, status):
     status.value = 0
