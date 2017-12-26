@@ -72,7 +72,7 @@ class MecanumDrive(RobotDriveBase):
         self.addChild(self.rearLeftMotor)
         self.addChild(self.frontRightMotor)
         self.addChild(self.rearRightMotor)
-        self.instances += 1
+        MecanumDrive.instances += 1
         self.setName("MecanumDrive", self.instances)
 
         self.reported = False

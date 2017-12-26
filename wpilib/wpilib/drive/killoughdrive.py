@@ -71,7 +71,7 @@ class KilloughDrive(RobotDriveBase):
         self.addChild(self.leftMotor)
         self.addChild(self.rightMotor)
         self.addChild(self.backMotor)
-        self.instances += 1
+        KilloughDrive.instances += 1
         self.setName("KilloughDrive", self.instances)
 
         self.reported = False

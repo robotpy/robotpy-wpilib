@@ -37,7 +37,7 @@ class SpeedControllerGroup(SendableBase, SpeedController):
         print(self.speedControllers)
         self.isInverted = False
 
-        self.instances += 1
+        SpeedControllerGroup.instances += 1
         self.setName("SpeedControllerGroup", self.instances)
 
     def set(self, speed):

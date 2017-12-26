@@ -90,7 +90,7 @@ class DifferentialDrive(RobotDriveBase):
 
         self.addChild(self.leftMotor)
         self.addChild(self.rightMotor)
-        self.instances += 1
+        DifferentialDrive.instances += 1
         self.setName("DifferentialDrive", self.instances)
 
     def arcadeDrive(self, xSpeed, zRotation, squaredInputs=True):
