@@ -40,41 +40,16 @@ class SPISimulator(SPISimBase):
         status.value = 0
         self.set_active_low = True
 
-    def freeSPIAccumulator(self, port, status):
+    def freeSPIAuto(self, port, status):
         status.value = 0
         self.acc_freed = True
-        
-    def resetSPIAccumulator(self, port, status):
-        status.value = 0
-        self.acc_reset = True
-        
-    def getSPIAccumulatorLastValue(self, port, status):
-        assert port == self.port
-        status.value = 0
-        return 0x55
-        
-    def getSPIAccumulatorValue(self, port, status):
-        assert port == self.port
-        status.value = 0
-        return 0x66
-        
-    def getSPIAccumulatorCount(self, port, status):
-        assert port == self.port
-        status.value = 0
-        return 0x77
-    
-    def getSPIAccumulatorAverage(self, port, status):
-        assert port == self.port
-        status.value = 0
-        return 0x88
-        
-    def getSPIAccumulatorOutput(self, port, status):
-        assert port == self.port
-        status.value = 0
-        return (0x99, 1)
-        
-def test_spi(wpilib):
-    
+
+
+
+def test_spi(wpilib, monkeypatch):
+
+    monkeypatch.setattr(wpilib.Notifier, '_thread', lambda s: None)
+
     sim = SPISimulator()
     port = wpilib.SPI.Port.kMXP
     
@@ -99,16 +74,13 @@ def test_spi(wpilib):
     
     spi.freeAccumulator()
     assert sim.acc_freed == True
-    
-    spi.resetAccumulator()
-    assert sim.acc_reset == True
-    
-    assert spi.getAccumulatorLastValue() == 0x55
-    assert spi.getAccumulatorValue() == 0x66
-    assert spi.getAccumulatorCount() == 0x77
-    assert spi.getAccumulatorAverage() == 0x88
-    assert spi.getAccumulatorOutput() == (0x99, 1)
-    
+
+    #assert spi.getAccumulatorLastValue() == 0x55
+    #assert spi.getAccumulatorValue() == 0x66
+    #assert spi.getAccumulatorCount() == 0x77
+    #assert spi.getAccumulatorAverage() == 0x88
+    #assert spi.getAccumulatorOutput() == (0x99, 1)
+
     spi.free()
     assert sim.closed == True
     

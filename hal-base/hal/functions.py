@@ -304,6 +304,7 @@ setDigitalPWMDutyCycle = _STATUSFUNC("setDigitalPWMDutyCycle", None, ("pwmGenera
 setDigitalPWMOutputChannel = _STATUSFUNC("setDigitalPWMOutputChannel", None, ("pwmGenerator", DigitalPWMHandle), ("channel", C.c_int32))
 
 setDIO = _STATUSFUNC("setDIO", None, ("dioPortHandle", DigitalHandle), ("value", C.c_bool))
+setDIODirection = _STATUSFUNC("setDIODirection", None, ("dioPortHandle", DigitalHandle), ("input", C.c_bool))
 getDIO = _STATUSFUNC("getDIO", C.c_bool, ("dioPortHandle", DigitalHandle))
 getDIODirection = _STATUSFUNC("getDIODirection", C.c_bool, ("dioPortHandle", DigitalHandle))
 pulse = _STATUSFUNC("pulse", None, ("dioPortHandle", DigitalHandle), ("pulseLength", C.c_double))
@@ -675,16 +676,25 @@ setSPIChipSelectActiveHigh = _TSTATUSFUNC("setSPIChipSelectActiveHigh", None, ("
 setSPIChipSelectActiveLow = _TSTATUSFUNC("setSPIChipSelectActiveLow", None, ("port", C.c_int32))
 getSPIHandle = _THUNKFUNC("getSPIHandle", C.c_int32, ("port", C.c_int32))
 setSPIHandle = _THUNKFUNC("setSPIHandle", None, ("port", C.c_int32), ("handle", C.c_int32))
-initSPIAccumulator = _TSTATUSFUNC("initSPIAccumulator", None, ("port", C.c_int32), ("period", C.c_int32), ("cmd", C.c_int32), ("xferSize", C.c_int32), ("validMask", C.c_int32), ("validValue", C.c_int32), ("dataShift", C.c_int32), ("dataSize", C.c_int32), ("isSigned", C.c_bool), ("bigEndian", C.c_bool))
-freeSPIAccumulator = _TSTATUSFUNC("freeSPIAccumulator", None, ("port", C.c_int32))
-resetSPIAccumulator = _TSTATUSFUNC("resetSPIAccumulator", None, ("port", C.c_int32))
-setSPIAccumulatorCenter = _TSTATUSFUNC("setSPIAccumulatorCenter", None, ("port", C.c_int32), ("center", C.c_int32))
-setSPIAccumulatorDeadband = _TSTATUSFUNC("setSPIAccumulatorDeadband", None, ("port", C.c_int32), ("deadband", C.c_int32))
-getSPIAccumulatorLastValue = _TSTATUSFUNC("getSPIAccumulatorLastValue", C.c_int32, ("port", C.c_int32))
-getSPIAccumulatorValue = _TSTATUSFUNC("getSPIAccumulatorValue", C.c_int64, ("port", C.c_int32))
-getSPIAccumulatorCount = _TSTATUSFUNC("getSPIAccumulatorCount", C.c_int64, ("port", C.c_int32))
-getSPIAccumulatorAverage = _TSTATUSFUNC("getSPIAccumulatorAverage", C.c_double, ("port", C.c_int32))
-getSPIAccumulatorOutput = _TSTATUSFUNC("getSPIAccumulatorOutput", None, ("port", C.c_int32), ("value", C.POINTER(C.c_int64)), ("count", C.POINTER(C.c_int64)), out=["value", "count"])
+
+initSPIAuto = _TSTATUSFUNC("initSPIAuto", None, ("port", C.c_int32), ("bufferSize", C.c_int32))
+freeSPIAuto = _TSTATUSFUNC("freeSPIAuto", None, ("port", C.c_int32))
+startSPIAutoRate = _TSTATUSFUNC("startSPIAutoRate", None, ("port", C.c_int32), ("period", C.c_double))
+startSPIAutoTrigger = _TSTATUSFUNC("startSPIAutoTrigger", None, ("port", C.c_int32), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32), ("triggerRising", C.c_bool), ("triggerFalling", C.c_bool))
+stopSPIAuto = _TSTATUSFUNC("stopSPIAuto", None, ("port", C.c_int32))
+
+_setSPIAutoTransmitData = _TSTATUSFUNC("setSPIAutoTransmitData", None, ("port", C.c_int32), ("dataToSend", C.POINTER(C.c_uint8)), ("dataSize", C.c_int32), ("zeroSize", C.c_int32))
+@hal_wrapper
+def setSPIAutoTransmitData(port, dataToSend, zeroSize):
+    sendSize = len(dataToSend)
+    buffer = (C.c_uint8 * sendSize)(*dataToSend)
+    _setSPIAutoTransmitData(port, buffer, sendSize, zeroSize)
+
+forceSPIAutoRead = _TSTATUSFUNC("forceSPIAutoRead", None, ("port", C.c_int32))
+readSPIAutoReceivedData = _TSTATUSFUNC("readSPIAutoReceivedData", C.c_int32, ("port", C.c_int32), ("buffer", C.POINTER(C.c_uint8)), ("numToRead", C.c_int32), ("timeout", C.c_double))
+
+getSPIAutoDroppedCount = _TSTATUSFUNC("getSPIAutoDroppedCount", C.c_int32, ("port", C.c_int32))
+
 
 #############################################################################
 # SerialPort

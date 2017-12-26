@@ -57,44 +57,36 @@ class SPISimBase:
     
     def setSPIHandle(self, port, handle):
         pass
-        
-    def initSPIAccumulator(self, port,
-                           period, cmd, xfer_size, valid_mask, valid_value,
-                           data_shift, data_size, is_signed, big_endian, status):
-        pass
-        
-    def freeSPIAccumulator(self, port, status):
-        pass
-        
-    def resetSPIAccumulator(self, port, status):
-        pass
-    
-    def setSPIAccumulatorCenter(self, port, center, status):
-        pass
-        
-    def setSPIAccumulatorDeadband(self, port, deadband, status):
-        pass
-        
-    def getSPIAccumulatorLastValue(self, port, status):
+
+    def initSPIAuto(self, port, bufferSize, status):
+        status.value = 0
+
+    def freeSPIAuto(self, port, status):
+        status.value = 0
+
+    def startSPIAutoRate(self, port, period, status):
+        status.value = 0
+
+    def startSPIAutoTrigger(self, port, digitalSourceHandle, analogTriggerType, triggerRising, triggerFalling, status):
+        status.value = 0
+
+    def stopSPIAuto(self, port, status):
+        status.value = 0
+
+    def setSPIAutoTransmitData(self, port, dataToSend, dataSize, zeroSize, status):
+        status.value = 0
+
+    def forceSPIAutoRead(self, port, status):
+        status.value = 0
+
+    def readSPIAutoReceivedData(self, port, buffer, numToRead, timeout, status):
+        ''':returns: number of bytes read'''
+        raise NotImplementedError
+
+    def getSPIAutoDroppedCount(self, port, status):
         ''':returns: int32'''
         raise NotImplementedError
-        
-    def getSPIAccumulatorValue(self, port, status):
-        ''':returns: int64'''
-        raise NotImplementedError
-        
-    def getSPIAccumulatorCount(self, port, status):
-        ''':returns: int32'''
-        raise NotImplementedError
-    
-    def getSPIAccumulatorAverage(self, port, status):
-        ''':returns: float'''
-        raise NotImplementedError
-        
-    def getSPIAccumulatorOutput(self, port, status):
-        ''':returns: value(int64), count(int32)'''
-        raise NotImplementedError
-        
+
 
 
 class ADXRS450_Gyro_Sim(SPISimBase):
