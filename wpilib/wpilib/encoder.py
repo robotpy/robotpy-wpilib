@@ -9,6 +9,7 @@
 import hal
 import warnings
 import weakref
+import enum
 
 from .interfaces.counterbase import CounterBase
 from .interfaces.pidsource import PIDSource
@@ -47,7 +48,7 @@ class Encoder(SensorBase):
     - indexSource: The index source (available on some encoders)
     """
 
-    class IndexingType:
+    class IndexingType(enum.IntEnum):
         kResetWhileHigh = 0
         kResetWhileLow = 1
         kResetOnFallingEdge = 2
@@ -90,19 +91,26 @@ class Encoder(SensorBase):
         and inputType.
 
         :param aSource: The source that should be used for the a channel.
+        :type aSource: :class:`.DigitalSource`
         :param bSource: The source that should be used for the b channel.
+        :type bSource: :class:`.DigitalSource`
         :param indexSource: The source that should be used for the index
             channel.
+        :type indexSource: :class:`.DigitalSource`
         :param aChannel: The digital input index that should be used for
             the a channel.
+        :type aChannel: int
         :param bChannel: The digital input index that should be used for
             the b channel.
+        :type bChannel: int
         :param indexChannel: The digital input index that should be used
             for the index channel.
+        :type indexChannel: int
         :param reverseDirection:
             Represents the orientation of the encoder and inverts the
             output values if necessary so forward represents positive
             values.  Defaults to False if unspecified.
+        :type reverseDirection: bool
         :param encodingType:
             Either k1X, k2X, or k4X to indicate 1X, 2X or 4X decoding. If
             4X is selected, then an encoder FPGA object is used and the
@@ -211,6 +219,7 @@ class Encoder(SensorBase):
         Get the FPGA Index of the encoder
 
         :returns: The Encoder's FPGA index
+        :rtype: int
         """
         return hal.getEncoderFPGAIndex(self.encoder)
 
@@ -218,10 +227,12 @@ class Encoder(SensorBase):
         """
         :returns: The encoding scale factor 1x, 2x, or 4x, per the requested
             encodingType. Used to divide raw edge counts down to spec'd counts.
+        :rtype: int
         """
         return hal.getEncoderEncodingScale(self.encoder)
 
     def free(self):
+        """Free the resources used by this object."""
         super().free()
         if self.aSource is not None and self.allocatedA:
             self.aSource.free()
@@ -243,6 +254,7 @@ class Encoder(SensorBase):
         count unscaled by the 1x, 2x, or 4x scale factor.
 
         :returns: Current raw count from the encoder
+        :rtype: int
         """
         return hal.getEncoderRaw(self.encoder)
 
@@ -252,6 +264,7 @@ class Encoder(SensorBase):
 
         :returns: Current count from the Encoder adjusted for the 1x, 2x, or
             4x scale factor.
+        :rtype: int
         """
         return hal.getEncoder(self.encoder)
 
@@ -272,6 +285,7 @@ class Encoder(SensorBase):
             :func:`getDistancePerPulse`.
 
         :returns: Period in seconds of the most recent pulse.
+        :rtype: float
         """
         warnings.warn("use getRate instead", DeprecationWarning)
         return hal.getEncoderPeriod(self.encoder)
@@ -286,6 +300,7 @@ class Encoder(SensorBase):
         :param maxPeriod: The maximum time between rising and falling edges
             before the FPGA will report the device stopped. This is expressed
             in seconds.
+        :type maxPeriod: float
         """
         hal.setEncoderMaxPeriod(self.encoder, maxPeriod)
 
@@ -303,6 +318,7 @@ class Encoder(SensorBase):
         """The last direction the encoder value changed.
 
         :returns: The last direction the encoder value changed.
+        :rtype: bool
         """
         return hal.getEncoderDirection(self.encoder)
 
@@ -311,6 +327,7 @@ class Encoder(SensorBase):
 
         :returns: The distance driven since the last reset as scaled by the
             value from :func:`setDistancePerPulse`.
+        :rtype: float
         """
         return hal.getEncoderDistance(self.encoder)
 
@@ -318,7 +335,8 @@ class Encoder(SensorBase):
         """Get the current rate of the encoder. Units are distance per second
         as scaled by the value from :func:`setDistancePerPulse`.
 
-         :returns: The current rate of the encoder.
+        :returns: The current rate of the encoder.
+        :rtype: float
         """
         return hal.getEncoderRate(self.encoder)
 
@@ -328,6 +346,7 @@ class Encoder(SensorBase):
 
         :param minRate: The minimum rate. The units are in distance per
             second as scaled by the value from :func:`setDistancePerPulse`.
+        :type minRate: float
         """
         hal.setEncoderMinRate(self.encoder, minRate)
 
@@ -342,6 +361,7 @@ class Encoder(SensorBase):
 
         :param distancePerPulse: The scale factor that will be used to convert
             pulses to useful units.
+        :type distancePerPulse: float
         """
         hal.setEncoderDistancePerPulse(self.encoder, distancePerPulse)
 
@@ -350,6 +370,7 @@ class Encoder(SensorBase):
         Get the distance per pulse for this encoder.
 
         :returns: The scale factor that will be used to convert pulses to useful units.
+        :rtype: float
         """
         return hal.getEncoderDistancePerPulse(self.encoder)
 
@@ -360,6 +381,7 @@ class Encoder(SensorBase):
 
         :param reverseDirection: True if the encoder direction should be
             reversed
+        :type reverseDirection: bool
         """
         hal.setEncoderReverseDirection(self.encoder, reverseDirection)
 
@@ -374,6 +396,7 @@ class Encoder(SensorBase):
 
         :param samplesToAverage: The number of samples to average from 1 to
             127.
+        :type samplesToAverage: int
         """
         hal.setEncoderSamplesToAverage(self.encoder, samplesToAverage)
 
@@ -384,6 +407,7 @@ class Encoder(SensorBase):
         resolution.
 
         :returns: The number of samples being averaged (from 1 to 127)
+        :rtype: int
         """
         return hal.getEncoderSamplesToAverage(self.encoder)
 
@@ -419,9 +443,9 @@ class Encoder(SensorBase):
         Set the index source for the encoder. When this source rises, the encoder count automatically resets.
 
         :param source: Either an initialized DigitalSource or a DIO channel number
-        :type: Either a :class:`.DigitalInput` or number
+        :type source: :class:`.DigitalInput` or int
         :param indexing_type: The state that will cause the encoder to reset
-        :type: A value from :class:`.IndexingType`
+        :type indexing_type: :class:`.IndexingType`
         """
         if hasattr(source, "getPortHandleForRouting"):
             self.indexSource = source
