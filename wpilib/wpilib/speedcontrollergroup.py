@@ -17,7 +17,7 @@ class SpeedControllerGroup(SendableBase, SpeedController):
 
     instances = 0
 
-    def __init__(self, *args):
+    def __init__(self, speedController, *args):
         """Create a new SpeedControllerGroup with the provided SpeedControllers.
 
         :param args: SpeedControllers to add
@@ -26,9 +26,15 @@ class SpeedControllerGroup(SendableBase, SpeedController):
         SendableBase.__init__(self)
         SpeedController.__init__(self)
 
-        for speedController in args:
-            self.addChild(speedController)
-        self.speedControllers = args
+        self.speedControllers = []
+        self.speedControllers.append(speedController)
+        self.addChild(speedController)
+
+        for speedcontroller in args:
+            self.speedControllers.append(speedcontroller)
+            self.addChild(speedcontroller)
+
+        print(self.speedControllers)
         self.isInverted = False
 
         self.instances += 1
