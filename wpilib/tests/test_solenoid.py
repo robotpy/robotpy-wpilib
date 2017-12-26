@@ -62,9 +62,9 @@ def test_doublesolenoid_initTable_null(doublesolenoid):
 
 
 @pytest.mark.parametrize("value_name, expected_output", [
-    ('kReverse', 'R'),
-    ('kForward', 'F'),
-    ('kOff', 'O'),
+    ('kReverse', 'Reverse'),
+    ('kForward', 'Forward'),
+    ('kOff', 'Off'),
     ])
 def test_doublesolenoid_initSendable_update(doublesolenoid, sendablebuilder, value_name, expected_output):
     doublesolenoid.set(getattr(doublesolenoid.Value, value_name))
