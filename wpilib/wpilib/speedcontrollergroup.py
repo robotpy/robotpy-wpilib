@@ -13,7 +13,7 @@ __all__ = ["SpeedControllerGroup"]
 
 
 class SpeedControllerGroup(SendableBase, SpeedController):
-    """Allows multiple :class:`.SpeedController` objects to be linked together"""
+    """Allows multiple :class:`.SpeedController` objects to be linked together."""
 
     instances = 0
 
