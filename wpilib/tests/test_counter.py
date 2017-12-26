@@ -22,18 +22,18 @@ def check_init(hal_data, mode, up, down, up_edge, down_edge, trigger_up=False, t
 
 def test_counter_init_1(wpilib, hal_data):
     ctr = wpilib.Counter()
-    check_init(hal_data, 0, 0, 0, (False, False), (False, False))
+    check_init(hal_data, wpilib.Counter.Mode.kTwoPulse, 0, 0, (False, False), (False, False))
 
 
 def test_counter_init_2(wpilib, hal_data):
     di = wpilib.DigitalInput(5)
     ctr = wpilib.Counter(di)
-    check_init(hal_data, 0, 5, 0, (True, False), (False, False))
+    check_init(hal_data, wpilib.Counter.Mode.kTwoPulse, 5, 0, (True, False), (False, False))
 
 
 def test_counter_init_3(wpilib, hal_data):
     ctr = wpilib.Counter(6)
-    check_init(hal_data, 0, 6, 0, (True, False), (False, False))
+    check_init(hal_data, wpilib.Counter.Mode.kTwoPulse, 6, 0, (True, False), (False, False))
     assert hal_data['dio'][6]['initialized'] == True
     assert hal_data['dio'][6]['is_input'] == True
 
@@ -42,14 +42,14 @@ def test_counter_init_4(wpilib, hal_data):
     us = wpilib.DigitalInput(3)
     ds = wpilib.DigitalInput(4)
     ctr = wpilib.Counter(wpilib.Counter.EncodingType.k1X, us, ds, True)
-    check_init(hal_data, 3, 3, 4, (True, False), (True, True))
+    check_init(hal_data, wpilib.Counter.Mode.kExternalDirection, 3, 4, (True, False), (True, True))
 
 
 def test_counter_init_5(wpilib, hal_data):
     at = wpilib.AnalogTrigger(2)
     ctr = wpilib.Counter(at)
     #Analog triggers get their channel ids from their index, not their analog port.
-    check_init(hal_data, 0, 0, 0, (True, False), (False, False), True)
+    check_init(hal_data, wpilib.Counter.Mode.kTwoPulse, 0, 0, (True, False), (False, False), True)
 
 
 def test_counter_set_up_channel(wpilib, hal_data):
@@ -290,6 +290,7 @@ def test_counter_pidget_rate(wpilib):
     ctr.setPIDSourceType(wpilib.interfaces.PIDSource.PIDSourceType.kRate)
     assert ctr.pidGet() == pytest.approx(7.0, 0.01)
 
+
 def test_counter_initSendable(wpilib, sendablebuilder, hal_data):
     hal_data["counter"][0]["count"] = 4
     ctr = wpilib.Counter()
@@ -302,3 +303,43 @@ def test_counter_initSendable(wpilib, sendablebuilder, hal_data):
 
     assert sendablebuilder.getTable().getNumber("Value", 0.0) == 4
     assert sendablebuilder.getTable().getString(".type", "") == "Counter"
+
+
+def test_geartooth_init_1(wpilib, hal_data):
+    di = wpilib.DigitalInput(5)
+    ctr = wpilib.GearTooth(di)
+    check_init(hal_data, wpilib.Counter.Mode.kTwoPulse, 5, 0, (True, False), (False, False))
+
+
+def test_geartooth_init_2(wpilib, hal_data):
+    di = wpilib.DigitalInput(5)
+    ctr = wpilib.GearTooth(di, True)
+    check_init(hal_data, wpilib.Counter.Mode.kPulseLength, 5, 0, (True, False), (False, False))
+
+
+def test_geartooth_init_3(wpilib, hal_data):
+    ctr = wpilib.GearTooth(6)
+    check_init(hal_data, wpilib.Counter.Mode.kTwoPulse, 6, 0, (True, False), (False, False))
+    assert hal_data['dio'][6]['initialized'] == True
+    assert hal_data['dio'][6]['is_input'] == True
+
+
+def test_geartooth_init_4(wpilib, hal_data):
+    ctr = wpilib.GearTooth(6, True)
+    check_init(hal_data, wpilib.Counter.Mode.kPulseLength, 6, 0, (True, False), (False, False))
+    assert hal_data['dio'][6]['initialized'] == True
+    assert hal_data['dio'][6]['is_input'] == True
+
+
+def test_geartooth_initSendable(wpilib, sendablebuilder, hal_data):
+    hal_data["counter"][0]["count"] = 4
+    ctr = wpilib.GearTooth(6)
+    ctr.initSendable(sendablebuilder)
+
+    assert sendablebuilder.properties[0].key == "Value"
+    assert sendablebuilder.properties[0].setter is None
+
+    sendablebuilder.updateTable()
+
+    assert sendablebuilder.getTable().getNumber("Value", 0.0) == 4
+    assert sendablebuilder.getTable().getString(".type", "") == "Gear Tooth"
