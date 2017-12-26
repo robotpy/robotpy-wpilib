@@ -7,7 +7,10 @@ def test_init_speedgroupcontroller(wpimock, halmock):
 
     m1 = MagicMock()
     m2 = MagicMock()
+
+    assert wpimock.SpeedControllerGroup.instances == 0
     group = wpimock.SpeedControllerGroup(m1, m2)
+    assert wpimock.SpeedControllerGroup.instances == 1
     assert m1, m2 in group.speedControllers
 
 

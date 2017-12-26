@@ -10,8 +10,11 @@ def test_init_diffdrive(wpimock, halmock):
     left = MagicMock()
     right = MagicMock()
 
+    assert wpimock.drive.DifferentialDrive.instances == 0
+
     drive = wpimock.drive.DifferentialDrive(left, right)
 
+    assert wpimock.drive.DifferentialDrive.instances == 1
     assert drive.maxOutput == wpimock.drive.RobotDriveBase.maxOutput
     assert drive.deadband == wpimock.drive.RobotDriveBase.deadband
 
@@ -26,8 +29,11 @@ def test_init_killough(wpimock, halmock):
     right = MagicMock()
     back = MagicMock()
 
+    assert wpimock.drive.KilloughDrive.instances == 0
+
     drive = wpimock.drive.KilloughDrive(left, right, back)
 
+    assert wpimock.drive.KilloughDrive.instances == 1
     assert drive.maxOutput == wpimock.drive.RobotDriveBase.maxOutput
     assert drive.deadband == wpimock.drive.RobotDriveBase.deadband
 
@@ -47,7 +53,11 @@ def test_init_mecanum(wpimock, halmock):
     rleft = MagicMock()
     rright = MagicMock()
 
+    assert wpimock.drive.MecanumDrive.instances == 0
+
     drive = wpimock.drive.MecanumDrive(fleft, rleft, fright, rright)
+
+    assert wpimock.drive.MecanumDrive.instances == 1
     assert drive.frontLeftMotor == fleft
     assert drive.rearLeftMotor == rleft
     assert drive.frontRightMotor == fright
