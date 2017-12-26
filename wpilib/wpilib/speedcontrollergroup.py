@@ -26,15 +26,11 @@ class SpeedControllerGroup(SendableBase, SpeedController):
         SendableBase.__init__(self)
         SpeedController.__init__(self)
 
-        self.speedControllers = []
-        self.speedControllers.append(speedController)
-        self.addChild(speedController)
+        self.speedControllers = [speedController] + list(args)
 
-        for speedcontroller in args:
-            self.speedControllers.append(speedcontroller)
+        for speedcontroller in self.speedControllers:
             self.addChild(speedcontroller)
 
-        print(self.speedControllers)
         self.isInverted = False
 
         SpeedControllerGroup.instances += 1
