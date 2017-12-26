@@ -903,6 +903,10 @@ def setDIO(dioPortHandle, value, status):
     status.value = 0
     hal_data['dio'][dioPortHandle.pin]['value'] = True if value else False
 
+def setDIODirection(dioPortHandle, input, status):
+    status.value = 0
+    hal_data['dio'][dioPortHandle.pin]['is_input'] = input
+
 def getDIO(dioPortHandle, status):
     status.value = 0
     return bool(hal_data['dio'][dioPortHandle.pin]['value'])
@@ -1730,46 +1734,41 @@ def getSPIHandle(port):
 def setSPIHandle(port, handle):
     assert False
 
-def initSPIAccumulator(port, period, cmd, xferSize, validMask, validValue, dataShift, dataSize, isSigned, bigEndian, status):
+def initSPIAuto(port, bufferSize, status):
     status.value = 0
     assert False
 
-def freeSPIAccumulator(port, status):
+def freeSPIAuto(port, status):
     status.value = 0
     assert False
 
-def resetSPIAccumulator(port, status):
+def startSPIAutoRate(port, period, status):
     status.value = 0
     assert False
 
-def setSPIAccumulatorCenter(port, center, status):
+def startSPIAutoTrigger(port, digitalSourceHandle, analogTriggerType, triggerRising, triggerFalling, status):
     status.value = 0
     assert False
 
-def setSPIAccumulatorDeadband(port, deadband, status):
+def stopSPIAuto(port, status):
     status.value = 0
     assert False
 
-def getSPIAccumulatorLastValue(port, status):
+def setSPIAutoTransmitData(port, dataToSend, dataSize, zeroSize, status):
     status.value = 0
     assert False
 
-def getSPIAccumulatorValue(port, status):
+def forceSPIAutoRead(port, status):
     status.value = 0
     assert False
 
-def getSPIAccumulatorCount(port, status):
+def readSPIAutoReceivedData(port, buffer, numToRead, timeout, status):
     status.value = 0
     assert False
 
-def getSPIAccumulatorAverage(port, status):
+def getSPIAutoDroppedCount(port, status):
     status.value = 0
     assert False
-
-def getSPIAccumulatorOutput(port, status):
-    status.value = 0
-    assert False
-
 
 #############################################################################
 # SerialPort

@@ -9,6 +9,7 @@
 import hal
 import weakref
 
+from .accumulatorresult import AccumulatorResult
 from .interfaces import PIDSource
 from .livewindow import LiveWindow
 from .resource import Resource
@@ -266,20 +267,18 @@ class AnalogInput(SensorBase):
         """
         return hal.getAccumulatorCount(self.port)
 
-    def getAccumulatorOutput(self):
+    def getAccumulatorOutput(self) -> AccumulatorResult:
         """Read the accumulated value and the number of accumulated values
         atomically.
 
         This function reads the value and count from the FPGA atomically. This
         can be used for averaging.
-
-        :returns: tuple of (value, count)
         """
         if not self.isAccumulatorChannel():
             raise IndexError("Channel %d is not an accumulator channel." % self.channel)
         (value, count) = hal.getAccumulatorOutput(self.port)
 
-        return (value + self.accumulatorOffset, count)
+        return AccumulatorResult(value + self.accumulatorOffset, count)
 
     def isAccumulatorChannel(self):
         """Is the channel attached to an accumulator.

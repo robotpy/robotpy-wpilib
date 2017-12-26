@@ -1,6 +1,6 @@
-# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/GyroBase.java
+# validated: 2017-12-24 DS f9bece2ffbf7 edu/wpi/first/wpilibj/GyroBase.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -67,27 +67,8 @@ class GyroBase(SensorBase):
         else:
             return 0.0
     
-    # Live Window code, only does anything if live window is activated.
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Gyro")
+        builder.addDoubleProperty("Value", self.getAngle, None)
 
-    def getSmartDashboardType(self):
-        return "Gyro"
 
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-        
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.getAngle())
-
-    def startLiveWindowMode(self):
-        pass
-
-    def stopLiveWindowMode(self):
-        pass
-    
-    
-    
