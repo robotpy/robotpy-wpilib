@@ -1,6 +1,6 @@
-# validated: 2017-09-20 AA e1195e8b9dab edu/wpi/first/wpilibj/ADXRS450_Gyro.java
+# validated: 2017-12-26 DV f9bece2ffbf7 edu/wpi/first/wpilibj/ADXRS450_Gyro.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2015. All Rights Reserved.
+# Copyright (c) 2015-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -61,6 +61,7 @@ class ADXRS450_Gyro(GyroBase):
             simPort = ADXRS450_Gyro_Sim(self)
         
         self.spi = SPI(port, simPort=simPort)
+
         self.spi.setClockRate(3000000)
         self.spi.setMSBFirst()
         self.spi.setSampleDataOnRising()
@@ -80,7 +81,7 @@ class ADXRS450_Gyro(GyroBase):
         self.calibrate()
         
         hal.report(hal.UsageReporting.kResourceType_ADXRS450, port)
-        LiveWindow.addSensor("ADXRS450_Gyro", port, self)
+        self.setName("ADXRS450_Gyro", port)
 
     def calibrate(self):
         """Calibrate the gyro by running for a number of samples and computing the
@@ -146,6 +147,7 @@ class ADXRS450_Gyro(GyroBase):
         
     def free(self):
         """Delete (free) the spi port used for the gyro and stop accumulating."""
+        super().free()
         if self.spi is not None:
             self.spi.free()
             self.spi = None

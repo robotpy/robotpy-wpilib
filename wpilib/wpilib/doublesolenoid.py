@@ -1,12 +1,13 @@
 # validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/DoubleSolenoid.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
 
 import hal
+import enum
 import warnings
 import weakref
 
@@ -28,15 +29,11 @@ class DoubleSolenoid(SolenoidBase):
     have two positions controlled by two separate channels.
     """
 
-    class Value:
+    class Value(enum.IntEnum):
         """Possible values for a DoubleSolenoid."""
         kOff = 0
         kForward = 1
         kReverse = 2
-
-        @classmethod
-        def name(cls, val):
-            return {cls.kOff: "O", cls.kForward: "F", cls.kReverse: "R"}.get(val, "O")
 
     def __init__(self, *args, **kwargs):
         """Constructor.
@@ -108,8 +105,7 @@ class DoubleSolenoid(SolenoidBase):
         hal.report(hal.UsageReporting.kResourceType_Solenoid,
                       reverseChannel, moduleNumber)
 
-        LiveWindow.addActuatorModuleChannel("DoubleSolenoid", moduleNumber,
-                                            forwardChannel, self)
+        self.setName("DoubleSolenoid", moduleNumber, forwardChannel)
         
         self.__finalizer = weakref.finalize(self, _freeSolenoid,
                                             self.forwardHandle, self.reverseHandle)
@@ -179,10 +175,9 @@ class DoubleSolenoid(SolenoidBase):
     def initSendable(self, builder):
         builder.setSmartDashboardType("Double Solenoid")
         builder.setSafeState(lambda: self.set(self.Value.kOff))
-        builder.addStringProperty("Value", lambda: self.Value.name(self.get()), self.valueChanged)
+        builder.addStringProperty("Value", lambda: self.get().name[1:], self._valueChanged)
 
-    def valueChanged(self, value):
-        #TODO: this is bad also
+    def _valueChanged(self, value):
         if value == "Reverse":
             self.set(self.Value.kReverse)
         elif value == "Forward":

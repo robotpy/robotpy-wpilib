@@ -1,6 +1,6 @@
-# validated: 2017-09-22 TW e1195e8b9dab edu/wpi/first/wpilibj/AnalogGyro.java
+# validated: 2017-12-26 DV f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogGyro.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2017. All Rights Reserved.
+# Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -11,8 +11,6 @@ import hal
 from .analoginput import AnalogInput
 from .gyrobase import GyroBase
 from .interfaces import PIDSource
-from .livewindow import LiveWindow
-from .timer import Timer
 
 __all__ = ["AnalogGyro"]
 
@@ -61,6 +59,7 @@ class AnalogGyro(GyroBase):
         if not hasattr(channel, "initAccumulator"):
             channel = AnalogInput(channel)
             self.channelAllocated = True
+            self.addChild(channel)
         else:
             self.channelAllocated = False
             
@@ -68,21 +67,18 @@ class AnalogGyro(GyroBase):
 
         self.gyroHandle = hal.initializeAnalogGyro(self.analog.port)
     
-           
         self.setDeadband(0.0)
 
         hal.setupAnalogGyro(self.gyroHandle)
         
-        hal.report(hal.UsageReporting.kResourceType_Gyro,
-                      self.analog.getChannel())
-        LiveWindow.addSensorChannel("AnalogGyro", self.analog.getChannel(), self)
+        hal.report(hal.UsageReporting.kResourceType_Gyro, self.analog.getChannel())
+        self.setName("AnalogGyro", self.analog.getChannel())
         
         if center is None or offset is None:
             self.calibrate()
         else:
-            hal.setAnalogGyroParameters(self.gyroHandle, self.kDefaultVoltsPerDegreePerSecond, offset, center)        
+            hal.setAnalogGyroParameters(self.gyroHandle, self.kDefaultVoltsPerDegreePerSecond, offset, center)
             self.reset()
-        
         
     def calibrate(self):
         """:see: :meth:`.Gyro.calibrate`"""
@@ -94,7 +90,7 @@ class AnalogGyro(GyroBase):
 
     def free(self):
         """:see: :meth:`.Gyro.free`"""
-        LiveWindow.removeComponent(self)
+        super().free()
         if self.analog is not None and self.channelAllocated:
             self.analog.free()
             self.analog = None
