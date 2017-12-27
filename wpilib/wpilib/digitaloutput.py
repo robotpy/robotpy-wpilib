@@ -1,10 +1,10 @@
-# validated: 2017-11-19 EN b65447b6f5a8 edu/wpi/first/wpilibj/DigitalOutput.java
-#----------------------------------------------------------------------------
+# validated: 2017-12-23 EN f9bece2ffbf7 edu/wpi/first/wpilibj/DigitalOutput.java
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import warnings
 import weakref
@@ -13,6 +13,7 @@ import hal
 
 from .digitalsource import DigitalSource
 from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["DigitalOutput"]
 
@@ -21,26 +22,33 @@ def _freePWMGenerator(pwmGenerator):
     hal.setDigitalPWMOutputChannel(pwmGenerator, SensorBase.kDigitalChannels)
     hal.freeDigitalPWM(pwmGenerator)
 
-class DigitalOutput(DigitalSource):
+class DigitalOutput(SendableBase):
     """Writes to a digital output
     
     Other devices that are implemented elsewhere will automatically allocate
     digital inputs and outputs as required.
     """
 
+    invalidPwmGenerator = None
+
     def __init__(self, channel):
         """Create an instance of a digital output.
 
         :param channel: the DIO channel for the digital output. 0-9 are on-board, 10-25 are on the MXP
         """
-        super().__init__(channel, False)
+
+        super().__init__()
         self._pwmGenerator = None
         self._pwmGenerator_finalizer = None
 
+        SensorBase.checkDigitalChannel(channel)
+        self.channel = channel
+
+        self.handle = hal.initializeDIOPort(hal.getPort(channel), False)
+
         hal.report(hal.UsageReporting.kResourceType_DigitalOutput,
                       channel)
-
-        self.valueEntry = None
+        self.setName("DigitalOutput", channel)
 
     @property
     def pwmGenerator(self):
@@ -52,12 +60,15 @@ class DigitalOutput(DigitalSource):
 
     def free(self):
         """Free the resources associated with a digital output."""
+        super().free()
         # finalize the pwm only if we have allocated it
         if self.pwmGenerator is not None:
             self._pwmGenerator_finalizer()
         self._pwmGenerator = None
-        super().free()
-        self._handle = None
+        if self.pwmGenerator is not self.invalidPwmGenerator:
+            self.disablePWM()
+        hal.freeDIOPort(self.handle)
+        self.handle = 0
 
     def set(self, value):
         """Set the value of a digital output.
@@ -65,7 +76,7 @@ class DigitalOutput(DigitalSource):
         :param value: True is on, off is False
         :type  value: bool
         """
-        hal.setDIO(self.handle, value)
+        hal.setDIO(self.handle, bool(value))
 
     def get(self):
         """Gets the value being output from the Digital Output.
@@ -124,7 +135,7 @@ class DigitalOutput(DigitalSource):
         :param initialDutyCycle: The duty-cycle to start generating. [0..1]
         :type  initialDutyCycle: float
         """
-        if self.pwmGenerator is not None:
+        if self.pwmGenerator is not self.invalidPwmGenerator:
             return
         self._pwmGenerator = hal.allocateDigitalPWM()
         hal.setDigitalPWMDutyCycle(self._pwmGenerator, initialDutyCycle)
@@ -138,8 +149,10 @@ class DigitalOutput(DigitalSource):
 
         Free up one of the 6 DO PWM generator resources that were in use.
         """
-        if self.pwmGenerator is None:
+        if self.pwmGenerator is not self.invalidPwmGenerator:
             return
+        hal.setDigitalPWMOutputChannel(self._pwmGenerator, SensorBase.kDigitalChannels)
+        hal.freeDigitalPWM(self._pwmGenerator)
         self._pwmGenerator_finalizer()
 
     def updateDutyCycle(self, dutyCycle):
@@ -151,47 +164,10 @@ class DigitalOutput(DigitalSource):
         :param dutyCycle: The duty-cycle to change to. [0..1]
         :type  dutyCycle: float
         """
-        if self.pwmGenerator is None:
+        if self.pwmGenerator is self.invalidPwmGenerator:
             return
-        hal.setDigitalPWMDutyCycle(self.pwmGenerator, dutyCycle)
+        hal.setDigitalPWMDutyCycle(self._pwmGenerator, dutyCycle)
 
-    def getAnalogTriggerTypeForRouting(self):
-        """Get the analog trigger type.
-
-        :returns: false
-        :rtype: int
-        """
-        return 0
-
-    def isAnalogTrigger(self):
-        """Is this an analog trigger.
-
-        :returns: true if this is an analog trigger
-        :rtype: bool
-        """
-        return False
-
-    def getPortHandleForRouting(self):
-        """Get the HAL Port Handle.
-
-        :returns: The HAL Handle to the specified source
-        """
-        return self.handle
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    # Live Window code, only does anything if live window is activated.
-    def getSmartDashboardType(self):
-        return "Digital Output"
-
-    def updateTable(self):
-        # TODO: Put current value.
-        pass
-
-    def valueChanged(self, entry, key, value, param):
-        self.set(True if value else False)
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Digital Output")
+        builder.addBooleanProperty("Value", self.get, self.set)

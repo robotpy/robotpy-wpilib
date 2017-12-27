@@ -1,12 +1,13 @@
-# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/DoubleSolenoid.java
+# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/DoubleSolenoid.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
 
 import hal
+import enum
 import warnings
 import weakref
 
@@ -28,7 +29,7 @@ class DoubleSolenoid(SolenoidBase):
     have two positions controlled by two separate channels.
     """
 
-    class Value:
+    class Value(enum.IntEnum):
         """Possible values for a DoubleSolenoid."""
         kOff = 0
         kForward = 1
@@ -104,19 +105,17 @@ class DoubleSolenoid(SolenoidBase):
         hal.report(hal.UsageReporting.kResourceType_Solenoid,
                       reverseChannel, moduleNumber)
 
-        LiveWindow.addActuatorModuleChannel("DoubleSolenoid", moduleNumber,
-                                            forwardChannel, self)
+        self.setName("DoubleSolenoid", moduleNumber, forwardChannel)
         
         self.__finalizer = weakref.finalize(self, _freeSolenoid,
                                             self.forwardHandle, self.reverseHandle)
 
     def free(self):
         """Mark the solenoid as freed."""
+        super().free()
         self.__finalizer()
         self.forwardHandle = None
         self.reverseHandle = None
-        
-        super().free()
 
     def set(self, value):
         """Set the value of a solenoid.
@@ -173,42 +172,15 @@ class DoubleSolenoid(SolenoidBase):
 
         return blacklist & (1 << self.reverseMask) != 0
 
-    # Live Window code, only does anything if live window is activated.
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Double Solenoid")
+        builder.setSafeState(lambda: self.set(self.Value.kOff))
+        builder.addStringProperty("Value", lambda: self.get().name[1:], self._valueChanged)
 
-    def getSmartDashboardType(self):
-        return "Double Solenoid"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable();
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            #TODO: this is bad
-            val = self.get()
-            if val == self.Value.kForward:
-                self.valueEntry.setString("F")
-            elif val == self.Value.kReverse:
-                self.valueEntry.setString("R")
-            else:
-                self.valueEntry.putString("O")
-
-    def valueChanged(self, entry, key, value, param):
-        #TODO: this is bad also
+    def _valueChanged(self, value):
         if value == "Reverse":
             self.set(self.Value.kReverse)
         elif value == "Forward":
             self.set(self.Value.kForward)
         else:
             self.set(self.Value.kOff)
-
-    def startLiveWindowMode(self):
-        self.set(self.Value.kOff) # Stop for safety
-        super().startLiveWindowMode()
-
-    def stopLiveWindowMode(self):
-        super().stopLiveWindowMode()
-        self.set(self.Value.kOff) # Stop for safety

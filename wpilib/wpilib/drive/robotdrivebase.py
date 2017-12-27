@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW 19addb04cf4a edu/wpi/first/wpilibj/drive/RobotDriveBase.java
+# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/drive/RobotDriveBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -7,11 +7,12 @@
 # ----------------------------------------------------------------------------
 
 from ..motorsafety import MotorSafety
+from ..sendablebase import SendableBase
 
 __all__ = ["RobotDriveBase"]
 
 
-class RobotDriveBase(MotorSafety):
+class RobotDriveBase(SendableBase, MotorSafety):
     """Common base class for drive platforms"""
 
     class MotorType:
@@ -38,19 +39,37 @@ class RobotDriveBase(MotorSafety):
         #: Back
         kBack = 2
 
-    maxOutput = 1.0
-    deadband = .02
+    kDefaultDeadband = .02
+    kDefaultMaxOutput = 1.0
+
+    deadband = kDefaultDeadband
+    maxOutput = kDefaultMaxOutput
 
     def __init__(self):
-        super().__init__()
+        SendableBase.__init__(self)
+        MotorSafety.__init__(self)
+
+        self.setSafetyEnabled(True)
+        self.setName("RobotDriveBase")
 
     def setDeadband(self, deadband):
+        """Change the value for deadband scaling. The default value is `.02`. Values smaller than the
+         deadband are set to 0, while values larger than the deadband are scaled from 0.0 to 1.0. See
+         :meth:`applyDeadband()`
+
+         :param deadband: The deadband to set
+         :type deadband: float
+         """
         self.deadband = deadband
 
     def setMaxOutput(self, maxOutput):
-        """Configure the scaling factor for using RobotDrive with motor controllers in a mode other than PercentVbus.
+        """Configure the scaling factor for using drive methods with motor controllers in a mode
+        other than PercentVbus or to limit the maximum output.
+
+        The default value is `1.0`
 
         :param maxOutput: Multiplied with the output percentage computed by the drive functions.
+        :type maxOutput: float
         """
         self.maxOutput = maxOutput
 

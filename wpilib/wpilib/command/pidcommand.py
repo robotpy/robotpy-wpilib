@@ -1,4 +1,4 @@
-# validated: 2017-09-24 AA 4e80570c4c48 edu/wpi/first/wpilibj/command/PIDCommand.java
+# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/command/PIDCommand.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -119,9 +119,7 @@ class PIDCommand(Command):
         """
         pass
 
-    def getSmartDashboardType(self):
-        return "PIDCommand"
-
-    def initTable(self, table):
-        self.controller.initTable(table)
-        super().initTable(table)
+    def initSendable(self, builder):
+        self.controller.initSendable(builder)
+        super().initSendable(builder)
+        builder.setSmartDashboardType("PIDCommand")

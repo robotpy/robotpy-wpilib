@@ -1,4 +1,4 @@
-# validated: 2017-10-22 DS f0cc62324134 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
+# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
 
 # validation note: 2017-10-22: Not using the getEntry() stuff that Java uses,
 #                              as using the existing table stuff is more
@@ -12,8 +12,18 @@
 #----------------------------------------------------------------------------
 
 import hal
+import threading
+from ._impl.utils import match_arglist, HasAttribute
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["SmartDashboard"]
+
+
+class Data:
+    def __init__(self):
+        self.sendable = None
+        self.builder = SendableBuilder()
+
 
 class SmartDashboard:
     """The bridge between robot programs and the SmartDashboard on the laptop
@@ -36,6 +46,7 @@ class SmartDashboard:
     # A table linking tables in the SmartDashboard to the SmartDashboardData
     # objects they came from.
     tablesToData = {}
+    mutex = threading.RLock()
 
     @classmethod
     def _reset(cls):
@@ -53,41 +64,53 @@ class SmartDashboard:
 
     @classmethod
     def putData(cls, *args, **kwargs):
-        """Maps the specified key to the specified value in this table.
+        """
+        Maps the specified key (name of the :class:`.Sendable` if not provided) 
+        to the specified value in this table.
         The value can be retrieved by calling the get method with a key that
         is equal to the original key.
 
-        Two argument formats are supported: key, data:
+        Two argument formats are supported: 
+        
+        - key, data
+        - value
         
         :param key: the key (cannot be None)
         :type  key: str
         :param data: the value
-
-        Or the single argument "value":
-        
-        :param value: the named value (getName is called to retrieve the value)
+        :type data: :class:`.Sendable`
+        :param value: the value
+        :type value: :class:`.Sendable`
         """
-        # NOTE: mix of args and kwargs not allowed
-        if kwargs and not args:
-            if "value" in kwargs:
-                data = kwargs["value"]
+        with cls.mutex:
+            key_arg = ("key", [str])
+            data_arg = ("data", [HasAttribute("initSendable")])
+            value_arg = ("value", [HasAttribute("initSendable")])
+            templates = [[key_arg, data_arg],
+                         [value_arg],]
+
+            index, results = match_arglist('SmartDashboard.putData',
+                                       args, kwargs, templates)
+            if index == 0:
+                key = results['key']
+                data = results["data"]
+            elif index == 1:
+                data = results["value"]
                 key = data.getName()
             else:
-                key = kwargs["key"]
-                data = kwargs["data"]
-        elif len(args) == 1 and not kwargs:
-            data = args[0]
-            key = data.getName()
-        elif len(args) == 2 and not kwargs:
-            key, data = args
-        else:
-            raise ValueError("only key, data or value accepted")
+                raise ValueError("only (key, data) or (value) accepted")
 
-        table = cls.getTable()
-        dataTable = table.getSubTable(key)
-        dataTable.getEntry(".type").setString(data.getSmartDashboardType())
-        data.initTable(dataTable)
-        cls.tablesToData[dataTable] = data
+            sddata = cls.tablesToData.get(key, None)
+            if sddata is None:
+                sddata = Data()
+                cls.tablesToData[key] = sddata
+
+            if sddata.sendable is None or sddata.sendable != data:
+                sddata.sendable = data
+                sddata.builder.setTable(cls.getTable().getSubTable(key))
+                data.initSendable(sddata.builder)
+
+            sddata.builder.updateTable()
 
     @classmethod
     def getData(cls, key):
@@ -100,17 +123,14 @@ class SmartDashboard:
         
         :raises: :exc:`KeyError` if the key doesn't exist
         """
-        table = cls.getTable()
-        subtable = table.getSubTable(key)
-        data = cls.tablesToData.get(subtable)
+        data = cls.tablesToData.get(subtable, None)
         if data is None:
             raise KeyError("SmartDashboard data does not exist: '%s'" % key)
-        return data
+        return data.sendable
     
     @classmethod
     def getEntry(cls, key):
-        """Gets the entry for the specified key. Entries are a more efficient
-        way to manipulate NT data.
+        """Gets the entry for the specified key.
         
         :param key: the key name
         :rtype: :class:`.NetworkTableEntry`
@@ -131,7 +151,7 @@ class SmartDashboard:
 
     @classmethod
     def getKeys(cls, types=0):
-        """Get array of keys in the table.
+        """Get the keys stored in the SmartDashboard table of NetworkTables.
 
         :param types: bitmask of types; 0 is treated as a "don't care".
         
@@ -242,11 +262,8 @@ class SmartDashboard:
     @classmethod
     def getBoolean(cls, key, defaultValue):
         """Returns the boolean the key maps to. If the key does not exist or is of
-        different type, it will return the default value; if that is not provided,
-        it will throw a :exc:`KeyError`.
+        different type, it will return the default value.
         
-        Calling this method without passing defaultValue is deprecated.
-
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
@@ -284,11 +301,8 @@ class SmartDashboard:
     @classmethod
     def getNumber(cls, key, defaultValue):
         """Returns the number the key maps to. If the key does not exist or is of
-        different type, it will return the default value; if that is not provided,
-        it will throw a :exc:`KeyError`.
+        different type, it will return the default value.
         
-        Calling this method without passing defaultValue is deprecated.
-
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
@@ -326,11 +340,8 @@ class SmartDashboard:
     @classmethod
     def getString(cls, key, defaultValue):
         """Returns the string the key maps to. If the key does not exist or is of
-        different type, it will return the default value; if that is not provided,
-        it will throw a :exc:`KeyError`.
+        different type, it will return the default value.
         
-        Calling this method without passing defaultValue is deprecated.
-
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
@@ -368,11 +379,8 @@ class SmartDashboard:
     @classmethod
     def getBooleanArray(cls, key, defaultValue):
         """Returns the boolean array the key maps to. If the key does not exist or is of
-        different type, it will return the default value; if that is not provided,
-        it will throw a :exc:`KeyError`.
+        different type, it will return the default value.
         
-        Calling this method without passing defaultValue is deprecated.
-
         :param key: the key to look up
         :type  key: str
         :param defaultValue: returned if the key doesn't exist
@@ -410,10 +418,7 @@ class SmartDashboard:
     @classmethod
     def getNumberArray(cls, key, defaultValue):
         """Returns the number array the key maps to. If the key does not exist or is of
-        different type, it will return the default value; if that is not provided,
-        it will throw a :exc:`KeyError`.
-        
-        Calling this method without passing defaultValue is deprecated.
+        different type, it will return the default value.
 
         :param key: the key to look up
         :type  key: str
@@ -500,10 +505,7 @@ class SmartDashboard:
     @classmethod
     def getRaw(cls, key, defaultValue):
         """Returns the raw value (byte array) the key maps to. If the key does not exist or is of
-        different type, it will return the default value; if that is not provided,
-        it will throw a :exc:`KeyError`.
-        
-        Calling this method without passing defaultValue is deprecated.
+        different type, it will return the default value.
 
         :param key: the key to look up
         :type  key: str
@@ -511,9 +513,6 @@ class SmartDashboard:
         
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
-
-        :raises: :exc:`KeyError` if the key doesn't exist and defaultValue
-                 is not provided.
         """
         table = cls.getTable()
         return table.getRaw(key, defaultValue)

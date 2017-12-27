@@ -2,6 +2,7 @@
     This is the core of WPILib.
 '''
 
+from .accumulatorresult import *
 from .adxl345_i2c import *
 from .adxl345_spi import *
 from .adxl362 import *
@@ -33,12 +34,15 @@ from .gyrobase import *
 from .i2c import *
 from .interruptablesensorbase import *
 from .iterativerobot import *
+from .iterativerobotbase import *
 from .jaguar import *
 from .joystick import *
 from .lineardigitalfilter import *
 from .livewindow import *
 from .livewindowsendable import *
 from .motorsafety import *
+from .nidecbrushless import *
+from .notifier import *
 from .pidcontroller import *
 from .powerdistributionpanel import *
 from .preferences import *
@@ -48,6 +52,7 @@ from .pwmtalonsrx import *
 from .relay import *
 from .resource import *
 from .robotbase import *
+from .robotcontroller import *
 from .robotdrive import *
 from .robotstate import *
 from .safepwm import *

@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
         # NOTE: may have false positives, but it should work well enough
         if exists('/etc/natinst/share/scs_imagemetadata.ini'):
-            raise RuntimeError("The simulation HAL should not be installed onto the RoboRIO. Perhaps try the `robotpy-hal-roborio` package?")
+            raise RuntimeError("The simulation HAL should not be installed onto the roboRIO. Perhaps try the `robotpy-hal-roborio` package?")
 
     setup(
         name='robotpy-hal-sim',
@@ -66,8 +66,8 @@ if __name__ == '__main__':
             "Intended Audience :: Education",
             "License :: OSI Approved :: BSD License",
             "Operating System :: OS Independent",
-            "Programming Language :: Python :: 3.4",
             "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6",
             "Topic :: Scientific/Engineering"
         ]
         )

@@ -6,10 +6,22 @@
   In: (docstring contents, may be followed by a function declaration without a { character)<br/>
   <textarea id="inbox" rows="10" cols="100"></textarea><p>
   Out: python docstring, optionally with a function definition<br/>
+  <input type="radio" name="mtype" value="normal" onclick="xfer()" checked/> normal
+  <input type="radio" name="mtype" value="classmethod" onclick="xfer()"/> @classmethod
+  <input type="radio" name="mtype" value="staticmethod" onclick="xfer()"/> @staticmethod
   <textarea id="outbox" rows="10" cols="100"></textarea><p>
   Out: sphinx variable doc<br/>
   <textarea id="sphinxbox" rows="10" cols="100"></textarea>
   <script>
+  
+    function getOutputMethodType() {
+      var radios = document.getElementsByName('mtype');
+      for (var i = 0, length = radios.length; i < length; i++) {
+        if (radios[i].checked) {
+          return radios[i].value;
+        }
+      }
+    }
   
     var indent = '        ';
     var indentRe = new RegExp(indent, "g");
@@ -22,16 +34,22 @@
           
           line = line.trim();
           
+          if (line == "<p>")
+            line = "";
+          
           line = line.replace("/*", "").replace("*/", "");
           line = line.replace(/@param\W+(\w+?)\W+/, ':param $1: ');
           line = line.replace("@returns", ":returns:").replace("@return", ":returns:")
           
+          line = line.replace(/{@link\W+#(\w+?)\(.*?\)\W*}/g, `:meth:\`.$1\``)
+          line = line.replace(/{@link\W+(\w+)#(\w+)\(.*?\)\W*}/g, `:meth:\`.$1.$2\``)
+          line = line.replace(/{@link\W+(\w+?)\W*}/g, `:class:\`.$1\``)
+          
+          line = line.replace('<p>', '');
+          
           if (line.startsWith("*"))
             line = line.slice(1);
-            
-          if (line == "<p>")
-            line = "";
-            
+          
           line = line.trim();
           
           lines[i] = line;
@@ -150,9 +168,24 @@
             funcName = "__init__";
             retType = "None";
         }
-
-        t[0] = "def " + funcName + "(self" + args +
-              ") -> " + retType + ":\n        " + t[0];
+        
+        switch (getOutputMethodType()) {
+          case "normal":
+            t[0] = "def " + funcName + "(self" + args +
+                  ") -> " + retType + ":\n        " + t[0];
+            break;
+          case "classmethod":
+            t[0] = "@classmethod\n    def " + funcName + "(cls" + args +
+                  ") -> " + retType + ":\n        " + t[0];
+            break;
+          case "staticmethod":
+            if (args.startsWith(",")) {
+              args = args.substring(1);
+            }
+            t[0] = "@staticmethod\n    def " + funcName + "(" + args +
+                  ") -> " + retType + ":\n        " + t[0];
+            break;
+        }
       }
       return t;
     }

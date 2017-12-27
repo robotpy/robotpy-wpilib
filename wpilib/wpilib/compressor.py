@@ -1,12 +1,13 @@
-# validated: 2017-11-21 EN 423d8f6860d7 edu/wpi/first/wpilibj/Compressor.java
+# validated: 2017-12-06 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Compressor.java
 import hal
 from networktables import NetworkTables
 
 from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["Compressor"]
 
-class Compressor(SensorBase):
+class Compressor(SendableBase):
     """Class for operating a compressor connected to a PCM (Pneumatic Control Module).
     
     The PCM will automatically run in closed loop mode by default whenever a
@@ -25,15 +26,14 @@ class Compressor(SensorBase):
         
         :param module: The PCM CAN device ID. (0 - 62 inclusive)
         """
+        super().__init__()
         self.table = None
         if module is None:
             module = SensorBase.getDefaultSolenoidModule()
         self.compressorHandle = hal.initializeCompressor(module)
         hal.report(hal.UsageReporting.kResourceType_Compressor, module)
+        self.setName("Compressor", module)
         self.module = module
-        self.enabledEntry = None
-        self.enabledListener = None
-        self.pressureSwitchEntry = None
 
     def start(self):
         """Start the compressor running in closed loop control mode.
@@ -149,39 +149,13 @@ class Compressor(SensorBase):
         """
         hal.clearAllPCMStickyFaults(self.module)
 
-    def getSmartDashboardType(self):
-        return "Compressor"
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Compressor")
+        builder.addBooleanProperty("Enabled", self.enabled, self.enabledChanged)
+        builder.addBooleanProperty("Pressure switch", self.getPressureSwitchValue, None)
 
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.enabledEntry = subtable.getEntry("Enabled")
-            self.pressureSwitchEntry = subtable.getEntry("Pressure Switch")
-            self.updateTable()
-        else:
-            self.enabledEntry = None
-            self.pressureSwitchEntry = None
-
-    def updateTable(self):
-        if self.enabledEntry is not None:
-            self.enabledEntry.setBoolean(self.enabled())
-        if self.pressureSwitchEntry is not None:
-            self.pressureSwitchEntry.setBoolean(self.getPressureSwitchValue())
-
-    def startLiveWindowMode(self):
-        if self.enabledEntry is not None:
-            self.enabledListener = self.enabledEntry.addListener(
-                self.enabledChanged, 
-                NetworkTables.NotifyFlags.IMMEDIATE |
-                NetworkTables.NotifyFlags.NEW |
-                NetworkTables.NotifyFlags.UPDATE)
-
-    def enabledChanged(self, entry, key, value, param):
+    def enabledChanged(self, value):
         if value:
             self.start()
         else:
             self.stop()
-
-    def stopLiveWindowMode(self):
-        if self.enabledEntry is not None:
-            self.enabledEntry.removeListener(self.enabledListener)
-            self.enabledListener = None

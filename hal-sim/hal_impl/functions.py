@@ -218,7 +218,7 @@ def getErrorMessage(code):
 
 def getFPGAVersion(status):
     status.value = 0
-    return 2017
+    return 2018
 
 def getFPGARevision(status):
     status.value = 0
@@ -605,6 +605,13 @@ def getAnalogTriggerOutput(analogTriggerHandle, type, status):
         status.value = ANALOG_TRIGGER_PULSE_OUTPUT_ERROR
         return False
 
+#############################################################################
+# CAN.h
+#############################################################################
+
+def CAN_GetCANStatus(status):
+    status.value = 0
+    return 0.0, 0, 0, 0, 0
 
 #############################################################################
 # Compressor.h
@@ -856,7 +863,25 @@ def freeDIOPort(dioPortHandle):
 
 def allocateDigitalPWM(status):
     status.value = 0
-    return types.DigitalPWMHandle()
+    handle = 0
+    dio = None
+    for i, port in enumerate(hal_data["dio"]):
+        if i >= kNumDigitalHeaders:
+            if not hal_data["mxp"][i]["initialized"]:
+                dio = _initport('dio', i, status)
+                hal_data["mxp"][i]["initialized"] = True
+                handle = i
+                break
+        if not port['initialized']:
+            dio = _initport('dio', i, status)
+            handle = i
+            break
+
+    if dio is None:
+        status.value = NO_AVAILABLE_RESOURCES
+        return None
+
+    return types.DigitalPWMHandle(getPort(handle))
 
 def freeDigitalPWM(pwmGenerator, status):
     status.value = 0
@@ -877,6 +902,10 @@ def setDigitalPWMOutputChannel(pwmGenerator, channel, status):
 def setDIO(dioPortHandle, value, status):
     status.value = 0
     hal_data['dio'][dioPortHandle.pin]['value'] = True if value else False
+
+def setDIODirection(dioPortHandle, input, status):
+    status.value = 0
+    hal_data['dio'][dioPortHandle.pin]['is_input'] = input
 
 def getDIO(dioPortHandle, status):
     status.value = 0
@@ -1167,7 +1196,7 @@ def setEncoderIndexSource(encoderHandle, digitalSourceHandle, analogTriggerType,
 
 def getEncoderFPGAIndex(encoderHandle, status):
     status.value = 0
-    assert False
+    return encoderHandle.idx
 
 def getEncoderDecodingScaleFactor(encoderHandle, status):
     status.value = 0
@@ -1267,20 +1296,64 @@ def setInterruptUpSourceEdge(interruptHandle, risingEdge, fallingEdge, status):
 # Notifier
 #############################################################################
 
-# def initializeNotifier(processQueue, param, status):
-#     assert False # TODO
-# 
-# def cleanNotifier(notifier, status):
-#     assert False # TODO
-#     
-# def getNotifierParam(notifier, status):
-#     assert False # TODO
-# 
-# def updateNotifierAlarm(notifier, triggerTime, status):
-#     assert False # TODO
-# 
-# def stopNotifierAlarm(notifier, status):
-#     assert False # TODO
+def initializeNotifier(status):
+    status.value = 0
+    handle = types.NotifierHandle()
+    handle.lock = hooks.createCondition()
+    return handle
+
+def stopNotifier(notifierHandle, status):
+    status.value = 0
+    with notifierHandle.lock:
+        notifierHandle.active = False
+        notifierHandle.running = False
+        notifierHandle.lock.notify_all()
+
+def cleanNotifier(notifierHandle, status):
+    status.value = 0
+    with notifierHandle.lock:
+        notifierHandle.active = False
+        notifierHandle.running = False
+        notifierHandle.lock.notify_all()
+
+def updateNotifierAlarm(notifierHandle, triggerTime, status):
+    status.value = 0
+    with notifierHandle.lock:
+        notifierHandle.waitTime = triggerTime
+        notifierHandle.running = True
+        notifierHandle.updatedAlarm = True
+        notifierHandle.lock.notify_all()
+
+def cancelNotifierAlarm(notifierHandle, status):
+    status.value = 0
+    with notifierHandle.lock:
+        notifierHandle.running = False
+        notifierHandle.lock.notify_all()
+
+def waitForNotifierAlarm(notifierHandle, status):
+    status.value = 0
+    with notifierHandle.lock:
+        while notifierHandle.active:
+            if not notifierHandle.running:
+                waitTime = 1000.0
+            else:
+                waitTime = (notifierHandle.waitTime - hooks.getFPGATime()) * 1e-6
+            
+            notifierHandle.lock.wait(timeout=waitTime)
+            if notifierHandle.updatedAlarm:
+                notifierHandle.updatedAlarm = False
+                continue
+            
+            if not notifierHandle.running:
+                continue
+            if not notifierHandle.active:
+                break
+            
+            notifierHandle.running = False
+            return hooks.getFPGATime()
+    
+    return 0
+
 
 #############################################################################
 # PDP
@@ -1661,46 +1734,41 @@ def getSPIHandle(port):
 def setSPIHandle(port, handle):
     assert False
 
-def initSPIAccumulator(port, period, cmd, xferSize, validMask, validValue, dataShift, dataSize, isSigned, bigEndian, status):
+def initSPIAuto(port, bufferSize, status):
     status.value = 0
     assert False
 
-def freeSPIAccumulator(port, status):
+def freeSPIAuto(port, status):
     status.value = 0
     assert False
 
-def resetSPIAccumulator(port, status):
+def startSPIAutoRate(port, period, status):
     status.value = 0
     assert False
 
-def setSPIAccumulatorCenter(port, center, status):
+def startSPIAutoTrigger(port, digitalSourceHandle, analogTriggerType, triggerRising, triggerFalling, status):
     status.value = 0
     assert False
 
-def setSPIAccumulatorDeadband(port, deadband, status):
+def stopSPIAuto(port, status):
     status.value = 0
     assert False
 
-def getSPIAccumulatorLastValue(port, status):
+def setSPIAutoTransmitData(port, dataToSend, dataSize, zeroSize, status):
     status.value = 0
     assert False
 
-def getSPIAccumulatorValue(port, status):
+def forceSPIAutoRead(port, status):
     status.value = 0
     assert False
 
-def getSPIAccumulatorCount(port, status):
+def readSPIAutoReceivedData(port, buffer, numToRead, timeout, status):
     status.value = 0
     assert False
 
-def getSPIAccumulatorAverage(port, status):
+def getSPIAutoDroppedCount(port, status):
     status.value = 0
     assert False
-
-def getSPIAccumulatorOutput(port, status):
-    status.value = 0
-    assert False
-
 
 #############################################################################
 # SerialPort

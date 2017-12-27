@@ -1,4 +1,4 @@
-# validated: 2017-10-03 EN 34c18ef00062 edu/wpi/first/wpilibj/command/Subsystem.java
+# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/command/Subsystem.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -9,6 +9,7 @@
 import logging
 
 from .scheduler import Scheduler
+from ..livewindow import LiveWindow
 from ..sendablebase import SendableBase
 
 __all__ = ["Subsystem"]
@@ -39,9 +40,9 @@ class Subsystem(SendableBase):
         super().__init__()
         # The name
         if name is None:
-            self.name = self.__class__.__name__
-        else:
-            self.name = name
+            name = self.__class__.__name__
+        self.setName(name)
+
         Scheduler.getInstance().registerSubsystem(self)
         self.logger = logging.getLogger(__name__)
 
@@ -53,11 +54,6 @@ class Subsystem(SendableBase):
 
         # The default command
         self.defaultCommand = None
-
-        self.hasDefaultEntry = None
-        self.defaultEntry = None
-        self.hasCommandEntry = None
-        self.commandEntry = None
 
     def initDefaultCommand(self):
         """Initialize the default command for a subsystem
@@ -91,12 +87,6 @@ class Subsystem(SendableBase):
             if self not in command.getRequirements():
                 raise ValueError("A default command must require the subsystem")
             self.defaultCommand = command
-        if self.hasDefaultEntry is not None and self.defaultEntry is not None:
-            if self.defaultCommand is not None:
-                self.hasDefaultEntry.setBoolean(True)
-                self.defaultEntry.setString(self.defaultCommand.getName())
-            else:
-                self.hasDefaultEntry.setBoolean(False)
 
     def getDefaultCommand(self):
         """Returns the default command (or None if there is none).
@@ -107,6 +97,17 @@ class Subsystem(SendableBase):
             self.initializedDefaultCommand = True
             self.initDefaultCommand()
         return self.defaultCommand
+
+    def getDefaultCommandName(self):
+        """
+        Returns the default command name, or empty string is there is none.
+
+        :returns: the default command name
+        """
+        defaultCommand = self.getDefaultCommand()
+        if defaultCommand is not None:
+            return defaultCommand.getName()
+        return ""
 
     def setCurrentCommand(self, command):
         """Sets the current command
@@ -123,12 +124,6 @@ class Subsystem(SendableBase):
         given a new one.  This will avoid that situation.
         """
         if self.currentCommandChanged:
-            if self.hasCommandEntry is not None and self.commandEntry is not None:
-                if self.currentCommand is not None:
-                    self.hasCommandEntry.setBoolean(True)
-                    self.commandEntry.setString(self.currentCommand.getName())
-                else:
-                    self.hasCommandEntry.setBoolean(False)
             self.currentCommandChanged = False
 
     def getCurrentCommand(self):
@@ -138,36 +133,37 @@ class Subsystem(SendableBase):
         """
         return self.currentCommand
 
-    def __str__(self):
-        return self.getName()
-
-    def getName(self):
-        """Returns the name of this subsystem, which is by default the class
-        name.
-        
-        :returns: the name of this subsystem
+    def getCurrentCommandName(self):
         """
-        return self.name
+        Returns the current command name, or empty string if no current command.
 
-    def getSmartDashboardType(self):
-        return "Subsystem"
+        :returns: the current command name
+        """
+        currentCommand = self.getCurrentCommand()
+        if currentCommand is not None:
+            return currentCommand.getName()
+        return ""
 
-    def initTable(self, table):
-        super().initTable(table)
-        if table is not None:
-            self.hasDefaultEntry = table.getEntry("hasDefault")
-            self.defaultEntry = table.getEntry("default")
-            self.hasCommandEntry = table.getEntry("hasCommand")
-            self.commandEntry = table.getEntry("command")
+    def addChild(self, child, name=None):
+        """
+        Associate a :class:`.Sendable` with this Subsystem.
+        Update the child's name if provided
 
-            if self.defaultCommand is not None:
-                self.hasDefaultEntry.setBoolean(True)
-                self.defaultEntry.setString(self.defaultCommand.getName())
-            else:
-                self.hasDefaultEntry.setBoolean(False)
+        :param child: sendable
+        :param name: name to give child
+        """
+        if name is not None:
+            child.setName(self.getSubsystem(), name)
+        else:
+            child.setSubsystem(self.getSubsystem())
+        LiveWindow.add(child)
 
-            if self.currentCommand is not None:
-                self.hasCommandEntry.setBoolean(True)
-                self.commandEntry.setString(self.currentCommand.getName())
-            else:
-                self.hasCommandEntry.setBoolean(False)
+    def __str__(self):
+        return self.getSubsystem()
+
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Subsystem")
+        builder.addBooleanProperty("hasDefault", lambda: self.defaultCommand is not None, None)
+        builder.addStringProperty("default", self.getDefaultCommandName, None)
+        builder.addBooleanProperty("hasCommand", lambda: self.defaultCommand is not None, None)
+        builder.addStringProperty("command", self.getCurrentCommandName, None)

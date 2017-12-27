@@ -5,7 +5,7 @@ def util(wpilib):
     return wpilib.Utility
 
 def test_utility_getFPGAVersion(util):
-    assert util.getFPGAVersion() == 2017
+    assert util.getFPGAVersion() == 2018
 
 def test_utility_getFPGARevision(util):
     assert util.getFPGARevision() == 0

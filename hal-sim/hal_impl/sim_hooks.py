@@ -31,6 +31,9 @@ class SimHooks:
     def delaySeconds(self, s):
         time.sleep(s)
     
+    def createCondition(self, lock=None):
+        return threading.Condition(lock=lock)
+    
     #
     # DriverStation related hooks
     #

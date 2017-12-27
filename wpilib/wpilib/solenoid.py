@@ -1,4 +1,4 @@
-# validated: 2017-10-02 EN 34c18ef00062 edu/wpi/first/wpilibj/Solenoid.java
+# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Solenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -68,7 +68,6 @@ class Solenoid(SolenoidBase):
 
         super().__init__(moduleNumber)
         self.channel = channel
-        self.valueEntry = None
 
         SensorBase.checkSolenoidModule(moduleNumber)
         SensorBase.checkSolenoidChannel(channel)
@@ -76,10 +75,9 @@ class Solenoid(SolenoidBase):
         portHandle = hal.getPortWithModule(moduleNumber, channel)
         self._solenoidHandle = hal.initializeSolenoidPort(portHandle)
 
-        LiveWindow.addActuatorModuleChannel("Solenoid", moduleNumber, channel,
-                                            self)
         hal.report(hal.UsageReporting.kResourceType_Solenoid, channel,
                    moduleNumber)
+        self.setName("Solenoid", self.moduleNumber, self.channel)
         
         self.__finalizer = weakref.finalize(self, _freeSolenoid, self._solenoidHandle)
         
@@ -93,16 +91,12 @@ class Solenoid(SolenoidBase):
         return self._solenoidHandle
 
     def free(self):
-        """
-        Mark the solenoid as freed.
-        """
-        if self.valueEntry is not None:
-            self.valueEntry.removeListener(self.valueListener)
-        
+        """Mark the solenoid as freed."""
+        super().free()
+
         self.__finalizer()
         self._solenoidHandle = None
         
-        super().free()
 
     def set(self, on):
         """Set the value of a solenoid.
@@ -124,36 +118,36 @@ class Solenoid(SolenoidBase):
         """
         Check if the solenoid is blacklisted.
             If a solenoid is shorted, it is added to the blacklist and disabled until power cycle, or until faults are
-            cleared. See :meth:`clearAllPCMStickyFaults`
+            cleared. See :meth:`.SolenoidBase.clearAllPCMStickyFaults`
 
         :returns: If solenoid is disabled due to short.
         """
         value = self.getPCMSolenoidBlackList() & (1 << self.channel)
         return value != 0
 
-    # Live Window code, only does anything if live window is activated.
+    def setPulseDuration(self, durationSeconds):
+        """
+        Set the pulse duration in the PCM. This is used in conjunction with
+        the startPulse method to allow the PCM to control the timing of a pulse.
+        The timing can be controlled in 0.01 second increments.
 
-    def getSmartDashboardType(self):
-        return "Solenoid"
+        see :meth:`startPulse`
 
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
+        :param durationSeconds: The duration of the pulse, from 0.01 to 2.55 seconds.
+        """
+        duration_ms = int(durationSeconds * 1000)
+        hal.setOneShotDuration(self.solenoidHandle, duration_ms)
 
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setBoolean("Value", self.get())
+    def startPulse(self):
+        """
+        Trigger the PCM to generate a pulse of the duration set in
+        setPulseDuration.
 
-    def valueChanged(self, entry, key, value, param):
-        self.set(True if value else False)
+        see :meth:`setPulseDuration`
+        """
+        hal.fireOneShot(self.solenoidHandle)
 
-    def startLiveWindowMode(self):
-        self.set(False) # Stop for safety
-        super().startLiveWindowMode()
-
-    def stopLiveWindowMode(self):
-        super().stopLiveWindowMode()
-        self.set(False) # Stop for safety
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Solenoid")
+        builder.setSafeState(lambda: self.set(False))
+        builder.addBooleanProperty("Value", self.get, self.set)

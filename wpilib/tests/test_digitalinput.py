@@ -12,16 +12,6 @@ def di_data(hal_data):
     return hal_data['dio'][2]
 
 
-@pytest.fixture(scope='function')
-def di_data(hal_data):
-    return hal_data['dio'][2]
-
-
-@pytest.fixture(scope='function')
-def di_table(networktables):
-    return networktables.NetworkTables.getTable("/LiveWindow/DigitalInput/2")
-
-
 def test_digitalinput_init(wpilib, di_data):
     di = wpilib.DigitalInput(2)
     assert di_data['initialized']
@@ -54,14 +44,10 @@ def test_digitalinput_isAnalogTrigger(digitalinput):
     assert not digitalinput.isAnalogTrigger()
 
 
-def test_digitalinput_initTable_null(digitalinput):
-    digitalinput.initTable(None)
-    assert digitalinput.valueEntry is None
-
-
-def test_digitalinput_initTable(digitalinput, di_table, di_data):
+def test_digitalinput_initSendable(digitalinput, sendablebuilder, di_data):
     di_data['value'] = True
 
-    digitalinput.initTable(di_table)
+    digitalinput.initSendable(sendablebuilder)
+    sendablebuilder.updateTable()
 
-    assert di_table.getBoolean('Value', False) == True
+    assert sendablebuilder.getTable().getBoolean("Value", False) == True

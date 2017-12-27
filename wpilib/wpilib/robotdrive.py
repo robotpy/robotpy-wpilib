@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW 2fc60680f436 edu/wpi/first/wpilibj/RobotDrive.java
+# validated: 2017-12-25 TW 52eba45c5126 edu/wpi/first/wpilibj/RobotDrive.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -455,7 +455,7 @@ class RobotDrive(MotorSafety):
         yIn = y
         # Negate y for the joystick.
         yIn = -yIn
-        # Compenstate for gyro angle.
+        # Compensate for gyro angle.
         xIn, yIn = RobotDrive.rotateVector(xIn, yIn, gyroAngle)
 
         wheelSpeeds = [0] * self.kMaxNumberOfMotors

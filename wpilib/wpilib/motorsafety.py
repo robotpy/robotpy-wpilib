@@ -1,21 +1,22 @@
-# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/MotorSafety.java edu/wpi/first/wpilibj/MotorSafetyHelper.java
-#----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2016. All Rights Reserved.
+# validated: 2017-12-25 TW d36d72bd4fe9 edu/wpi/first/wpilibj/MotorSafety.java edu/wpi/first/wpilibj/MotorSafetyHelper.java
+# ----------------------------------------------------------------------------
+# Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
-import weakref
+import logging
 import threading
+import weakref
 
 from .robotstate import RobotState
 from .timer import Timer
 
-import logging
 logger = logging.getLogger(__name__)
 
 __all__ = ["MotorSafety"]
+
 
 class MotorSafety:
     """Provides mechanisms to safely shutdown motors if they aren't updated
@@ -32,7 +33,7 @@ class MotorSafety:
     DEFAULT_SAFETY_EXPIRATION = 0.1
     helpers = weakref.WeakSet()
     helpers_lock = threading.Lock()
-    
+
     @staticmethod
     def _reset():
         with MotorSafety.helpers_lock:
@@ -49,6 +50,7 @@ class MotorSafety:
         self.safetyEnabled = False
         self.safetyExpiration = MotorSafety.DEFAULT_SAFETY_EXPIRATION
         self.safetyStopTime = Timer.getFPGATimestamp()
+        self.mutex = threading.Lock()
         with MotorSafety.helpers_lock:
             MotorSafety.helpers.add(self)
 
@@ -56,7 +58,8 @@ class MotorSafety:
         """Feed the motor safety object.
         Resets the timer on this object that is used to do the timeouts.
         """
-        self.safetyStopTime = Timer.getFPGATimestamp() + self.safetyExpiration
+        with self.mutex:
+            self.safetyStopTime = Timer.getFPGATimestamp() + self.safetyExpiration
 
     def setExpiration(self, expirationTime):
         """Set the expiration time for the corresponding motor safety object.
@@ -64,7 +67,8 @@ class MotorSafety:
         :param expirationTime: The timeout value in seconds.
         :type expirationTime: float
         """
-        self.safetyExpiration = expirationTime
+        with self.mutex:
+            self.safetyExpiration = expirationTime
 
     def getExpiration(self):
         """Retrieve the timeout value for the corresponding motor safety
@@ -73,7 +77,8 @@ class MotorSafety:
         :returns: the timeout value in seconds.
         :rtype: float
         """
-        return self.safetyExpiration
+        with self.mutex:
+            return self.safetyExpiration
 
     def isAlive(self):
         """Determine of the motor is still operating or has timed out.
@@ -82,7 +87,8 @@ class MotorSafety:
             timed out.
         :rtype: float
         """
-        return not self.safetyEnabled or self.safetyStopTime > Timer.getFPGATimestamp()
+        with self.mutex:
+            return not self.safetyEnabled or self.safetyStopTime > Timer.getFPGATimestamp()
 
     def check(self):
         """Check if this motor has exceeded its timeout.
@@ -90,11 +96,15 @@ class MotorSafety:
         exceeded its timeout value. If it has, the stop method is called,
         and the motor is shut down until its value is updated again.
         """
-        if not self.safetyEnabled or RobotState.isDisabled() or RobotState.isTest():
+        with self.mutex:
+            enabled = self.safetyEnabled
+            stopTime = self.safetyStopTime
+
+        if not enabled or RobotState.isDisabled() or RobotState.isTest():
             return
-        if self.safetyStopTime < Timer.getFPGATimestamp():
+        if stopTime < Timer.getFPGATimestamp():
             logger.warning("%s... Output not updated often enough." %
-                        self.getDescription())
+                           self.getDescription())
 
             self.stopMotor()
 
@@ -105,7 +115,8 @@ class MotorSafety:
         :param enabled: True if motor safety is enforced for this object
         :type  enabled: bool
         """
-        self.safetyEnabled = bool(enabled)
+        with self.mutex:
+            self.safetyEnabled = bool(enabled)
 
     def isSafetyEnabled(self):
         """Return the state of the motor safety enabled flag.
@@ -114,7 +125,8 @@ class MotorSafety:
         :returns: True if motor safety is enforced for this device
         :rtype: bool
         """
-        return self.safetyEnabled
+        with self.mutex:
+            return self.safetyEnabled
 
     @staticmethod
     def checkMotors():

@@ -81,95 +81,44 @@ def test_compressor_clearallpcmstickyfaults(compressor, compressor_data):
     compressor.clearAllPCMStickyFaults()
 
 
-def test_compressor_sd(compressor):
-    
-    assert compressor.getSmartDashboardType() == 'Compressor'
-    
-    compressor.getTable = MagicMock()
-    compressor.updateTable()
-
-
-def test_compressor_inittable_nulltable(compressor, compressor_data):
+def test_compressor_initSendable_update(compressor, sendablebuilder, compressor_data):
     compressor_data['pressure_switch'] = True
     compressor_data['on'] = True
-    compressor.initTable(None)
+    compressor.initSendable(sendablebuilder)
 
-    assert compressor.enabledEntry is None
+    sendablebuilder.updateTable()
+
+    assert sendablebuilder.getTable().getString(".type", "") == 'Compressor'
+    assert sendablebuilder.getTable().getBoolean("Enabled", False) == True 
+    assert compressor.getPressureSwitchValue() == True
+    assert sendablebuilder.getTable().getBoolean("Pressure switch", False) == True 
 
 
-def test_compressor_inittable(compressor, compressor_table, compressor_data):
+def test_compressor_initSendable_setter(compressor, sendablebuilder, compressor_data):
     compressor_data['pressure_switch'] = True
-    compressor_data['on'] = True
-    compressor.initTable(compressor_table)
+    compressor.initSendable(sendablebuilder)
 
-    assert compressor_table.getBoolean("Enabled", False) == True 
-    assert compressor_table.getBoolean("Pressure Switch", False) == True 
+    sendablebuilder.updateTable()
 
+    [enabled_prop, pressure_prop] = sendablebuilder.properties
+    assert enabled_prop.key == "Enabled"
+    assert pressure_prop.key == "Pressure switch"
+    assert pressure_prop.setter is None
 
-def test_compressor_updateTable_nullentry(compressor, compressor_data):
-    compressor.getPressureSwitchValue = MagicMock()
-    compressor.enabled = MagicMock()
-    compressor.updateTable()
-
-    compressor.getPressureSwitchValue.assert_not_called()
-    compressor.enabled.assert_not_called()
-
-
-def test_startlivewindowmode(compressor, compressor_data):
-    compressor.enabledEntry = MagicMock()
-
-    assert compressor.enabledListener is None
-    compressor.startLiveWindowMode()
-
-    compressor.enabledEntry.addListener.assert_called_with(compressor.enabledChanged, 
-                NetworkTables.NotifyFlags.IMMEDIATE |
-                NetworkTables.NotifyFlags.NEW |
-                NetworkTables.NotifyFlags.UPDATE)
-    assert compressor.enabledListener is not None
-
-
-def test_startlivewindowmode_null_entry(compressor):
-    compressor.enabledEntry = None
-
-    assert compressor.enabledListener is None
-    compressor.startLiveWindowMode()
-
-    assert compressor.enabledListener is None
+    assert compressor.getClosedLoopControl() == False
+    enabled_prop.setter(True)
+    assert compressor.getClosedLoopControl() == True
 
 
 def test_enabledchanged_true(compressor):
     compressor.start = MagicMock()
 
-    compressor.enabledChanged(None, None, True, None)
+    compressor.enabledChanged(True)
     assert compressor.start.called
 
 
 def test_enabledchanged_false(compressor):
     compressor.stop = MagicMock()
 
-    compressor.enabledChanged(None, None, False, None)
+    compressor.enabledChanged(False)
     assert compressor.stop.called
-
-
-def test_stoplivewindowmode(compressor):
-    compressor.enabledEntry = MagicMock()
-
-    compressor.startLiveWindowMode()
-
-    assert compressor.enabledListener is not None
-
-    compressor.stopLiveWindowMode()
-
-    assert compressor.enabledListener is None
-
-
-def test_stoplivewindowmode_null_entry(compressor):
-    compressor.enabledEntry = None
-
-    compressor.startLiveWindowMode()
-
-    assert compressor.enabledListener is None
-
-    compressor.stopLiveWindowMode()
-
-    assert compressor.enabledListener is None

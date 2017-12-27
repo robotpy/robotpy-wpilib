@@ -245,47 +245,30 @@ def test_encoder_pidget_displacement(wpilib, encoder_data):
     assert encoder.pidGet() == pytest.approx(3.0, 0.01)
 
 
-def test_encoder_getSmartDashboardType1(wpilib):
+def test_encoder_initSendable_setSmartDashboardType1(wpilib, sendablebuilder):
     encoder = wpilib.Encoder(1, 2, False, wpilib.Encoder.EncodingType.k2X)
+    encoder.initSendable(sendablebuilder)
 
-    assert encoder.getSmartDashboardType() == "Encoder"
+    assert sendablebuilder.getTable().getString(".type", "") == "Encoder"
 
 
-def test_encoder_getSmartDashboardType2(wpilib):
+def test_encoder_initSendable_setSmartDashboardType2(wpilib, sendablebuilder):
     encoder = wpilib.Encoder(1, 2, False, wpilib.Encoder.EncodingType.k4X)
+    encoder.initSendable(sendablebuilder)
 
-    assert encoder.getSmartDashboardType() == "Quadrature Encoder"
-
-
-def test_encoder_initTable_null(wpilib):
-    encoder = wpilib.Encoder(1, 2)
-
-    encoder.initTable(None)
+    assert sendablebuilder.getTable().getString(".type", "") == "Quadrature Encoder"
 
 
-def test_encoder_initTable(wpilib, encoder_data, encoder_table):
+def test_encoder_initSendable_update(wpilib, encoder_data, sendablebuilder):
     encoder = wpilib.Encoder(1, 2)
 
     encoder_data['rate'] = 3.3
     encoder_data['count'] = 2.0
     encoder.setDistancePerPulse(2.1)
 
-    encoder.initTable(encoder_table)
+    encoder.initSendable(sendablebuilder)
+    sendablebuilder.updateTable()
 
-    assert encoder_table.getNumber("Speed", 0.0) == pytest.approx(3.3, 0.01)
-    assert encoder_table.getNumber("Distance", 0.0) == pytest.approx(4.2, 0.01)
-    assert encoder_table.getNumber("Distance per Tick", 0.0) == pytest.approx(2.1, 0.01)
-
-
-def test_encoder_livewindowmode_null(wpilib):
-    encoder = wpilib.Encoder(1, 2)
-    encoder.initTable(None)
-    encoder.startLiveWindowMode()
-    encoder.stopLiveWindowMode()
-
-
-def test_encoder_livewindowmode(wpilib, encoder_table):
-    encoder = wpilib.Encoder(1, 2)
-    encoder.initTable(encoder_table)
-    encoder.startLiveWindowMode()
-    encoder.stopLiveWindowMode()
+    assert sendablebuilder.getTable().getNumber("Speed", 0.0) == pytest.approx(3.3, 0.01)
+    assert sendablebuilder.getTable().getNumber("Distance", 0.0) == pytest.approx(4.2, 0.01)
+    assert sendablebuilder.getTable().getNumber("Distance per Tick", 0.0) == pytest.approx(2.1, 0.01)
