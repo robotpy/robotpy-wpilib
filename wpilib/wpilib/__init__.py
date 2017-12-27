@@ -34,6 +34,7 @@ from .gyrobase import *
 from .i2c import *
 from .interruptablesensorbase import *
 from .iterativerobot import *
+from .iterativerobotbase import *
 from .jaguar import *
 from .joystick import *
 from .lineardigitalfilter import *
