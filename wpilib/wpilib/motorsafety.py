@@ -50,6 +50,7 @@ class MotorSafety:
         self.safetyEnabled = False
         self.safetyExpiration = MotorSafety.DEFAULT_SAFETY_EXPIRATION
         self.safetyStopTime = Timer.getFPGATimestamp()
+        self.mutex = threading.Lock()
         with MotorSafety.helpers_lock:
             MotorSafety.helpers.add(self)
 
@@ -57,7 +58,7 @@ class MotorSafety:
         """Feed the motor safety object.
         Resets the timer on this object that is used to do the timeouts.
         """
-        with MotorSafety.helpers_lock:
+        with self.mutex:
             self.safetyStopTime = Timer.getFPGATimestamp() + self.safetyExpiration
 
     def setExpiration(self, expirationTime):
@@ -66,7 +67,7 @@ class MotorSafety:
         :param expirationTime: The timeout value in seconds.
         :type expirationTime: float
         """
-        with MotorSafety.helpers_lock:
+        with self.mutex:
             self.safetyExpiration = expirationTime
 
     def getExpiration(self):
@@ -76,7 +77,7 @@ class MotorSafety:
         :returns: the timeout value in seconds.
         :rtype: float
         """
-        with MotorSafety.helpers_lock:
+        with self.mutex:
             return self.safetyExpiration
 
     def isAlive(self):
@@ -86,7 +87,7 @@ class MotorSafety:
             timed out.
         :rtype: float
         """
-        with MotorSafety.helpers_lock:
+        with self.mutex:
             return not self.safetyEnabled or self.safetyStopTime > Timer.getFPGATimestamp()
 
     def check(self):
@@ -95,7 +96,7 @@ class MotorSafety:
         exceeded its timeout value. If it has, the stop method is called,
         and the motor is shut down until its value is updated again.
         """
-        with MotorSafety.helpers_lock:
+        with self.mutex:
             enabled = self.safetyEnabled
             stopTime = self.safetyStopTime
 
@@ -114,7 +115,7 @@ class MotorSafety:
         :param enabled: True if motor safety is enforced for this object
         :type  enabled: bool
         """
-        with MotorSafety.helpers_lock:
+        with self.mutex:
             self.safetyEnabled = bool(enabled)
 
     def isSafetyEnabled(self):
@@ -124,7 +125,7 @@ class MotorSafety:
         :returns: True if motor safety is enforced for this device
         :rtype: bool
         """
-        with MotorSafety.helpers_lock:
+        with self.mutex:
             return self.safetyEnabled
 
     @staticmethod
