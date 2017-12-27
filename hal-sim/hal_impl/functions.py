@@ -218,7 +218,7 @@ def getErrorMessage(code):
 
 def getFPGAVersion(status):
     status.value = 0
-    return 2017
+    return 2018
 
 def getFPGARevision(status):
     status.value = 0

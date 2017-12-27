@@ -9,7 +9,7 @@ def rc(wpilib):
     return wpilib.RobotController
 
 def test_rc_getFPGAVersion(rc):
-    assert rc.getFPGAVersion() == 2017
+    assert rc.getFPGAVersion() == 2018
 
 def test_rc_getFPGARevision(rc):
     assert rc.getFPGARevision() == 0
@@ -79,4 +79,4 @@ def test_getEnabled6V(wpilib, data):
 def test_getFaultCount6V(wpilib, data):
     data['user_faults_6v'] = 3
     assert wpilib.RobotController.getFaultCount6V() == 3
-    
+

@@ -1,4 +1,4 @@
-# validated: 2017-10-02 EN e1195e8b9dab edu/wpi/first/wpilibj/Utility.java
+# validated: 2017-12-27 TW 8b7aa61091df edu/wpi/first/wpilibj/Utility.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -11,11 +11,18 @@ import hal
 __all__ = ["Utility"]
 
 class Utility:
-    """Contains global utility functions"""
+    """Contains global utility functions
+
+    .. deprecated:: 2018.0.0
+        Use :class:`.RobotController` instead
+    """
 
     @staticmethod
     def getFPGAVersion():
         """Return the FPGA Version number.
+
+        .. deprecated:: 2018.0.0
+            Use :meth:`.RobotController.getFPGAVersion` instead
 
         :returns: FPGA Version number.
         :rtype: int
@@ -29,6 +36,9 @@ class Utility:
         next 8 bits are the Minor Revision. The 12 least significant bits
         are the Build Number.
 
+        .. deprecated:: 2018.0.0
+            Use :meth:`.RobotController.getFPGARevision` instead
+
         :returns: FPGA Revision number.
         :rtype: int
         """
@@ -38,6 +48,9 @@ class Utility:
     def getFPGATime():
         """Read the microsecond timer from the FPGA.
 
+        .. deprecated:: 2018.0.0
+            Use :meth:`.RobotController.getFPGATime` instead
+
         :returns: The current time in microseconds according to the FPGA.
         :rtype: int
         """
@@ -46,6 +59,9 @@ class Utility:
     @staticmethod
     def getUserButton():
         """Get the state of the "USER" button on the roboRIO.
+
+        .. deprecated:: 2018.0.0
+            Use :meth:`.RobotController.getUserButton` instead
 
         :returns: True if the button is currently pressed down
         :rtype: bool
