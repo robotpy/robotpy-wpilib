@@ -3,7 +3,6 @@
 import argparse
 import inspect
 import sys
-
 from pkg_resources import iter_entry_points
 
 from .logconfig import configure_logging
@@ -80,7 +79,7 @@ def run(robot_class, **kwargs):
         :param **kwargs: Keyword arguments that will be passed to the executed entry points
         :returns: This function should never return
     '''
-    
+
     sys.excepthook = ds_except_hook
     # sanity check
     if not hasattr(robot_class, 'main'):
