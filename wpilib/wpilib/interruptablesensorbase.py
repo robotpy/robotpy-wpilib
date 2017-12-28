@@ -77,7 +77,8 @@ class InterruptableSensorBase(SensorBase):
             where the user program will have to explicitly wait for the interrupt
             to occur.
         """
-
+        if self.interrupt is not None:
+            raise ValueError("The interrupt has already been allocated")
         self.isSynchronousInterrupt = watcher
         self._interrupt = hal.initializeInterrupts(watcher)
         self._interrupt_finalizer = weakref.finalize(self, hal.cleanInterrupts, self._interrupt)
