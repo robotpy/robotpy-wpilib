@@ -5,7 +5,6 @@ import inspect
 import sys
 
 from os.path import exists
-
 from pkg_resources import iter_entry_points
 
 from .logconfig import configure_logging

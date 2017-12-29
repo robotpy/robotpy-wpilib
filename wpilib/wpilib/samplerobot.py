@@ -1,19 +1,21 @@
-# validated: 2016-12-22 JW e44a6e227a89 edu/wpi/first/wpilibj/SampleRobot.java
-#----------------------------------------------------------------------------
+# validated: 2017-12-22 TW 3c3a448d4726 edu/wpi/first/wpilibj/SampleRobot.java
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+
+import logging
+import warnings
 
 import hal
-import logging
-
+from .livewindow import LiveWindow
 from .robotbase import RobotBase
 from .timer import Timer
-from .livewindow import LiveWindow
 
 __all__ = ["SampleRobot"]
+
 
 class SampleRobot(RobotBase):
     """A simple robot base class that knows the standard FRC competition
@@ -28,16 +30,25 @@ class SampleRobot(RobotBase):
     Alternatively you can override the :meth:`robotMain` method and manage all
     aspects of the robot yourself (not recommended).
     
-    .. warning:: While it may look like a good choice to use for your code
-                 if you're inexperienced, don't. Unless you know what you
-                 are doing, complex code will be much more difficult under
-                 this system. Use :class:`.IterativeRobot` or command based
-                 instead if you're new.
+    .. deprecated:: 2018.0.0
+        While it may look like a good choice to use for your code
+        if you're inexperienced, don't. Unless you know what you
+        are doing, complex code will be much more difficult under
+        this system. Use :class:`.TimedRobot` or command based
+        instead if you're new.
     """
-    
+
     #: A python logging object that you can use to send messages to the log. It
     #: is recommended to use this instead of print statements.
     logger = logging.getLogger("robot")
+
+    def __init__(self):
+        warnings.warn(
+            "While it may look like a good choice to use for your code if you're inexperienced, don't. " +
+            "Unless you know what you are doing, complex code will be much more difficult under this system. " +
+            "Use TimedRobot or Command-Based instead",
+            DeprecationWarning)
+        super().__init__()
 
     def robotInit(self):
         """Robot-wide initialization code should go here.
@@ -126,16 +137,13 @@ class SampleRobot(RobotBase):
                    hal.UsageReporting.kFramework_Sample)
 
         self.robotInit()
-        
+
         # Tell the DS that the robot is ready to be enabled
         hal.observeUserProgramStarting()
 
         self.robotMain()
-            
-        if hasattr(self, '_no_robot_main'):
-            # first and one-time initialization
-            LiveWindow.setEnabled(False)
 
+        if hasattr(self, '_no_robot_main'):
             while True:
                 if self.isDisabled():
                     self.ds.InDisabled(True)
