@@ -72,6 +72,7 @@ from .spark import *
 from .speedcontrollergroup import *
 from .spi import *
 from .talon import *
+from .timedrobot import *
 from .timer import *
 from .ultrasonic import *
 from .utility import *
