@@ -56,11 +56,6 @@ def test_doublesolenoid_blacklisted(doublesolenoid):
     assert doublesolenoid.isFwdSolenoidBlackListed() == False
     assert doublesolenoid.isRevSolenoidBlackListed() == False
 
-
-def test_doublesolenoid_initTable_null(doublesolenoid):
-    doublesolenoid.initTable(None)
-
-
 @pytest.mark.parametrize("value_name, expected_output", [
     ('kReverse', 'Reverse'),
     ('kForward', 'Forward'),

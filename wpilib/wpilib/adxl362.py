@@ -1,4 +1,4 @@
-# validated: 2017-09-20 AA 34c18ef00062 edu/wpi/first/wpilibj/ADXL362.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/ADXL362.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -12,11 +12,11 @@ from .driverstation import DriverStation
 from .interfaces import Accelerometer
 from .spi import SPI
 from .sensorbase import SensorBase
-from .livewindow import LiveWindow
+from .sendable import Sendable
 
 __all__ = ["ADXL362"]
 
-class ADXL362(SensorBase):
+class ADXL362(SensorBase, Sendable):
     """
         ADXL362 SPI Accelerometer.
     
@@ -85,12 +85,12 @@ class ADXL362(SensorBase):
         hal.report(hal.UsageReporting.kResourceType_ADXL362,
                       port)
 
-        LiveWindow.addSensor("ADXL362", port, self)
+        self.setName("ADXL362", port)
 
     def free(self):
-        LiveWindow.removeComponent(self)
         if self.spi:
             self.spi.free()
+            self.spi = None
         super().free()
 
     # Accelerometer interface
@@ -102,6 +102,9 @@ class ADXL362(SensorBase):
                       the accelerometer will measure.
         :type  range: :class:`ADXL362.Range`
         """
+        if not self.spi:
+            return
+
         if range == self.Range.k2G:
             value = self.kFilterCtl_Range2G
             self.gsPerLSB = 0.001
@@ -179,27 +182,16 @@ class ADXL362(SensorBase):
                 rawData[1] * self.gsPerLSB,
                 rawData[2] * self.gsPerLSB)
 
-    # Live Window code, only does anything if live window is activated.
+    def _updateValues(self):
+        data = self.getAccelerations()
+        self._entryX.setDouble(data[0])
+        self._entryY.setDouble(data[1])
+        self._entryZ.setDouble(data[2])
 
-    def getSmartDashboardType(self):
-        return "3AxisAccelerometer"
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("3AxisAccelerometer")
+        self._entryX = builder.getEntry("X")
+        self._entryY = builder.getEntry("Y")
+        self._entryZ = builder.getEntry("Z")
 
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.xEntry = subtable.getEntry("X")
-            self.yEntry = subtable.getEntry("Y")
-            self.zEntry = subtable.getEntry("Z")
-            self.updateTable()
-        else:
-            self.xEntry = None
-            self.yEntry = None
-            self.zEntry = None
-
-    def updateTable(self):
-        if self.xEntry is not None:
-            self.xEntry.setDouble(self.getX())
-        if self.yEntry is not None:
-            self.yEntry.setDouble(self.getY())
-        if self.zEntry is not None:
-            self.zEntry.setDouble(self.getZ())
-
+        builder.setUpdateTable(self._updateValues)

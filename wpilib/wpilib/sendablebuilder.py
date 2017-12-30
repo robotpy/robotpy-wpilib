@@ -146,7 +146,6 @@ class SendableBuilder:
         :param getter:  getter function (returns current value)
         :type getter: () -> bool
         :param setter:  setter function (sets new value)
-        :type setter: (bool) -> Any
         """
         updater = None if getter is None else lambda entry: entry.setBoolean(getter())
         self._addProperty(key, updater, setter)

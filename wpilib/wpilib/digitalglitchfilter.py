@@ -1,6 +1,6 @@
-# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/DigitalGlitchFilter.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/DigitalGlitchFilter.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2015-2017. All Rights Reserved.
+# Copyright (c) 2015-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.
 #----------------------------------------------------------------------------
@@ -12,6 +12,7 @@ from .digitalsource import DigitalSource
 from .encoder import Encoder
 from .counter import Counter
 from .sensorbase import SensorBase
+from .sendable import Sendable
 
 __all__ = ['DigitalGlitchFilter']
 
@@ -27,6 +28,7 @@ class DigitalGlitchFilter(SensorBase):
     filterAllocated = [False]*3
 
     def __init__(self):
+        super().__init__()
         self.channelIndex = -1
         with self.mutex:
             for i, v in enumerate(self.filterAllocated):
@@ -35,11 +37,13 @@ class DigitalGlitchFilter(SensorBase):
                     self.filterAllocated[i] = True
                     hal.report(hal.UsageReporting.kResourceType_DigitalFilter,
                                self.channelIndex, 0)
+                    self.setName("DigitalGlitchFilter", i)
                     break
             else:
                 raise ValueError("No more filters available")
 
     def free(self):
+        super().free()
         if self.channelIndex >= 0:
             with self.mutex:
                 self.filterAllocated[self.channelIndex] = False
@@ -129,3 +133,6 @@ class DigitalGlitchFilter(SensorBase):
         '''
         fpga_cycles = self.getPeriodCycles()
         return fpga_cycles * 1000 / (self.kSystemClockTicksPerMicrosecond / 4)
+
+    def initSendable(self, builder):
+        pass

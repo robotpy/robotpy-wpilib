@@ -1,6 +1,6 @@
-# validated: 2017-09-22 TW e1195e8b9dab edu/wpi/first/wpilibj/AnalogTrigger.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogTrigger.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -12,13 +12,15 @@ import weakref
 from .analoginput import AnalogInput
 from .analogtriggeroutput import AnalogTriggerOutput
 from .resource import Resource
+from .sendable import Sendable
+from .sensorbase import SensorBase
 
 __all__ = ["AnalogTrigger"]
 
 def _freeAnalogTrigger(port):
     hal.cleanAnalogTrigger(port)
 
-class AnalogTrigger:
+class AnalogTrigger(SensorBase, Sendable):
     """
         Converts an analog signal into a digital signal
         
@@ -43,21 +45,26 @@ class AnalogTrigger:
             trigger.  Treated as an AnalogInput if the provided object has a
             getChannel function.
         """
-        if hasattr(channel, "getChannel"):
-            self.analogInput = channel
-        else:
+        super().__init__()
+        if not hasattr(channel, "getChannel"):
             self.analogInput = AnalogInput(channel)
+            self.ownsAnalog = True
+            self.addChild(self.analogInput)
+        else:
+            self.analogInput = channel
 
         port = hal.getPort(channel)
         self._port, self.index = hal.initializeAnalogTrigger(port)
         self.__finalizer = \
                 weakref.finalize(self, _freeAnalogTrigger, self._port)
-                
+
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
         hal.report(hal.UsageReporting.kResourceType_AnalogTrigger,
                       channel)
+
+        self.setName("AnalogTrigger", self.analogInput.getChannel())
 
     @property
     def port(self):
@@ -67,10 +74,11 @@ class AnalogTrigger:
 
     def free(self):
         """Release the resources used by this object"""
+        super().free()
         self.__finalizer()
         if self.analogInput:
             self.analogInput.free()
-            
+
 
     def setLimitsRaw(self, lower, upper):
         """Set the upper and lower limits of the analog trigger. The limits are
@@ -82,7 +90,7 @@ class AnalogTrigger:
         """
         if lower > upper:
             raise ValueError("Lower bound is greater than upper")
-        
+
         hal.setAnalogTriggerLimitsRaw(self.port, lower, upper)
 
     def setLimitsVoltage(self, lower, upper):
@@ -94,7 +102,7 @@ class AnalogTrigger:
         """
         if lower > upper:
             raise ValueError("Lower bound is greater than upper")
-        
+
         hal.setAnalogTriggerLimitsVoltage(self.port, float(lower), float(upper))
 
     def setAveraged(self, useAveragedValue):
@@ -150,3 +158,7 @@ class AnalogTrigger:
         :returns: An AnalogTriggerOutput object.
         """
         return AnalogTriggerOutput(self, type)
+
+    def initSendable(self, builder):
+        if self.ownsAnalog:
+            self.analogInput.initSendable( )

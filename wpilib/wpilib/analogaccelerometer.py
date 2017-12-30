@@ -1,4 +1,4 @@
-# validated: 2017-09-22 TW 34c18ef00062 edu/wpi/first/wpilibj/AnalogAccelerometer.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogAccelerometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -10,13 +10,12 @@ import hal
 
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
-from .livewindow import LiveWindow
 from .sensorbase import SensorBase
-from networktables import NetworkTables
+from .sendable import Sendable
 
 __all__ = ["AnalogAccelerometer"]
 
-class AnalogAccelerometer(SensorBase):
+class AnalogAccelerometer(SensorBase, Sendable):
     """Analog Accelerometer
     
     The accelerometer reads acceleration directly through the sensor. Many
@@ -35,19 +34,27 @@ class AnalogAccelerometer(SensorBase):
         :param channel: port index or an already initialized :class:`.AnalogInput`
         """
         super().__init__()
-        if not hasattr(channel, "getAverageVoltage"):
-            channel = AnalogInput(channel)
-        self.analogChannel = channel
+        if not hasattr(channel, "getAverageVoltage"): # If 'channel' is an integer
+            self.analogChannel = AnalogInput(channel)
+            self.allocatedChannel = True
+            self.addChild(self.analogChannel)
+        else:
+            self.allocatedChannel = False
+            self.analogChannel = channel
         self.voltsPerG = 1.0
         self.zeroGVoltage = 2.5
         self.pidSource = self.PIDSourceType.kDisplacement
         hal.report(hal.UsageReporting.kResourceType_Accelerometer,
                       self.analogChannel.getChannel())
-        LiveWindow.addSensorChannel("Accelerometer",
+        self.setName("Accelerometer",
                                     self.analogChannel.getChannel(), self)
 
     def free(self):
-        LiveWindow.removeComponent(self)
+        super().free()
+        if self.analogChannel and self.allocatedChannel:
+            self.analogChannel.free()
+        self.analogChannel = None
+
 
     def getAcceleration(self):
         """Return the acceleration in Gs.
@@ -57,6 +64,8 @@ class AnalogAccelerometer(SensorBase):
         :returns: The current acceleration of the sensor in Gs.
         :rtype: float
         """
+        if not self.analogChannel:
+            return 0.0
         return (self.analogChannel.getAverageVoltage() - self.zeroGVoltage) / self.voltsPerG
 
     def setSensitivity(self, sensitivity):
@@ -102,25 +111,6 @@ class AnalogAccelerometer(SensorBase):
         """
         return self.getAcceleration()
 
-    def getSmartDashboardType(self):
-        return "Accelerometer"
-
-    # Live Window code, only does anything if live window is activated.
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.getAcceleration())
-
-    def startLiveWindowMode(self):
-        # Don't have to do anything special when entering the LiveWindow.
-        pass
-
-    def stopLiveWindowMode(self):
-        # Don't have to do anything special when exiting the LiveWindow.
-        pass
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Accelerometer")
+        builder.addDoubleProperty("Value", self.getAcceleration, None)

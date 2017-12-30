@@ -1,4 +1,4 @@
-# validated: 2017-09-22 TW 34c18ef00062 edu/wpi/first/wpilibj/AnalogOutput.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -12,13 +12,14 @@ import weakref
 from .livewindow import LiveWindow
 from .resource import Resource
 from .sensorbase import SensorBase
+from .sendable import Sendable
 
 __all__ = ["AnalogOutput"]
 
 def _freeAnalogOutput(port):
     hal.freeAnalogOutputPort(port)
 
-class AnalogOutput(SensorBase):
+class AnalogOutput(SensorBase, Sendable):
     """Analog output"""
 
     channels = Resource(SensorBase.kAnalogOutputChannels)
@@ -36,7 +37,7 @@ class AnalogOutput(SensorBase):
         port = hal.getPort(channel)
         self._port = hal.initializeAnalogOutputPort(port)
 
-        LiveWindow.addSensorChannel("AnalogOutput", channel, self)
+        self.setName("AnalogOutput", channel)
         hal.report(hal.UsageReporting.kResourceType_AnalogChannel,
                       channel, 1)
         
@@ -69,28 +70,7 @@ class AnalogOutput(SensorBase):
     def getVoltage(self):
         return hal.getAnalogOutput(self.port)
 
-    # Live Window code, only does anything if live window is activated.
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Analog Output")
+        builder.addDoubleProperty("Value", self.getVoltage, self.setVoltage)
 
-    def getSmartDashboardType(self):
-        return "Analog Output"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.valueEntry = subtable.getEntry("Value")
-            self.updateTable()
-        else:
-            self.valueEntry = None
-
-    def updateTable(self):
-        if self.valueEntry is not None:
-            self.valueEntry.setDouble(self.getVoltage())
-
-    def startLiveWindowMode(self):
-        # Analog Channels don't have to do anything special when entering the
-        # LiveWindow.
-        pass
-
-    def stopLiveWindowMode(self):
-        # Analog Channels don't have to do anything special when exiting the
-        # LiveWindow.
-        pass

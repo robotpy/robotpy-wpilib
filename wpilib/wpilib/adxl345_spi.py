@@ -1,4 +1,4 @@
-# validated: 2017-09-20 AA 34c18ef00062 edu/wpi/first/wpilibj/ADXL345_SPI.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/ADXL345_SPI.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -72,10 +72,9 @@ class ADXL345_SPI(SensorBase):
         hal.report(hal.UsageReporting.kResourceType_ADXL345,
                       hal.UsageReporting.kADXL345_SPI)
 
-        LiveWindow.addSensor("ADXL345_SPI", port, self)
+        self.setName("ADXL345_SPI", port)
 
     def free(self):
-        LiveWindow.removeComponent(self)
         self.spi.free()
         super().free()
 
@@ -159,25 +158,16 @@ class ADXL345_SPI(SensorBase):
 
     # Live Window code, only does anything if live window is activated.
 
-    def getSmartDashboardType(self):
-        return "3AxisAccelerometer"
+    def _updateValues(self, entryX, entryY, entryZ):
+        data = self.getAccelerations()
+        entryX.setDouble(data[0])
+        entryY.setDouble(data[1])
+        entryZ.setDouble(data[2])
 
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.xEntry = subtable.getEntry("X")
-            self.yEntry = subtable.getEntry("Y")
-            self.zEntry = subtable.getEntry("Z")
-            self.updateTable()
-        else:
-            self.xEntry = None
-            self.yEntry = None
-            self.zEntry = None
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("3AxisAccelerometer")
+        entryX = builder.getEntry("X")
+        entryY = builder.getEntry("Y")
+        entryZ = builder.getEntry("Z")
 
-    def updateTable(self):
-        if self.xEntry is not None:
-            self.xEntry.setDouble(self.getX())
-        if self.yEntry is not None:
-            self.yEntry.setDouble(self.getY())
-        if self.zEntry is not None:
-            self.zEntry.setDouble(self.getZ())
-
+        builder.setUpdateTable(self._updateValues(entryX, entryY, entryZ))
