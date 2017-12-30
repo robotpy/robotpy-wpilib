@@ -31,7 +31,8 @@ class AnalogAccelerometer(SensorBase, Sendable):
         """Constructor. Create a new instance of Accelerometer from either an existing
         AnalogChannel or from an analog channel port index.
 
-        :param channel: port index or an already initialized :class:`.AnalogInput`
+        :param channel: port index or an already initialized AnalogInput
+        :type channel: int or :class:`.AnalogInput`
         """
         super().__init__()
         if not hasattr(channel, "getAverageVoltage"): # If 'channel' is an integer
@@ -46,8 +47,7 @@ class AnalogAccelerometer(SensorBase, Sendable):
         self.pidSource = self.PIDSourceType.kDisplacement
         hal.report(hal.UsageReporting.kResourceType_Accelerometer,
                       self.analogChannel.getChannel())
-        self.setName("Accelerometer",
-                                    self.analogChannel.getChannel(), self)
+        self.setName("Accelerometer", self.analogChannel.getChannel())
 
     def free(self):
         super().free()

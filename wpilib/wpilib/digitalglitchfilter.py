@@ -12,7 +12,6 @@ from .digitalsource import DigitalSource
 from .encoder import Encoder
 from .counter import Counter
 from .sensorbase import SensorBase
-from .sendable import Sendable
 
 __all__ = ['DigitalGlitchFilter']
 

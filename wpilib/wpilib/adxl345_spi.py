@@ -157,17 +157,16 @@ class ADXL345_SPI(SensorBase):
                 rawData[2] * self.kGsPerLSB)
 
     # Live Window code, only does anything if live window is activated.
-
-    def _updateValues(self, entryX, entryY, entryZ):
+    def _updateValues(self):
         data = self.getAccelerations()
-        entryX.setDouble(data[0])
-        entryY.setDouble(data[1])
-        entryZ.setDouble(data[2])
+        self._entryX.setDouble(data[0])
+        self._entryY.setDouble(data[1])
+        self._entryZ.setDouble(data[2])
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("3AxisAccelerometer")
-        entryX = builder.getEntry("X")
-        entryY = builder.getEntry("Y")
-        entryZ = builder.getEntry("Z")
+        self._entryX = builder.getEntry("X")
+        self._entryY = builder.getEntry("Y")
+        self._entryZ = builder.getEntry("Z")
 
-        builder.setUpdateTable(self._updateValues(entryX, entryY, entryZ))
+        builder.setUpdateTable(self._updateValues)

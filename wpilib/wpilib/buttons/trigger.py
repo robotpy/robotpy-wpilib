@@ -7,7 +7,7 @@
 #----------------------------------------------------------------------------
 
 from networktables.networktable import NetworkTable
-from wpilib import SendableBuilder
+from ..sendablebuilder import SendableBuilder
 
 from ..sendablebase import SendableBase
 from ..command.command import Command

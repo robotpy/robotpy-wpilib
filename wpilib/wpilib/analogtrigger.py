@@ -1,14 +1,14 @@
 # validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogTrigger.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
-import hal
 import weakref
 
+import hal
 from .analoginput import AnalogInput
 from .analogtriggeroutput import AnalogTriggerOutput
 from .resource import Resource
@@ -17,8 +17,10 @@ from .sensorbase import SensorBase
 
 __all__ = ["AnalogTrigger"]
 
+
 def _freeAnalogTrigger(port):
     hal.cleanAnalogTrigger(port)
+
 
 class AnalogTrigger(SensorBase, Sendable):
     """
@@ -56,13 +58,13 @@ class AnalogTrigger(SensorBase, Sendable):
         port = hal.getPort(channel)
         self._port, self.index = hal.initializeAnalogTrigger(port)
         self.__finalizer = \
-                weakref.finalize(self, _freeAnalogTrigger, self._port)
+            weakref.finalize(self, _freeAnalogTrigger, self._port)
 
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
         hal.report(hal.UsageReporting.kResourceType_AnalogTrigger,
-                      channel)
+                   channel)
 
         self.setName("AnalogTrigger", self.analogInput.getChannel())
 
@@ -78,7 +80,6 @@ class AnalogTrigger(SensorBase, Sendable):
         self.__finalizer()
         if self.analogInput:
             self.analogInput.free()
-
 
     def setLimitsRaw(self, lower, upper):
         """Set the upper and lower limits of the analog trigger. The limits are
@@ -161,4 +162,4 @@ class AnalogTrigger(SensorBase, Sendable):
 
     def initSendable(self, builder):
         if self.ownsAnalog:
-            self.analogInput.initSendable( )
+            self.analogInput.initSendable(builder)
