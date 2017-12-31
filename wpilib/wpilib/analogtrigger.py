@@ -12,7 +12,6 @@ import hal
 from .analoginput import AnalogInput
 from .analogtriggeroutput import AnalogTriggerOutput
 from .resource import Resource
-from .sendable import Sendable
 from .sensorbase import SensorBase
 
 __all__ = ["AnalogTrigger"]
@@ -22,7 +21,7 @@ def _freeAnalogTrigger(port):
     hal.cleanAnalogTrigger(port)
 
 
-class AnalogTrigger(SensorBase, Sendable):
+class AnalogTrigger(SensorBase):
     """
         Converts an analog signal into a digital signal
         

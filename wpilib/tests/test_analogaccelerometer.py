@@ -1,10 +1,14 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
+
 @pytest.fixture("function")
 def acc(wpilib):
-    aa =  wpilib.AnalogAccelerometer(2)
+    aa = wpilib.AnalogAccelerometer(2)
     aa.analogChannel.getAverageVoltage = MagicMock(return_value=3)
     return aa
+
 
 def test_init(wpilib):
     acc1 = wpilib.AnalogAccelerometer(0)

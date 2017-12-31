@@ -11,7 +11,6 @@ import hal
 from .interfaces import Accelerometer
 from .spi import SPI
 from .sensorbase import SensorBase
-from .livewindow import LiveWindow
 
 __all__ = ["ADXL345_SPI"]
 

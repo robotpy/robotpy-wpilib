@@ -12,11 +12,10 @@ from .driverstation import DriverStation
 from .interfaces import Accelerometer
 from .spi import SPI
 from .sensorbase import SensorBase
-from .sendable import Sendable
 
 __all__ = ["ADXL362"]
 
-class ADXL362(SensorBase, Sendable):
+class ADXL362(SensorBase):
     """
         ADXL362 SPI Accelerometer.
     

@@ -11,11 +11,10 @@ import hal
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
 from .sensorbase import SensorBase
-from .sendable import Sendable
 
 __all__ = ["AnalogAccelerometer"]
 
-class AnalogAccelerometer(SensorBase, Sendable):
+class AnalogAccelerometer(SensorBase):
     """Analog Accelerometer
     
     The accelerometer reads acceleration directly through the sensor. Many

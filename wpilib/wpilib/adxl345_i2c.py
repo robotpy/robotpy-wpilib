@@ -11,11 +11,10 @@ import hal
 from .interfaces import Accelerometer
 from .i2c import I2C
 from .sensorbase import SensorBase
-from .sendable import Sendable
 
 __all__ = ["ADXL345_I2C"]
 
-class ADXL345_I2C(SensorBase, Sendable):
+class ADXL345_I2C(SensorBase):
     """
         ADXL345 accelerometer device via i2c
     """

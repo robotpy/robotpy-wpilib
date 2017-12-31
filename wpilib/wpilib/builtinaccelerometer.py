@@ -9,11 +9,10 @@ import hal
 
 from .interfaces import Accelerometer
 from .sensorbase import SensorBase
-from .sendable import Sendable
 
 __all__ = ["BuiltInAccelerometer"]
 
-class BuiltInAccelerometer(SensorBase, Sendable):
+class BuiltInAccelerometer(SensorBase):
     """Built-in accelerometer device
 
     This class allows access to the roboRIO's internal accelerometer.

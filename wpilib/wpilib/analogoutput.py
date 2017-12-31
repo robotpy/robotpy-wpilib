@@ -9,17 +9,15 @@
 import hal
 import weakref
 
-from .livewindow import LiveWindow
 from .resource import Resource
 from .sensorbase import SensorBase
-from .sendable import Sendable
 
 __all__ = ["AnalogOutput"]
 
 def _freeAnalogOutput(port):
     hal.freeAnalogOutputPort(port)
 
-class AnalogOutput(SensorBase, Sendable):
+class AnalogOutput(SensorBase):
     """Analog output"""
 
     channels = Resource(SensorBase.kAnalogOutputChannels)
