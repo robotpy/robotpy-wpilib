@@ -20,7 +20,7 @@ arrowtab = "--> "
 
 def get_wpilib_dirs(wpilib_dir):
     paths = list()
-    paths.append(join(wpilib_dir, 'src', 'athena', 'java', 'edu', 'wpi', 'first', 'wpilibj'))
+    paths.append(join(wpilib_dir, 'src', 'main', 'java', 'edu', 'wpi', 'first', 'wpilibj'))
     return paths
 
 def get_python_attr(python_object, name):
@@ -113,9 +113,9 @@ def compare_object(python_object, java_object):
 
         #Check if the corresponding python object has enough arguments to match
         if output["present"]:
-            args, varargs, keywords, defaults = inspect.getargspec(python_object)
-            if varargs is None and keywords is None:
-                args = [a for a in args if a != "self"]
+            argspec = inspect.getfullargspec(python_object)
+            if argspec.varargs is None and argspec.varkw is None:
+                args = [a for a in argspec.args if a != "self"]
                 if len(args) < len(output["parameters"]):
                     output["errors"] += 1
 
