@@ -162,8 +162,3 @@ class SensorBase(SendableBase):
         :returns: The number of the default solenoid module.
         """
         return SensorBase.defaultSolenoidModule
-
-    def free(self):
-        """Free the resources used by this object"""
-        # TODO: delete?
-        pass
