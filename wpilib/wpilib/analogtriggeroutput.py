@@ -45,6 +45,7 @@ class AnalogTriggerOutput(DigitalSource):
     Using the averaging engine may help with this, but rotational speeds of the
     sensor will then be limited.
     """
+
     class AnalogTriggerType:
         """Defines the state in which the :class:`.AnalogTrigger` triggers"""
         kInWindow = hal.AnalogTriggerType.kInWindow

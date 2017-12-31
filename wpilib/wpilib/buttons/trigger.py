@@ -1,16 +1,14 @@
 # validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/buttons/Trigger.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
-from networktables.networktable import NetworkTable
-from ..sendablebuilder import SendableBuilder
 
-from ..sendablebase import SendableBase
 from ..command.command import Command
+from ..sendablebase import SendableBase
 
 __all__ = ["Trigger"]
 
@@ -49,6 +47,7 @@ class Trigger(SendableBase):
 
         :param command: the command to start
         """
+
         def execute():
             if self.grab():
                 if not execute.pressedLast:
@@ -69,6 +68,7 @@ class Trigger(SendableBase):
 
         :param command: the command to start
         """
+
         def execute():
             if self.grab():
                 execute.pressedLast = True
@@ -87,6 +87,7 @@ class Trigger(SendableBase):
 
         :param command: the command to start
         """
+
         def execute():
             if self.grab():
                 execute.pressedLast = True
@@ -104,6 +105,7 @@ class Trigger(SendableBase):
 
         :param command: the command to toggle
         """
+
         def execute():
             if self.grab():
                 if not execute.pressedLast:
@@ -124,6 +126,7 @@ class Trigger(SendableBase):
 
         :param command: the command to cancel
         """
+
         def execute():
             if self.grab():
                 if not execute.pressedLast:
@@ -142,7 +145,7 @@ class Trigger(SendableBase):
     def _setPressed(self, value: bool) -> None:
         self.sendablePressed = value
 
-    def initSendable(self, builder: SendableBuilder):
+    def initSendable(self, builder):
         builder.setSmartDashboardType("Button")
         builder.setSafeState(self._safeState)
         builder.addBooleanProperty("pressed", self.grab, self._setPressed)

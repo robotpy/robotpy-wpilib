@@ -62,6 +62,5 @@ class Sendable:
         Initializes this Sendable object.
 
         :param builder: sendable builder
-        :type builder: :class:`wpilib.SendableBuilder`
         """
         raise NotImplementedError
