@@ -103,16 +103,16 @@ def _initport(name, idx, status, root=hal_data):
     try:
         if idx < 0:
             raise IndexError()
-        
+
         data = root[name][idx]
     except IndexError:
         status.value = PARAMETER_OUT_OF_RANGE
         return
-        
+
     if data['initialized']:
         status.value = RESOURCE_IS_ALLOCATED
         return
-    
+
     data['initialized'] = True
     status.value = 0
     return data
@@ -209,10 +209,10 @@ def _getErrorMessage(code):
     elif code == HAL_PWM_SCALE_ERROR:
         return "HAL: The PWM Scale Factors are out of range"
     elif code == HAL_HANDLE_ERROR:
-        return  "HAL: A handle parameter was passed incorrectly"
+        return "HAL: A handle parameter was passed incorrectly"
     else:
         return "Unknown error status %s" % code
-    
+
 def getErrorMessage(code):
     return bytes(_getErrorMessage(code), 'utf-8')
 
@@ -238,7 +238,7 @@ def getFPGAButton(status):
 def getSystemActive(status):
     status.value = 0
     return True
-    
+
 def getBrownedOut(status):
     status.value = 0
     return False
@@ -256,14 +256,14 @@ def initialize(timeout=0, mode=0):
     baseInitialize(None)
     #initializeNotifier()
     initializeDriverStation()
-    
+
     return True
 
 def report(resource, instanceNumber, context=0, feature=None):
-    
+
     # TODO: Cover all interesting devices
     hur = constants.HALUsageReporting
-    if resource ==  hur.kResourceType_Jaguar:
+    if resource == hur.kResourceType_Jaguar:
         hal_data['pwm'][instanceNumber]['type'] = 'jaguar'
     elif resource == hur.kResourceType_MindsensorsSD540:
         hal_data['pwm'][instanceNumber]['type'] = 'sd540'
@@ -277,7 +277,7 @@ def report(resource, instanceNumber, context=0, feature=None):
         hal_data['pwm'][instanceNumber]['type'] = 'victor'
     elif resource == hur.kResourceType_VictorSP:
         hal_data['pwm'][instanceNumber]['type'] = 'victorsp'
-    
+
     hal_data['reports'].setdefault(resource, []).append(instanceNumber)
     return 0
 
@@ -346,18 +346,18 @@ def getAccumulatorOutput(analogPortHandle, status):
 
 def initializeAnalogGyro(handle, status):
     handle = types.GyroHandle(handle)
-    
+
     data = _initport('analog_gyro', handle.pin, status)
     if not data:
         return
-    
+
     data['offset'] = 0
     data['deadband'] = 0
     data['volts_per_degree'] = 0
-    
+
     data['angle'] = 0
     data['rate'] = 0
-    
+
     return handle
 
 def setupAnalogGyro(handle, status):
@@ -390,29 +390,29 @@ def calibrateAnalogGyro(handle, status):
 
 def setAnalogGyroDeadband(handle, volts, status):
     status.value = 0
-    hal_data['analog_gyro'][handle.pin]['deadband'] = volts 
+    hal_data['analog_gyro'][handle.pin]['deadband'] = volts
 
 def getAnalogGyroAngle(handle, status):
     status.value = 0
-    return hal_data['analog_gyro'][handle.pin]['angle'] 
+    return hal_data['analog_gyro'][handle.pin]['angle']
 
 def getAnalogGyroRate(handle, status):
     status.value = 0
-    return hal_data['analog_gyro'][handle.pin]['rate'] 
+    return hal_data['analog_gyro'][handle.pin]['rate']
 
 def getAnalogGyroOffset(handle, status):
     status.value = 0
-    return hal_data['analog_gyro'][handle.pin]['offset'] 
+    return hal_data['analog_gyro'][handle.pin]['offset']
 
 def getAnalogGyroCenter(handle, status):
     status.value = 0
-    return hal_data['analog_gyro'][handle.pin]['center'] 
+    return hal_data['analog_gyro'][handle.pin]['center']
 
 #############################################################################
 # AnalogInput.h
 #############################################################################
 
-def initializeAnalogInputPort(portHandle, status):    
+def initializeAnalogInputPort(portHandle, status):
     if _initport('analog_in', portHandle.pin, status):
         return types.AnalogInputHandle(portHandle)
 
@@ -535,7 +535,7 @@ def cleanAnalogTrigger(analogTriggerHandle, status):
 
 def setAnalogTriggerLimitsRaw(analogTriggerHandle, lower, upper, status):
     if lower > upper:
-        status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR 
+        status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR
     else:
         status.value = 0
         hal_data['analog_trigger'][analogTriggerHandle.index]['trig_lower'] = lower
@@ -543,13 +543,13 @@ def setAnalogTriggerLimitsRaw(analogTriggerHandle, lower, upper, status):
 
 def setAnalogTriggerLimitsVoltage(analogTriggerHandle, lower, upper, status):
     if lower > upper:
-        status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR 
+        status.value = ANALOG_TRIGGER_LIMIT_ORDER_ERROR
     else:
         status.value = 0
         analogPortHandle = hal_data['analog_port'][analogTriggerHandle.pin]
         hal_data['analog_trigger'][analogTriggerHandle.index]['trig_lower'] = getAnalogVoltsToValue(analogPortHandle, lower, status)
         hal_data['analog_trigger'][analogTriggerHandle.index]['trig_upper'] = getAnalogVoltsToValue(analogPortHandle, upper, status)
-    
+
 
 def setAnalogTriggerAveraged(analogTriggerHandle, useAveragedValue, status):
     if hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] is 'filtered':
@@ -562,7 +562,7 @@ def setAnalogTriggerFiltered(analogTriggerHandle, useFilteredValue, status):
     if hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] is 'averaged':
         status.value = INCOMPATIBLE_STATE
     else:
-        status.value = 0    
+        status.value = 0
         hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] = 'filtered' if useFilteredValue else None
 
 def _get_trigger_value(analogTriggerHandle):
@@ -581,7 +581,7 @@ def getAnalogTriggerInWindow(analogTriggerHandle, status):
     status.value = 0
     atr, val = _get_trigger_value(analogTriggerHandle)
     return val >= atr['trig_lower'] and val <= atr['trig_upper']
-        
+
 def getAnalogTriggerTriggerState(analogTriggerHandle, status):
     # To work properly, this needs some other runtime component managing the
     # state variable too, but this works well enough
@@ -620,7 +620,7 @@ def CAN_GetCANStatus(status):
 def initializeCompressor(module, status):
     status.value = 0
     assert module == 0 # don't support multiple modules for now
-    
+
     hal_data['compressor']['initialized'] = True
     return types.CompressorHandle(module)
 
@@ -691,8 +691,8 @@ def initializeCounter(mode, status):
         if cnt['initialized'] == False:
             cnt['initialized'] = True
             cnt['mode'] = mode
-            return types.CounterHandle(idx), idx 
-    
+            return types.CounterHandle(idx), idx
+
     status.value = NO_AVAILABLE_RESOURCES
     return None, -1
 
@@ -712,10 +712,10 @@ def setCounterUpSource(counterHandle, digitalSourceHandle, analogTriggerType, st
     except AttributeError:
         hal_data['counter'][counterHandle.idx]['up_source_channel'] = digitalSourceHandle.pin
     hal_data['counter'][counterHandle.idx]['up_source_trigger'] = analogTriggerType
-    
+
     if hal_data['counter'][counterHandle.idx]['mode'] in \
        [constants.CounterMode.kTwoPulse, constants.CounterMode.kExternalDirection]:
-        setCounterUpSourceEdge(counterHandle, True, False, status) 
+        setCounterUpSourceEdge(counterHandle, True, False, status)
 
 def setCounterUpSourceEdge(counterHandle, risingEdge, fallingEdge, status):
     status.value = 0
@@ -840,14 +840,14 @@ def initializeDIOPort(portHandle, input, status):
         if hal_data["mxp"][mxp_port]["initialized"]:
             status.value = RESOURCE_IS_ALLOCATED
             return
-    
+
     dio = _initport('dio', portHandle.pin, status)
     if dio is None:
         return
-    
+
     if portHandle.pin >= kNumDigitalHeaders:
         hal_data["mxp"][mxp_port]["initialized"] = True
-    
+
     dio['is_input'] = input
     return types.DigitalHandle(portHandle)
 
@@ -925,17 +925,17 @@ def isPulsing(dioPortHandle, status):
 
 def isAnyPulsing(status):
     status.value = 0
-    
+
     for p in hal_data['dio']:
         if p is not None and p['pulse_length'] is not None:
             return True
     return False
-    
+
 def setFilterSelect(dioPortHandle, filterIndex, status):
     if filterIndex < 0 or filterIndex > 3:
         status.value = PARAMETER_OUT_OF_RANGE
         return
-    
+
     if filterIndex == 0:
         filterIndex = hal_data['dio'][dioPortHandle.pin]['filterIndex']
         hal_data['dio'][dioPortHandle.pin]['filterIndex'] = None
@@ -958,7 +958,7 @@ def setFilterPeriod(filterIndex, value, status):
     if filterIndex < 0 or filterIndex > 2:
         status.value = PARAMETER_OUT_OF_RANGE
         return
-    
+
     status.value = 0
     hal_data['filter'][filterIndex]['period'] = value
 
@@ -966,7 +966,7 @@ def getFilterPeriod(filterIndex, status):
     if filterIndex < 0 or filterIndex > 2:
         status.value = PARAMETER_OUT_OF_RANGE
         return
-    
+
     status.value = 0
     return hal_data['filter'][filterIndex]['period']
 
@@ -1054,11 +1054,11 @@ def getMatchTime(status):
         - If robot is disabled, time is 0
     '''
     status.value = 0
-    match_start = hal_data['time']['match_start']
-    if match_start is None:
-        return 0.0
+    remaining = hal_data['time']['remaining']
+    if remaining is None:
+        return 135.0
     else:
-        return (hooks.getFPGATime() - hal_data['time']['match_start'])/1000000.0
+        return (remaining - hooks.getFPGATime())/1000000.0
 
 def getMatchInfo():
     evt = hal_data['event']
@@ -1338,20 +1338,20 @@ def waitForNotifierAlarm(notifierHandle, status):
                 waitTime = 1000.0
             else:
                 waitTime = (notifierHandle.waitTime - hooks.getFPGATime()) * 1e-6
-            
+
             notifierHandle.lock.wait(timeout=waitTime)
             if notifierHandle.updatedAlarm:
                 notifierHandle.updatedAlarm = False
                 continue
-            
+
             if not notifierHandle.running:
                 continue
             if not notifierHandle.active:
                 break
-            
+
             notifierHandle.running = False
             return hooks.getFPGATime()
-    
+
     return 0
 
 
@@ -1361,7 +1361,7 @@ def waitForNotifierAlarm(notifierHandle, status):
 
 def initializePDP(module, status):
     status.value = 0
-    
+
 def checkPDPChannel(channel):
     return channel < kNumPDPChannels and channel >= 0
 
@@ -1409,26 +1409,26 @@ def clearPDPStickyFaults(module, status):
 
 def initializePWMPort(portHandle, status):
     status.value = 0
-    
+
     pwmPortHandle = types.DigitalPWMHandle(portHandle)
- 
+
     if pwmPortHandle.pin >= kNumDigitalHeaders:
         mxp_port = _remapMXPPWMChannel(pwmPortHandle.pin)
         if hal_data["mxp"][mxp_port]["initialized"]:
             status.value = RESOURCE_IS_ALLOCATED
             return
- 
+
     if _initport('pwm', pwmPortHandle.pin, status) is None:
         return
-    
+
     if pwmPortHandle.pin >= kNumDigitalHeaders:
         hal_data["mxp"][mxp_port]["initialized"] = True
- 
+
     return pwmPortHandle
 
 def freePWMPort(pwmPortHandle, status):
     status.value = 0
-    
+
     assert hal_data['pwm'][pwmPortHandle.pin]['initialized']
     hal_data['pwm'][pwmPortHandle.pin]['initialized'] = False
     hal_data['pwm'][pwmPortHandle.pin]['raw_value'] = 0
@@ -1436,11 +1436,11 @@ def freePWMPort(pwmPortHandle, status):
     hal_data['pwm'][pwmPortHandle.pin]['period_scale'] = None
     hal_data['pwm'][pwmPortHandle.pin]['zero_latch'] = False
     hal_data['pwm'][pwmPortHandle.pin]['elim_deadband'] = False
- 
+
     if pwmPortHandle.pin >= kNumDigitalHeaders:
         mxp_port = _remapMXPPWMChannel(pwmPortHandle.pin)
         hal_data["mxp"][mxp_port]["initialized"] = False
-        
+
     pwmPortHandle.pin = None
 
 def checkPWMChannel(channel):
@@ -1661,7 +1661,7 @@ def freeRelayPort(relayPortHandle):
         hal_data['relay'][channel]['fwd'] = False
     else:
         hal_data['relay'][channel]['rev'] = False
-    
+
 def checkRelayChannel(channel):
     return 0 <= channel and channel < kNumRelayHeaders
 
@@ -1867,17 +1867,17 @@ def initializeSolenoidPort(portHandle, status):
     if not checkSolenoidModule(portHandle.module):
         status.value = RESOURCE_OUT_OF_RANGE
         return
-    
+
     if portHandle.module not in hal_data['pcm']:
         hal_data['pcm'][portHandle.module] = [NotifyDict({
             'initialized': False,
             'value':       None
         }) for _ in range(kNumSolenoidChannels)]
-    
+
     data = _initport(portHandle.module, portHandle.pin, status, root=hal_data['pcm'])
     if data is None:
         return
-    
+
     data['value'] = False
     return types.SolenoidHandle(portHandle)
 
