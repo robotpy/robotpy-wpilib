@@ -159,6 +159,7 @@ class LinearDigitalFilter(Filter):
         :param source: The PIDSource object that is used to get values
         :type source: :class:`.PIDSource`, callable
         :param taps: The number of samples to average over. Higher = smoother but slower
+        :type taps: int
         
         :raises: :exc:`ValueError` if number of taps is less than 1
         
