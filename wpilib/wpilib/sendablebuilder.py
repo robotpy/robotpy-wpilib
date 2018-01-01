@@ -1,4 +1,4 @@
-# validated: 2017-12-06 EN f9bece2ffbf7 edu/wpi/first/wpilibj/smartdashboard/SendableBuilderImpl.java
+# validated: 2018-01-01 EN 40eb6dfc9b83 edu/wpi/first/wpilibj/smartdashboard/SendableBuilderImpl.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -71,25 +71,34 @@ class SendableBuilder:
         if self._updateTable is not None:
             self._updateTable()
 
-    def startLiveWindowMode(self):
-        """
-        Start LiveWindow mode by hooking the setters for all properties.
-        """
-        if self.safeState is not None:
-            self.safeState()
-
+    def startListeners(self):
+        """Hook setters for all properties"""
         for prop in self.properties:
             prop.startListener()
 
-    def stopLiveWindowMode(self):
+    def stopListeners(self):
+        """Unhook setters for all properties"""
+        for prop in self.properties:
+            prop.stopListener()
+
+    def startLiveWindowMode(self):
         """
-        Stop LiveWindow mode by unhooking the setters for all properties.
+        Start LiveWindow mode by hooking the setters for all properties. Also calls
+        the safeState function if one was provided.
         """
         if self.safeState is not None:
             self.safeState()
 
-        for prop in self.properties:
-            prop.stopListener()
+        self.startListeners()
+
+    def stopLiveWindowMode(self):
+        """
+        Stop LiveWindow mode by unhooking the setters for all properties. Also calls
+        the safeState function if one was provided.
+        """
+        self.stopListeners()
+        if self.safeState is not None:
+            self.safeState()
 
     def setSmartDashboardType(self, type):
         """

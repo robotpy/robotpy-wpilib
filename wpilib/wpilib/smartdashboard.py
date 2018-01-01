@@ -1,4 +1,4 @@
-# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
+# validated: 2018-01-01 EN 40eb6dfc9b83 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
 
 # validation note: 2017-10-22: Not using the getEntry() stuff that Java uses,
 #                              as using the existing table stuff is more
@@ -20,8 +20,8 @@ __all__ = ["SmartDashboard"]
 
 
 class Data:
-    def __init__(self):
-        self.sendable = None
+    def __init__(self, sendable):
+        self.sendable = sendable
         self.builder = SendableBuilder()
 
 
@@ -101,16 +101,16 @@ class SmartDashboard:
                 raise ValueError("only (key, data) or (value) accepted")
 
             sddata = cls.tablesToData.get(key, None)
-            if sddata is None:
-                sddata = Data()
-                cls.tablesToData[key] = sddata
+            if sddata is None or sddata.sendable != data:
+                if sddata is not None:
+                    sddata.builder.stopListeners()
 
-            if sddata.sendable is None or sddata.sendable != data:
-                sddata.sendable = data
+                sddata = Data(data)
+                cls.tablesToData[key] = sddata
                 sddata.builder.setTable(cls.getTable().getSubTable(key))
                 data.initSendable(sddata.builder)
-
-            sddata.builder.updateTable()
+                sddata.builder.updateTable()
+                sddata.builder.startListeners()
 
     @classmethod
     def getData(cls, key):
@@ -516,3 +516,9 @@ class SmartDashboard:
         """
         table = cls.getTable()
         return table.getRaw(key, defaultValue)
+
+    @classmethod
+    def updateValues(cls):
+        with cls.mutex:
+            for data in cls.tablesToData.values():
+                data.builder.updateTable()

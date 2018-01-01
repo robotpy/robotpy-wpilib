@@ -66,3 +66,6 @@ def test_smartdashboard_getSelected_nodefault(wpilib, sendablebuilder):
     # New choice should now be returned
     assert chooser.getSelected() == o1
     
+
+def test_smartdashboard_updateValues(wpilib):
+    wpilib.SmartDashboard.updateValues()
