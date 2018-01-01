@@ -75,6 +75,14 @@ class UsageReporting:
     kResourceType_PCM = 60
     kResourceType_PigeonIMU = 61
     kResourceType_NidecBrushless = 62
+    kResourceType_CANifier = 63
+    kResourceType_CTRE_future0 = 64
+    kResourceType_CTRE_future1 = 65
+    kResourceType_CTRE_future2 = 66
+    kResourceType_CTRE_future3 = 67
+    kResourceType_CTRE_future4 = 68
+    kResourceType_CTRE_future5 = 69
+    kResourceType_CTRE_future6 = 70
 
     # enum tInstances
     kLanguage_LabVIEW = 1
