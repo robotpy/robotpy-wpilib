@@ -1,12 +1,15 @@
 # validated: 2017-10-03 EN 34c18ef00062 edu/wpi/first/wpilibj/Sendable.java
 
+from .sendablebuilder import SendableBuilder
+
 __all__ = ["Sendable"]
+
 
 class Sendable:
     """The base interface for objects that can be sent over the network
     through network tables"""
-    
-    def getName(self):
+
+    def getName(self) -> str:
         """
         Gets the name of this Sendable object.
 
@@ -15,7 +18,7 @@ class Sendable:
         """
         raise NotImplementedError
 
-    def setName(self, subsystem, name=None):
+    def setName(self, subsystem: str, name: str = None) -> None:
         """
         Sets the name of this Sendable object.
 
@@ -24,7 +27,7 @@ class Sendable:
         """
         raise NotImplementedError
 
-    def _setNameAndSubsystem(self, subsystem, name):
+    def _setNameAndSubsystem(self, subsystem: str, name: str) -> None:
         """
         Sets both the subsystem name and device name of this Sendable object.
 
@@ -36,7 +39,7 @@ class Sendable:
         self.setSubsystem(subsystem)
         self.setName(name)
 
-    def getSubsystem(self):
+    def getSubsystem(self) -> str:
         """
         Gets the subsystem name of this Sendable object.
 
@@ -45,7 +48,7 @@ class Sendable:
         """
         raise NotImplementedError
 
-    def setSubsystem(self, subsystem):
+    def setSubsystem(self, subsystem: str) -> None:
         """
         Sets the subsystem name of this Sendable object.
 
@@ -54,20 +57,10 @@ class Sendable:
         """
         raise NotImplementedError
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         """
         Initializes this Sendable object.
 
         :param builder: sendable builder
-        :type builder: :class:`wpilib.SendableBuilder`
         """
         raise NotImplementedError
-
-    # todo: remove
-    def initTable(self, subtable):
-        """Initializes a table for this sendable object.
-
-        :param subtable: The table to put the values in.
-        """
-        if hasattr(self, "updateTable"):
-            self.updateTable()

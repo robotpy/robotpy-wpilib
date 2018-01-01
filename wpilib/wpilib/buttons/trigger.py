@@ -1,17 +1,19 @@
-# validated: 2017-10-19 AA 34c18ef00062 edu/wpi/first/wpilibj/buttons/Trigger.java
-#----------------------------------------------------------------------------
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/buttons/Trigger.java
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
-from networktables.networktable import NetworkTable
+
+from ..command.command import Command
+from ..sendablebase import SendableBase
 
 __all__ = ["Trigger"]
 
 
-class Trigger:
+class Trigger(SendableBase):
     """This class provides an easy way to link commands to inputs.
 
     It is very easy to link a button to a command.  For instance, you could
@@ -23,7 +25,8 @@ class Trigger:
     For this, they only have to write the :func:`get` method to get the full
     functionality of the Trigger class.
     """
-    def get(self):
+
+    def get(self) -> bool:
         """Returns whether or not the trigger is active
 
         This method will be called repeatedly a command is linked to the
@@ -33,19 +36,18 @@ class Trigger:
         """
         raise NotImplementedError
 
-    def grab(self):
+    def grab(self) -> bool:
         """Returns whether :meth:`get` returns True or the internal table for
         :class:`.SmartDashboard` use is pressed.
         """
-        pressedEntry = getattr(self, "pressedEntry", None)
-        return self.get() or (pressedEntry is not None and
-                              pressedEntry.getBoolean(False))
+        return self.get() or getattr(self, "sendablePressed", False)
 
-    def whenActive(self, command):
+    def whenActive(self, command: Command) -> None:
         """Starts the given command whenever the trigger just becomes active.
 
         :param command: the command to start
         """
+
         def execute():
             if self.grab():
                 if not execute.pressedLast:
@@ -66,6 +68,7 @@ class Trigger:
 
         :param command: the command to start
         """
+
         def execute():
             if self.grab():
                 execute.pressedLast = True
@@ -79,11 +82,12 @@ class Trigger:
         from ..command import Scheduler
         Scheduler.getInstance().addButton(execute)
 
-    def whenInactive(self, command):
+    def whenInactive(self, command: Command):
         """Starts the command when the trigger becomes inactive.
 
         :param command: the command to start
         """
+
         def execute():
             if self.grab():
                 execute.pressedLast = True
@@ -96,11 +100,12 @@ class Trigger:
         from ..command import Scheduler
         Scheduler.getInstance().addButton(execute)
 
-    def toggleWhenActive(self, command):
+    def toggleWhenActive(self, command: Command):
         """Toggles a command when the trigger becomes active.
 
         :param command: the command to toggle
         """
+
         def execute():
             if self.grab():
                 if not execute.pressedLast:
@@ -116,11 +121,12 @@ class Trigger:
         from ..command import Scheduler
         Scheduler.getInstance().addButton(execute)
 
-    def cancelWhenActive(self, command):
+    def cancelWhenActive(self, command: Command) -> None:
         """Cancels a command when the trigger becomes active.
 
         :param command: the command to cancel
         """
+
         def execute():
             if self.grab():
                 if not execute.pressedLast:
@@ -133,15 +139,13 @@ class Trigger:
         from ..command import Scheduler
         Scheduler.getInstance().addButton(execute)
 
-    def getSmartDashboardType(self):
-        """These methods continue to return the "Button" :class:`.SmartDashboard` type
-        until we decided to create a Trigger widget type for the dashboard.
-        """
-        return "Button"
+    def _safeState(self) -> None:
+        self.sendablePressed = False
 
-    def initTable(self, table):
-        if table is not None and isinstance(table, NetworkTable):
-            self.pressedEntry = table.getEntry("pressed")
-            self.pressedEntry.setBoolean(self.get())
-        else:
-            self.pressedEntry = None
+    def _setPressed(self, value: bool) -> None:
+        self.sendablePressed = value
+
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Button")
+        builder.setSafeState(self._safeState)
+        builder.addBooleanProperty("pressed", self.grab, self._setPressed)

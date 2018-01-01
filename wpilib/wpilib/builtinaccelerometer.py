@@ -1,4 +1,4 @@
-# validated: 2017-11-21 EN 34c18ef00062 edu/wpi/first/wpilibj/BuiltInAccelerometer.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/BuiltInAccelerometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -9,7 +9,6 @@ import hal
 
 from .interfaces import Accelerometer
 from .sensorbase import SensorBase
-from .livewindow import LiveWindow
 
 __all__ = ["BuiltInAccelerometer"]
 
@@ -35,7 +34,7 @@ class BuiltInAccelerometer(SensorBase):
         self.zEntry = None
         hal.report(hal.UsageReporting.kResourceType_Accelerometer, 0, 0,
                       "Built-in accelerometer")
-        LiveWindow.addSensor("BuiltInAccel", 0, self)
+        self.setName("BuiltInAccel", 0)
 
     def setRange(self, range):
         """Set the measuring range of the accelerometer.
@@ -84,30 +83,8 @@ class BuiltInAccelerometer(SensorBase):
         """
         return hal.getAccelerometerZ()
 
-    def getSmartDashboardType(self):
-        return "3AxisAccelerometer"
-
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.xEntry = subtable.getEntry("X")
-            self.yEntry = subtable.getEntry("Y")
-            self.zEntry = subtable.getEntry("Z")
-            self.updateTable()
-        else:
-            self.xEntry = None
-            self.yEntry = None
-            self.zEntry = None
-
-    def updateTable(self):
-        if self.xEntry is not None:
-            self.xEntry.setDouble(self.getX())
-        if self.yEntry is not None:
-            self.yEntry.setDouble(self.getY())
-        if self.zEntry is not None:
-            self.zEntry.setDouble(self.getZ())
-
-    def startLiveWindowMode(self): # pragma: no cover
-        pass
-
-    def stopLiveWindowMode(self): # pragma: no cover
-        pass
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("3AxisAccelerometer")
+        builder.addDoubleProperty("X", self.getX, None)
+        builder.addDoubleProperty("Y", self.getY, None)
+        builder.addDoubleProperty("Z", self.getZ, None)

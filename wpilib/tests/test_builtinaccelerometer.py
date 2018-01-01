@@ -36,24 +36,15 @@ def test_bacc_getZ(acc, acc_data):
     acc_data['z'] = 3.14
     assert acc.getZ() == 3.14
 
-def test_bacc_getSmartDashboardType(acc):
-    assert acc.getSmartDashboardType() == "3AxisAccelerometer"
-    
-def test_bacc_updateTable(acc, acc_data):
-    acc.xEntry = MagicMock()
-    acc.yEntry = MagicMock()
-    acc.zEntry = MagicMock()
+def test_bacc_initSendable(acc, sendablebuilder, acc_data):
     acc_data['x'] = 1
     acc_data['y'] = 2
     acc_data['z'] = 3
-    acc.updateTable()
 
-    acc.xEntry.setDouble.assert_has_calls([call(1)])
-    acc.yEntry.setDouble.assert_has_calls([call(2)])
-    acc.zEntry.setDouble.assert_has_calls([call(3)])
+    acc.initSendable(sendablebuilder)
+    sendablebuilder.updateTable()
 
-def test_bacc_updateTable_uninitialized(acc, acc_data):
-    acc.xEntry = None
-    acc.yEntry = None
-    acc.zEntry = None
-    acc.updateTable()
+    assert sendablebuilder.getTable().getValue("X", 0.0) == 1
+    assert sendablebuilder.getTable().getValue("Y", 0.0) == 2
+    assert sendablebuilder.getTable().getValue("Z", 0.0) == 3
+

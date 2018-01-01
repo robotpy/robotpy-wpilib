@@ -1,6 +1,6 @@
-# validated: 2017-09-22 TW e1195e8b9dab edu/wpi/first/wpilibj/AnalogTriggerOutput.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogTriggerOutput.java
 #----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -32,10 +32,10 @@ class AnalogTriggerOutput(DigitalSource):
     The RisingPulse and FallingPulse outputs detect an instantaneous transition
     from above the upper limit to below the lower limit, and vise versa. These
     pulses represent a rollover condition of a sensor and can be routed to an
-    up / down couter or to interrupts. Because the outputs generate a pulse,
+    up / down counter or to interrupts. Because the outputs generate a pulse,
     they cannot be read directly. To help ensure that a rollover condition is
     not missed, there is an average rejection filter available that operates on
-    the upper 8 bits of a 12 bit number and selects the nearest outlyer of 3
+    the upper 8 bits of a 12 bit number and selects the nearest outlier of 3
     samples.  This will reject a sample that is (due to averaging or sampling)
     errantly between the two limits. This filter will fail if more than one
     sample in a row is errantly in between the two limits. You may see this
@@ -45,6 +45,13 @@ class AnalogTriggerOutput(DigitalSource):
     Using the averaging engine may help with this, but rotational speeds of the
     sensor will then be limited.
     """
+
+    class AnalogTriggerType:
+        """Defines the state in which the :class:`.AnalogTrigger` triggers"""
+        kInWindow = hal.AnalogTriggerType.kInWindow
+        kState = hal.AnalogTriggerType.kState
+        kRisingPulse = hal.AnalogTriggerType.kRisingPulse
+        kFallingPulse = hal.AnalogTriggerType.kFallingPulse
 
     def __init__(self, trigger, outputType):
         """Create an object that represents one of the four outputs from an
@@ -63,10 +70,6 @@ class AnalogTriggerOutput(DigitalSource):
         hal.report(hal.UsageReporting.kResourceType_AnalogTriggerOutput,
                       trigger.index, outputType)
 
-    def free(self):
-        if self.interrupt is not None:
-            self.cancelInterrupts()
-
     def get(self):
         """Get the state of the analog trigger output.
 
@@ -84,9 +87,5 @@ class AnalogTriggerOutput(DigitalSource):
     def getAnalogTriggerTypeForRouting(self):
         return self.outputType
 
-    class AnalogTriggerType:
-        """Defines the state in which the :class:`.AnalogTrigger` triggers"""
-        kInWindow = hal.AnalogTriggerType.kInWindow
-        kState = hal.AnalogTriggerType.kState
-        kRisingPulse = hal.AnalogTriggerType.kRisingPulse
-        kFallingPulse = hal.AnalogTriggerType.kFallingPulse
+    def initSendable(self, builder):
+        pass

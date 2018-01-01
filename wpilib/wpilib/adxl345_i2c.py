@@ -1,4 +1,4 @@
-# validated: 2017-09-20 AA 34c18ef00062 edu/wpi/first/wpilibj/ADXL345_I2C.java
+# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/ADXL345_I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -11,7 +11,6 @@ import hal
 from .interfaces import Accelerometer
 from .i2c import I2C
 from .sensorbase import SensorBase
-from .livewindow import LiveWindow
 
 __all__ = ["ADXL345_I2C"]
 
@@ -66,10 +65,9 @@ class ADXL345_I2C(SensorBase):
         hal.report(hal.UsageReporting.kResourceType_ADXL345,
                       hal.UsageReporting.kADXL345_I2C)
 
-        LiveWindow.addSensor("ADXL345_I2C", port, self)
+        self.setName("ADXL345_I2C", port)
 
     def free(self):
-        LiveWindow.removeComponent(self)
         self.i2c.free()
         super().free()
 
@@ -145,27 +143,17 @@ class ADXL345_I2C(SensorBase):
                 rawData[1] * self.kGsPerLSB,
                 rawData[2] * self.kGsPerLSB)
 
-    # Live Window code, only does anything if live window is activated.
 
-    def getSmartDashboardType(self):
-        return "3AxisAccelerometer"
+    def _updateValues(self):
+        data = self.getAccelerations()
+        self._entryX.setDouble(data[0])
+        self._entryY.setDouble(data[1])
+        self._entryZ.setDouble(data[2])
 
-    def initTable(self, subtable):
-        if subtable is not None:
-            self.xEntry = subtable.getEntry("X")
-            self.yEntry = subtable.getEntry("Y")
-            self.zEntry = subtable.getEntry("Z")
-            self.updateTable()
-        else:
-            self.xEntry = None
-            self.yEntry = None
-            self.zEntry = None
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("3AxisAccelerometer")
+        self._entryX = builder.getEntry("X")
+        self._entryY = builder.getEntry("Y")
+        self._entryZ = builder.getEntry("Z")
 
-    def updateTable(self):
-        if self.xEntry is not None:
-            self.xEntry.setDouble(self.getX())
-        if self.yEntry is not None:
-            self.yEntry.setDouble(self.getY())
-        if self.zEntry is not None:
-            self.zEntry.setDouble(self.getZ())
-
+        builder.setUpdateTable(self._updateValues)
