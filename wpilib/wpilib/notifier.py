@@ -121,4 +121,4 @@ class Notifier:
         also remove any single notification events from the queue. If a timer-based call to the
         registered handler is in progress, this function will block until the handler call is complete.
         """
-        hal.cancelNotifierAlarm(self.notifier)
+        hal.cancelNotifierAlarm(self._notifier)
