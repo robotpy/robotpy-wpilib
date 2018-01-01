@@ -1,4 +1,4 @@
-# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/command/Subsystem.java
+# validated: 2018-01-01 EN 566e28369406 edu/wpi/first/wpilibj/command/Subsystem.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

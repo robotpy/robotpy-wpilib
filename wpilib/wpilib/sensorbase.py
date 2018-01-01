@@ -1,4 +1,4 @@
-# validated: 2017-11-21 EN e1195e8b9dab edu/wpi/first/wpilibj/SensorBase.java
+# validated: 2018-01-01 EN f9bece2ffbf7 edu/wpi/first/wpilibj/SensorBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
