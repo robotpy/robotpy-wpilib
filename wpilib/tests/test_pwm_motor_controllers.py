@@ -7,14 +7,16 @@ import pytest
 
 @pytest.mark.parametrize('clsname, ',
                          ['Jaguar', 'SD540', 'Spark', 'Talon',
-                          'PWMTalonSRX', 'Victor', 'VictorSP'])
+                          'PWMTalonSRX', 'Victor', 'VictorSP',
+                          'PWMVictorSPX', 'DMC60'])
 def test_controller(wpilib, hal_data, clsname):
     
     # create object/helper function
     obj = getattr(wpilib, clsname)(2)
     
     # validate reporting is correct
-    assert hal_data['pwm'][2]['type'] == clsname.lower()
+    # TODO: remove the VictorSPX and DMC60 check once there is usage reporting
+    assert clsname in ('PWMVictorSPX', 'DMC60') or hal_data['pwm'][2]['type'] == clsname.lower()
     
     # Assert starts with zero
     assert obj.get() == 0
@@ -40,5 +42,3 @@ def test_controller(wpilib, hal_data, clsname):
         
         obj.set(i)
         assert abs(obj.get() + i) < 0.01
-        
-    

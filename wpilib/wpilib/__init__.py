@@ -25,6 +25,7 @@ from .digitalglitchfilter import *
 from .digitalinput import *
 from .digitaloutput import *
 from .digitalsource import *
+from .dmc60 import *
 from .doublesolenoid import *
 from .driverstation import *
 from .encoder import *
@@ -49,6 +50,7 @@ from .preferences import *
 from .pwm import *
 from .pwmspeedcontroller import *
 from .pwmtalonsrx import *
+from .pwmvictorspx import *
 from .relay import *
 from .resource import *
 from .robotbase import *
