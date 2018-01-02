@@ -1,4 +1,4 @@
-# validated: 2017-12-24 TW f9bece2ffbf7 edu/wpi/first/wpilibj/IterativeRobotBase.java
+# validated: 2018-01-01 EN 40eb6dfc9b83 edu/wpi/first/wpilibj/IterativeRobotBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -11,6 +11,7 @@ import logging
 
 import hal
 from .livewindow import LiveWindow
+from .smartdashboard import SmartDashboard
 from .robotbase import RobotBase
 
 __all__ = ["IterativeRobotBase"]
@@ -176,4 +177,5 @@ class IterativeRobotBase(RobotBase):
             hal.observeUserProgramTest()
             self.testPeriodic()
         self.robotPeriodic()
+        SmartDashboard.updateValues()
         LiveWindow.updateValues()
