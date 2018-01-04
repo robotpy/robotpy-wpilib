@@ -75,9 +75,9 @@ class DifferentialDrive(RobotDriveBase):
     points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is
     positive.
 
-    Inputs smaller then `.02` will
-    be set to 0, and larger values will be scaled so that the full range is still used. This
-    deadband value can be changed with :meth:`.RobotDriveBase.setDeadband`.
+    Inputs smaller than :data:`.RobotDriveBase.kDefaultDeadband` will be set to
+    0, and larger values will be scaled so that the full range is still used.
+    This deadband value can be changed with :meth:`~.RobotDriveBase.setDeadband`.
 
     .. note:: RobotDrive porting guide:
 
@@ -86,7 +86,7 @@ class DifferentialDrive(RobotDriveBase):
 
         :meth:`.arcadeDrive` is equivalent to
         :meth:`.RobotDrive.arcadeDrive` if a deadband of 0 is used
-        and the the rotation input is inverted (i.e ``arcadeDrive(y, -rotation)``)
+        and the rotation input is inverted (i.e ``arcadeDrive(y, -rotation)``)
 
         :meth:`.curvatureDrive` is similar in concept to
         :meth:`.RobotDrive.drive` with the addition of a quick turn
@@ -126,7 +126,6 @@ class DifferentialDrive(RobotDriveBase):
 
     def arcadeDrive(self, xSpeed, zRotation, squaredInputs=True):
         """Arcade drive method for differential drive platform.
-        The calculated values will be squared to decrease sensitivity at low speeds
 
         :param xSpeed: The robot's speed along the X axis `[-1.0..1.0]`. Forward is positive
         :param zRotation: The robot's zRotation rate around the Z axis `[-1.0..1.0]`. Clockwise is positive
