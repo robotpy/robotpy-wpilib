@@ -22,6 +22,37 @@ class DifferentialDrive(RobotDriveBase):
     These drive bases typically have drop-center / skid-steer with two or more wheels per side
     (e.g., 6WD or 8WD).
 
+    This class takes a :class:`.SpeedController` per side. For four and six motor
+    drivetrains, construct and pass in :class:`.SpeedControllerGroup` instances as follows.
+
+    Four motor drivetrain::
+
+        def robotInit(self):
+            self.frontLeft = wpilib.Talon(1)
+            self.rearLeft = wpilib.Talon(2)
+            self.left = wpilib.SpeedControllerGroup(self.frontLeft, self.rearLeft)
+
+            self.frontRight = wpilib.Talon(3)
+            self.rearRight = wpilib.Talon(4)
+            self.right = wpilib.SpeedControllerGroup(self.frontRight, self.rearRight)
+
+            self.drive = DifferentialDrive(self.left, self.right)
+
+    Six motor drivetrain::
+
+        def robotInit(self):
+            self.frontLeft = wpilib.Talon(1)
+            self.midLeft = wpilib.Talon(2)
+            self.rearLeft = wpilib.Talon(3)
+            self.left = wpilib.SpeedControllerGroup(self.frontLeft, self.midLeft, self.rearLeft)
+
+            self.frontRight = wpilib.Talon(4)
+            self.midRight = wpilib.Talon(5)
+            self.rearRight = wpilib.Talon(6)
+            self.right = wpilib.SpeedControllerGroup(self.frontRight, self.midRight, self.rearRight)
+
+            self.drive = DifferentialDrive(self.left, self.right)
+
     A differential drive robot has left and right wheels separated by an arbitrary width.
 
     Drive base diagram::
@@ -70,13 +101,13 @@ class DifferentialDrive(RobotDriveBase):
     def __init__(self, leftMotor, rightMotor):
         """Constructor for DifferentialDrive.
 
-        .. note:: This class takes in a SpeedController per side. For two and four motor drivetrains,
-                  construct and pass in  :class:`.SpeedControllerGroup` instances as follows.
+        .. note:: To pass multiple motors per side, use a :class:`.SpeedControllerGroup`.
+                  If a motor needs to be inverted, do so before passing it in.
 
-        :param leftMotor: Left motor SpeedController
-        :param rightMotor: Right motor SpeedController
-        :type leftMotor: :class:`.SpeedController` or :class:`.SpeedControllerGroup`
-        :type rightMotor: :class:`.SpeedController` or :class:`.SpeedControllerGroup`
+        :param leftMotor: Left motor(s)
+        :param rightMotor: Right motor(s)
+        :type leftMotor: :class:`.SpeedController`
+        :type rightMotor: :class:`.SpeedController`
         """
         super().__init__()
 
