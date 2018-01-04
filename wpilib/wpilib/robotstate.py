@@ -1,4 +1,4 @@
-# validated: 2015-12-24 DS 6d854af edu/wpi/first/wpilibj/RobotState.java
+# validated: 2018-01-04 TW e1195e8b9dab edu/wpi/first/wpilibj/RobotState.java
 
 __all__ = ["RobotState"]
 
