@@ -52,24 +52,23 @@ class RobotDriveBase(SendableBase, MotorSafety):
         self.setSafetyEnabled(True)
         self.setName("RobotDriveBase")
 
-    def setDeadband(self, deadband):
-        """Change the value for deadband scaling. The default value is `.02`. Values smaller than the
-         deadband are set to 0, while values larger than the deadband are scaled from 0.0 to 1.0. See
-         :meth:`applyDeadband()`
+    def setDeadband(self, deadband: float):
+        """Change the value for deadband scaling.
 
-         :param deadband: The deadband to set
-         :type deadband: float
-         """
+        The default value is :const:`kDefaultDeadband`. Values smaller than the deadband are set to 0,
+        while values larger than the deadband are scaled from 0.0 to 1.0. See :meth:`applyDeadband`.
+
+        :param deadband: The deadband to set
+        """
         self.deadband = deadband
 
-    def setMaxOutput(self, maxOutput):
+    def setMaxOutput(self, maxOutput: float):
         """Configure the scaling factor for using drive methods with motor controllers in a mode
         other than PercentVbus or to limit the maximum output.
 
-        The default value is `1.0`
+        The default value is :const:`kDefaultMaxOutput`.
 
         :param maxOutput: Multiplied with the output percentage computed by the drive functions.
-        :type maxOutput: float
         """
         self.maxOutput = maxOutput
 
