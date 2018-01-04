@@ -1,6 +1,6 @@
-# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
+# validated: 2018-01-04 DV bb38ef564204 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
 # ----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2017. All Rights Reserved.
+# Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -309,4 +309,7 @@ class DifferentialDrive(RobotDriveBase):
     def initSendable(self, builder):
         builder.setSmartDashboardType("DifferentialDrive")
         builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
-        builder.addDoubleProperty("Right Motor Speed", self.rightMotor.get, self.rightMotor.set)
+        builder.addDoubleProperty(
+            "Right Motor Speed",
+            lambda: -self.rightMotor.get(),
+            lambda x: self.rightMotor.set(-x))
