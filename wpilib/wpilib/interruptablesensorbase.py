@@ -1,27 +1,34 @@
-# validated: 2017-11-19 EN b65447b6f5a8 edu/wpi/first/wpilibj/InterruptableSensorBase.java
-#----------------------------------------------------------------------------
+# validated: 2017-11-23 TW b65447b6f5a8 edu/wpi/first/wpilibj/InterruptableSensorBase.java
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import weakref
+import enum
 
 from .sensorbase import SensorBase
 
 __all__ = ["InterruptableSensorBase"]
 
+
 class InterruptableSensorBase(SensorBase):
     """Base for sensors to be used with interrupts"""
+
+    class WaitResult(enum.IntEnum):
+        kTimeout = 0x0
+        kRisingEdge = 0x1
+        kFallingEdge = 0x100
+        kBoth = 0x101
 
     def __init__(self):
         """Create a new InterrupatableSensorBase"""
         super().__init__()
         # The interrupt resource
-        self._interrupt = None
-        self._interrupt_finalizer = None
+        self.interrupt = None
         # Flags if the interrupt being allocated is synchronous
         self.isSynchronousInterrupt = False
 
@@ -30,14 +37,6 @@ class InterruptableSensorBase(SensorBase):
 
     def getPortHandleForRouting(self):
         raise NotImplementedError
-
-    @property
-    def interrupt(self):
-        if self._interrupt_finalizer is None:
-            return None
-        if not self._interrupt_finalizer.alive:
-            return None
-        return self._interrupt
 
     def requestInterrupts(self, handler=None):
         """Request one of the 8 interrupts asynchronously on this digital
@@ -51,7 +50,7 @@ class InterruptableSensorBase(SensorBase):
             specified, the user program will have to explicitly wait for the
             interrupt to occur using waitForInterrupt.
         """
-        if self.interrupt is not None:
+        if self.interrupt:
             raise ValueError("The interrupt has already been allocated")
 
         self.allocateInterrupts(handler is not None)
@@ -61,8 +60,6 @@ class InterruptableSensorBase(SensorBase):
         hal.requestInterrupts(self.interrupt, self.getPortHandleForRouting(),
                               self.getAnalogTriggerTypeForRouting())
         self.setUpSourceEdge(True, False)
-        if handler is not None:
-            hal.attachInterruptHandler(self.interrupt, handler)
 
     def allocateInterrupts(self, watcher):
         """Allocate the interrupt
@@ -71,13 +68,9 @@ class InterruptableSensorBase(SensorBase):
             where the user program will have to explicitly wait for the interrupt
             to occur.
         """
-        if self.interrupt is not None:
-            raise ValueError("The interrupt has already been allocated")
 
         self.isSynchronousInterrupt = watcher
-        self._interrupt = hal.initializeInterrupts(watcher)
-        self._interrupt_finalizer = weakref.finalize(self, hal.cleanInterrupts,
-                                                     self._interrupt)
+        self.interrupt = hal.initializeInterrupts(watcher)
 
     def cancelInterrupts(self):
         """Cancel interrupts on this device. This deallocates all the
@@ -85,7 +78,7 @@ class InterruptableSensorBase(SensorBase):
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
-        self._interrupt_finalizer()
+        hal.cleanInterrupts(self.interrupt)
         self.interrupt = None
 
     def waitForInterrupt(self, timeout, ignorePrevious=True):
@@ -104,7 +97,8 @@ class InterruptableSensorBase(SensorBase):
         rising = 0x1 if (result & 0xFF) else 0x0
         falling = 0x100 if (result & 0xFF00) else 0x0
 
-        return rising | falling
+        result = rising | falling
+        return self.WaitResult(result)
 
     def enableInterrupts(self):
         """Enable interrupts to occur on this input. Interrupts are disabled
