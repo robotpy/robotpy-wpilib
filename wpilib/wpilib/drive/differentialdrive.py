@@ -1,4 +1,4 @@
-# validated: 2018-01-04 DV bb38ef564204 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
+# validated: 2018-01-04 DV 1f4822f33278 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -28,12 +28,12 @@ class DifferentialDrive(RobotDriveBase):
     Four motor drivetrain::
 
         def robotInit(self):
-            self.frontLeft = wpilib.Talon(1)
-            self.rearLeft = wpilib.Talon(2)
+            self.frontLeft = wpilib.Spark(1)
+            self.rearLeft = wpilib.Spark(2)
             self.left = wpilib.SpeedControllerGroup(self.frontLeft, self.rearLeft)
 
-            self.frontRight = wpilib.Talon(3)
-            self.rearRight = wpilib.Talon(4)
+            self.frontRight = wpilib.Spark(3)
+            self.rearRight = wpilib.Spark(4)
             self.right = wpilib.SpeedControllerGroup(self.frontRight, self.rearRight)
 
             self.drive = DifferentialDrive(self.left, self.right)
@@ -41,14 +41,14 @@ class DifferentialDrive(RobotDriveBase):
     Six motor drivetrain::
 
         def robotInit(self):
-            self.frontLeft = wpilib.Talon(1)
-            self.midLeft = wpilib.Talon(2)
-            self.rearLeft = wpilib.Talon(3)
+            self.frontLeft = wpilib.Spark(1)
+            self.midLeft = wpilib.Spark(2)
+            self.rearLeft = wpilib.Spark(3)
             self.left = wpilib.SpeedControllerGroup(self.frontLeft, self.midLeft, self.rearLeft)
 
-            self.frontRight = wpilib.Talon(4)
-            self.midRight = wpilib.Talon(5)
-            self.rearRight = wpilib.Talon(6)
+            self.frontRight = wpilib.Spark(4)
+            self.midRight = wpilib.Spark(5)
+            self.rearRight = wpilib.Spark(6)
             self.right = wpilib.SpeedControllerGroup(self.frontRight, self.midRight, self.rearRight)
 
             self.drive = DifferentialDrive(self.left, self.right)
