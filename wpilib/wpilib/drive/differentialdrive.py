@@ -16,39 +16,39 @@ __all__ = ["DifferentialDrive"]
 
 class DifferentialDrive(RobotDriveBase):
     """
-        A class for driving differential drive/skid-steer drive platforms such as the Kit of Parts drive
-        base, "tank drive", or West Coast Drive.
+    A class for driving differential drive/skid-steer drive platforms such as the Kit of Parts drive
+    base, "tank drive", or West Coast Drive.
 
-        These drive bases typically have drop-center / skid-steer with two or more wheels per side
-        (e.g., 6WD or 8WD).
+    These drive bases typically have drop-center / skid-steer with two or more wheels per side
+    (e.g., 6WD or 8WD).
 
-        A differential drive robot has left and right wheels separated by an arbitrary width.
+    A differential drive robot has left and right wheels separated by an arbitrary width.
 
-        Drive base diagram::
+    Drive base diagram::
 
-            |_______|
-            | |   | |
-              |   |
-            |_|___|_|
-            |       |
+        |_______|
+        | |   | |
+          |   |
+        |_|___|_|
+        |       |
 
 
-        Each ``drive()`` function provides different inverse kinematic relations for a differential drive
-        robot. Motor outputs for the right side are negated, so motor direction inversion by the user is
-        usually unnecessary.
+    Each ``drive()`` function provides different inverse kinematic relations for a differential drive
+    robot. Motor outputs for the right side are negated, so motor direction inversion by the user is
+    usually unnecessary.
 
-        This library uses the NED axes convention (North-East-Down as external reference in the world
-        frame): http://www.nuclearprojects.com/ins/images/axis_big.png.
+    This library uses the NED axes convention (North-East-Down as external reference in the world
+    frame): http://www.nuclearprojects.com/ins/images/axis_big.png.
 
-        The positive X axis points ahead, the positive Y axis points right, and the positive Z axis
-        points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is
-        positive.
+    The positive X axis points ahead, the positive Y axis points right, and the positive Z axis
+    points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is
+    positive.
 
-        Inputs smaller then `.02` will
-        be set to 0, and larger values will be scaled so that the full range is still used. This
-        deadband value can be changed with :meth:`.RobotDriveBase.setDeadband`.
+    Inputs smaller then `.02` will
+    be set to 0, and larger values will be scaled so that the full range is still used. This
+    deadband value can be changed with :meth:`.RobotDriveBase.setDeadband`.
 
-        RobotDrive porting guide:
+    .. note:: RobotDrive porting guide:
 
         :meth:`.tankDrive` is equivalent to
         :meth:`.RobotDrive.tankDrive` if a deadband of 0 is used.

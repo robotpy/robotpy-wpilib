@@ -43,15 +43,16 @@ class MecanumDrive(RobotDriveBase):
     points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is
     positive.
 
-    RobotDrive porting guide:
-    In MecanumDrive, the right side speed controllers are automatically inverted, while in RobotDrive,
-    no speed controllers are automatically inverted.
+    .. note:: RobotDrive porting guide:
 
-    :meth:`driveCartesian` is equivalent to :meth:`.RobotDrive.mecanumDrive_Cartesian` if a deadband of 0
-    is used, and the ``ySpeed`` and ``gyroAngle`` values are inverted compared to ``RobotDrive`` (i.e
-    ``driveCartesian(xSpeed, -ySpeed, zRotation, -gyroAngle)``.
+        In MecanumDrive, the right side speed controllers are automatically inverted,
+        while in RobotDrive, no speed controllers are automatically inverted.
 
-    :meth:`drivePolar` is equivalent to :meth:`.RobotDrive.mecanumPolar` if a deadband of 0 is used.
+        :meth:`driveCartesian` is equivalent to :meth:`.RobotDrive.mecanumDrive_Cartesian` if a deadband of 0
+        is used, and the ``ySpeed`` and ``gyroAngle`` values are inverted compared to ``RobotDrive`` (i.e
+        ``driveCartesian(xSpeed, -ySpeed, zRotation, -gyroAngle)``.
+
+        :meth:`drivePolar` is equivalent to :meth:`.RobotDrive.mecanumPolar` if a deadband of 0 is used.
     """
 
     instances = 0
