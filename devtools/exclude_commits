@@ -10,3 +10,5 @@ ed1a94531a6aa14617b74bc5139817c0529faf54 # license update
 a834fff7b2f9696833a8f073c2f2c3bff2d49079 # styleguide format
 f151892db5722aa630c42488e9417e075e22e780 # license update
 # don't add this; e1195e8b9dab602f036da0c801ba0cc505730b80 # another reorg
+eedb8910c36b732f7294886921b8d5d72847041b # wpilibj styleguide beginning newline
+0ef9803363380c58804a0d885a7cc7ea8233a1ac # copyright year bump
