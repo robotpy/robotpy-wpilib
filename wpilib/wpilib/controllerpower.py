@@ -1,17 +1,22 @@
-# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/ControllerPower.java
-#----------------------------------------------------------------------------
+# validated: 2018-01-04 TW 8b7aa61091df edu/wpi/first/wpilibj/ControllerPower.java
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
 __all__ = ['ControllerPower']
 
+
 class ControllerPower:
-    """Provides access to power levels on the roboRIO"""
+    """Old Controller PR class.
+
+    .. deprecated:: 2018.0.0
+        Use RobotController class instead
+    """
 
     @staticmethod
     def getInputVoltage():
@@ -80,6 +85,7 @@ class ControllerPower:
     def getVoltage5V():
         """
             Get the voltage of the 5V rail
+
 
             :returns: The controller 5V rail voltage value in Volts
             :rtype: float
@@ -161,4 +167,3 @@ class ControllerPower:
             :rtype: int
         """
         return hal.getUserCurrentFaults6V()
-
