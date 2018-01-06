@@ -1,4 +1,11 @@
 # validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/drive/MecanumDrive.java
+#----------------------------------------------------------------------------
+# Copyright (c) FIRST 2008-2017. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+#----------------------------------------------------------------------------
+
 import math
 
 import hal
@@ -9,7 +16,7 @@ __all__ = ["MecanumDrive"]
 
 
 class MecanumDrive(RobotDriveBase):
-    """A class for driving Mecanum drive platforms.
+    r"""A class for driving Mecanum drive platforms.
 
     Mecanum drives are rectangular with one wheel on each corner. Each wheel has rollers toed in
     45 degrees toward the front or back. When looking at the wheels from the top, the roller axles
@@ -18,11 +25,11 @@ class MecanumDrive(RobotDriveBase):
 
     Drive base diagram::
 
-        \\_______//
-        \\ |   | //
-           |   |
-        //_|___|_\\
-        //       \\
+        \_______/
+        \ |   | /
+          |   |
+        /_|___|_\
+        /       \
 
 
     Each drive() function provides different inverse kinematic relations for a Mecanum drive
@@ -36,15 +43,16 @@ class MecanumDrive(RobotDriveBase):
     points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is
     positive.
 
-    RobotDrive porting guide:
-    In MecanumDrive, the right side speed controllers are automatically inverted, while in RobotDrive,
-    no speed controllers are automatically inverted.
+    .. note:: RobotDrive porting guide:
 
-    :meth:`driveCartesian` is equivalent to :meth:`.RobotDrive.mecanumDrive_Cartesian` if a deadband of 0
-    is used, and the ``ySpeed`` and ``gyroAngle`` values are inverted compared to ``RobotDrive`` (i.e
-    ``driveCartesian(xSpeed, -ySpeed, zRotation, -gyroAngle)``.
+        In MecanumDrive, the right side speed controllers are automatically inverted,
+        while in RobotDrive, no speed controllers are automatically inverted.
 
-    :meth:`drivePolar` is equivalent to :meth:`.RobotDrive.mecanumPolar` if a deadband of 0 is used.
+        :meth:`driveCartesian` is equivalent to :meth:`.RobotDrive.mecanumDrive_Cartesian` if a deadband of 0
+        is used, and the ``ySpeed`` and ``gyroAngle`` values are inverted compared to ``RobotDrive`` (i.e
+        ``driveCartesian(xSpeed, -ySpeed, zRotation, -gyroAngle)``.
+
+        :meth:`drivePolar` is equivalent to :meth:`.RobotDrive.mecanumPolar` if a deadband of 0 is used.
     """
 
     instances = 0

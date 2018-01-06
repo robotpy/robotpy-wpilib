@@ -1,6 +1,6 @@
-# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
+# validated: 2018-01-04 DV 1f4822f33278 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
 # ----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2017. All Rights Reserved.
+# Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -16,46 +16,77 @@ __all__ = ["DifferentialDrive"]
 
 class DifferentialDrive(RobotDriveBase):
     """
-        A class for driving differential drive/skid-steer drive platforms such as the Kit of Parts drive
-        base, "tank drive", or West Coast Drive.
+    A class for driving differential drive/skid-steer drive platforms such as the Kit of Parts drive
+    base, "tank drive", or West Coast Drive.
 
-        These drive bases typically have drop-center / skid-steer with two or more wheels per side
-        (e.g., 6WD or 8WD).
+    These drive bases typically have drop-center / skid-steer with two or more wheels per side
+    (e.g., 6WD or 8WD).
 
-        A differential drive robot has left and right wheels separated by an arbitrary width.
+    This class takes a :class:`.SpeedController` per side. For four and six motor
+    drivetrains, construct and pass in :class:`.SpeedControllerGroup` instances as follows.
 
-        Drive base diagram::
+    Four motor drivetrain::
 
-            |_______|
-            | |   | |
-              |   |
-            |_|___|_|
-            |       |
+        def robotInit(self):
+            self.frontLeft = wpilib.Spark(1)
+            self.rearLeft = wpilib.Spark(2)
+            self.left = wpilib.SpeedControllerGroup(self.frontLeft, self.rearLeft)
+
+            self.frontRight = wpilib.Spark(3)
+            self.rearRight = wpilib.Spark(4)
+            self.right = wpilib.SpeedControllerGroup(self.frontRight, self.rearRight)
+
+            self.drive = DifferentialDrive(self.left, self.right)
+
+    Six motor drivetrain::
+
+        def robotInit(self):
+            self.frontLeft = wpilib.Spark(1)
+            self.midLeft = wpilib.Spark(2)
+            self.rearLeft = wpilib.Spark(3)
+            self.left = wpilib.SpeedControllerGroup(self.frontLeft, self.midLeft, self.rearLeft)
+
+            self.frontRight = wpilib.Spark(4)
+            self.midRight = wpilib.Spark(5)
+            self.rearRight = wpilib.Spark(6)
+            self.right = wpilib.SpeedControllerGroup(self.frontRight, self.midRight, self.rearRight)
+
+            self.drive = DifferentialDrive(self.left, self.right)
+
+    A differential drive robot has left and right wheels separated by an arbitrary width.
+
+    Drive base diagram::
+
+        |_______|
+        | |   | |
+          |   |
+        |_|___|_|
+        |       |
 
 
-        Each ``drive()`` function provides different inverse kinematic relations for a differential drive
-        robot. Motor outputs for the right side are negated, so motor direction inversion by the user is
-        usually unnecessary.
+    Each ``drive()`` function provides different inverse kinematic relations for a differential drive
+    robot. Motor outputs for the right side are negated, so motor direction inversion by the user is
+    usually unnecessary.
 
-        This library uses the NED axes convention (North-East-Down as external reference in the world
-        frame): http://www.nuclearprojects.com/ins/images/axis_big.png.
+    This library uses the NED axes convention (North-East-Down as external reference in the world
+    frame): http://www.nuclearprojects.com/ins/images/axis_big.png.
 
-        The positive X axis points ahead, the positive Y axis points right, and the positive Z axis
-        points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is
-        positive.
+    The positive X axis points ahead, the positive Y axis points right, and the positive Z axis
+    points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is
+    positive.
 
-        Inputs smaller then `.02` will
-        be set to 0, and larger values will be scaled so that the full range is still used. This
-        deadband value can be changed with :meth:`.RobotDriveBase.setDeadband`.
+    Inputs smaller than :data:`.RobotDriveBase.kDefaultDeadband` will be set to
+    0, and larger values will be scaled so that the full range is still used.
+    This deadband value can be changed with :meth:`~.RobotDriveBase.setDeadband`.
 
-        RobotDrive porting guide:
+    .. note:: RobotDrive porting guide:
 
         :meth:`.tankDrive` is equivalent to
         :meth:`.RobotDrive.tankDrive` if a deadband of 0 is used.
 
         :meth:`.arcadeDrive` is equivalent to
         :meth:`.RobotDrive.arcadeDrive` if a deadband of 0 is used
-        and the the rotation input is inverted (i.e ``arcadeDrive(y, -rotation)``)
+        and the rotation input is inverted (i.e ``arcadeDrive(y, -rotation)``)
 
         :meth:`.curvatureDrive` is similar in concept to
         :meth:`.RobotDrive.drive` with the addition of a quick turn
@@ -70,13 +101,13 @@ class DifferentialDrive(RobotDriveBase):
     def __init__(self, leftMotor, rightMotor):
         """Constructor for DifferentialDrive.
 
-        .. note:: This class takes in a SpeedController per side. For two and four motor drivetrains,
-                  construct and pass in  :class:`.SpeedControllerGroup` instances as follows.
+        .. note:: To pass multiple motors per side, use a :class:`.SpeedControllerGroup`.
+                  If a motor needs to be inverted, do so before passing it in.
 
-        :param leftMotor: Left motor SpeedController
-        :param rightMotor: Right motor SpeedController
-        :type leftMotor: :class:`.SpeedController` or :class:`.SpeedControllerGroup`
-        :type rightMotor: :class:`.SpeedController` or :class:`.SpeedControllerGroup`
+        :param leftMotor: Left motor(s)
+        :param rightMotor: Right motor(s)
+        :type leftMotor: :class:`.SpeedController`
+        :type rightMotor: :class:`.SpeedController`
         """
         super().__init__()
 
@@ -95,7 +126,6 @@ class DifferentialDrive(RobotDriveBase):
 
     def arcadeDrive(self, xSpeed, zRotation, squaredInputs=True):
         """Arcade drive method for differential drive platform.
-        The calculated values will be squared to decrease sensitivity at low speeds
 
         :param xSpeed: The robot's speed along the X axis `[-1.0..1.0]`. Forward is positive
         :param zRotation: The robot's zRotation rate around the Z axis `[-1.0..1.0]`. Clockwise is positive
@@ -279,4 +309,7 @@ class DifferentialDrive(RobotDriveBase):
     def initSendable(self, builder):
         builder.setSmartDashboardType("DifferentialDrive")
         builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
-        builder.addDoubleProperty("Right Motor Speed", self.rightMotor.get, self.rightMotor.set)
+        builder.addDoubleProperty(
+            "Right Motor Speed",
+            lambda: -self.rightMotor.get(),
+            lambda x: self.rightMotor.set(-x))

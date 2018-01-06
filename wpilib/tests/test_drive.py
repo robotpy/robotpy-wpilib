@@ -15,8 +15,8 @@ def test_init_diffdrive(wpimock, halmock):
     drive = wpimock.drive.DifferentialDrive(left, right)
 
     assert wpimock.drive.DifferentialDrive.instances == 1
-    assert drive.maxOutput == wpimock.drive.RobotDriveBase.maxOutput
-    assert drive.deadband == wpimock.drive.RobotDriveBase.deadband
+    assert drive.maxOutput == wpimock.drive.RobotDriveBase.kDefaultMaxOutput
+    assert drive.deadband == wpimock.drive.RobotDriveBase.kDefaultDeadband
 
     # TODO: test hal.setPWM() outputs
 
@@ -34,8 +34,8 @@ def test_init_killough(wpimock, halmock):
     drive = wpimock.drive.KilloughDrive(left, right, back)
 
     assert wpimock.drive.KilloughDrive.instances == 1
-    assert drive.maxOutput == wpimock.drive.RobotDriveBase.maxOutput
-    assert drive.deadband == wpimock.drive.RobotDriveBase.deadband
+    assert drive.maxOutput == wpimock.drive.RobotDriveBase.kDefaultMaxOutput
+    assert drive.deadband == wpimock.drive.RobotDriveBase.kDefaultDeadband
 
     assert drive.leftMotor == left
     assert drive.rightMotor == right
@@ -63,8 +63,8 @@ def test_init_mecanum(wpimock, halmock):
     assert drive.frontRightMotor == fright
     assert drive.rearRightMotor == rright
 
-    assert drive.maxOutput == wpimock.drive.RobotDriveBase.maxOutput
-    assert drive.deadband == wpimock.drive.RobotDriveBase.deadband
+    assert drive.maxOutput == wpimock.drive.RobotDriveBase.kDefaultMaxOutput
+    assert drive.deadband == wpimock.drive.RobotDriveBase.kDefaultDeadband
 
 
 def test_init_error(wpimock, halmock):
