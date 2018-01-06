@@ -1,4 +1,4 @@
-# validated: 2017-11-23 TW b65447b6f5a8 edu/wpi/first/wpilibj/InterruptableSensorBase.java
+# validated: 2018-01-06 TW f9bece2ffbf7 edu/wpi/first/wpilibj/InterruptableSensorBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

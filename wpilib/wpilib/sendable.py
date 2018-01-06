@@ -1,4 +1,4 @@
-# validated: 2017-10-03 EN 34c18ef00062 edu/wpi/first/wpilibj/Sendable.java
+# validated: 2018-01-06 TW f9bece2ffbf7 edu/wpi/first/wpilibj/Sendable.java
 
 from .sendablebuilder import SendableBuilder
 
