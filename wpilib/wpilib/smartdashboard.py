@@ -1,4 +1,4 @@
-# validated: 2018-01-01 EN 40eb6dfc9b83 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
+# validated: 2018-01-06 DS ee33296e1fe6 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
 
 # validation note: 2017-10-22: Not using the getEntry() stuff that Java uses,
 #                              as using the existing table stuff is more
@@ -107,10 +107,12 @@ class SmartDashboard:
 
                 sddata = Data(data)
                 cls.tablesToData[key] = sddata
-                sddata.builder.setTable(cls.getTable().getSubTable(key))
+                dataTable = cls.getTable().getSubTable(key)
+                sddata.builder.setTable(dataTable)
                 data.initSendable(sddata.builder)
                 sddata.builder.updateTable()
                 sddata.builder.startListeners()
+                dataTable.getEntry('.name').setString(key)
 
     @classmethod
     def getData(cls, key):
