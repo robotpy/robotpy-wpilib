@@ -1,4 +1,4 @@
-# validated: 2018-01-01 EN 566e28369406 edu/wpi/first/wpilibj/command/Subsystem.java
+# validated: 2018-01-06 TW 8346caed9cbf edu/wpi/first/wpilibj/command/Subsystem.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -163,7 +163,7 @@ class Subsystem(SendableBase):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Subsystem")
-        builder.addBooleanProperty("hasDefault", lambda: self.defaultCommand is not None, None)
-        builder.addStringProperty("default", self.getDefaultCommandName, None)
-        builder.addBooleanProperty("hasCommand", lambda: self.defaultCommand is not None, None)
-        builder.addStringProperty("command", self.getCurrentCommandName, None)
+        builder.addBooleanProperty(".hasDefault", lambda: self.defaultCommand is not None, None)
+        builder.addStringProperty(".default", self.getDefaultCommandName, None)
+        builder.addBooleanProperty(".hasCommand", lambda: self.defaultCommand is not None, None)
+        builder.addStringProperty(".command", self.getCurrentCommandName, None)
