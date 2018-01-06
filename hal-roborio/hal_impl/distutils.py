@@ -7,8 +7,8 @@
 #
 
 
-hal_version = '2018.1.1-beta-5-20171217230225-1-g166d9e0'
-wpiutil_version = '3.0.0-beta-3-20171202033920-6-g4e0ed79'
+hal_version = '2018.1.1-20180104001731'
+wpiutil_version = '3.0.0-20180104003936'
 
 frc_site = 'http://first.wpi.edu/FRC/roborio/maven/development'
 
