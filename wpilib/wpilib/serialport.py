@@ -1,4 +1,4 @@
-# validated: 2017-03-05 DS f3d66e92ecdd edu/wpi/first/wpilibj/SerialPort.java
+# validated: 2018-01-06 DS 479d0beb5a79 edu/wpi/first/wpilibj/SerialPort.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
