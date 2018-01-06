@@ -41,6 +41,11 @@ class InterruptableSensorBase(SensorBase):
             return None
         return self._interrupt
 
+    def free(self):
+        super().free()
+        if self.interrupt is not None:
+            self.cancelInterrupts()
+
     def getAnalogTriggerTypeForRouting(self):
         raise NotImplementedError
 
@@ -89,6 +94,7 @@ class InterruptableSensorBase(SensorBase):
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
+        self._interrupt_finalizer()
         hal.cleanInterrupts(self.interrupt)
         self.interrupt = None
 
