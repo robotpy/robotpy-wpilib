@@ -1,8 +1,9 @@
+git+git://github.com/robotpy/pynetworktables.git
+
 -e .
 -e ../hal-base
 -e ../hal-sim
 
-git+git://github.com/robotpy/pynetworktables.git
 git+git://github.com/robotpy/pyfrc.git
 
 pytest>=2.8
