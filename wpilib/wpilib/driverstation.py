@@ -1,11 +1,12 @@
-# validated: 2017-01-22 DS d322342494d6 edu/wpi/first/wpilibj/DriverStation.java
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# validated: 2018-01-06 TW 8b7aa61091df edu/wpi/first/wpilibj/DriverStation.java
+# Copyright (c) 2008-2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 
 import threading
 
+import enum
 import hal
 import sys
 import traceback
@@ -32,6 +33,16 @@ class DriverStation:
         Red = 0
         Blue = 1
         Invalid = 2
+
+    class MatchType(enum.IntEnum):
+        None_ = 0
+        Practice = 1
+        Qualification = 2
+        Elimination = 3
+
+    class MatchInfoData:
+        pass
+
 
     @staticmethod
     def _reset():
@@ -66,15 +77,22 @@ class DriverStation:
         if not hasattr(DriverStation, 'instance') or DriverStation.instance is not None:
             raise ValueError("Do not create DriverStation instances, use DriverStation.getInstance() instead")
 
-        self.joystickMutex = threading.RLock()
+        self.cacheDataMutex = threading.RLock()
 
         self.joystickAxes = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVs = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtons = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
+        self.matchInfo = self.MatchInfoData()
+        hal.getMatchInfo(self.matchInfo)
+
+        self.joystickButtonsPressed = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
+        self.joystickButtonsReleased = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
 
         self.joystickAxesCache = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVsCache = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtonsCache = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
+        self.matchInfoCache = self.MatchInfoData()
+        hal.getMatchInfo(self.matchInfoCache)
 
         self.controlWordMutex = threading.RLock()
         self.controlWordCache = hal.ControlWord()
@@ -125,23 +143,21 @@ class DriverStation:
         traceString = ""
         locString = ""
 
+        exc = sys.exc_info()[0]
+        stack = traceback.extract_stack()[:-2]  # last one is this func
+        if exc is not None: # i.e. if an exception is present
+            # remove call of full_stack, the printed exception
+            # will contain the caught exception caller instead
+            del stack[-1]
+            del stack[-1]
+
+        locString = "%s.%s:%s" % (stack[-1][0], stack[-1][1], stack[-1][2])
         if printTrace:
-            exc = sys.exc_info()[0]
-            stack = traceback.extract_stack()[:-2]  # last one is this func
-            if exc is not None: # i.e. if an exception is present
-                # remove call of full_stack, the printed exception
-                # will contain the caught exception caller instead
-                del stack[-1]
-                del stack[-1]
-
-            locString = "%s.%s:%s" % (stack[-1][0], stack[-1][1], stack[-1][2])
-
             trc = 'Traceback (most recent call last):\n'
             stackstr = trc + ''.join(traceback.format_list(stack))
             if exc is not None:
                 stackstr += '  ' + traceback.format_exc().lstrip(trc)
             errorString += ':\n' + stackstr
-
             logger.exception(error)
         elif isError:
             logger.error(error)
@@ -171,7 +187,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             joystickAxes = self.joystickAxes[stick]
 
             if axis >= joystickAxes.count:
@@ -196,7 +212,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             joystickPOVs = self.joystickPOVs[stick]
 
             if pov >= joystickPOVs.count:
@@ -215,7 +231,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             return self.joystickButtons[stick].buttons
 
     def getStickButton(self, stick, button):
@@ -231,7 +247,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             joystickButtons = self.joystickButtons[stick]
             if button > joystickButtons.count:
                 self._reportJoystickUnpluggedWarning("Joystick Button %d on port %d not available, check if controller is plugged in" % (button, stick))
@@ -240,6 +256,44 @@ class DriverStation:
                 self._reportJoystickUnpluggedError("Button indexes begin at 1 for WPILib")
                 return False
             return ((0x1 << (button - 1)) & joystickButtons.buttons) != 0
+
+    def getStickButtonPressed(self, stick, button):
+        """Whether one joystick button was pressed since the last check.
+        Button indices begin at 1.
+
+        :param stick: Joystick to read
+        :param button: Button index, beginning at 1
+        :returns: Whether the joystick button was pressed since the last check
+        """
+        if button <= 0:
+            self._reportJoystickUnpluggedError("Button indexes begin at 1 for WPILib")
+            return False
+        if not 0 <= stick < self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
+        if self.joystickButtonsPressed[stick].buttons & 1 << (button - 1):
+            self.joystickButtonsPressed[stick].buttons &= ~(1 << (button -1))
+            return True
+        return False
+
+    def getStickButtonReleased(self, stick, button):
+        """Whether one joystick button was released since the last check.
+        Button indices begin at 1.
+
+        :param stick: Joystick to read
+        :param button: Button index, beginning at 1
+        :returns: Whether the joystick button was released since the last check
+        """
+        if button <= 0:
+            self._reportJoystickUnpluggedError("Button indexes begin at 1 for WPILib")
+            return False
+        if not 0 <= stick < self.kJoystickPorts:
+            raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
+
+        if self.joystickButtonsReleased[stick].buttons & 1 << (button - 1):
+            self.joystickButtonsReleased[stick].buttons &= ~(1 << (button -1))
+            return True
+        return False
 
     def getStickAxisCount(self, stick):
         """Returns the number of axes on a given joystick port
@@ -252,7 +306,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             return self.joystickAxes[stick].count
 
 
@@ -267,7 +321,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             return self.joystickPOVs[stick].count
 
     def getStickButtonCount(self, stick):
@@ -281,7 +335,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             return self.joystickButtons[stick].count
 
     def getJoystickIsXbox(self, stick):
@@ -295,7 +349,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
             if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
                 self._reportJoystickUnpluggedWarning("WARNING: Joystick on port {} not avaliable, check if controller is "
@@ -316,7 +370,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
             if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
                 self._reportJoystickUnpluggedWarning("Joystick on port {} not avaliable, check if controller is "
@@ -337,7 +391,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
             if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick].axes):
                 self._reportJoystickUnpluggedError("WARNING: Joystick on port {} not avaliable, check if controller is "
@@ -359,7 +413,7 @@ class DriverStation:
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
-        with self.joystickMutex:
+        with self.cacheDataMutex:
             return hal.getJoystickAxisType(stick, axis)
 
     def isEnabled(self):
@@ -445,6 +499,9 @@ class DriverStation:
         outputs may be disabled if the robot is disabled or e-stopped, the
         watchdog has expired, or if the roboRIO browns out.
 
+        .. deprecated:: 2018.0.0
+            Use :meth:`.RobotController.isSysActive`
+
         :returns: True if the FPGA outputs are enabled.
         """
         return hal.getSystemActive()
@@ -453,9 +510,59 @@ class DriverStation:
         """
         Check if the system is browned out.
 
+        .. deprecated:: 2018.0.0
+            Use :meth:`.RobotController.isBrownedOut`
+
         :returns: True if the system is browned out.
         """
         return hal.getBrownedOut()
+
+    def getGameSpecificMessage(self):
+        """Get the game specific message
+
+        :returns: Game specific message
+        :rtype: str
+        """
+        with self.cacheDataMutex:
+            return self.matchInfo.gameSpecificMessage
+
+    def getEventName(self):
+        """Get the event name
+
+        :returns: Event name
+        :rtype: str
+        """
+        with self.cacheDataMutex:
+            return self.matchInfo.eventName
+
+    def getMatchType(self):
+        """Gets the match type
+
+        :returns: The matchtype
+        :rtype: :class:`MatchType`
+        """
+        with self.cacheDataMutex:
+            matchType = self.matchInfo.matchType
+
+        return self.MatchType(matchType)
+
+    def getMatchNumber(self):
+        """Get the match number
+
+        :returns: Match number
+        :rtype: int
+        """
+        with self.cacheDataMutex:
+            return self.matchInfo.matchNumber
+
+    def getReplayNumber(self):
+        """Get the replay number
+
+        :returns: Replay number
+        :rtype: int
+        """
+        with self.cacheDataMutex:
+            return self.matchInfo.replayNumber
 
     def getAlliance(self):
         """Get the current alliance from the FMS.
@@ -523,6 +630,9 @@ class DriverStation:
     def getBatteryVoltage(self):
         """Read the battery voltage.
 
+        .. deprecated:: 2018.0.0
+            Use :meth:`.RobotController.getBatteryVoltage`
+
         :returns: The battery voltage in Volts."""
         return hal.getVinVoltage()
 
@@ -574,16 +684,27 @@ class DriverStation:
             hal.getJoystickPOVs(stick, self.joystickPOVsCache[stick])
             hal.getJoystickButtons(stick, self.joystickButtonsCache[stick])
 
+        hal.getMatchInfo(self.matchInfoCache)
+
         # Force a control word update, to make sure the data is the newest.
         self._updateControlWord(True)
 
         # lock joystick mutex to swap cache data
-        with self.joystickMutex:
+        with self.cacheDataMutex:
+            for i in range(self.kJoystickPorts):
+                self.joystickButtonsPressed[i].buttons |= \
+                    ~self.joystickButtons[i].buttons & self.joystickButtonsCache[i].buttons
+
+                self.joystickButtonsReleased[i].buttons |= \
+                    self.joystickButtons[i].buttons & ~self.joystickButtonsCache[i].buttons
 
             # move cache to actual data
             self.joystickAxes, self.joystickAxesCache = self.joystickAxesCache, self.joystickAxes
             self.joystickButtons, self.joystickButtonsCache = self.joystickButtonsCache, self.joystickButtons
             self.joystickPOVs, self.joystickPOVsCache = self.joystickPOVsCache, self.joystickPOVs
+
+            self.matchInfo, self.matchInfoCache = self.matchInfoCache, self.matchInfo
+
 
     def _reportJoystickUnpluggedError(self, message):
         """
@@ -611,6 +732,9 @@ class DriverStation:
             hal.waitForDSData()
             self._getData()
 
+            if self.isDisabled():
+                safetyCounter = 0
+
             safetyCounter += 1
             if safetyCounter >= 4:
                 MotorSafety.checkMotors()
@@ -636,7 +760,7 @@ class DriverStation:
         """
         now = hal.getFPGATime()
         with self.controlWordMutex:
-            if now - self.lastControlWordUpdate > 50 or force:
+            if (now - self.lastControlWordUpdate) > 50 or force:
                 hal.getControlWord(self.controlWordCache)
                 self.lastControlWordUpdate = now
 

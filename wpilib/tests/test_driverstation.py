@@ -67,6 +67,7 @@ def test_task_safetyCounter(dsmock, halmock):
             self.count += 1
             if self.count >= 5:
                 dsmock.threadKeepAlive = False
+    halmock.getFPGATime.return_value = 1000
     halmock.waitForDSData = unalive()
     dsmock._getData = MagicMock()
     with patch("wpilib.driverstation.MotorSafety") as mocksafety:
@@ -78,6 +79,7 @@ def test_task_usermode(mode, dsmock, halmock):
     # exit function after one iteration
     def unalive():
         dsmock.threadKeepAlive = False
+    halmock.getFPGATime.return_value = 1000
     halmock.waitForDSData = unalive
     dsmock._getData = MagicMock()
     setattr(dsmock, "userIn"+mode, True)
