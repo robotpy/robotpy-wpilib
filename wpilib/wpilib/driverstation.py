@@ -110,7 +110,7 @@ class DriverStation:
         self.thread.start()
 
     def release(self):
-        """Kill the thread"""
+        """Kill the thread."""
         self.threadKeepAlive = False
 
     @staticmethod
@@ -163,19 +163,17 @@ class DriverStation:
                       locString.encode('utf-8'),
                       traceString.encode('utf-8'), True)
 
-    def getStickAxis(self, stick, axis):
+    def getStickAxis(self, stick: int, axis: int) -> float:
         """Get the value of the axis on a joystick.
+
         This depends on the mapping of the joystick connected to the specified
         port.
 
         :param stick: The joystick port number
-        :type stick: int
         :param axis: The analog axis value to read from the joystick.
-        :type axis: int
 
         :returns: The value of the axis on the joystick.
         """
-
         if axis < 0 or axis >= hal.kMaxJoystickAxes:
             raise IndexError("Joystick axis is out of range")
         if stick < 0 or stick >= self.kJoystickPorts:
@@ -190,13 +188,11 @@ class DriverStation:
 
             return joystickAxes.axes[axis]
 
-    def getStickPOV(self, stick, pov):
+    def getStickPOV(self, stick: int, pov: int) -> int:
         """Get the state of a POV on the joystick.
 
         :param stick: The joystick port number
-        :type stick: int
         :param pov: which POV
-        :type pov: int
 
         :returns: The angle of the POV in degrees, or -1 if the POV is not
                   pressed.
@@ -214,11 +210,10 @@ class DriverStation:
                 return -1
             return joystickPOVs.povs[pov]
 
-    def getStickButtons(self, stick):
+    def getStickButtons(self, stick: int) -> int:
         """The state of all the buttons on the joystick.
 
         :param stick: The joystick port number
-        :type stick: int
 
         :returns: The state of all buttons, as a bit array.
         """
@@ -228,13 +223,11 @@ class DriverStation:
         with self.cacheDataMutex:
             return self.joystickButtons[stick].buttons
 
-    def getStickButton(self, stick, button):
+    def getStickButton(self, stick: int, button: int) -> bool:
         """The state of a button on the joystick. Button indexes begin at 1.
 
         :param stick: The joystick port number
-        :type stick: int
         :param button: The button index, beginning at 1.
-        :type button: int
 
         :returns: The state of the button.
         """
@@ -251,7 +244,7 @@ class DriverStation:
                 return False
             return ((0x1 << (button - 1)) & joystickButtons.buttons) != 0
 
-    def getStickButtonPressed(self, stick, button):
+    def getStickButtonPressed(self, stick: int, button: int) -> bool:
         """Whether one joystick button was pressed since the last check.
         Button indices begin at 1.
 
@@ -270,7 +263,7 @@ class DriverStation:
             return True
         return False
 
-    def getStickButtonReleased(self, stick, button):
+    def getStickButtonReleased(self, stick: int, button: int) -> bool:
         """Whether one joystick button was released since the last check.
         Button indices begin at 1.
 
@@ -289,11 +282,10 @@ class DriverStation:
             return True
         return False
 
-    def getStickAxisCount(self, stick):
-        """Returns the number of axes on a given joystick port
+    def getStickAxisCount(self, stick: int) -> int:
+        """Returns the number of axes on a given joystick port.
 
         :param stick: The joystick port number
-        :type stick: int
 
         :returns: The number of axes on the indicated joystick
         """
@@ -303,12 +295,10 @@ class DriverStation:
         with self.cacheDataMutex:
             return self.joystickAxes[stick].count
 
-
-    def getStickPOVCount(self, stick):
-        """Returns the number of POVs on a given joystick port
+    def getStickPOVCount(self, stick: int) -> int:
+        """Returns the number of POVs on a given joystick port.
 
         :param stick: The joystick port number
-        :type stick: int
 
         :returns: The number of POVs on the indicated joystick
         """
@@ -318,11 +308,10 @@ class DriverStation:
         with self.cacheDataMutex:
             return self.joystickPOVs[stick].count
 
-    def getStickButtonCount(self, stick):
-        """Gets the number of buttons on a joystick
+    def getStickButtonCount(self, stick: int) -> int:
+        """Gets the number of buttons on a joystick.
 
         :param stick: The joystick port number
-        :type stick: int
 
         :returns: The number of buttons on the indicated joystick.
         """
@@ -332,13 +321,12 @@ class DriverStation:
         with self.cacheDataMutex:
             return self.joystickButtons[stick].count
 
-    def getJoystickIsXbox(self, stick):
-        """Gets the value of isXbox on a joystick
+    def getJoystickIsXbox(self, stick: int) -> bool:
+        """Gets the value of isXbox on a joystick.
 
         :param stick: The joystick port number
-        :type stick: int
 
-        :returns A boolean that returns the value of isXbox
+        :returns: A boolean that returns the value of isXbox
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
@@ -352,14 +340,13 @@ class DriverStation:
 
         return hal.getJoystickIsXbox(stick)
 
-    def getJoystickType(self, stick):
+    def getJoystickType(self, stick: int) -> int:
         """
         Gets the value of type on a joystick
 
         :param stick: The joystick port number
-        :type stick: int
 
-        :returns An integer that returns the value of type.
+        :returns: An integer that returns the value of type.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
@@ -373,14 +360,13 @@ class DriverStation:
 
         return hal.getJoystickType(stick)
 
-    def getJoystickName(self, stick):
+    def getJoystickName(self, stick: int) -> str:
         """
         Gets the name of a joystick
 
         :param stick: The joystick port number
-        :type stick: int
 
-        :returns The joystick name.
+        :returns: The joystick name.
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
@@ -394,15 +380,13 @@ class DriverStation:
 
         return hal.getJoystickName(stick)
 
-    def getJoystickAxisType(self, stick, axis):
+    def getJoystickAxisType(self, stick: int, axis: int) -> int:
         """Returns the types of Axes on a given joystick port.
 
         :param stick: The joystick port number
-        :type stick: int
         :param axis: The target axis
-        :type axis: int
 
-        :returns An integer that reports type of axis the axis is reporting to be
+        :returns: An integer that reports type of axis the axis is reporting to be
         """
         if stick < 0 or stick >= self.kJoystickPorts:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
@@ -410,7 +394,7 @@ class DriverStation:
         with self.cacheDataMutex:
             return hal.getJoystickAxisType(stick, axis)
 
-    def isEnabled(self):
+    def isEnabled(self) -> bool:
         """Gets a value indicating whether the Driver Station requires the
         robot to be enabled.
 
@@ -420,7 +404,7 @@ class DriverStation:
             self._updateControlWord(False)
             return self.controlWordCache.enabled != 0 and self.controlWordCache.dsAttached != 0
 
-    def isDisabled(self):
+    def isDisabled(self) -> bool:
         """Gets a value indicating whether the Driver Station requires the
         robot to be disabled.
 
@@ -428,7 +412,7 @@ class DriverStation:
         """
         return not self.isEnabled()
 
-    def isAutonomous(self):
+    def isAutonomous(self) -> bool:
         """Gets a value indicating whether the Driver Station requires the
         robot to be running in autonomous mode.
 
@@ -438,7 +422,7 @@ class DriverStation:
             self._updateControlWord(False)
             return self.controlWordCache.autonomous != 0
 
-    def isOperatorControl(self):
+    def isOperatorControl(self) -> bool:
         """Gets a value indicating whether the Driver Station requires the
         robot to be running in operator-controlled mode.
 
@@ -449,7 +433,7 @@ class DriverStation:
             self._updateControlWord(False)
             return not (self.controlWordCache.autonomous != 0 or self.controlWordCache.test != 0)
 
-    def isTest(self):
+    def isTest(self) -> bool:
         """Gets a value indicating whether the Driver Station requires the
         robot to be running in test mode.
 
@@ -459,7 +443,7 @@ class DriverStation:
             self._updateControlWord(False)
             return self.controlWordCache.test != 0
 
-    def isDSAttached(self):
+    def isDSAttached(self) -> bool:
         """Is the driver station attached to the robot?
 
         :returns: True if the robot is being controlled by a driver station.
@@ -468,7 +452,7 @@ class DriverStation:
             self._updateControlWord(False)
             return self.controlWordCache.dsAttached != 0
 
-    def isNewControlData(self):
+    def isNewControlData(self) -> bool:
         """Gets if a new control packet from the driver station arrived since
         the last time this function was called.
 
@@ -477,7 +461,7 @@ class DriverStation:
         """
         return hal.isNewControlData()
 
-    def isFMSAttached(self):
+    def isFMSAttached(self) -> bool:
         """Gets if the driver station attached to a Field Management System.
 
         :returns: True if the robot is competing on a field being controlled
@@ -511,58 +495,52 @@ class DriverStation:
         """
         return hal.getBrownedOut()
 
-    def getGameSpecificMessage(self):
-        """Get the game specific message
+    def getGameSpecificMessage(self) -> str:
+        """Get the game specific message.
 
-        :returns: Game specific message
-        :rtype: str
+        :returns: The game specific message
         """
         with self.cacheDataMutex:
             return self.matchInfo.gameSpecificMessage
 
-    def getEventName(self):
+    def getEventName(self) -> str:
         """Get the event name
 
-        :returns: Event name
-        :rtype: str
+        :returns: The event name
         """
         with self.cacheDataMutex:
             return self.matchInfo.eventName
 
-    def getMatchType(self):
-        """Gets the match type
+    def getMatchType(self) -> MatchType:
+        """Get the match type.
 
-        :returns: The matchtype
-        :rtype: :class:`MatchType`
+        :returns: The match type
         """
         with self.cacheDataMutex:
             matchType = self.matchInfo.matchType
 
         return self.MatchType(matchType)
 
-    def getMatchNumber(self):
-        """Get the match number
+    def getMatchNumber(self) -> int:
+        """Get the match number.
 
-        :returns: Match number
-        :rtype: int
+        :returns: The match number
         """
         with self.cacheDataMutex:
             return self.matchInfo.matchNumber
 
-    def getReplayNumber(self):
-        """Get the replay number
+    def getReplayNumber(self) -> int:
+        """Get the replay number.
 
-        :returns: Replay number
-        :rtype: int
+        :returns: The replay number
         """
         with self.cacheDataMutex:
             return self.matchInfo.replayNumber
 
-    def getAlliance(self):
+    def getAlliance(self) -> Alliance:
         """Get the current alliance from the FMS.
 
         :returns: The current alliance
-        :rtype: :class:`DriverStation.Alliance`
         """
         allianceStationID = hal.getAllianceStation()
         hAid = hal.AllianceStationID
@@ -574,7 +552,7 @@ class DriverStation:
         else:
             return self.Alliance.Invalid
 
-    def getLocation(self):
+    def getLocation(self) -> int:
         """Gets the location of the team's driver station controls.
 
         :returns: The location of the team's driver station controls:
@@ -592,9 +570,10 @@ class DriverStation:
         else:
             return 0
 
-    def waitForData(self, timeout = None):
-        """Wait for new data or for timeout, which ever comes first.  If
-        timeout is None, wait for new data only.
+    def waitForData(self, timeout: int = None) -> bool:
+        """Wait for new data or for timeout, which ever comes first.
+
+        If timeout is None, wait for new data only.
 
         :param timeout: The maximum time in seconds to wait.
 
@@ -604,8 +583,9 @@ class DriverStation:
             timeout = 0
         return hal.waitForDSDataTimeout(timeout)
 
-    def getMatchTime(self):
+    def getMatchTime(self) -> int:
         """Return the approximate match time.
+
         The FMS does not currently send the official match time to the robots, but
         does send an approximate match time. The value will count down the time
         remaining in the current period (auto or teleop).
@@ -699,10 +679,9 @@ class DriverStation:
 
             self.matchInfo, self.matchInfoCache = self.matchInfoCache, self.matchInfo
 
-
     def _reportJoystickUnpluggedError(self, message):
         """
-        Reports errors related to unplugged joysticks and throttles them so that they don't overwhelm the DS
+        Reports errors related to unplugged joysticks and throttles them so that they don't overwhelm the DS.
         """
         currentTime = Timer.getFPGATimestamp()
         if currentTime > self.nextMessageTime:
@@ -711,7 +690,7 @@ class DriverStation:
 
     def _reportJoystickUnpluggedWarning(self, message):
         """
-        Reports errors related to unplugged joysticks and throttles them so that they don't overwhelm the DS
+        Reports errors related to unplugged joysticks and throttles them so that they don't overwhelm the DS.
         """
         currentTime = Timer.getFPGATimestamp()
         if currentTime > self.nextMessageTime:
