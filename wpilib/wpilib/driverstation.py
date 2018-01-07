@@ -133,25 +133,25 @@ class DriverStation:
 
     @staticmethod
     def _reportErrorImpl(isError, code, error, printTrace):
-        errorString = error
         traceString = ""
         locString = ""
 
-        exc = sys.exc_info()[0]
-        stack = traceback.extract_stack()[:-2]  # last one is this func
-        if exc is not None: # i.e. if an exception is present
-            # remove call of full_stack, the printed exception
-            # will contain the caught exception caller instead
-            del stack[-1]
-            del stack[-1]
-
-        locString = "%s.%s:%s" % (stack[-1][0], stack[-1][1], stack[-1][2])
         if printTrace:
+            exc = sys.exc_info()[0]
+            stack = traceback.extract_stack()[:-2]  # last one is this func
+            if exc is not None:  # i.e. if an exception is present
+                # remove call of full_stack, the printed exception
+                # will contain the caught exception caller instead
+                del stack[-1]
+                del stack[-1]
+
+            locString = "%s.%s:%s" % (stack[-1][0], stack[-1][1], stack[-1][2])
+
             trc = 'Traceback (most recent call last):\n'
             stackstr = trc + ''.join(traceback.format_list(stack))
             if exc is not None:
                 stackstr += '  ' + traceback.format_exc().lstrip(trc)
-            errorString += ':\n' + stackstr
+            traceString += ':\n' + stackstr
             logger.exception(error)
         elif isError:
             logger.error(error)
