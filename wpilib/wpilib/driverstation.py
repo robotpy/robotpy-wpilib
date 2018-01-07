@@ -715,7 +715,7 @@ class DriverStation:
         """
         currentTime = Timer.getFPGATimestamp()
         if currentTime > self.nextMessageTime:
-            self.reportError(message, False)
+            self.reportWarning(message, False)
             self.nextMessageTime = currentTime + JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL
 
     def _run(self):
