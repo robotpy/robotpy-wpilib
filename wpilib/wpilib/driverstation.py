@@ -28,8 +28,8 @@ class DriverStation:
     #: The number of joystick ports
     kJoystickPorts = 6
 
-    class Alliance:
-        """The robot alliance that the robot is a part of"""
+    class Alliance(enum.IntEnum):
+        """The robot alliance that the robot is a part of."""
         Red = 0
         Blue = 1
         Invalid = 2
