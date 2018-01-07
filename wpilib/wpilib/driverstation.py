@@ -22,8 +22,7 @@ logger = logging.getLogger('wpilib.ds')
 JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL = 1.0
 
 class DriverStation:
-    """Provide access to the network communication data to / from the Driver
-    Station."""
+    """Provide access to the network communication data to / from the Driver Station."""
 
     #: The number of joystick ports
     kJoystickPorts = 6
@@ -69,7 +68,6 @@ class DriverStation:
         instance static member variable, you should never create a
         DriverStation instance.
         """
-
         if not hasattr(DriverStation, 'instance') or DriverStation.instance is not None:
             raise ValueError("Do not create DriverStation instances, use DriverStation.getInstance() instead")
 
@@ -259,7 +257,7 @@ class DriverStation:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
         if self.joystickButtonsPressed[stick].buttons & 1 << (button - 1):
-            self.joystickButtonsPressed[stick].buttons &= ~(1 << (button -1))
+            self.joystickButtonsPressed[stick].buttons &= ~(1 << (button - 1))
             return True
         return False
 
@@ -278,7 +276,7 @@ class DriverStation:
             raise IndexError("Joystick index is out of range, should be 0-%s" % self.kJoystickPorts)
 
         if self.joystickButtonsReleased[stick].buttons & 1 << (button - 1):
-            self.joystickButtonsReleased[stick].buttons &= ~(1 << (button -1))
+            self.joystickButtonsReleased[stick].buttons &= ~(1 << (button - 1))
             return True
         return False
 
@@ -335,7 +333,7 @@ class DriverStation:
             # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
             if 1 > self.joystickButtons[stick].count and 1 > len(self.joystickAxes[stick]):
                 self._reportJoystickUnpluggedWarning("WARNING: Joystick on port {} not avaliable, check if controller is "
-                                                   "plugged in.\n".format(stick))
+                                                     "plugged in.\n".format(stick))
                 return False
 
         return hal.getJoystickIsXbox(stick)
@@ -607,7 +605,8 @@ class DriverStation:
         .. deprecated:: 2018.0.0
             Use :meth:`.RobotController.getBatteryVoltage`
 
-        :returns: The battery voltage in Volts."""
+        :returns: The battery voltage in Volts.
+        """
         return hal.getVinVoltage()
 
     def InDisabled(self, entering):
@@ -726,8 +725,9 @@ class DriverStation:
                 hal.observeUserProgramTest()
 
     def _updateControlWord(self, force):
-        """Updates the data in the control word cache. Updates if the force parameter is set, or if
-        50ms have passed since the last update.
+        """Updates the data in the control word cache.
+
+        Updates if the force parameter is set, or if 50ms have passed since the last update.
 
         :param force: True to force an update to the cache, otherwise update if 50ms have passed.
         """
@@ -736,4 +736,3 @@ class DriverStation:
             if (now - self.lastControlWordUpdate) > 50 or force:
                 hal.getControlWord(self.controlWordCache)
                 self.lastControlWordUpdate = now
-
