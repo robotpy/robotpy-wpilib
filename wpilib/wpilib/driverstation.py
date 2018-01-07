@@ -40,10 +40,6 @@ class DriverStation:
         Qualification = 2
         Elimination = 3
 
-    class MatchInfoData:
-        pass
-
-
     @staticmethod
     def _reset():
         if hasattr(DriverStation, 'instance'):
@@ -82,8 +78,7 @@ class DriverStation:
         self.joystickAxes = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVs = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtons = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
-        self.matchInfo = self.MatchInfoData()
-        hal.getMatchInfo(self.matchInfo)
+        self.matchInfo = hal.MatchInfo()
 
         self.joystickButtonsPressed = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
         self.joystickButtonsReleased = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
@@ -91,8 +86,7 @@ class DriverStation:
         self.joystickAxesCache = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVsCache = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtonsCache = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
-        self.matchInfoCache = self.MatchInfoData()
-        hal.getMatchInfo(self.matchInfoCache)
+        self.matchInfoCache = hal.MatchInfo()
 
         self.controlWordMutex = threading.RLock()
         self.controlWordCache = hal.ControlWord()
