@@ -40,14 +40,14 @@ class DriverStation:
         Qualification = 2
         Elimination = 3
 
-    @staticmethod
-    def _reset():
-        if hasattr(DriverStation, 'instance'):
-            ds = DriverStation.instance
+    @classmethod
+    def _reset(cls):
+        ds = getattr(cls, 'instance', None)
+        if ds is not None:
             ds.release()
             #hal.giveMultiWait(ds.packetDataAvailableSem)
             ds.thread.join()
-            del DriverStation.instance
+            del cls.instance
 
     @classmethod
     def getInstance(cls):
