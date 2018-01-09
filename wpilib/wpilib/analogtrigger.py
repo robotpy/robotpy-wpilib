@@ -54,8 +54,7 @@ class AnalogTrigger(SensorBase):
         else:
             self.analogInput = channel
 
-        port = hal.getPort(channel)
-        self._port, self.index = hal.initializeAnalogTrigger(port)
+        self._port, self.index = hal.initializeAnalogTrigger(self.analogInput.port)
         self.__finalizer = \
             weakref.finalize(self, _freeAnalogTrigger, self._port)
 
