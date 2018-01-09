@@ -24,11 +24,19 @@ def _RETFUNC(name, restype, *params, out=None, library=_dll,
             paramflags.append((dir, param[0], param[2]))
         else:
             paramflags.append((dir, param[0]))
-        
+
     # Note: keep in sync with hal-sim implementation
     if c_name is None:
         c_name = 'HAL_%s%s' % (name[0].upper(), name[1:])
-            
+
+    # retval isn't returned if there are out parameters
+    if errcheck is None and restype is not None and out is not None:
+        outindexes = [i for i, p in enumerate(params) if p[0] in out]
+        def errcheck(rv, f, args):
+            out = [rv]
+            out.extend(getattr(args[i], 'value', args[i]) for i in outindexes)
+            return tuple(out)
+
     try:
         func = prototype((c_name, library), tuple(paramflags))
         if errcheck is not None:

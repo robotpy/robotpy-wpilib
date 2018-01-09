@@ -41,24 +41,16 @@ def hal_wrapper(f):
     '''Decorator to support introspection. The wrapped function must be
        the same name as the wrapper function, but start with an underscore
     '''
-    
+
     wrapped = globals()['_' + f.__name__]
     if hasattr(wrapped, 'fndata'):
         f.fndata = wrapped.fndata
     return f
 
 def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
-                handle_missing=False, _inner_func=_RETFUNC, c_name=None):
+                handle_missing=False, _inner_func=_RETFUNC, c_name=None, errcheck=None):
     realparams = list(params)
     realparams.append(("status", C.POINTER(C.c_int32)))
-    if restype is not None and out is not None:
-        outindexes = [i for i, p in enumerate(params) if p[0] in out]
-        def errcheck(rv, f, args):
-            out = [rv]
-            out.extend(args[i].value for i in outindexes)
-            return tuple(out)
-    else:
-        errcheck = None
     _inner = _inner_func(name, restype, *realparams, out=out, library=library,
                         errcheck=errcheck, handle_missing=handle_missing, c_name=None)
     def outer(*args, **kwargs):
