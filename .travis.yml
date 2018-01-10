@@ -8,9 +8,10 @@ stages:
 env:
 - RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
 
+# reverse order because travis already has latest python installed
 python:
-- "3.5"
 - "3.6"
+- "3.5"
 
 # command to install dependencies
 install:
@@ -26,34 +27,47 @@ jobs:
   include:
   - stage: deploy-pypi
     if: tag IS present
+    install: true
     script: cd hal-sim
     deploy:
     - provider: pypi
       user: $PYPI_USERNAME
       password: $PYPI_PASSWORD
+      on:
+        tags: true
   - stage: deploy-pypi
     if: tag IS present
+    install: true
     script: cd hal-base
     deploy:
     - provider: pypi
       user: $PYPI_USERNAME
       password: $PYPI_PASSWORD
+      on:
+        tags: true
   - stage: deploy-pypi
     if: tag IS present
+    install: true
     script: cd hal-roborio
     deploy:
     - provider: pypi
       user: $PYPI_USERNAME
       password: $PYPI_PASSWORD
+      on:
+        tags: true
   - stage: deploy-pypi
+    install: true
     if: tag IS present
     script: cd wpilib
     deploy:
       provider: pypi
       user: $PYPI_USERNAME
       password: $PYPI_PASSWORD
+      on:
+        tags: true
   - stage: deploy-github
     if: tag IS present
+    install: true
     script: devtools/build_installer.sh
     deploy:
     - provider: releases
