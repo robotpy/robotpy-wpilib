@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e 
+set -e
 cd `dirname $0`
 source _windows_env.sh
 source _gitver.sh
@@ -34,7 +34,7 @@ pushd $rpy_tmpdir
 
 # Download + extract files from the installer
 pip download --no-cache --disable-pip-version-check robotpy-installer -d .
-tar --strip=2 -xf robotpy-installer*.tar.gz '*/installer.py' '*/win32/*'
+tar --strip=2 -xf robotpy-installer*.tar.gz --wildcards '*/installer.py' '*/win32/*'
 rm robotpy-installer*.tar.gz
 
 find *
