@@ -148,7 +148,7 @@ class RobotBase:
             from .driverstation import DriverStation
             DriverStation.reportError("Unhandled exception instantiating robot " + robot_cls.__name__, True)
             DriverStation.reportWarning("Robots should not quit, but yours did!", False)
-            DriverStation.reportError("Could not instantiate robot "+robot_cls.__name__+"!")
+            DriverStation.reportError("Could not instantiate robot "+robot_cls.__name__+"!", False)
             return False
 
         # Add a check to see if the user forgot to call super().__init__()
@@ -174,11 +174,11 @@ class RobotBase:
             from .driverstation import DriverStation
             DriverStation.reportError("Unhandled exception", True)
             DriverStation.reportWarning("Robots should not quit, but yours did!", False)
-            DriverStation.reportError("The startCompetition() method (or methods called by it) should have handled the exception above.")
+            DriverStation.reportError("The startCompetition() method (or methods called by it) should have handled the exception above.", False)
             return False
         else:
             # startCompetition never returns unless exception occurs....
             from .driverstation import DriverStation
             DriverStation.reportWarning("Robots should not quit, but yours did!", False)
-            DriverStation.reportError("Unexpected return from startCompetition() method.")
+            DriverStation.reportError("Unexpected return from startCompetition() method.", False)
             return False
