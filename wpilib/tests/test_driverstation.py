@@ -267,7 +267,7 @@ def test_event_data(hal, hal_data):
     info = hal.MatchInfo()
     ret = hal.getMatchInfo(info)
     assert ret == 0
-    assert info.eventName == 'my-event'
+    assert info.eventName == b'my-event'
 
 def test_joystick_name(hal, hal_data):
     hal_data['joysticks'][0]['name'] = 'joy0'
