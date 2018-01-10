@@ -657,7 +657,7 @@ class DriverStation:
             hal.getJoystickPOVs(stick, self.joystickPOVsCache[stick])
             hal.getJoystickButtons(stick, self.joystickButtonsCache[stick])
 
-        hal.getMatchInfo(self.matchInfoCache)
+        _, self.matchInfoCache = hal.getMatchInfo()
 
         # Force a control word update, to make sure the data is the newest.
         self._updateControlWord(True)
