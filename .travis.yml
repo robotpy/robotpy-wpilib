@@ -1,10 +1,17 @@
 language: python
 sudo: false
+stages:
+- test
+- deploy-pypi
+- deploy-github
+
 env:
-  - RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
+- RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
+
 python:
-  - "3.5"
-  - "3.6"
+- "3.5"
+- "3.6"
+
 # command to install dependencies
 install:
   - pip install -U pip
@@ -14,6 +21,49 @@ install:
 script:
   - wpilib/tests/run_tests.sh
   - "pushd docs && make html && popd"
+
+jobs:
+  include:
+  - stage: deploy-pypi
+    if: tag IS present
+    script: cd hal-sim
+    deploy:
+    - provider: pypi
+      user: $PYPI_USERNAME
+      password: $PYPI_PASSWORD
+  - stage: deploy-pypi
+    if: tag IS present
+    script: cd hal-base
+    deploy:
+    - provider: pypi
+      user: $PYPI_USERNAME
+      password: $PYPI_PASSWORD
+  - stage: deploy-pypi
+    if: tag IS present
+    script: cd hal-roborio
+    deploy:
+    - provider: pypi
+      user: $PYPI_USERNAME
+      password: $PYPI_PASSWORD
+  - stage: deploy-pypi
+    if: tag IS present
+    script: cd wpilib
+    deploy:
+      provider: pypi
+      user: $PYPI_USERNAME
+      password: $PYPI_PASSWORD
+  - stage: deploy-github
+    if: tag IS present
+    script: devtools/build_installer.sh
+    deploy:
+    - provider: releases
+      api_key: $GITHUB_OAUTH_TOKEN
+      file_glob: true
+      file: dist/robotpy-*.zip
+      skip_cleanup: true
+      on:
+        tags: true
+
 git:
   depth: 200
 notifications:
