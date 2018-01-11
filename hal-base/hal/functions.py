@@ -349,11 +349,8 @@ setJoystickOutputs = _RETFUNC("setJoystickOutputs", C.c_int32, ("joystickNum", C
 
 getMatchTime = _STATUSFUNC("getMatchTime", C.c_double)
 
-# TODO: hack
-_matchInfo_type = MatchInfo_ptr if __hal_simulation__ else C.c_void_p
-
 _getMatchInfo = _RETFUNC("getMatchInfo", C.c_int32, ("info", MatchInfo_ptr), out=["info"])
-_freeMatchInfo = _RETFUNC("freeMatchInfo", None, ("info", _matchInfo_type))
+_freeMatchInfo = _RETFUNC("freeMatchInfo", None, ("info", MatchInfo_ptr))
 
 @hal_wrapper
 def getMatchInfo(cachedInfo):
