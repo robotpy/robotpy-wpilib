@@ -123,9 +123,8 @@ def drive_mecanum(wpimock, halmock):
     m4.reset_mock()
     return drive
 
-quickStopAccumulator = 0
 def check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn):
-    global quickStopAccumulator
+    quickStopAccumulator = 0
     y = wpimock.drive.RobotDriveBase.limit(y)
     y = wpimock.drive.RobotDriveBase.applyDeadband(y, drive_diff.deadband)
 
