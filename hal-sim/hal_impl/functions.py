@@ -1067,7 +1067,7 @@ def getMatchInfo():
     info.matchType = evt['match_type']
     info.matchNumber = evt['match_number']
     info.replayNumber = evt['replay_number']
-    info.gameSpecificMessage = bytes(evt['game_specific_message'], 'utf-8')
+    info.gameSpecificMessage = evt['game_specific_message']
     return 0, info
 
 def freeMatchInfo(info):
