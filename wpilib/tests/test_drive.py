@@ -123,16 +123,18 @@ def drive_mecanum(wpimock, halmock):
     m4.reset_mock()
     return drive
 
-
+quickStopAccumulator = 0
 def check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn):
-    quickStopAccumulator = 0
+    global quickStopAccumulator
     y = wpimock.drive.RobotDriveBase.limit(y)
     y = wpimock.drive.RobotDriveBase.applyDeadband(y, drive_diff.deadband)
 
+    rotation = wpimock.drive.RobotDriveBase.limit(rotation)
+    rotation = wpimock.drive.RobotDriveBase.applyDeadband(rotation, drive_diff.deadband)
+
     if isQuickTurn:
-        if abs(y) < .2:
-            alpha = .1
-            quickStopAccumulator = (1 - alpha) * quickStopAccumulator + alpha * wpimock.drive.RobotDriveBase.limit(
+        if abs(y) < drive_diff.quickStopThreshold:
+            quickStopAccumulator = (1 - drive_diff.quickStopAlpha) * quickStopAccumulator + drive_diff.quickStopAlpha * wpimock.drive.RobotDriveBase.limit(
                 rotation) * 2
 
         overPower = True
@@ -167,7 +169,7 @@ def check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn):
             rightMotorSpeed = -1.0
 
     drive_diff.leftMotor.set.assert_called_once_with(leftMotorSpeed * drive_diff.maxOutput)
-    drive_diff.rightMotor.set.assert_called_once_with(rightMotorSpeed * drive_diff.maxOutput)
+    drive_diff.rightMotor.set.assert_called_once_with(-rightMotorSpeed * drive_diff.maxOutput)
 
 
 @pytest.mark.parametrize("y,rotation,isQuickTurn",
@@ -248,7 +250,7 @@ def check_arcade(wpimock, drive_diff, y, rotation, sq):
             leftMotorSpeed = maxInput
             rightMotorSpeed = y - rotation
     drive_diff.leftMotor.set.assert_called_once_with(leftMotorSpeed * drive_diff.maxOutput)
-    drive_diff.rightMotor.set.assert_called_once_with(rightMotorSpeed * drive_diff.maxOutput)
+    drive_diff.rightMotor.set.assert_called_once_with(-rightMotorSpeed * drive_diff.maxOutput)
 
 
 @pytest.mark.parametrize("sq,y,rotation",

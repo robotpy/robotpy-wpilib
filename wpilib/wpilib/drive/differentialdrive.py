@@ -171,7 +171,7 @@ class DifferentialDrive(RobotDriveBase):
         rightMotorSpeed = RobotDriveBase.limit(rightMotorSpeed) * self.maxOutput
 
         self.leftMotor.set(leftMotorSpeed)
-        self.rightMotor.set(rightMotorSpeed)
+        self.rightMotor.set(-rightMotorSpeed)
 
         self.feed()
 
@@ -198,11 +198,13 @@ class DifferentialDrive(RobotDriveBase):
         xSpeed = RobotDriveBase.limit(xSpeed)
         xSpeed = RobotDriveBase.applyDeadband(xSpeed, self.deadband)
 
+        zRotation = RobotDriveBase.limit(zRotation)
+        zRotation = RobotDriveBase.applyDeadband(zRotation, self.deadband)
+
         if isQuickTurn:
-            if abs(xSpeed) < .2:
-                alpha = .1
-                self.quickStopAccumulator = (1 - alpha) * self.quickStopAccumulator + alpha * RobotDriveBase.limit(
-                    zRotation) * 2
+            if abs(xSpeed) < self.quickStopThreshold:
+                self.quickStopAccumulator = (1 - self.quickStopAlpha) * self.quickStopAccumulator + \
+                                            self.quickStopAlpha * RobotDriveBase.limit(zRotation) * 2
 
             overPower = True
             angularPower = zRotation
@@ -236,7 +238,7 @@ class DifferentialDrive(RobotDriveBase):
                 rightMotorSpeed = -1.0
 
         self.leftMotor.set(leftMotorSpeed * self.maxOutput)
-        self.rightMotor.set(rightMotorSpeed * self.maxOutput)
+        self.rightMotor.set(-rightMotorSpeed * self.maxOutput)
 
         self.feed()
 
