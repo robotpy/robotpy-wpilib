@@ -1,4 +1,4 @@
-# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/SpeedControllerGroup.java
+# validated: 2018-01-12 TW 59f938b584d9 edu/wpi/first/wpilibj/SpeedControllerGroup.java
 
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
@@ -42,7 +42,7 @@ class SpeedControllerGroup(SendableBase, SpeedController):
 
     def get(self):
         if len(self.speedControllers) > 0:
-            return self.speedControllers[0].get()
+            return self.speedControllers[0].get() * (-1 if self.isInverted else 1)
         return 0.0
 
     def setInverted(self, isInverted):

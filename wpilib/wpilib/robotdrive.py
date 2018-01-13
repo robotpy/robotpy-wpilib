@@ -29,7 +29,7 @@ def _freeRobotDrive(allocatedSpeedControllers):
 class RobotDrive(MotorSafety):
     """
     .. deprecated:: 2018.0.0
-        Use DifferentialDrive, KilloughDrive, or MecanumDrive instead.
+        Use :class:`.DifferentialDrive` or :class:`.MecanumDrive` instead.
 
     Operations on a robot drivetrain based on a definition of the motor
     configuration. 
