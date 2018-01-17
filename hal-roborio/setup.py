@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import importlib.machinery
+import os
 from os.path import dirname, exists, join
 import subprocess
 import sys
@@ -8,9 +9,8 @@ import sys
 from setuptools import setup
 
 # Check to see if we're on a RoboRIO before potentially downloading anything
-if __name__ == '__main__' and len(sys.argv) > 1 and sys.argv[1] == 'install':
-    if not exists('/etc/natinst/share/scs_imagemetadata.ini'):
-        raise RuntimeError("This HAL should only be installed onto a RoboRIO. Perhaps try the `robotpy-hal-sim` package?")
+if os.environ.get('FORCE_HAL_INSTALL') != '1' and not exists('/etc/natinst/share/scs_imagemetadata.ini'):
+    raise RuntimeError("This HAL should only be installed onto a RoboRIO. Perhaps try the `robotpy-hal-sim` package?")
 
 setup_dir = dirname(__file__)
 git_dir = join(setup_dir, '..', '.git')

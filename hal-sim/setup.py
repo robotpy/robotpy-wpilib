@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 from os.path import dirname, exists, join
 import sys, subprocess
 from setuptools import setup
@@ -40,13 +41,9 @@ with open(join(setup_dir, 'README.rst'), 'r') as readme_file:
     long_description = readme_file.read()
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1] == 'install':
-        # setuptools doesn't seem to have a nice way of running checks before
-        # an install script runs, so I'm just going to do this and hope it works
-
-        # NOTE: may have false positives, but it should work well enough
-        if exists('/etc/natinst/share/scs_imagemetadata.ini'):
-            raise RuntimeError("The simulation HAL should not be installed onto the roboRIO. Perhaps try the `robotpy-hal-roborio` package?")
+    # NOTE: may have false positives, but it should work well enough
+    if os.environ.get('FORCE_HAL_INSTALL') != '1' and exists('/etc/natinst/share/scs_imagemetadata.ini'):
+        raise RuntimeError("The simulation HAL should not be installed onto the roboRIO. Perhaps try the `robotpy-hal-roborio` package?")
 
     setup(
         name='robotpy-hal-sim',
