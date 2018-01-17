@@ -9,7 +9,8 @@ import sys
 from setuptools import setup
 
 # Check to see if we're on a RoboRIO before potentially downloading anything
-if os.environ.get('FORCE_HAL_INSTALL') != '1' and not 'sdist' in sys.argv \
+if os.environ.get('FORCE_HAL_INSTALL') != '1' \
+   and not 'sdist' in sys.argv and not 'egg_info' in sys.argv \
    and not exists('/etc/natinst/share/scs_imagemetadata.ini'):
     raise RuntimeError("This HAL should only be installed onto a RoboRIO. Perhaps try the `robotpy-hal-sim` package?")
 
