@@ -30,25 +30,19 @@ class SampleRobot(RobotBase):
     Alternatively you can override the :meth:`robotMain` method and manage all
     aspects of the robot yourself (not recommended).
     
-    .. deprecated:: 2018.0.0
+    .. warning::
         While it may look like a good choice to use for your code
         if you're inexperienced, don't. Unless you know what you
         are doing, complex code will be much more difficult under
         this system. Use :class:`.TimedRobot` or command based
         instead if you're new.
+
+    .. deprecated:: 2018.0.0
     """
 
     #: A python logging object that you can use to send messages to the log. It
     #: is recommended to use this instead of print statements.
     logger = logging.getLogger("robot")
-
-    def __init__(self):
-        warnings.warn(
-            "While it may look like a good choice to use for your code if you're inexperienced, don't. " +
-            "Unless you know what you are doing, complex code will be much more difficult under this system. " +
-            "Use TimedRobot or Command-Based instead",
-            DeprecationWarning)
-        super().__init__()
 
     def robotInit(self):
         """Robot-wide initialization code should go here.
