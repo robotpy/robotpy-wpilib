@@ -50,6 +50,10 @@ class Preferences:
             Preferences.instance = Preferences()
         return Preferences.instance
 
+    @classmethod
+    def _reset(cls):
+        del cls.instance
+
     def __init__(self):
         """Creates a preference class that will automatically read the file in
         a different thread. Any call to its methods will be blocked until the
@@ -138,7 +142,7 @@ class Preferences:
     def __setitem__(self, key, value):
         """Python style setting of key/value."""
         self.table.putString(key, str(value))
-  
+
     def containsKey(self, key):
         """Returns whether or not there is a key with the given name.
 
