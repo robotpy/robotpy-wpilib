@@ -52,7 +52,8 @@ class Preferences:
 
     @classmethod
     def _reset(cls):
-        del cls.instance
+        if hasattr(cls, "instance"):
+            del cls.instance
 
     def __init__(self):
         """Creates a preference class that will automatically read the file in
