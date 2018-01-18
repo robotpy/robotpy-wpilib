@@ -7,10 +7,10 @@
 #
 
 
-hal_version = '2018.1.1-20180104001731'
-wpiutil_version = '3.0.0-20180104003936'
+hal_version = '2018.1.1'
+wpiutil_version = '3.0.0'
 
-frc_site = 'http://first.wpi.edu/FRC/roborio/maven/development'
+frc_site = 'http://first.wpi.edu/FRC/roborio/maven/release'
 
 hal_site = '%s/edu/wpi/first/hal/hal' % frc_site
 wpiutil_site = '%s/edu/wpi/first/wpiutil/wpiutil-cpp' % frc_site
