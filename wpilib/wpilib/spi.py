@@ -1,4 +1,4 @@
-# validated: 2016-12-20 JW e1195e8b9dab602f036da0c801ba0cc505730b80 edu/wpi/first/wpilibj/SPI.java
+# validated: 2018-01-19 DS a3e5378d1468 edu/wpi/first/wpilibj/SPI.java
 
 import ctypes
 import enum
