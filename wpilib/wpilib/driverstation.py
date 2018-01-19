@@ -499,7 +499,9 @@ class DriverStation:
         :returns: The game specific message
         """
         with self.cacheDataMutex:
-            return self.matchInfo.gameSpecificMessage.decode('utf-8')
+            message = self.matchInfo.gameSpecificMessage
+        if message is not None:
+            return message.decode('utf-8')
 
     def getEventName(self) -> str:
         """Get the event name
@@ -507,7 +509,9 @@ class DriverStation:
         :returns: The event name
         """
         with self.cacheDataMutex:
-            return self.matchInfo.eventName.decode('utf-8')
+            name = self.matchInfo.eventName
+        if name is not None:
+            return name.decode('utf-8')
 
     def getMatchType(self) -> MatchType:
         """Get the match type.
