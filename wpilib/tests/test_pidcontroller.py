@@ -443,8 +443,8 @@ def test_pidcontroller_calculate_rate6(pid):
 def test_pidcontroller_calculate_rate7(pid, continuous, input, setpoint, expected_error, expected_output):
     pid.pidInput.getPIDSourceType.return_value = pid.PIDSourceType.kRate
     pid.pidInput.pidGet.return_value = input
-    pid.setContinuous(continuous)
     pid.setInputRange(-180.0, 180.0)
+    pid.setContinuous(continuous)
     pid.setOutputRange(-1, 1)
     pid.setSetpoint(setpoint)
     pid.setPID(p=0.1, i=0.0, d=0.075, f=0.0)

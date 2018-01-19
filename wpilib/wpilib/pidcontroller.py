@@ -1,4 +1,4 @@
-# validated: 2017-12-13 EN f9bece2ffbf7 edu/wpi/first/wpilibj/PIDController.java
+# validated: 2018-01-19 DS 551388845713 edu/wpi/first/wpilibj/PIDController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -289,13 +289,15 @@ class PIDController(SendableBase):
 
     def setContinuous(self, continuous=True):
         """Set the PID controller to consider the input to be continuous.
-        Rather then using the max and min in as constraints, it considers them
+        Rather then using the max and min input range as constraints, it considers them
         to be the same point and automatically calculates the shortest route
         to the setpoint.
 
         :param continuous: Set to True turns on continuous, False turns off
             continuous
         """
+        if continuous and self.inputRange <= 0:
+            raise ValueError("No input range set when calling setContinuous().")
         with self.mutex:
             self.continuous = continuous
 
@@ -539,7 +541,7 @@ class PIDController(SendableBase):
         :param error: The current error of the PID controller.
         :return: Error for continuous inputs.
         """
-        if self.continuous:
+        if self.continuous and self.inputRange > 0:
             error %= self.inputRange
             if abs(error) > self.inputRange / 2:
                 if error > 0:
