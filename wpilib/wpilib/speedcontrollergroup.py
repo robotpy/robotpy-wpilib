@@ -1,4 +1,4 @@
-# validated: 2018-01-12 TW 59f938b584d9 edu/wpi/first/wpilibj/SpeedControllerGroup.java
+# validated: 2018-01-19 DS 0e8ff4663df9 edu/wpi/first/wpilibj/SpeedControllerGroup.java
 
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
@@ -60,8 +60,7 @@ class SpeedControllerGroup(SendableBase, SpeedController):
             speedController.disable()
 
     def pidWrite(self, output):
-        for speedController in self.speedControllers:
-            speedController.pidWrite(output)
+        self.set(output)
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Speed Controller")

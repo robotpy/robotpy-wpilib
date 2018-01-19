@@ -1,4 +1,4 @@
-# validated: 2018-01-06 DS 691741cfcb30 edu/wpi/first/wpilibj/RobotController.java
+# validated: 2018-01-19 DS 02b6615042d8 edu/wpi/first/wpilibj/RobotController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
