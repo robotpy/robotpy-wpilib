@@ -14,17 +14,28 @@ class Sendable:
         Gets the name of this Sendable object.
 
         :returns: Name
-        :rtype: str
         """
         raise NotImplementedError
 
     def setName(self, subsystem: str, name: str = None) -> None:
         """
-        Sets the name of this Sendable object.
+        Sets the name (and optionally the subsystem name) of this Sendable object.
 
-        :param name: Name
-        :type name: str
+        This may be called with two different sets of parameters:
+
+        - name
+        - subsystem, name
+
+        :param str subsystem: subsystem name
+        :param str name: Name
         """
+        if name is None:
+            self._setName(subsystem)
+        else:
+            self._setNameAndSubsystem(subsystem, name)
+
+    def _setName(self, name: str) -> None:
+        """Sets the name of this Sendable object."""
         raise NotImplementedError
 
     def _setNameAndSubsystem(self, subsystem: str, name: str) -> None:
@@ -32,9 +43,7 @@ class Sendable:
         Sets both the subsystem name and device name of this Sendable object.
 
         :param subsystem: subsystem name
-        :type subsystem: str
         :param name: Name
-        :type name: str
         """
         self.setSubsystem(subsystem)
         self.setName(name)
@@ -44,7 +53,6 @@ class Sendable:
         Gets the subsystem name of this Sendable object.
 
         :returns: subsystem name
-        :rtype: str
         """
         raise NotImplementedError
 
@@ -53,7 +61,6 @@ class Sendable:
         Sets the subsystem name of this Sendable object.
 
         :param subsystem: subsystem name
-        :type subsystem: str
         """
         raise NotImplementedError
 
