@@ -41,7 +41,13 @@ class VerboseExceptionFormatter(logging.Formatter):
             return exc_text
         # Now we're going to format and add the locals information.
         output_lines = [exc_text, '\n']
-        tb = exc_info[2]  # This is the outermost frame of the traceback.
+        
+        # Retrieve locals from the innermost exception
+        exc = exc_info[1]
+        while exc.__cause__:
+            exc = exc.__cause__
+        
+        tb = exc.__traceback__  # This is the outermost frame of the traceback.
         if tb: # this should always be true, but sometimes someone messes up
             while tb.tb_next:
                 tb = tb.tb_next  # Zoom to the innermost frame.
