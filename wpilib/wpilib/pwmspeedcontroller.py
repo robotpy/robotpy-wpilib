@@ -39,6 +39,7 @@ class PWMSpeedController(SafePWM):
         :param isInverted: The state of inversion (True is inverted).
         """
         self.isInverted = isInverted
+        return self
 
     def getInverted(self):
         """
