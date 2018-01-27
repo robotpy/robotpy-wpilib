@@ -1,4 +1,4 @@
-# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/command/Command.java
+# validated: 2018-01-27 DS e4e1eab4131d edu/wpi/first/wpilibj/command/Command.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -74,6 +74,8 @@ class Command(SendableBase):
         self.requirements = set()
         # Whether or not it is running
         self.running = False
+        # Whether or not this command has completed running
+        self.completed = True
         # Whether or not it is interruptible
         self.interruptible = True
         # Whether or not it has been canceled
@@ -141,6 +143,7 @@ class Command(SendableBase):
             self.initialized = False
             self.canceled = False
             self.running = False
+            self.completed = True
 
     def run(self):
         """The run method is used internally to actually run the commands.
@@ -296,6 +299,7 @@ class Command(SendableBase):
             if self.parent is not None:
                 raise ValueError("Can not start a command that is a part of a command group")
             Scheduler.getInstance().add(self)
+            self.completed = False
 
     def startRunning(self):
         """This is used internally to mark that the command has been started.
@@ -354,6 +358,14 @@ class Command(SendableBase):
         """
         with self.mutex:
             return self.canceled
+    
+    def isCompleted(self) -> bool:
+        """Whether or not this command has completed running.
+        
+        :returns: whether or not this command has completed running.
+        """
+        with self.mutex:
+            return self.completed
 
     def isInterruptible(self):
         """Returns whether or not this command can be interrupted.

@@ -1,4 +1,4 @@
-# validated: 2017-10-03 EN e1195e8b9dab edu/wpi/first/wpilibj/command/ConditionalCommand.java
+# validated: 2018-01-27 DS e4e1eab4131d edu/wpi/first/wpilibj/command/ConditionalCommand.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2017 All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -77,6 +77,8 @@ class ConditionalCommand(Command):
             self.chosenCommand.clearRequirements()
         
             self.chosenCommand.start()
+        
+        super()._initialize()
     
     def _cancel(self):
         if self.chosenCommand is not None and self.chosenCommand.isRunning():
@@ -85,11 +87,13 @@ class ConditionalCommand(Command):
         super()._cancel()
     
     def isFinished(self):
-        return self.chosenCommand is not None and self.chosenCommand.isRunning() and \
-            self.chosenCommand.isFinished()
+        if self.chosenCommand is not None:
+            return self.chosenCommand.isCompleted()
+        else:
+            return True
     
-    def interrupted(self):
+    def _interrupted(self):
         if self.chosenCommand is not None and self.chosenCommand.isRunning():
             self.chosenCommand.cancel()
             
-        super().interrupted()
+        super()._interrupted()
