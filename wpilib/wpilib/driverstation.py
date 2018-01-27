@@ -79,7 +79,7 @@ class DriverStation:
         self.joystickAxes = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVs = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtons = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
-        self.matchInfo = hal.MatchInfo()
+        self.matchInfo = hal.MatchInfo(eventName=b'', gameSpecificMessage=b'')
 
         self.joystickButtonsPressed = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
         self.joystickButtonsReleased = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
@@ -87,7 +87,7 @@ class DriverStation:
         self.joystickAxesCache = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVsCache = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtonsCache = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
-        self.matchInfoCache = hal.MatchInfo()
+        self.matchInfoCache = hal.MatchInfo(eventName=b'', gameSpecificMessage=b'')
 
         self.controlWordMutex = threading.RLock()
         self.controlWordCache = hal.ControlWord()
@@ -502,9 +502,7 @@ class DriverStation:
         :returns: The game specific message
         """
         with self.cacheDataMutex:
-            message = self.matchInfo.gameSpecificMessage
-        if message is not None:
-            return message.decode('utf-8')
+            return self.matchInfo.gameSpecificMessage.decode('utf-8')
 
     def getEventName(self) -> str:
         """Get the event name
@@ -512,9 +510,7 @@ class DriverStation:
         :returns: The event name
         """
         with self.cacheDataMutex:
-            name = self.matchInfo.eventName
-        if name is not None:
-            return name.decode('utf-8')
+            return self.matchInfo.eventName.decode('utf-8')
 
     def getMatchType(self) -> MatchType:
         """Get the match type.
