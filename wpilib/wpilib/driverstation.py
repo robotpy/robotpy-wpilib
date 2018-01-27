@@ -1,4 +1,4 @@
-# validated: 2018-01-06 TW 8b7aa61091df edu/wpi/first/wpilibj/DriverStation.java
+# validated: 2018-01-28 DV 07f70cf78422 edu/wpi/first/wpilibj/DriverStation.java
 # Copyright (c) 2008-2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
@@ -70,6 +70,9 @@ class DriverStation:
         """
         if not hasattr(DriverStation, 'instance') or DriverStation.instance is not None:
             raise ValueError("Do not create DriverStation instances, use DriverStation.getInstance() instead")
+
+        self.waitForDataCount = 0
+        self.waitForDataCond = threading.Condition()
 
         self.cacheDataMutex = threading.RLock()
 
@@ -572,7 +575,7 @@ class DriverStation:
         else:
             return 0
 
-    def waitForData(self, timeout: int = None) -> bool:
+    def waitForData(self, timeout: float = None) -> bool:
         """Wait for new data or for timeout, which ever comes first.
 
         If timeout is None, wait for new data only.
@@ -581,9 +584,13 @@ class DriverStation:
 
         :returns: True if there is new data, otherwise False
         """
-        if timeout is None:
-            timeout = 0
-        return hal.waitForDSDataTimeout(timeout)
+        with self.waitForDataCond:
+            currentCount = self.waitForDataCount
+            signaled = self.waitForDataCond.wait_for(lambda: self.waitForDataCount != currentCount, timeout)
+            if not signaled:
+                # Return False if a timeout happened
+                return False
+        return True
 
     def getMatchTime(self) -> int:
         """Return the approximate match time.
@@ -681,6 +688,10 @@ class DriverStation:
             self.joystickPOVs, self.joystickPOVsCache = self.joystickPOVsCache, self.joystickPOVs
 
             self.matchInfo, self.matchInfoCache = self.matchInfoCache, self.matchInfo
+
+        with self.waitForDataCond:
+            self.waitForDataCount += 1
+            self.waitForDataCond.notify_all()
 
     def _reportJoystickUnpluggedError(self, message):
         """
