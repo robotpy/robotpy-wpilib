@@ -1,4 +1,4 @@
-# validated: 2018-01-28 DV 07f70cf78422 edu/wpi/first/wpilibj/DriverStation.java
+# validated: 2018-01-28 DV 48ae6c954a75 edu/wpi/first/wpilibj/DriverStation.java
 # Copyright (c) 2008-2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
@@ -11,6 +11,8 @@ import hal
 import sys
 import traceback
 
+from networktables import NetworkTables
+
 from .motorsafety import MotorSafety
 from .timer import Timer
 
@@ -21,11 +23,44 @@ logger = logging.getLogger('wpilib.ds')
 
 JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL = 1.0
 
+
+class MatchDataSender:
+    def __init__(self):
+        self.table = NetworkTables.getTable('FMSInfo')
+        self.typeMetadata = self.table.getEntry('.type')
+        self.typeMetadata.forceSetString('FMSInfo')
+        self.gameSpecificMessage = self.table.getEntry('GameSpecificMessage')
+        self.gameSpecificMessage.forceSetString('')
+        self.eventName = self.table.getEntry('EventName')
+        self.eventName.forceSetString('')
+        self.matchNumber = self.table.getEntry('MatchNumber')
+        self.matchNumber.forceSetDouble(0)
+        self.replayNumber = self.table.getEntry('ReplayNumber')
+        self.replayNumber.forceSetDouble(0)
+        self.matchType = self.table.getEntry('MatchType')
+        self.matchType.forceSetDouble(0)
+        self.alliance = self.table.getEntry('IsRedAlliance')
+        self.alliance.forceSetBoolean(True)
+        self.station = self.table.getEntry('StationNumber')
+        self.station.forceSetDouble(0)
+        #self.controlWord = self.table.getEntry('FMSControlData')
+        #self.controlWord.forceSetDouble(0)
+
+
 class DriverStation:
     """Provide access to the network communication data to / from the Driver Station."""
 
     #: The number of joystick ports
     kJoystickPorts = 6
+
+    _station_numbers = {
+        hal.AllianceStationID.kBlue1: 1,
+        hal.AllianceStationID.kBlue2: 2,
+        hal.AllianceStationID.kBlue3: 3,
+        hal.AllianceStationID.kRed1: 1,
+        hal.AllianceStationID.kRed2: 2,
+        hal.AllianceStationID.kRed3: 3,
+    }
 
     class Alliance(enum.IntEnum):
         """The robot alliance that the robot is a part of."""
@@ -92,6 +127,8 @@ class DriverStation:
         self.controlWordMutex = threading.RLock()
         self.controlWordCache = hal.ControlWord()
         self.lastControlWordUpdate = 0
+
+        self.matchDataSender = MatchDataSender()
 
         # vars not initialized in constructor
         self.nextMessageTime = 0.0
@@ -560,16 +597,7 @@ class DriverStation:
             1, 2, or 3
         """
         allianceStationID = hal.getAllianceStation()
-        hAid = hal.AllianceStationID
-
-        if allianceStationID in (hAid.kRed1, hAid.kBlue1):
-            return 1
-        elif allianceStationID in (hAid.kRed2, hAid.kBlue2):
-            return 2
-        elif allianceStationID in (hAid.kRed3, hAid.kBlue3):
-            return 3
-        else:
-            return 0
+        return self._station_numbers.get(allianceStationID, 0)
 
     def waitForData(self, timeout: float = None) -> bool:
         """Wait for new data or for timeout, which ever comes first.
@@ -652,6 +680,28 @@ class DriverStation:
         """
         self.userInTest = entering
 
+    def _sendMatchData(self):
+        alliance = hal.getAllianceStation()
+        hAid = hal.AllianceStationID
+        isRedAlliance = alliance in {hAid.kRed1, hAid.kRed2, hAid.kRed3}
+        stationNumber = self._station_numbers.get(alliance, 0)
+
+        with self.cacheDataMutex:
+            eventName = self.matchInfo.eventName.decode('utf-8')
+            gameSpecificMessage = self.matchInfo.gameSpecificMessage.decode('utf-8')
+            matchNumber = self.matchInfo.matchNumber
+            replayNumber = self.matchInfo.replayNumber
+            matchType = self.matchInfo.matchType
+
+        self.matchDataSender.alliance.setBoolean(isRedAlliance)
+        self.matchDataSender.station.setDouble(stationNumber)
+        self.matchDataSender.eventName.setString(eventName)
+        self.matchDataSender.gameSpecificMessage.setString(gameSpecificMessage)
+        self.matchDataSender.matchNumber.setDouble(matchNumber)
+        self.matchDataSender.replayNumber.setDouble(replayNumber)
+        self.matchDataSender.matchType.setDouble(matchType)
+        #self.matchDataSender.controlWord.setDouble(...)
+
     def _getData(self):
         """Copy data from the DS task for the user.
         If no new data exists, it will just be returned, otherwise
@@ -688,6 +738,8 @@ class DriverStation:
         with self.waitForDataCond:
             self.waitForDataCount += 1
             self.waitForDataCond.notify_all()
+
+        self._sendMatchData()
 
     def _reportJoystickUnpluggedError(self, message):
         """
