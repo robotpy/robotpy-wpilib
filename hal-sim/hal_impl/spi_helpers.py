@@ -19,13 +19,20 @@ class SPISimBase:
 
     def transactionSPI(self, port, dataToSend, dataReceived, size):
         '''
-            To give data back use ``data_received``::
-
-                data_received[:] = [1,2,3...]
-
+            Writes data to the I2C device and then reads from it. You can read
+            bytes from the ``dataToSend`` parameter. To return data,
+            you need to write bytes to the ``data_received`` parameter.
+            object.
+            
+            A simple example of returning 3 bytes might be::
+            
+                def transactionSPI(self, port, dataToSend, dataReceived, size):
+                    dataReceived[:] = b'123'
+                    return len(dataReceived)
+            
             :returns: number of bytes returned
         '''
-        raise NotImplementedError
+        raise NotImplementedError("This error only occurs in simulation if you don't implement a custom interface for your SPI device. See the SPISimBase documentation for details")
 
     def writeSPI(self, port, dataToSend, sendSize):
         ''':returns: number of bytes written'''
@@ -33,11 +40,17 @@ class SPISimBase:
 
     def readSPI(self, port, buffer, count):
         '''
-            To give data, do ``buffer[:] = [1,2,3...]``
-
+            Reads data from the SPI device. To return data to your code, you
+            need to write bytes to the ``buffer`` parameter. A simple example of
+            returning 3 bytes might be::
+            
+                def readSPI(self, port, buffer, count):
+                    buffer[:] = b'123'
+                    return len(buffer)
+            
             :returns: number of bytes read
         '''
-        raise NotImplementedError
+        raise NotImplementedError("This error only occurs in simulation if you don't implement a custom interface for your SPI device. See the SPISimBase documentation for details")
 
     def closeSPI(self, port):
         pass
@@ -83,11 +96,11 @@ class SPISimBase:
 
     def readSPIAutoReceivedData(self, port, buffer, numToRead, timeout, status):
         ''':returns: number of bytes read'''
-        raise NotImplementedError
+        raise NotImplementedError("This error only occurs in simulation if you don't implement a custom interface for your SPI device. See the SPISimBase documentation for details")
 
     def getSPIAutoDroppedCount(self, port, status):
         ''':returns: int32'''
-        raise NotImplementedError
+        raise NotImplementedError("This error only occurs in simulation if you don't implement a custom interface for your SPI device. See the SPISimBase documentation for details")
 
 
 

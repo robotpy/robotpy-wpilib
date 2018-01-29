@@ -26,3 +26,5 @@ The library is designed to:
     wpilib.command
     wpilib.drive
     wpilib.interfaces
+    
+    hal
