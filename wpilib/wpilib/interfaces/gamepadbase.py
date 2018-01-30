@@ -15,13 +15,15 @@ __all__ = ["GamepadBase"]
 class GamepadBase(GenericHID):
     """
     GamepadBase Interface.
+
+    .. deprecated: 2018.0.0
+       Inherit directly from :class:`.GenericHID` instead.
     """
 
-    def __init__(self, port):
-        warnings.warn("Gamepad Deprecated. Inherit directly from GenericHID instead",
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        warnings.warn("GamepadBase is deprecated, inherit directly from GenericHID instead",
                       DeprecationWarning, stacklevel=2)
-
-        super().__init__(port)
 
     def getRawAxis(self, axis):
         raise NotImplementedError

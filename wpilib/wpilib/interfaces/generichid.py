@@ -5,6 +5,9 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+
+import enum
+
 from ..driverstation import DriverStation
 import hal
 
@@ -16,7 +19,7 @@ class GenericHID:
     GenericHID Interface.
     """
 
-    class RumbleType:
+    class RumbleType(enum.IntEnum):
         """Represents a rumble output on the JoyStick."""
 
         #: Left Hand
@@ -25,7 +28,7 @@ class GenericHID:
         #: Right Hand
         kRightRumble = 1
 
-    class HIDType:
+    class HIDType(enum.IntEnum):
         kUnknown = -1
         kXInputUnknown = 0
         kXInputGamepad = 1
@@ -44,10 +47,7 @@ class GenericHID:
         kHIDFlight = 23
         kHID1stPerson = 24
 
-        def __init__(self, value):
-            self.value = value
-
-    class Hand:
+    class Hand(enum.IntEnum):
         """Which hand the Human Interface Device is associated with."""
 
         #: Left Hand
@@ -56,14 +56,14 @@ class GenericHID:
         #: Right Hand
         kRight = 1
 
-    def __init__(self, port):
+    def __init__(self, port: int) -> None:
         self.port = port
         self.ds = DriverStation.getInstance()
-        self.output = 0
+        self.outputs = 0
         self.leftRumble = 0
         self.rightRumble = 0
 
-    def getX(self, hand=None):
+    def getX(self, hand: Hand = Hand.kRight) -> float:
         """Get the x position of HID.
 
         :param hand: which hand, left or right
@@ -71,7 +71,7 @@ class GenericHID:
         """
         raise NotImplementedError
 
-    def getY(self, hand=None):
+    def getY(self, hand: Hand = Hand.kRight) -> float:
         """Get the y position of the HID.
 
         :param hand: which hand, left or right
@@ -79,31 +79,35 @@ class GenericHID:
         """
         raise NotImplementedError
 
-    def getRawButton(self, button):
-        """Is the given button pressed.
+    def getRawButton(self, button: int) -> bool:
+        """Get the button value (starting at button 1).
 
-        :param button: which button number
-        :returns: the angle of the POV in degrees, or -1 if the POV is not pressed.
+        :param button: The button number to be read (starting at 1)
+        :returns: The state of the button.
         """
         return self.ds.getStickButton(self.port, button)
 
-    def getRawButtonPressed(self, button):
+    def getRawButtonPressed(self, button: int) -> bool:
         """Whether the button was pressed since the last check. Button indexes begin at 1.
 
         :param button: The button index, beginning at 1.
         :returns: Whether the button was pressed since the last check.
+
+        .. versionadded:: 2018.0.0
         """
         return self.ds.getStickButtonPressed(self.port, button)
 
-    def getRawButtonReleased(self, button):
+    def getRawButtonReleased(self, button: int) -> bool:
         """Whether the button was released since the last check. Button indexes begin at 1.
 
         :param button: The button index, beginning at 1.
         :returns: Whether the button was released since the last check.
+
+        .. versionadded:: 2018.0.0
         """
         return self.ds.getStickButtonReleased(self.port, button)
 
-    def getRawAxis(self, axis):
+    def getRawAxis(self, axis: int) -> float:
         """Get the raw axis.
 
         :param axis: index of the axis
@@ -111,7 +115,7 @@ class GenericHID:
         """
         return self.ds.getStickAxis(self.port, axis)
 
-    def getPOV(self, pov=0):
+    def getPOV(self, pov: int = 0) -> int:
         """Get the angle in degrees of a POV on the HID.
 
         The POV angles start at 0 in the up direction, and increase clockwise (eg right is 90,
@@ -122,48 +126,52 @@ class GenericHID:
         """
         return self.ds.getStickPOV(self.port, pov)
 
-    def getAxisCount(self):
+    def getAxisCount(self) -> int:
         """Get the number of axes for the HID
 
         :returns: The number of axis for the current HID
         """
         return self.ds.getStickAxisCount(self.port)
 
-    def getPOVCount(self):
+    def getPOVCount(self) -> int:
         """For the current HID, return the number of POVs."""
         return self.ds.getStickPOVCount(self.port)
 
-    def getPort(self):
+    def getButtonCount(self) -> int:
+        """For the current HID, return the number of buttons."""
+        return self.ds.getStickButtonCount(self.port)
+
+    def getPort(self) -> int:
         """Get the port number of the HID.
 
         :returns: The port number of the HID.
         """
         return self.port
 
-    def getType(self):
+    def getType(self) -> HIDType:
         """Get the type of the HID.
 
         :returns: the type of the HID.
         """
-        return self.ds.getJoystickType(self.port)
+        return self.HIDType(self.ds.getJoystickType(self.port))
 
-    def getName(self):
+    def getName(self) -> str:
         """Get the name of the HID.
 
         :returns: the name of the HID.
         """
         return self.ds.getJoystickName(self.port)
 
-    def setOutput(self, outputNumber, value):
+    def setOutput(self, outputNumber: int, value: bool) -> None:
         """Set a single HID output value for the HID.
 
         :param outputNumber: The index of the output to set (1-32)
         :param value: The value to set the output to
         """
-        self.outputs  = (self.outputs & ~(1 << (outputNumber - 1))) | ((1 if value else 0) << (outputNumber - 1))
+        self.outputs = (self.outputs & ~(1 << (outputNumber - 1))) | ((1 if value else 0) << (outputNumber - 1))
         hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
 
-    def setOutputs(self, value):
+    def setOutputs(self, value: int) -> None:
         """Set all HID output values for the HID.
 
         :param value: The 32 bit output value (1 bit for each output)
@@ -171,7 +179,7 @@ class GenericHID:
         self.outputs = value
         hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
 
-    def setRumble(self, type, value):
+    def setRumble(self, type: RumbleType, value: float) -> None:
         """Set the rumble output for the HID. The DS currently supports 2 rumble values, left rumble and
         right rumble.
 

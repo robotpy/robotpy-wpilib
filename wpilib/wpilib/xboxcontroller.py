@@ -5,11 +5,13 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
+
 import hal
-from .driverstation import DriverStation
 from .interfaces.generichid import GenericHID
 
 __all__ = ['XboxController']
+
 
 class XboxController(GenericHID):
     """
@@ -20,7 +22,7 @@ class XboxController(GenericHID):
         and the mapping of ports to hardware buttons depends on the code in the Driver Station.
      """
 
-    class Button:
+    class Button(enum.IntEnum):
         kBumperLeft = 5
         kBumperRight = 6
         kStickLeft = 9
@@ -32,70 +34,60 @@ class XboxController(GenericHID):
         kBack = 7
         kStart = 8
 
-    def __init__(self, port):
+    def __init__(self, port: int) -> None:
         """Construct an instance of an XBoxController. The XBoxController index is the USB port on the Driver Station.
 
         :param port: The port on the Driver Station that the joystick is plugged into
         """
-
         super().__init__(port)
-        self.ds = DriverStation.getInstance()
-
-        self.outputs = 0
-        self.leftRumble = 0
-        self.rightRumble = 0
 
         hal.report(hal.UsageReporting.kResourceType_Joystick, port)
 
-    def getX(self, hand):
+    def getX(self, hand: GenericHID.Hand) -> float:
         """Get the X axis value of the controller.
 
         :param hand: Side of controller whose value should be returned
         :return: The X axis value of the controller
-        :rtype: float
         """
-        if hand == GenericHID.Hand.kLeft:
+        if hand == self.Hand.kLeft:
             return self.getRawAxis(0)
         else:
             return self.getRawAxis(4)
 
-    def getY(self, hand):
+    def getY(self, hand: GenericHID.Hand) -> float:
         """Get the Y axis value of the controller.
 
         :param hand: Side of controller whose value should be returned
         :return: The Y axis value of the controller
-        :rtype: float
         """
-        if hand == GenericHID.Hand.kLeft:
+        if hand == self.Hand.kLeft:
             return self.getRawAxis(1)
         else:
             return self.getRawAxis(5)
 
-    def getTriggerAxis(self, hand):
+    def getTriggerAxis(self, hand: GenericHID.Hand) -> float:
         """Get the trigger axis value of the controller.
 
         :param hand: Side of controller whose value should be returned
         :return: The trigger axis value of the controller
-        :rtype: float
         """
-        if hand == GenericHID.Hand.kLeft:
+        if hand == self.Hand.kLeft:
             return self.getRawAxis(2)
         else:
             return self.getRawAxis(3)
 
-    def getBumper(self, hand):
+    def getBumper(self, hand: GenericHID.Hand) -> bool:
         """Read the values of the bumper button on the controller.
 
         :param hand: Side of controller whose value should be returned.
         :return: The state of the button
-        :rtype: boolean
         """
         if hand == GenericHID.Hand.kLeft:
             return self.getRawButton(self.Button.kBumperLeft)
         else:
             return self.getRawButton(self.Button.kBumperRight)
 
-    def getBumperPressed(self, hand):
+    def getBumperPressed(self, hand: GenericHID.Hand) -> bool:
         """Whether the bumper was pressed since the last check.
 
         :param hand: Side of controller whose value should be returned.
@@ -106,7 +98,7 @@ class XboxController(GenericHID):
         else:
             return self.getRawButtonPressed(self.Button.kBumperRight)
 
-    def getBumperReleased(self, hand):
+    def getBumperReleased(self, hand: GenericHID.Hand) -> bool:
         """Whether the bumper was released since the last check.
 
         :param hand: Side of controller whose value should be returned.
@@ -117,19 +109,18 @@ class XboxController(GenericHID):
         else:
             return self.getRawButtonReleased(self.Button.kBumperRight)
 
-    def getStickButton(self, hand):
+    def getStickButton(self, hand: GenericHID.Hand) -> bool:
         """Read the values of the stick button on the controller
 
         :param hand: Side of the controller whose value should be returned
         :return: The state of the button
-        :rtype: boolean
         """
         if hand == GenericHID.Hand.kLeft:
             return self.getRawButton(9)
         else:
             return self.getRawButton(10)
 
-    def getStickButtonPressed(self, hand):
+    def getStickButtonPressed(self, hand: GenericHID.Hand) -> bool:
         """Whether the stick button was pressed since the last check.
 
         :param hand: Side of controller whose value should be returned.
@@ -140,7 +131,7 @@ class XboxController(GenericHID):
         else:
             return self.getRawButtonPressed(self.Button.kStickRight)
 
-    def getStickButtonReleased(self, hand):
+    def getStickButtonReleased(self, hand: GenericHID.Hand) -> bool:
         """Whether the stick button was released since the last check.
 
         :param hand: Side of controller whose value should be returned.
@@ -151,132 +142,126 @@ class XboxController(GenericHID):
         else:
             return self.getRawButtonReleased(self.Button.kStickRight)
 
-    def getAButton(self):
+    def getAButton(self) -> bool:
         """Read the value of the A button on the controller
 
         :return: The state of the A button
-        :rtype: boolean
         """
         return self.getRawButton(self.Button.kA)
 
-    def getAButtonPressed(self):
+    def getAButtonPressed(self) -> bool:
         """Whether the A button was pressed since the last check.
 
         :returns: Whether the button was pressed since the last check.
         """
         return self.getRawButtonPressed(self.Button.kA)
 
-    def getAButtonReleased(self):
+    def getAButtonReleased(self) -> bool:
         """Whether the A button was released since the last check.
 
         :returns: Whether the button was released since the last check.
         """
         return self.getRawButtonReleased(self.Button.kA)
 
-    def getBButton(self):
+    def getBButton(self) -> bool:
         """Read the value of the B button on the controller
 
         :return: The state of the B button
-        :rtype: boolean
         """
         return self.getRawButton(self.Button.kB)
 
-    def getBButtonPressed(self):
+    def getBButtonPressed(self) -> bool:
         """Whether the B button was pressed since the last check.
 
         :returns: Whether the button was pressed since the last check.
         """
         return self.getRawButtonPressed(self.Button.kB)
 
-    def getBButtonReleased(self):
+    def getBButtonReleased(self) -> bool:
         """Whether the B button was released since the last check.
 
         :returns: Whether the button was released since the last check.
         """
         return self.getRawButtonReleased(self.Button.kB)
 
-    def getXButton(self):
+    def getXButton(self) -> bool:
         """Read the value of the X button on the controller
 
         :return: The state of the X button
-        :rtype: boolean
         """
         return self.getRawButton(self.Button.kX)
 
-    def getXButtonPressed(self):
+    def getXButtonPressed(self) -> bool:
         """Whether the X button was pressed since the last check.
 
         :returns: Whether the button was pressed since the last check.
         """
         return self.getRawButtonPressed(self.Button.kX)
 
-    def getXButtonReleased(self):
+    def getXButtonReleased(self) -> bool:
         """Whether the X button was released since the last check.
 
         :returns: Whether the button was released since the last check.
         """
         return self.getRawButtonReleased(self.Button.kX)
 
-    def getYButton(self):
+    def getYButton(self) -> bool:
         """Read the value of the Y button on the controller
 
         :return: The state of the Y button
-        :rtype: boolean
         """
         return self.getRawButton(self.Button.kY)
 
-    def getYButtonPressed(self):
+    def getYButtonPressed(self) -> bool:
         """Whether the Y button was pressed since the last check.
 
         :returns: Whether the button was pressed since the last check.
         """
         return self.getRawButtonPressed(self.Button.kY)
 
-    def getYButtonReleased(self):
+    def getYButtonReleased(self) -> bool:
         """Whether the Y button was released since the last check.
 
         :returns: Whether the button was released since the last check.
         """
         return self.getRawButtonReleased(self.Button.kY)
 
-    def getBackButton(self):
+    def getBackButton(self) -> bool:
         """Read the value of the Back button on the controller
 
         :return: The state of the Back button
-        :rtype: boolean
         """
         return self.getRawButton(self.Button.kBack)
 
-    def getBackButtonPressed(self):
+    def getBackButtonPressed(self) -> bool:
         """Whether the Back button was pressed since the last check.
 
         :returns: Whether the button was pressed since the last check.
         """
         return self.getRawButtonPressed(self.Button.kBack)
 
-    def getBackButtonReleased(self):
+    def getBackButtonReleased(self) -> bool:
         """Whether the Back button was released since the last check.
 
         :returns: Whether the button was released since the last check.
         """
         return self.getRawButtonReleased(self.Button.kBack)
 
-    def getStartButton(self):
+    def getStartButton(self) -> bool:
         """Read the value of the Start button on the controller
 
         :return: The state of the Start button
-        :rtype: boolean
         """
         return self.getRawButton(self.Button.kStart)
 
-    def getStartButtonPressed(self):
+    def getStartButtonPressed(self) -> bool:
         """Whether the Start button was pressed since the last check.
 
         :returns: Whether the button was pressed since the last check.
         """
         return self.getRawButtonPressed(self.Button.kStart)
 
-    def getStartButtonReleased(self):
+    def getStartButtonReleased(self) -> bool:
         """Whether the Start button was released since the last check.
 
         :returns: Whether the button was released since the last check.

@@ -13,7 +13,7 @@ __all__ = ["JoystickButton"]
 class JoystickButton(Button):
     """A :class:`.button.Button` that gets its state from a :class:`.GenericHID`."""
 
-    def __init__(self, joystick, buttonNumber):
+    def __init__(self, joystick, buttonNumber: int) -> None:
         """Create a joystick button for triggering commands.
 
         :param joystick: The GenericHID object that has the button (e.g.
@@ -25,7 +25,7 @@ class JoystickButton(Button):
         self.joystick = joystick
         self.buttonNumber = buttonNumber
 
-    def get(self):
+    def get(self) -> bool:
         """Gets the value of the joystick button.
 
         :returns: The value of the joystick button
