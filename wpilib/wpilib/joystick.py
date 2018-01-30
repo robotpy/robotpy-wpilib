@@ -6,6 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 
+import enum
 import math
 import warnings
 
@@ -32,7 +33,7 @@ class Joystick(GenericHID):
     kDefaultTriggerButton = 1
     kDefaultTopButton = 2
 
-    class AxisType:
+    class AxisType(enum.IntEnum):
         """Represents an analog axis on a joystick."""
         kX = 0
         kY = 1
@@ -40,26 +41,26 @@ class Joystick(GenericHID):
         kTwist = 3
         kThrottle = 4
 
-    class Axis:
+    # Note: This is private upstream.
+    # This copy is here because of the extra kNumAxes.
+    class Axis(enum.IntEnum):
         """Represents an analog axis on a joystick"""
         kX = 0
         kY = 1
         kZ = 2
         kTwist = 3
         kThrottle = 4
-        kNumAxis = 5
+        kNumAxes = 5
 
-    class ButtonType:
+    class ButtonType(enum.IntEnum):
         """Represents a digital button on the Joystick"""
         kTrigger = 1
         kTop = 2
 
-    class Button:
-        """Represents a digital button on the Joystick"""
-        kTrigger = 1
-        kTop = 2
+    # Note: This is private upstream.
+    Button = ButtonType
 
-    def __init__(self, port):
+    def __init__(self, port: int) -> None:
         """Construct an instance of a joystick.
 
         The joystick index is the USB port on the Driver Station.
@@ -69,67 +70,50 @@ class Joystick(GenericHID):
 
         :param port: The port on the Driver Station that the joystick is
             plugged into.
-        :type  port: int
-        :param numAxisTypes: The number of axis types.
-        :type  numAxisTypes: int
-        :param numButtonTypes: The number of button types.
-        :type  numButtonTypes: int
         """
         super().__init__(port)
-        from .driverstation import DriverStation
-        self.ds = DriverStation.getInstance()
 
-        self.axes = [0] * self.Axis.kNumAxis
+        self.axes = [0] * self.Axis.kNumAxes
         self.axes[self.Axis.kX] = self.kDefaultXAxis
         self.axes[self.Axis.kY] = self.kDefaultYAxis
         self.axes[self.Axis.kZ] = self.kDefaultZAxis
         self.axes[self.Axis.kTwist] = self.kDefaultTwistAxis
         self.axes[self.Axis.kThrottle] = self.kDefaultThrottleAxis
 
-        self.outputs = 0
-        self.leftRumble = 0
-        self.rightRumble = 0
-
         hal.report(hal.UsageReporting.kResourceType_Joystick, port)
 
-    def setXChannel(self, channel):
+    def setXChannel(self, channel: int):
         """Set the channel associated with the X axis.
 
         :param channel: The channel to set the axis to.
-        :type channel: int
         """
         self.axes[self.Axis.kX] = channel
 
-    def setYChannel(self, channel):
+    def setYChannel(self, channel: int):
         """Set the channel associated with the Y axis.
 
         :param channel: The channel to set the axis to.
-        :type channel: int
         """
         self.axes[self.Axis.kY] = channel
 
-    def setZChannel(self, channel):
+    def setZChannel(self, channel: int):
         """Set the channel associated with the Z axis.
 
         :param channel: The channel to set the axis to.
-        :type channel: int
         """
         self.axes[self.Axis.kZ] = channel
 
-    def setThrottleChannel(self, channel):
+    def setThrottleChannel(self, channel: int):
         """Set the channel associated with the Throttle axis.
 
         :param channel: The channel to set the axis to.
-        :type channel: int
         """
         self.axes[self.Axis.kThrottle] = channel
 
-    def setTwistChannel(self, channel):
+    def setTwistChannel(self, channel: int) -> int:
         """Set the channel associated with the Twist axis.
 
         :param channel: The channel to set the axis to.
-        :type channel: int
-        :rtype: int
         """
         self.axes[self.Axis.kTwist] = channel
 
@@ -148,53 +132,46 @@ class Joystick(GenericHID):
                       DeprecationWarning, stacklevel=2)
         self.axes[axis] = channel
 
-    def getXChannel(self):
+    def getXChannel(self) -> int:
         """Get the channel currently associated with the X axis
 
         :returns: The channel for the axis
-        :rtype: int
         """
         return self.axes[self.Axis.kX]
 
-    def getYChannel(self):
+    def getYChannel(self) -> int:
         """Get the channel currently associated with the Y axis
 
         :returns: The channel for the axis
-        :rtype: int
         """
         return self.axes[self.Axis.kY]
 
-    def getZChannel(self):
+    def getZChannel(self) -> int:
         """Get the channel currently associated with the Z axis
 
         :returns: The channel for the axis
-        :rtype: int
         """
         return self.axes[self.Axis.kZ]
 
-    def getThrottleChannel(self):
+    def getThrottleChannel(self) -> int:
         """Get the channel currently associated with the Throttle axis
 
         :returns: The channel for the axis
-        :rtype: int
         """
         return self.axes[self.Axis.kThrottle]
 
-    def getTwistChannel(self):
+    def getTwistChannel(self) -> int:
         """Get the channel currently associated with the Twist axis
 
         :returns: The channel for the axis
-        :rtype: int
         """
         return self.axes[self.Axis.kTwist]
 
-    def getAxisChannel(self, axis):
+    def getAxisChannel(self, axis: int) -> int:
         """Get the channel currently associated with the specified axis.
 
         :param axis: The axis to look up the channel for.
-        :type  axis: int
         :returns: The channel for the axis.
-        :rtype: int
         
         ..deprecated:: 2018.0.0
             Use the more specific axis channel getter functions
@@ -203,7 +180,7 @@ class Joystick(GenericHID):
                       DeprecationWarning, stacklevel=2)
         return self.axes[axis]
 
-    def getX(self, hand=None):
+    def getX(self, hand=None) -> float:
         """Get the X value of the joystick.
 
         This depends on the mapping of the joystick connected to the current
@@ -211,11 +188,10 @@ class Joystick(GenericHID):
 
         :param hand: Unused
         :returns: The X value of the joystick.
-        :rtype: float
         """
         return self.getRawAxis(self.axes[self.Axis.kX])
 
-    def getY(self, hand=None):
+    def getY(self, hand=None) -> float:
         """Get the Y value of the joystick.
 
         This depends on the mapping of the joystick connected to the current
@@ -223,42 +199,38 @@ class Joystick(GenericHID):
 
         :param hand: Unused
         :returns: The Y value of the joystick.
-        :rtype: float
         """
         return self.getRawAxis(self.axes[self.Axis.kY])
 
-    def getZ(self, hand=None):
+    def getZ(self, hand=None) -> float:
         """Get the Z position of the HID
 
         :param hand: Unused
         :returns: the Z position
-        :rtype: float
         """
         return self.getRawAxis(self.axes[self.Axis.kZ])
 
-    def getTwist(self):
+    def getTwist(self) -> float:
         """Get the twist value of the current joystick.
 
         This depends on the mapping of the joystick connected to the current
         port.
 
         :returns: The Twist value of the joystick.
-        :rtype: float
         """
         return self.getRawAxis(self.axes[self.AxisType.kTwist])
 
-    def getThrottle(self):
+    def getThrottle(self) -> float:
         """Get the throttle value of the current joystick.
 
         This depends on the mapping of the joystick connected to the current
         port.
 
         :returns: The Throttle value of the joystick.
-        :rtype: float
         """
         return self.getRawAxis(self.axes[self.AxisType.kThrottle])
 
-    def getAxis(self, axis):
+    def getAxis(self, axis) -> float:
         """For the current joystick, return the axis determined by the
         argument.
 
@@ -269,7 +241,6 @@ class Joystick(GenericHID):
         :param axis: The axis to read.
         :type axis: :class:`Joystick.AxisType`
         :returns: The value of the axis.
-        :rtype: float
 
         ..deprecated: 2018.0.0
             Use the more specific axis getter functions.
@@ -291,14 +262,13 @@ class Joystick(GenericHID):
             raise ValueError(
                 "Invalid axis specified! Must be one of wpilib.Joystick.AxisType, or use getRawAxis instead")
 
-    def getTrigger(self):
+    def getTrigger(self) -> bool:
         """Read the state of the trigger on the joystick.
 
         Look up which button has been assigned to the trigger and read its
         state.
 
         :returns: The state of the trigger.
-        :rtype: bool
         """
         return self.getRawButton(self.Button.kTrigger)
 
@@ -316,13 +286,12 @@ class Joystick(GenericHID):
         """
         return self.getRawButtonReleased(self.Button.kTrigger)
 
-    def getTop(self):
+    def getTop(self) -> bool:
         """Read the state of the top button on the joystick.
 
         Look up which button has been assigned to the top and read its state.
 
         :returns: The state of the top button.
-        :rtype: bool
         """
         return self.getRawButton(self.Button.kTop)
 
@@ -340,15 +309,13 @@ class Joystick(GenericHID):
         """
         return self.getRawButtonReleased(self.Button.kTop)
 
-    def getButton(self, button):
+    def getButton(self, button: ButtonType) -> bool:
         """Get buttons based on an enumerated type.
 
         The button type will be looked up in the list of buttons and then read.
 
         :param button: The type of button to read.
-        :type  button: :class:`.Joystick.ButtonType`
         :returns: The state of the button.
-        :rtype: bool
 
         ..deprecated: 2018.0.0
             Use Button enum values instead of ButtonType
@@ -363,29 +330,26 @@ class Joystick(GenericHID):
             raise ValueError(
                 "Invalid button specified! Must be one of wpilib.Joystick.ButtonType, or use getRawButton instead")
 
-    def getMagnitude(self):
+    def getMagnitude(self) -> float:
         """Get the magnitude of the direction vector formed by the joystick's
         current position relative to its origin.
 
         :returns: The magnitude of the direction vector
-        :rtype: float
         """
         return math.hypot(self.getX(), self.getY())
 
-    def getDirectionRadians(self):
+    def getDirectionRadians(self) -> float:
         """Get the direction of the vector formed by the joystick and its
         origin in radians.
 
         :returns: The direction of the vector in radians
-        :rtype: float
         """
         return math.atan2(self.getX(), -self.getY())
 
-    def getDirectionDegrees(self):
+    def getDirectionDegrees(self) -> float:
         """Get the direction of the vector formed by the joystick and its
         origin in degrees.
 
         :returns: The direction of the vector in degrees
-        :rtype: float
         """
         return math.degrees(self.getDirectionRadians())
