@@ -440,7 +440,8 @@ def transactionI2C(port, deviceAddress, dataToSend, receiveSize):
     recv_buffer = (C.c_uint8 * receiveSize)()
     rv = _transactionI2C(port, deviceAddress, send_buffer, sendSize, recv_buffer, receiveSize)
     if rv < 0:
-        raise IOError(_os.strerror(C.get_errno()))
+        errno = C.get_errno()
+        raise IOError(errno, _os.strerror(errno))
     return recv_buffer[:]
 
 _writeI2C = _THUNKFUNC("writeI2C", C.c_int32, ("port", C.c_int32), ("deviceAddress", C.c_int32),
@@ -451,16 +452,18 @@ def writeI2C(port, deviceAddress, dataToSend):
     buffer = (C.c_uint8 * sendSize)(*dataToSend)
     rv = _writeI2C(port, deviceAddress, buffer, sendSize)
     if rv < 0:
-        raise IOError(_os.strerror(C.get_errno()))
+        errno = C.get_errno()
+        raise IOError(errno, _os.strerror(errno))
 
 _readI2C = _THUNKFUNC("readI2C", C.c_int32, ("port", C.c_int32), ("deviceAddress", C.c_int32),
-                     ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_int32))
+                      ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_int32))
 @hal_wrapper
 def readI2C(port, deviceAddress, count):
     buffer = (C.c_uint8 * count)()
     rv = _readI2C(port, deviceAddress, buffer, count)
     if rv < 0:
-        raise IOError(_os.strerror(C.get_errno()))
+        errno = C.get_errno()
+        raise IOError(errno, _os.strerror(errno))
     return buffer[:]
 
 closeI2C = _THUNKFUNC("closeI2C", None, ("port", C.c_int32))
@@ -635,7 +638,8 @@ def transactionSPI(port, dataToSend):
     recv_buffer = (C.c_uint8 * size)()
     rv = _transactionSPI(port, send_buffer, recv_buffer, size)
     if rv < 0:
-        raise IOError(_os.strerror(C.get_errno()))
+        errno = C.get_errno()
+        raise IOError(errno, _os.strerror(errno))
     return recv_buffer[:rv]
 
 _writeSPI = _THUNKFUNC("writeSPI", C.c_int32, ("port", C.c_int32), ("dataToSend", C.POINTER(C.c_uint8)), ("sendSize", C.c_int32))
@@ -645,7 +649,8 @@ def writeSPI(port, dataToSend):
     buffer = (C.c_uint8 * sendSize)(*dataToSend)
     rv = _writeSPI(port, buffer, sendSize)
     if rv < 0:
-        raise IOError(_os.strerror(C.get_errno()))
+        errno = C.get_errno()
+        raise IOError(errno, _os.strerror(errno))
     return rv
 
 _readSPI = _THUNKFUNC("readSPI", C.c_int32, ("port", C.c_int32), ("buffer", C.POINTER(C.c_uint8)), ("count", C.c_int32))
@@ -654,7 +659,8 @@ def readSPI(port, count):
     buffer = (C.c_uint8 * count)()
     rv = _readSPI(port, buffer, count)
     if rv < 0:
-        raise IOError(_os.strerror(C.get_errno()))
+        errno = C.get_errno()
+        raise IOError(errno, _os.strerror(errno))
     return buffer[:]
 
 closeSPI = _THUNKFUNC("closeSPI", None, ("port", C.c_int32))
