@@ -84,7 +84,8 @@ class I2C:
         This is a lower-level interface to the I2C hardware giving you more
         control over each transaction. If you intend to write multiple bytes
         in the same transaction and do not plan to receive anything back, use
-        writeBulk() instead.
+        writeBulk() instead. Calling this with a receiveSize of 0 will
+        result in an error.
 
         :param dataToSend: Buffer of data to send as part of the transaction.
         :type dataToSend: iterable of bytes
