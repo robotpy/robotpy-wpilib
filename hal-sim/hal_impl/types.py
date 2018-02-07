@@ -107,6 +107,11 @@ class MatchInfo:
         'replayNumber',
         'gameSpecificMessage'
     ]
+
+    def __init__(self, *, eventName: bytes = None, gameSpecificMessage: bytes = None) -> None:
+        self.eventName = eventName
+        self.gameSpecificMessage = gameSpecificMessage
+
 MatchInfo_ptr = fake_pointer(MatchInfo)
 
 #############################################################################
