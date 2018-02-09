@@ -92,7 +92,7 @@ def set_estop():
 
     notify_new_ds_data()
 
-def set_mode(new_mode, new_enabled):
+def set_mode(new_mode, new_enabled, **kwargs):
     '''
         Calls the appropriate function based on the mode string
 
@@ -118,8 +118,8 @@ def set_mode(new_mode, new_enabled):
 
     if new_mode != old_mode or enabled != new_enabled:
         if new_mode == 'test':
-            set_test_mode(new_enabled)
+            set_test_mode(new_enabled, **kwargs)
         elif new_mode == 'auto':
-            set_autonomous(new_enabled)
+            set_autonomous(new_enabled, **kwargs)
         elif new_mode == 'teleop':
-            set_teleop_mode(new_enabled)
+            set_teleop_mode(new_enabled, **kwargs)
