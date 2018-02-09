@@ -10,8 +10,11 @@ def notify_new_ds_data():
     '''Called when driver station data is modified'''
     data.hooks.notifyDSData()
 
-def set_autonomous(enabled):
+def set_autonomous(enabled, game_specific_message=None):
     '''Only designed to be called on transition'''
+
+    if game_specific_message:
+        hal_data['event']['game_specific_message'] = game_specific_message
 
     hal_data['control'].update({
         'autonomous': True,
