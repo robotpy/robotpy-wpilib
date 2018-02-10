@@ -166,6 +166,11 @@ def check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn):
         elif rightMotorSpeed < -1.0:
             leftMotorSpeed -= rightMotorSpeed + 1.0
             rightMotorSpeed = -1.0
+    
+    maxMagnitude = max(abs(leftMotorSpeed), abs(rightMotorSpeed))
+    if maxMagnitude > 1.0:
+        leftMotorSpeed /= maxMagnitude
+        rightMotorSpeed /= maxMagnitude
 
     drive_diff.leftMotor.set.assert_called_once_with(leftMotorSpeed * drive_diff.maxOutput)
     drive_diff.rightMotor.set.assert_called_once_with(-rightMotorSpeed * drive_diff.maxOutput)

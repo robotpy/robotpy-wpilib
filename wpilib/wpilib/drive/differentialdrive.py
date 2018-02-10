@@ -1,4 +1,4 @@
-# validated: 2018-01-04 DV 1f4822f33278 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
+# validated: 2018-02-09 DS 64a7e57fe058 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -236,6 +236,12 @@ class DifferentialDrive(RobotDriveBase):
             elif rightMotorSpeed < -1.0:
                 leftMotorSpeed -= rightMotorSpeed + 1.0
                 rightMotorSpeed = -1.0
+        
+        # Normalize the wheel speeds
+        maxMagnitude = max(abs(leftMotorSpeed), abs(rightMotorSpeed))
+        if maxMagnitude > 1.0:
+            leftMotorSpeed /= maxMagnitude
+            rightMotorSpeed /= maxMagnitude
 
         self.leftMotor.set(leftMotorSpeed * self.maxOutput)
         self.rightMotor.set(-rightMotorSpeed * self.maxOutput)
