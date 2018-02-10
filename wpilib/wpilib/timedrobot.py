@@ -1,4 +1,4 @@
-# validated: 2017-11-09 TW ef3267833fc3 edu/wpi/first/wpilibj/TimedRobot.java
+# validated: 2018-02-09 DS 5ca00dddbeff edu/wpi/first/wpilibj/TimedRobot.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -57,3 +57,7 @@ class TimedRobot(IterativeRobotBase):
 
         if self.startLoop:
             self.loop.startPeriodic(self.period)
+    
+    def getPeriod(self):
+        """Get time period between calls to Periodic() functions."""
+        return self.period
