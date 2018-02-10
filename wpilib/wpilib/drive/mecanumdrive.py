@@ -1,4 +1,4 @@
-# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/drive/MecanumDrive.java
+# validated: 2018-02-09 DS 77d6c11743a8 edu/wpi/first/wpilibj/drive/MecanumDrive.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -171,6 +171,6 @@ class MecanumDrive(RobotDriveBase):
     def initSendable(self, builder):
         builder.setSmartDashboardType("MecanumDrive")
         builder.addDoubleProperty("Front Left Motor Speed", self.frontLeftMotor.get, self.frontLeftMotor.set)
-        builder.addDoubleProperty("Front Right Motor Speed", self.frontRightMotor.get, self.frontRightMotor.set)
+        builder.addDoubleProperty("Front Right Motor Speed", lambda: -1*self.frontRightMotor.get(), lambda v: self.frontRightMotor.set(v))
         builder.addDoubleProperty("Rear Left Motor Speed", self.rearLeftMotor.get, self.rearLeftMotor.set)
-        builder.addDoubleProperty("Rear Right Motor Speed", self.rearRightMotor.get, self.rearRightMotor.set)
+        builder.addDoubleProperty("Rear Right Motor Speed", lambda: -1*self.rearRightMotor.get(), lambda v: self.rearRightMotor.set(v))
