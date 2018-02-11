@@ -335,7 +335,7 @@ _freeJoystickName = _RETFUNC("freeJoystickName", None, ("name", _joystick_type))
 def getJoystickName(joystickNum):
     name = _getJoystickName(joystickNum)
     if name is not None:
-        namestr = name.decode('utf-8')
+        namestr = C.c_char_p(name).decode('utf-8')
         _freeJoystickName(name)
         return namestr
     return None
