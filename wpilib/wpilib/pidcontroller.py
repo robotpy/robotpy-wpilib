@@ -450,7 +450,8 @@ class PIDController(SendableBase):
         :returns: True if the error is less than the tolerance
         """
         with self.mutex:
-            return self.tolerance.onTarget()
+            # python-specific: this is equivalent to the NullTolerance object in Java
+            raise ValueError("No tolerance value set when calling onTarget().")
 
     def enable(self):
         """Begin running the PIDController."""
