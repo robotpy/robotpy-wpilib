@@ -171,7 +171,7 @@ class IterativeRobotBase(RobotBase):
             self.teleopPeriodic()
         else:
             if self.last_mode is not self.Mode.kTest:
-                LiveWindow.setEnabled(False)
+                LiveWindow.setEnabled(True)
                 self.testInit()
                 self.last_mode = self.Mode.kTest
             hal.observeUserProgramTest()
