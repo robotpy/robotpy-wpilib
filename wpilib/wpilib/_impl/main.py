@@ -10,12 +10,6 @@ from pkg_resources import iter_entry_points
 from .logconfig import configure_logging
 import hal_impl
 
-from wpilib.driverstation import DriverStation
-
-def ds_except_hook(exctype, value, traceback):
-    DriverStation.reportError("ERROR Unhandled {}".format(exctype), True)
-    sys.__excepthook__(exctype, value, traceback)
-
 def _log_versions():
     import wpilib
     import hal
@@ -90,7 +84,6 @@ def run(robot_class, **kwargs):
         :returns: This function should never return
     '''
 
-    sys.excepthook = ds_except_hook
     # sanity check
     if not hasattr(robot_class, 'main'):
         print("ERROR: run() must be passed a robot class that inherits from RobotBase (or IterativeBase/SampleBase)")

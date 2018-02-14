@@ -170,27 +170,34 @@ class DriverStation:
         DriverStation._reportErrorImpl(False, 1, error, printTrace)
 
     @staticmethod
-    def _reportErrorImpl(isError, code, error, printTrace):
+    def _reportErrorImpl(isError, code, error, printTrace, exc_info=None):
         traceString = ""
         locString = ""
 
         if printTrace:
-            exc = sys.exc_info()[0]
-            stack = traceback.extract_stack()[:-2]  # last one is this func
-            if exc is not None:  # i.e. if an exception is present
-                # remove call of full_stack, the printed exception
-                # will contain the caught exception caller instead
-                del stack[-1]
-                del stack[-1]
-
-            locString = "%s.%s:%s" % (stack[-1][0], stack[-1][1], stack[-1][2])
-
+            # If an exception is passed in or an exception is present
+            if exc_info is None:
+                exc_info = sys.exc_info()
+            
+            exc = exc_info[0]
+            if exc is None:
+                tb = traceback.extract_stack()[:-2]
+            else:
+                tb = traceback.extract_tb(exc_info[2])
+            
+            locString = "%s.%s:%s" % (tb[-1][0], tb[-1][1], tb[-1][2])
+            
             trc = 'Traceback (most recent call last):\n'
-            stackstr = trc + ''.join(traceback.format_list(stack))
+            stackstr = trc + ''.join(traceback.format_list(tb))
             if exc is not None:
-                stackstr += '  ' + traceback.format_exc().lstrip(trc)
-            traceString += ':\n' + stackstr
-            logger.exception(error)
+                 stackstr += '  ' + (''.join(traceback.format_exception(*exc_info))).lstrip(trc)
+            traceString += '\n' + stackstr
+            
+            if exc is None:
+                logger.error(error + "\n" + traceString)
+            else:
+                logger.error(error, exc_info=exc_info)
+            
         elif isError:
             logger.error(error)
         else:
