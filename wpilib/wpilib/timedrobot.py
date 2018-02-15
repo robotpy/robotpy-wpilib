@@ -10,6 +10,8 @@ import hal
 
 from .iterativerobotbase import IterativeRobotBase
 from .notifier import Notifier
+from .resource import Resource
+from .robotcontroller import RobotController
 from .timer import Timer
 
 
@@ -33,7 +35,16 @@ class TimedRobot(IterativeRobotBase):
         self.period = TimedRobot.DEFAULT_PERIOD
         # Prevents loop from starting if user calls setPeriod() in robotInit()
         self.startLoop = False
-        self.loop = Notifier(self.loopFunc)
+        
+        self._expirationTime = 0
+        self._notifier = hal.initializeNotifier()
+        
+        Resource._add_global_resource(self)
+    
+    # python-specific
+    def free(self) -> None:
+        hal.stopNotifier(self._notifier)
+        hal.cleanNotifier(self._notifier)
 
     def startCompetition(self) -> None:
         """Provide an alternate "main loop" via startCompetition()"""
@@ -42,10 +53,19 @@ class TimedRobot(IterativeRobotBase):
         hal.observeUserProgramStarting()
 
         self.startLoop = True
-        self.loop.startPeriodic(self.period)
+        
+        self._expirationTime = RobotController.getFPGATime() * 1e-6 + self.period
+        self._updateAlarm()
 
+        # Loop forever, calling the appropriate mode-dependent function
         while True:
-            Timer.delay(60*60*24)
+            if hal.waitForNotifierAlarm(self._notifier) == 0:
+                break
+            
+            self._expirationTime += self.period
+            self._updateAlarm()
+            
+            self.loopFunc()
 
 
     def setPeriod(self, period: float) -> None:
@@ -56,8 +76,12 @@ class TimedRobot(IterativeRobotBase):
         self.period = period
 
         if self.startLoop:
-            self.loop.startPeriodic(self.period)
+            self._expirationTime = RobotController.getFPGATime() * 1e-6 + self.period
+            self._updateAlarm()
     
     def getPeriod(self):
         """Get time period between calls to Periodic() functions."""
         return self.period
+    
+    def _updateAlarm(self) -> None:
+        hal.updateNotifierAlarm(self._notifier, int(self._expirationTime * 1e6))
