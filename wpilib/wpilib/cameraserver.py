@@ -68,10 +68,17 @@ class CameraServer:
                 '-m', 'cscore'
             ]
             
+            # TODO: Get accurate reporting data from the other cscore process. For
+            # now, just differentiate between users with a custom py file and those
+            # who do not. cscore handle values indicate type with bits 24-30
+            
             if vision_py:
                 if not vision_py.startswith('/'):
                     vision_py = '/home/lvuser/py/' + vision_py
                 args.append(vision_py)
+                hal.report(hal.UsageReporting.kResourceType_PCVideoServer, 0x51)
+            else:
+                hal.report(hal.UsageReporting.kResourceType_PCVideoServer, 0x52)
             
             # We open a pipe to it so that when this process exits, it dies
             proc = subprocess.Popen(args, close_fds=True, stdin=subprocess.PIPE, cwd='/home/lvuser/py')
