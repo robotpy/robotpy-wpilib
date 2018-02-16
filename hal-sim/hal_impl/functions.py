@@ -1335,11 +1335,22 @@ def waitForNotifierAlarm(notifierHandle, status):
     with notifierHandle.lock:
         while notifierHandle.active:
             if not notifierHandle.running:
-                waitTime = 1000.0
+                # TODO: switch to longer wait once pyfrc is fixed
+                #waitTime = 1000.0
+                waitTime = 0.010
             else:
-                waitTime = (notifierHandle.waitTime - hooks.getFPGATime()) * 1e-6
+                waitTime = max((notifierHandle.waitTime - hooks.getFPGATime()) * 1e-6, 0)
 
-            notifierHandle.lock.wait(timeout=waitTime)
+            notifierHandle.updatedAlarm = False
+
+            # TODO: fix pyfrc to make this work with the condition instead
+            #notifierHandle.lock.wait(timeout=waitTime)
+            try:
+                notifierHandle.lock.release()
+                hooks.delaySeconds(waitTime)
+            finally:
+                notifierHandle.lock.acquire()
+
             if notifierHandle.updatedAlarm:
                 notifierHandle.updatedAlarm = False
                 continue
