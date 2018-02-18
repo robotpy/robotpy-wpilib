@@ -43,8 +43,8 @@ class MatchDataSender:
         self.alliance.forceSetBoolean(True)
         self.station = self.table.getEntry('StationNumber')
         self.station.forceSetDouble(0)
-        #self.controlWord = self.table.getEntry('FMSControlData')
-        #self.controlWord.forceSetDouble(0)
+        self.controlWord = self.table.getEntry('FMSControlData')
+        self.controlWord.forceSetDouble(0)
 
 
 class DriverStation:
