@@ -51,7 +51,13 @@ def fake_pointer(orig_obj, name=None):
 #############################################################################
 
 class ControlWord:
-    
+    ENABLED_FIELD = 0
+    AUTO_FIELD = 1
+    TEST_FIELD = 2
+    EMERGENCY_STOP_FIELD = 3
+    FMS_ATTACHED_FIELD = 4
+    DS_ATTACHED_FIELD = 5
+
     def __init__(self):
         self.enabled = 0
         self.autonomous = 0
@@ -59,7 +65,15 @@ class ControlWord:
         self.eStop = 0
         self.fmsAttached = 0
         self.dsAttached = 0
-    
+
+    def to_bits(self) -> int:
+        return (self.enabled << self.ENABLED_FIELD
+                | self.autonomous << self.AUTO_FIELD
+                | self.test << self.TEST_FIELD
+                | self.eStop << self.EMERGENCY_STOP_FIELD
+                | self.fmsAttached << self.FMS_ATTACHED_FIELD
+                | self.dsAttached << self.DS_ATTACHED_FIELD)
+
 ControlWord_ptr = fake_pointer(ControlWord)
 
 class JoystickAxes:

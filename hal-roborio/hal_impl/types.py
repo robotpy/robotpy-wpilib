@@ -39,6 +39,12 @@ class ControlWord(C.Structure):
                 ("fmsAttached", C.c_uint32, 1),
                 ("dsAttached", C.c_uint32, 1),
                 ("control_reserved", C.c_uint32, 26)]
+
+    _c_int32_p = C.POINTER(C.c_int32)
+
+    def to_bits(self) -> int:
+        return C.cast(C.pointer(self), self._c_int32_p).contents.value
+
 ControlWord_ptr = C.POINTER(ControlWord)
 
 class JoystickAxes(C.Structure):
