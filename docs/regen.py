@@ -76,10 +76,6 @@ def gen_package(mod):
     classes = []
     
     for clsname, cls in inspect.getmembers(mod, inspect.isclass):
-        # Skip undocumented classes - only stubs will be undocumented.
-        if not cls.__doc__:
-            continue
-        
         fname = join(docdir, '%s.rst' % clsname)
         clsmodname = cls.__module__
         write_if_changed(

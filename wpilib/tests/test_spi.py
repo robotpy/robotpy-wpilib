@@ -1,7 +1,6 @@
 
 import pytest
 
-import hal
 from hal_impl.spi_helpers import SPISimBase
 
 class SPISimulator(SPISimBase):
@@ -48,7 +47,7 @@ class SPISimulator(SPISimBase):
 
 def test_spi(wpilib, monkeypatch):
 
-    monkeypatch.setattr(wpilib.Notifier, '_thread', lambda s: None)
+    monkeypatch.setattr(wpilib.Notifier, '_run', lambda s: None)
 
     sim = SPISimulator()
     port = wpilib.SPI.Port.kMXP
@@ -90,7 +89,7 @@ def test_spi(wpilib, monkeypatch):
 
 def test_adxrs450(wpilib, hal_data, monkeypatch, sim_hooks):
 
-    monkeypatch.setattr(wpilib.Notifier, '_thread', lambda s: None)
+    monkeypatch.setattr(wpilib.Notifier, '_run', lambda s: None)
 
     gyro = wpilib.ADXRS450_Gyro()
 

@@ -6,6 +6,7 @@ __pycache__
 htmlcov
 *,cover
 .cache
+.pytest_cache/
 
 build 
 dist
