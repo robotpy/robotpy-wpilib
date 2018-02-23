@@ -356,11 +356,11 @@ _freeMatchInfo = _RETFUNC("freeMatchInfo", None, ("info", MatchInfo_ptr))
 def getMatchInfo(cachedInfo):
     ret, info = _getMatchInfo()
     if ret == 0:
-        cachedInfo.eventName = info.eventName
+        cachedInfo.eventName = info.eventName.decode('utf-8')
         cachedInfo.matchType = info.matchType
         cachedInfo.matchNumber = info.matchNumber
         cachedInfo.replayNumber = info.replayNumber
-        cachedInfo.gameSpecificMessage = info.gameSpecificMessage
+        cachedInfo.gameSpecificMessage = info.gameSpecificMessage.decode('utf-8')
         _freeMatchInfo(info)
     return ret
     

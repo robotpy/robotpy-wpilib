@@ -24,6 +24,18 @@ logger = logging.getLogger('wpilib.ds')
 JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL = 1.0
 
 
+# NOTE: Not using hal.MatchInfo to avoid having to constantly decode the bytestrings.
+class MatchInfoData:
+    __slots__ = ('eventName', 'matchType', 'matchNumber', 'replayNumber', 'gameSpecificMessage')
+
+    def __init__(self):
+        self.eventName = ''
+        self.matchType = 0
+        self.matchNumber = 0
+        self.replayNumber = 0
+        self.gameSpecificMessage = ''
+
+
 class MatchDataSender:
     def __init__(self):
         self.table = NetworkTables.getTable('FMSInfo')
@@ -114,7 +126,7 @@ class DriverStation:
         self.joystickAxes = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVs = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtons = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
-        self.matchInfo = hal.MatchInfo(eventName=b'', gameSpecificMessage=b'')
+        self.matchInfo = MatchInfoData()
 
         self.joystickButtonsPressed = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
         self.joystickButtonsReleased = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
@@ -122,7 +134,7 @@ class DriverStation:
         self.joystickAxesCache = [hal.JoystickAxes() for _ in range(self.kJoystickPorts)]
         self.joystickPOVsCache = [hal.JoystickPOVs() for _ in range(self.kJoystickPorts)]
         self.joystickButtonsCache = [hal.JoystickButtons() for _ in range(self.kJoystickPorts)]
-        self.matchInfoCache = hal.MatchInfo(eventName=b'', gameSpecificMessage=b'')
+        self.matchInfoCache = MatchInfoData()
 
         self.controlWordMutex = threading.RLock()
         self.controlWordCache = hal.ControlWord()
@@ -546,15 +558,15 @@ class DriverStation:
         :returns: The game specific message
         """
         with self.cacheDataMutex:
-            return self.matchInfo.gameSpecificMessage.decode('utf-8')
+            return self.matchInfo.gameSpecificMessage
 
     def getEventName(self) -> str:
-        """Get the event name
+        """Get the event name.
 
         :returns: The event name
         """
         with self.cacheDataMutex:
-            return self.matchInfo.eventName.decode('utf-8')
+            return self.matchInfo.eventName
 
     def getMatchType(self) -> MatchType:
         """Get the match type.
@@ -694,8 +706,8 @@ class DriverStation:
         stationNumber = self._station_numbers.get(alliance, 0)
 
         with self.cacheDataMutex:
-            eventName = self.matchInfo.eventName.decode('utf-8')
-            gameSpecificMessage = self.matchInfo.gameSpecificMessage.decode('utf-8')
+            eventName = self.matchInfo.eventName
+            gameSpecificMessage = self.matchInfo.gameSpecificMessage
             matchNumber = self.matchInfo.matchNumber
             replayNumber = self.matchInfo.replayNumber
             matchType = self.matchInfo.matchType
