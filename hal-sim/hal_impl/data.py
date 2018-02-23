@@ -129,11 +129,11 @@ def _reset_hal_data(current_hooks):
 
         # HAL MatchInfo data
         'event': {
-            'name': OUT('sim-event'),
-            'match_type': OUT(0),
-            'match_number': OUT(0),
-            'replay_number': OUT(0),
-            'game_specific_message': OUT('')
+            'name': IN('sim-event'),
+            'match_type': IN(0),
+            'match_number': IN(0),
+            'replay_number': IN(0),
+            'game_specific_message': IN('')
         },
 
         # You should not modify these directly, instead use the mode_helpers!
