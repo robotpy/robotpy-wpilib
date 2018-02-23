@@ -13,10 +13,9 @@ import hal
 from .resource import Resource
 from .robotcontroller import RobotController
 
+
 class Notifier:
-    
-    def __init__(self, run: callable):
-        
+    def __init__(self, run: callable) -> None:
         #: The lock for the process information.
         self._processLock = threading.RLock()
         
@@ -39,7 +38,7 @@ class Notifier:
         self._period = 0
         
         #: The thread waiting on the HAL alarm
-        self._thread = threading.Thread(target=self._thread, daemon=True)
+        self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
         
         # python-specific
@@ -63,7 +62,7 @@ class Notifier:
         if handle:
             hal.updateNotifierAlarm(handle, int(self._expirationTime * 1e6))
     
-    def _thread(self) -> None:
+    def _run(self) -> None:
         while True:
             notifier = self._notifier
             if not notifier:
@@ -91,9 +90,10 @@ class Notifier:
             self._handler = handler
     
     def startSingle(self, delay: float) -> None:
-        """Register for single event notification. A timer event is queued for a single event after the
-        specified delay.
-        
+        """Register for single event notification.
+
+        A timer event is queued for a single event after the specified delay.
+
         :param delay: Seconds to wait before the handler is called.
         """
         with self._processLock:
@@ -103,12 +103,14 @@ class Notifier:
             self._updateAlarm()
     
     def startPeriodic(self, period: float) -> None:
-        """Register for periodic event notification. A timer event is queued for periodic event
-        notification. Each time the interrupt occurs, the event will be immediately requeued for the
-        same time interval.
-        
-        :param period: Period in seconds to call the handler starting one period after the call to this
-        method.
+        """Register for periodic event notification.
+
+        A timer event is queued for periodic event notification.
+        Each time the interrupt occurs, the event will be immediately
+        requeued for the same time interval.
+
+        :param period: Period in seconds to call the handler starting
+                       one period after the call to this method.
         """
         with self._processLock:
             self._periodic = True
@@ -117,8 +119,11 @@ class Notifier:
             self._updateAlarm()
     
     def stop(self) -> None:
-        """Stop timer events from occurring. Stop any repeating timer events from occurring. This will
-        also remove any single notification events from the queue. If a timer-based call to the
-        registered handler is in progress, this function will block until the handler call is complete.
+        """Stop timer events from occurring.
+
+        Stop any repeating timer events from occurring. This will also
+        remove any single notification events from the queue.
+        If a timer-based call to the registered handler is in progress,
+        this function will block until the handler call is complete.
         """
         hal.cancelNotifierAlarm(self._notifier)
