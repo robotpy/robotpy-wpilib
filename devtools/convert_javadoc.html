@@ -42,7 +42,6 @@
       var lines =  txt.split(/\r?\n/);
       for (i = 0; i < lines.length; i++) {
           var line = lines[i];
-          
           line = line.trim();
           
           line = line.replace("/*", "").replace("*/", "");
@@ -193,6 +192,9 @@
     }
 
     function process(txt) {
+      // remove diff formatting if present
+      txt = txt.replace(/^\+/gm, '');
+      
       // try to find a function definition
       var s = txt.split(/(.*)\n\s+(?:(?:public|protected|private|static|final|synchronized|abstract|default|native)\s+)+(?:([\w<>[\]]+)\s+)?(\w+)\s*\(([^)]*)\)/);
       var t = processDoc(s[0]);
