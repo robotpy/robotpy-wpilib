@@ -1,4 +1,4 @@
-# validated: 2017-12-26 DS 7f074563d06f edu/wpi/first/wpilibj/ADXRS450_Gyro.java
+# validated: 2018-03-03 DV 67de595c85fe edu/wpi/first/wpilibj/ADXRS450_Gyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2015-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -86,6 +86,9 @@ class ADXRS450_Gyro(GyroBase):
         hal.report(hal.UsageReporting.kResourceType_ADXRS450, port)
         self.setName("ADXRS450_Gyro", port)
 
+    def isConnected(self) -> bool:
+        return self.spi is not None
+
     def calibrate(self):
         """Calibrate the gyro by running for a number of samples and computing the
         center value. Then use the center value as the Accumulator center value for
@@ -142,11 +145,14 @@ class ADXRS450_Gyro(GyroBase):
 
     def reset(self):
         """
-        Reset the gyro. Resets the gyro to a heading of zero. This can be used if
+        Reset the gyro.
+        
+        Resets the gyro to a heading of zero. This can be used if
         there is significant drift in the gyro and it needs to be recalibrated
         after it has been running.
         """
-        self.spi.resetAccumulator()
+        if self.spi is not None:
+            self.spi.resetAccumulator()
 
     def free(self):
         """Delete (free) the spi port used for the gyro and stop accumulating."""

@@ -1435,6 +1435,9 @@ def initializePWMPort(portHandle, status):
     if pwmPortHandle.pin >= kNumDigitalHeaders:
         hal_data["mxp"][mxp_port]["initialized"] = True
 
+    # Defaults to allow an always valid config.
+    setPWMConfig(pwmPortHandle, 2.0, 1.501, 1.5, 1.499, 1.0, status)
+
     return pwmPortHandle
 
 def freePWMPort(pwmPortHandle, status):

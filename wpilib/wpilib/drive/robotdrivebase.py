@@ -1,4 +1,4 @@
-# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/drive/RobotDriveBase.java
+# validated: 2018-03-03 DV 7bb3e4efc319 edu/wpi/first/wpilibj/drive/RobotDriveBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -53,10 +53,10 @@ class RobotDriveBase(SendableBase, MotorSafety):
         self.setName("RobotDriveBase")
 
     def setDeadband(self, deadband: float):
-        """Change the value for deadband scaling.
+        """Sets the deadband applied to the drive inputs (e.g. joystick values).
 
-        The default value is :const:`kDefaultDeadband`. Values smaller than the deadband are set to 0,
-        while values larger than the deadband are scaled from 0.0 to 1.0. See :meth:`applyDeadband`.
+        The default value is :const:`kDefaultDeadband`. Inputs smaller than the deadband are set to
+        0 while inputs larger than the deadband are scaled from 0 to 1. See :meth:`applyDeadband`.
 
         :param deadband: The deadband to set
         """
