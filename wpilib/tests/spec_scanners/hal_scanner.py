@@ -339,7 +339,7 @@ class Function:
         if self.params and self.params[-1].name == 'status':
             text += '\n    status.value = 0'
         
-        text += '\n    assert False'
+        text += '\n    raise NotImplementedError'
         text += '\n'
         
         return text 
