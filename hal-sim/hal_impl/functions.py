@@ -575,7 +575,7 @@ def _get_trigger_value(analogTriggerHandle):
         return atr, ain['avg_value']
     if trig_type == 'filtered':
         return atr, ain['value'] # XXX
-    assert False
+    raise NotImplementedError
 
 def getAnalogTriggerInWindow(analogTriggerHandle, status):
     status.value = 0
@@ -1038,7 +1038,7 @@ def freeJoystickName(name):
     pass
 
 def getJoystickAxisType(joystickNum, axis):
-    assert False
+    raise NotImplementedError
 
 def setJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
     hal_data['joysticks'][joystickNum]["leftRumble"] = leftRumble
@@ -1132,11 +1132,11 @@ def getEncoder(encoderHandle, status):
 
 def getEncoderRaw(encoderHandle, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def getEncoderEncodingScale(encoderHandle, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def resetEncoder(encoderHandle, status):
     status.value = 0
@@ -1200,7 +1200,7 @@ def getEncoderFPGAIndex(encoderHandle, status):
 
 def getEncoderDecodingScaleFactor(encoderHandle, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def getEncoderDistancePerPulse(encoderHandle, status):
     status.value = 0
@@ -1208,7 +1208,7 @@ def getEncoderDistancePerPulse(encoderHandle, status):
 
 def getEncoderEncodingType(encoderHandle, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 
 #############################################################################
@@ -1216,10 +1216,10 @@ def getEncoderEncodingType(encoderHandle, status):
 #############################################################################
 
 def loadOneExtension(library):
-    assert False
+    raise NotImplementedError
 
 def loadExtensions():
-    assert False
+    raise NotImplementedError
 
 
 #############################################################################
@@ -1238,58 +1238,58 @@ def loadExtensions():
 #
 
 def initializeI2C(port, status):
-    assert False
+    raise NotImplementedError
 
 def transactionI2C(port, deviceAddress, dataToSend, sendSize, dataReceived, receiveSize):
-    assert False
+    raise NotImplementedError
 
 def writeI2C(port, deviceAddress, dataToSend, sendSize):
-    assert False
+    raise NotImplementedError
 
 def readI2C(port, deviceAddress, buffer, count):
-    assert False
+    raise NotImplementedError
 
 def closeI2C(port):
-    assert False
+    raise NotImplementedError
 
 #############################################################################
 # Interrupts
 #############################################################################
 
 def initializeInterrupts(watcher, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 def cleanInterrupts(interruptHandle, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 def waitForInterrupt(interruptHandle, timeout, ignorePrevious, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 def enableInterrupts(interruptHandle, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 def disableInterrupts(interruptHandle, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 def readInterruptRisingTimestamp(interruptHandle, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 def readInterruptFallingTimestamp(interruptHandle, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 def requestInterrupts(interruptHandle, digitalSourceHandle, analogTriggerType, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def attachInterruptHandler(interruptHandle, handler, param, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 def attachInterruptHandlerThreaded(interruptHandle, handler, param, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setInterruptUpSourceEdge(interruptHandle, risingEdge, fallingEdge, status):
-    assert False # TODO
+    raise NotImplementedError # TODO
 
 
 #############################################################################
@@ -1711,75 +1711,75 @@ def getRelay(relayPortHandle, status):
 
 def initializeSPI(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def transactionSPI(port, dataToSend, dataReceived, size):
-    assert False
+    raise NotImplementedError
 
 def writeSPI(port, dataToSend, sendSize):
-    assert False
+    raise NotImplementedError
 
 def readSPI(port, buffer, count):
-    assert False
+    raise NotImplementedError
 
 def closeSPI(port):
-    assert False
+    raise NotImplementedError
 
 def setSPISpeed(port, speed):
-    assert False
+    raise NotImplementedError
 
 def setSPIOpts(port, msbFirst, sampleOnTrailing, clkIdleHigh):
-    assert False
+    raise NotImplementedError
 
 def setSPIChipSelectActiveHigh(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSPIChipSelectActiveLow(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def getSPIHandle(port):
-    assert False
+    raise NotImplementedError
 
 def setSPIHandle(port, handle):
-    assert False
+    raise NotImplementedError
 
 def initSPIAuto(port, bufferSize, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def freeSPIAuto(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def startSPIAutoRate(port, period, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def startSPIAutoTrigger(port, digitalSourceHandle, analogTriggerType, triggerRising, triggerFalling, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def stopSPIAuto(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSPIAutoTransmitData(port, dataToSend, dataSize, zeroSize, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def forceSPIAutoRead(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def readSPIAutoReceivedData(port, buffer, numToRead, timeout, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def getSPIAutoDroppedCount(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 #############################################################################
 # SerialPort
@@ -1795,75 +1795,75 @@ def getSPIAutoDroppedCount(port, status):
 
 def initializeSerialPort(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialBaudRate(port, baud, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialDataBits(port, bits, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialParity(port, parity, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialStopBits(port, stopBits, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialWriteMode(port, mode, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialFlowControl(port, flow, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialTimeout(port, timeout, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def enableSerialTermination(port, terminator, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def disableSerialTermination(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialReadBufferSize(port, size, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def setSerialWriteBufferSize(port, size, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def getSerialBytesReceived(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def readSerial(port, buffer, count, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def writeSerial(port, buffer, count, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def flushSerial(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def clearSerial(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 def closeSerial(port, status):
     status.value = 0
-    assert False
+    raise NotImplementedError
 
 
 #############################################################################
@@ -1948,7 +1948,7 @@ def setOneShotDuration(solenoidPortHandle, durMS, status):
 def fireOneShot(solenoidPortHandle, status):
     status.value = 0
     # TODO: need to schedule a callback to implement this somehow
-    assert False
+    raise NotImplementedError
 
 # This needs to be here otherwise tests will fail, as hal.initialize() does not call this
 data._reset_hal_data(hooks)
