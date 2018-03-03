@@ -9,6 +9,7 @@
   <input type="radio" name="mtype" value="normal" onclick="xfer()" checked/> normal
   <input type="radio" name="mtype" value="classmethod" onclick="xfer()"/> @classmethod
   <input type="radio" name="mtype" value="staticmethod" onclick="xfer()"/> @staticmethod
+  <input type="radio" name="mtype" value="yamlgen" onclick="xfer()"/> yamlgen
   <br/>
   <textarea id="outbox" rows="10" cols="100"></textarea><p>
   Out: sphinx variable doc<br/>
@@ -24,9 +25,6 @@
       }
     }
   
-    var indent = '        ';
-    var indentRe = new RegExp(indent, "g");
-    
     function trimLines(lines) {
       return lines.join('\r\n').trim().split('\r\n');
     }
@@ -116,24 +114,7 @@
         }
       }
       
-      // indent all
-      lines =  text.split(/\r?\n/);
-      for (i = 0; i < lines.length; i++) {
-        if (i != 0)
-          lines[i] = indent + lines[i];
-      }
-      
-      var sphinx = '#: ' + lines.join('\r\n').replace(indentRe, indent + '#: ')
-      
-      if (lines.length > 1)
-        lines.push(indent);
-            
-      lines[lines.length -1] = lines[lines.length -1] + '"""';
-      
-      var ret = ['"""' + lines.join('\r\n'),
-                 sphinx];
-      
-      return ret;
+      return text;
     }
 
     function javaTypeToPython(type) {
@@ -190,6 +171,25 @@
         }
         return type;
     }
+    
+    var indent = '        ';
+    var indentRe = new RegExp(indent, "g");
+    
+    function formatDocstring(text) {
+      // indent all
+      var lines =  text.split(/\r?\n/);
+      for (var i = 0; i < lines.length; i++) {
+        if (i != 0)
+          lines[i] = indent + lines[i];
+      }
+      
+      if (lines.length > 1)
+        lines.push(indent);
+            
+      lines[lines.length -1] = lines[lines.length -1] + '"""';
+      
+      return '"""' + lines.join('\r\n');
+    }
 
     function process(txt) {
       // remove diff formatting if present
@@ -198,6 +198,12 @@
       // try to find a function definition
       var s = txt.split(/(.*)\n\s+(?:(?:public|protected|private|static|final|synchronized|abstract|default|native)\s+)+(?:([\w<>[\]]+)\s+)?(\w+)\s*\(([^)]*)\)/);
       var t = processDoc(s[0]);
+      
+      if (getOutputMethodType() == "yamlgen") {
+        t = '  doc: |\r\n    ' + t.replace(/\r\n/g, '\r\n    ');
+      } else {
+        t = formatDocstring(t);
+      }
       
       // add the function definition in if present
       if (s.length > 1) {
@@ -231,19 +237,19 @@
         
         switch (getOutputMethodType()) {
           case "normal":
-            t[0] = "def " + funcName + "(self" + args +
-                  ") -> " + retType + ":\n        " + t[0];
+            t = "def " + funcName + "(self" + args +
+                  ") -> " + retType + ":\n        " + t;
             break;
           case "classmethod":
-            t[0] = "@classmethod\n    def " + funcName + "(cls" + args +
-                  ") -> " + retType + ":\n        " + t[0];
+            t = "@classmethod\n    def " + funcName + "(cls" + args +
+                  ") -> " + retType + ":\n        " + t;
             break;
           case "staticmethod":
             if (args.startsWith(",")) {
               args = args.substring(1);
             }
-            t[0] = "@staticmethod\n    def " + funcName + "(" + args +
-                  ") -> " + retType + ":\n        " + t[0];
+            t = "@staticmethod\n    def " + funcName + "(" + args +
+                  ") -> " + retType + ":\n        " + t;
             break;
         }
       }
@@ -252,8 +258,8 @@
     
     function xfer() {
       var txt = process(inbox.value);
-      outbox.value = txt[0];
-      sphinxbox.value = txt[1];
+      outbox.value = txt;
+      //sphinxbox.value = '#: ' + lines.join('\r\n').replace(indentRe, indent + '#: ');
     }
   
     inbox.oninput = inbox.onpropertychange = inbox.onpaste = xfer;
