@@ -552,14 +552,14 @@ def setAnalogTriggerLimitsVoltage(analogTriggerHandle, lower, upper, status):
 
 
 def setAnalogTriggerAveraged(analogTriggerHandle, useAveragedValue, status):
-    if hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] is 'filtered':
+    if hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] == 'filtered':
         status.value = INCOMPATIBLE_STATE
     else:
         status.value = 0
         hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] = 'averaged' if useAveragedValue else None
 
 def setAnalogTriggerFiltered(analogTriggerHandle, useFilteredValue, status):
-    if hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] is 'averaged':
+    if hal_data['analog_trigger'][analogTriggerHandle.index]['trig_type'] == 'averaged':
         status.value = INCOMPATIBLE_STATE
     else:
         status.value = 0
@@ -571,9 +571,9 @@ def _get_trigger_value(analogTriggerHandle):
     trig_type = atr['trig_type']
     if trig_type is None:
         return atr, ain['value']
-    if trig_type is 'averaged':
+    if trig_type == 'averaged':
         return atr, ain['avg_value']
-    if trig_type is 'filtered':
+    if trig_type == 'filtered':
         return atr, ain['value'] # XXX
     assert False
 
