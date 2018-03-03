@@ -7,12 +7,13 @@
 #
 
 
-hal_version = '2018.3.1'
+hal_version = '2018.424242.3.3-20180303062844-2-g8b78c4c'
 wpiutil_version = '3.1.0'
 
 frc_site = 'http://first.wpi.edu/FRC/roborio/maven/release'
 
-hal_site = '%s/edu/wpi/first/hal/hal' % frc_site
+#hal_site = '%s/edu/wpi/first/hal/hal' % frc_site
+hal_site = 'https://www.tortall.net/~robotpy/feeds/2018/hal/'
 wpiutil_site = '%s/edu/wpi/first/wpiutil/wpiutil-cpp' % frc_site
 
 hal_libs = 'hal-%s-linuxathena.zip' % hal_version
