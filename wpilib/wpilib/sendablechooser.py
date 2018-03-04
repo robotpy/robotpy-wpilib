@@ -1,4 +1,4 @@
-# validated: 2017-12-16 EN f9bece2ffbf7 edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
+# validated: 2018-03-04 DV 9d7293734a65 edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -46,7 +46,7 @@ class SendableChooser(SendableBase):
     def __init__(self):
         """Instantiates a SendableChooser.
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         self.map = {}
         self.tableSelected = None
         self.defaultChoice = ""
