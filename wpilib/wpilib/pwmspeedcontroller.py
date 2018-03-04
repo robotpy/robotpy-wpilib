@@ -1,4 +1,4 @@
-# validated: 2017-10-23 TW e1195e8b9dab edu/wpi/first/wpilibj/PWMSpeedController.java
+# validated: 2018-03-04 DV 5175829babeb edu/wpi/first/wpilibj/PWMSpeedController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -64,3 +64,8 @@ class PWMSpeedController(SafePWM):
         :type  output: float
         """
         self.set(output)
+
+    def initSendable(self, builder):
+        builder.setSmartDashboardType("Speed Controller")
+        builder.setSafeState(self.setDisabled)
+        builder.addDoubleProperty("Value", self.getSpeed, self.setSpeed)

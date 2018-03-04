@@ -1,4 +1,4 @@
-# validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/PWM.java
+# validated: 2018-03-04 DV 5175829babeb edu/wpi/first/wpilibj/PWM.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -260,6 +260,6 @@ class PWM(SendableBase):
         hal.latchPWMZero(self.handle)
 
     def initSendable(self, builder):
-        builder.setSmartDashboardType("Speed Controller")
+        builder.setSmartDashboardType("PWM")
         builder.setSafeState(self.setDisabled)
-        builder.addDoubleProperty("Value", self.getSpeed, self.setSpeed)
+        builder.addDoubleProperty("Value", self.getRaw, lambda value: self.setRaw(int(value)))
