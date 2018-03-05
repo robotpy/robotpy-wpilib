@@ -347,7 +347,13 @@ def freeJoystickName(name):
 getJoystickAxisType = _RETFUNC("getJoystickAxisType", C.c_int32, ("joystickNum", C.c_int32), ("axis", C.c_int32))
 setJoystickOutputs = _RETFUNC("setJoystickOutputs", C.c_int32, ("joystickNum", C.c_int32), ("outputs", C.c_int64), ("leftRumble", C.c_int32), ("rightRumble", C.c_int32))
 
-getMatchTime = _STATUSFUNC("getMatchTime", C.c_double)
+_getMatchTime = _STATUSFUNC("getMatchTime", C.c_double)
+@hal_wrapper
+def getMatchTime():
+    try:
+        return _getMatchTime()
+    except HALError:
+        return -1
 
 _getMatchInfo = _RETFUNC("getMatchInfo", C.c_int32, ("info", MatchInfo_ptr), out=["info"])
 _freeMatchInfo = _RETFUNC("freeMatchInfo", None, ("info", MatchInfo_ptr))
