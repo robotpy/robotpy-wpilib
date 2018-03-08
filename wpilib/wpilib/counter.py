@@ -105,8 +105,7 @@ class Counter(SensorBase):
             to k1X if unspecified.  Only used when two sources are specified.
         :type encodingType: :class:`.Counter.EncodingType`
         """
-
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         source_identifier = [int, HasAttribute("getPortHandleForRouting"), HasAttribute("createOutput")]
 
         argument_templates = [[],

@@ -27,7 +27,7 @@ class DigitalGlitchFilter(SensorBase):
     filterAllocated = [False]*3
 
     def __init__(self):
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         self.channelIndex = -1
         with self.mutex:
             for i, v in enumerate(self.filterAllocated):

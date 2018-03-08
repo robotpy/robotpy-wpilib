@@ -48,8 +48,7 @@ class AnalogInput(SensorBase):
 
         :param channel: The channel number to represent. 0-3 are on-board 4-7 are on the MXP port.
         """
-        
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         SensorBase.checkAnalogInputChannel(channel)
         
         self.channel = channel

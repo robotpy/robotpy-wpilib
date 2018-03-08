@@ -37,7 +37,7 @@ class Subsystem(SendableBase):
         :param name: the name of the subsystem; if None, it will be set to the
                      name to the name of the class.
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         # The name
         if name is None:
             name = self.__class__.__name__

@@ -33,7 +33,7 @@ class AnalogAccelerometer(SensorBase):
         :param channel: port index or an already initialized AnalogInput
         :type channel: int or :class:`.AnalogInput`
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         if not hasattr(channel, "getAverageVoltage"): # If 'channel' is an integer
             self.analogChannel = AnalogInput(channel)
             self.allocatedChannel = True

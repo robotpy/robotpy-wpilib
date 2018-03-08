@@ -26,7 +26,7 @@ class Compressor(SendableBase):
         
         :param module: The PCM CAN device ID. (0 - 62 inclusive)
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         self.table = None
         if module is None:
             module = SensorBase.getDefaultSolenoidModule()

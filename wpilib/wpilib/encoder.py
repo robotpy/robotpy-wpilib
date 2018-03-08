@@ -121,7 +121,7 @@ class Encoder(SensorBase):
             spec'd count.  Defaults to k4X if unspecified.
         :type encodingType: :class:`Encoder.EncodingType`
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         a_source_arg = ("aSource", HasAttribute("getPortHandleForRouting"))
         b_source_arg = ("bSource", HasAttribute("getPortHandleForRouting"))
         index_source_arg = ("indexSource", HasAttribute("getPortHandleForRouting"))

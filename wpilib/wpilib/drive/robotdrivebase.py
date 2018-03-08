@@ -43,7 +43,7 @@ class RobotDriveBase(SendableBase, MotorSafety):
     kDefaultMaxOutput = 1.0
 
     def __init__(self):
-        SendableBase.__init__(self)
+        SendableBase.__init__(self, addLiveWindow=False)
         MotorSafety.__init__(self)
 
         self.deadband = self.kDefaultDeadband

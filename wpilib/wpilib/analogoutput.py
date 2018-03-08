@@ -27,7 +27,7 @@ class AnalogOutput(SensorBase):
 
         :param channel: The channel number to represent.
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         SensorBase.checkAnalogOutputChannel(channel)
         
         self.channel = channel

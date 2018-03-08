@@ -45,8 +45,7 @@ class AnalogPotentiometer(SensorBase):
             the zero value.  Defaults to 0.0 if unspecified.
         :type  offset: float
         """
-
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         if not hasattr(channel, "getVoltage"):
             channel = AnalogInput(channel)
             self.addChild(channel)

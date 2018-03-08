@@ -21,7 +21,7 @@ class JoystickButton(Button):
         :param buttonNumber: The button number
                              (see :meth:`.GenericHID.getRawButton`)
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         self.joystick = joystick
         self.buttonNumber = buttonNumber
 

@@ -23,7 +23,7 @@ class SpeedControllerGroup(SendableBase, SpeedController):
         :param args: SpeedControllers to add
         :type args: :class:`.SpeedController`
         """
-        SendableBase.__init__(self)
+        SendableBase.__init__(self, addLiveWindow=False)
         SpeedController.__init__(self)
 
         self.speedControllers = [speedController] + list(args)

@@ -106,7 +106,7 @@ class Ultrasonic(SensorBase):
             trip time of the ping, and the distance.
         :param units: The units returned in either kInches or kMillimeters
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         # Convert to DigitalInput and DigitalOutput if necessary
         self.pingAllocated = False
         self.echoAllocated = False

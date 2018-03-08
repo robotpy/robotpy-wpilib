@@ -26,7 +26,7 @@ class NidecBrushless(SendableBase, MotorSafety, SpeedController):
         :param dioChannel: The DIO channel that the Nidec Brushless controller is attached to.
                 0-9 are on-board, 10-25 are on the MXP port
         """
-        super().__init__()
+        SendableBase.__init__(self, addLiveWindow=False)
         self.dio = DigitalOutput(dioChannel)
         self.addChild(self.dio)
         self.dio.setPWMRate(15625)

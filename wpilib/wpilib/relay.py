@@ -89,7 +89,7 @@ class Relay(SendableBase, MotorSafety):
             If not specified, defaults to allowing both directions.
         :type  direction: :class:`Relay.Direction`
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         if direction is None:
             direction = self.Direction.kBoth
         self.channel = channel

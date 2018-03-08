@@ -6,7 +6,6 @@
 # the project.
 # ----------------------------------------------------------------------------
 
-import warnings
 import weakref
 
 import hal
@@ -36,8 +35,7 @@ class DigitalOutput(SendableBase):
 
         :param channel: the DIO channel for the digital output. 0-9 are on-board, 10-25 are on the MXP
         """
-
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         self._pwmGenerator = None
         self._pwmGenerator_finalizer = None
 
