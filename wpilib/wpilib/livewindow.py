@@ -94,20 +94,22 @@ class LiveWindow:
         after a period of adjusting them in LiveWindow mode.
         """
         from .command import Scheduler
-        if cls.liveWindowEnabled != enabled:
-            scheduler = Scheduler.getInstance()
-            if enabled:
-                logger.info("Starting live window mode.")
-                scheduler.disable()
-                scheduler.removeAll()
-            else:
-                logger.info("Stopping live window mode.")
-                for component in cls.components.values():
-                    component.builder.stopLiveWindowMode()
-                scheduler.enable()
-            cls.startLiveWindow = enabled
-            cls.liveWindowEnabled = enabled
-            cls.enabledEntry().setBoolean(enabled)
+        with cls.mutex:
+            if cls.liveWindowEnabled != enabled:
+                scheduler = Scheduler.getInstance()
+                if enabled:
+                    logger.info("Starting live window mode.")
+                    scheduler.disable()
+                    scheduler.removeAll()
+                else:
+                    logger.info("Stopping live window mode.")
+                    components = list(cls.components.values())
+                    for component in components:
+                        component.builder.stopLiveWindowMode()
+                    scheduler.enable()
+                cls.startLiveWindow = enabled
+                cls.liveWindowEnabled = enabled
+                cls.enabledEntry().setBoolean(enabled)
 
     @classmethod
     def run(cls):
@@ -305,7 +307,8 @@ class LiveWindow:
             if not cls.liveWindowEnabled and not cls.telemetryEnabled:
                 return
 
-            for component in cls.components.values():
+            components = list(cls.components.values())
+            for component in components:
                 if component.sendable is not None and component.parent is None and (cls.liveWindowEnabled or component.telemetryEnabled):
                     if component.firstTime:
                         # By holding off creating the NetworkTable entries, it allows the
