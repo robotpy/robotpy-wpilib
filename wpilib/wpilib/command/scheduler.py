@@ -48,7 +48,7 @@ class Scheduler(SendableBase):
     def __init__(self):
         """Instantiates a Scheduler.
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         hal.report(hal.UsageReporting.kResourceType_Command,
                    hal.UsageReporting.kCommand_Scheduler)
         self.setName("Scheduler")

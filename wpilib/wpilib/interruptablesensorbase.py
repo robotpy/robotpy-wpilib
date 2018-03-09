@@ -26,7 +26,7 @@ class InterruptableSensorBase(SensorBase):
 
     def __init__(self):
         """Create a new InterrupatableSensorBase"""
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         # The interrupt resource
         self._interrupt = None
         self._interrupt_finalizer = None

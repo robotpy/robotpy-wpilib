@@ -46,7 +46,7 @@ class AnalogTrigger(SensorBase):
             trigger.  Treated as an AnalogInput if the provided object has a
             getChannel function.
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         if not hasattr(channel, "getChannel"):
             self.analogInput = AnalogInput(channel)
             self.ownsAnalog = True

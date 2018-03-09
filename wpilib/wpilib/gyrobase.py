@@ -20,8 +20,8 @@ class GyroBase(SensorBase):
     
     PIDSourceType = PIDSource.PIDSourceType
     
-    def __init__(self):
-        super().__init__()
+    def __init__(self, addLiveWindow=True):
+        super().__init__(addLiveWindow=addLiveWindow)
         self.pidSource = self.PIDSourceType.kDisplacement
         self.valueEntry = None
     

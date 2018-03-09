@@ -54,7 +54,7 @@ class AnalogGyro(GyroBase):
         :param offset: Preset uncalibrated value to use as the gyro offset
         :type offset: float
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         
         if not hasattr(channel, "initAccumulator"):
             channel = AnalogInput(channel)

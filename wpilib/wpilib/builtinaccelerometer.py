@@ -27,7 +27,7 @@ class BuiltInAccelerometer(SensorBase):
             +/-8g if unspecified.
         :type  range: :class:`.Accelerometer.Range`
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         self.setRange(range)
         self.xEntry = None
         self.yEntry = None

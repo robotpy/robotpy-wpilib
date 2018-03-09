@@ -24,7 +24,7 @@ class PowerDistributionPanel(SensorBase):
             :param module: CAN ID of the PDP
             :type module: int
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         self.module = module
         SensorBase.checkPDPModule(module)
         hal.initializePDP(module)

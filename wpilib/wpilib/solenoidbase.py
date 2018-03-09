@@ -21,7 +21,7 @@ class SolenoidBase(SendableBase):
 
         :param moduleNumber: The PCM CAN ID
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         self.moduleNumber = moduleNumber
 
     def getAll(moduleNumber):

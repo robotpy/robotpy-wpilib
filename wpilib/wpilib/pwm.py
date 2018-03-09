@@ -52,6 +52,7 @@ class PWM(SendableBase):
       controllers. Due to the shipping firmware on the Jaguar, we can't run the
       update period less than 5.05 ms.
     """
+
     class PeriodMultiplier:
         """Represents the amount to multiply the minimum servo-pulse pwm
         period by.
@@ -72,7 +73,7 @@ class PWM(SendableBase):
         :param channel: The PWM channel number. 0-9 are on-board, 10-19 are on the MXP port
         :type channel: int
         """
-        super().__init__()
+        super().__init__(addLiveWindow=False)
         SensorBase.checkPWMChannel(channel)
         self.channel = channel
         
@@ -88,7 +89,6 @@ class PWM(SendableBase):
                 
         # Python-specific: Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
-        
     
     @property
     def handle(self):
