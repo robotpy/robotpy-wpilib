@@ -199,6 +199,7 @@
       
       if (getOutputMethodType() == "yamlgen") {
         t = '  doc: |\r\n    ' + t.replace(/\r\n/g, '\r\n    ');
+        return t;
       } else {
         t = formatDocstring(t);
       }
