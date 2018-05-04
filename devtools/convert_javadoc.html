@@ -99,7 +99,11 @@
         
         text += '\r\n' + pname + ' '.repeat(pindent.length - pname.length) + pp[0] + "\r\n";
         for (j = 1; j < pp.length; j++) {
-          text += pindent + pp[j] + "\r\n";
+          if (pp[j]) {
+            text += pindent + pp[j] + "\r\n";
+          } else {
+            text += "\r\n";
+          }
         }
       }
       
@@ -108,7 +112,11 @@
         // returns always needs a newline before it
         text += "\r\n:returns: " + returns[0];
         for (i = 1; i < returns.length; i++) {
-          text += '          ' + returns[i] + "\r\n";
+          if (returns[i]) {
+            text += '          ' + returns[i] + "\r\n";
+          } else {
+            text += "\r\n";
+          }
         }
       }
       
@@ -176,8 +184,8 @@
     function formatDocstring(text) {
       // indent all
       var lines =  text.split(/\r?\n/);
-      for (var i = 0; i < lines.length; i++) {
-        if (i != 0)
+      for (var i = 1; i < lines.length; i++) {
+        if (lines[i])
           lines[i] = indent + lines[i];
       }
       
