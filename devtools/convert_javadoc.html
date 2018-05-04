@@ -212,10 +212,8 @@
         var args = s[5];
 
         if (args) {
-          var pyArgs = [];
-          args = args.split(", ");
-          for (var i = 0; i<args.length; i++) {
-              var split = args[i].split(" ");
+          var pyArgs = args.split(", ").map(function (arg) {
+              var split = arg.split(" ");
               var argName, argType;
               if (split[0] != "final") {
                   argType = split[0];
@@ -224,8 +222,8 @@
                   argType = split[1];
                   argName = split[2];
               }
-              pyArgs.push(argName + ": " + javaTypeToPython(argType));
-          }
+              return argName + ": " + javaTypeToPython(argType);
+          });
           args = ", " + pyArgs.join(", ");
         }
         if (retType) {
