@@ -2,83 +2,8 @@
     This is the core of WPILib.
 '''
 
-from .accumulatorresult import *
-from .adxl345_i2c import *
-from .adxl345_spi import *
-from .adxl362 import *
-from .adxrs450_gyro import *
-from .analogaccelerometer import *
-from .analoginput import *
-from .analoggyro import *
-from .analogoutput import *
-from .analogpotentiometer import *
-from .analogtrigger import *
-from .analogtriggeroutput import *
-from .builtinaccelerometer import *
-from .cameraserver import *
-from .compressor import *
-from .controllerpower import *
-from .counter import *
-from .digitalglitchfilter import *
-from .digitalinput import *
-from .digitaloutput import *
-from .digitalsource import *
-from .dmc60 import *
-from .doublesolenoid import *
-from .driverstation import *
-from .encoder import *
-from .filter import *
-from .geartooth import *
-from .gyrobase import *
-from .i2c import *
-from .interruptablesensorbase import *
-from .iterativerobot import *
-from .iterativerobotbase import *
-from .jaguar import *
-from .joystick import *
-from .lineardigitalfilter import *
-from .livewindow import *
-from .livewindowsendable import *
-from .motorsafety import *
-from .nidecbrushless import *
-from .notifier import *
-from .pidcontroller import *
-from .powerdistributionpanel import *
-from .preferences import *
-from .pwm import *
-from .pwmspeedcontroller import *
-from .pwmtalonsrx import *
-from .pwmvictorspx import *
-from .relay import *
-from .resource import *
-from .robotbase import *
-from .robotcontroller import *
-from .robotdrive import *
-from .robotstate import *
-from .safepwm import *
-from .samplerobot import *
-from .sd540 import *
-from .sendable import *
-from .sendablebase import *
-from .sendablebuilder import *
-from .sendablechooser import *
-from .sensorbase import *
-from .serialport import *
-from .servo import *
-from .smartdashboard import *
-from .solenoidbase import *
-from .solenoid import *
-from .spark import *
-from .speedcontrollergroup import *
-from .spi import *
-from .talon import *
-from .timedrobot import *
-from .timer import *
-from .ultrasonic import *
-from .utility import *
-from .victor import *
-from .victorsp import *
-from .xboxcontroller import *
+import importlib
+import sys
 
 from ._impl.main import run
 
@@ -86,3 +11,116 @@ try:
     from .version import __version__
 except ImportError:
     __version__ = 'master'
+
+__all__ = (
+    'AccumulatorResult',
+    'ADXL345_I2C',
+    'ADXL345_SPI',
+    'ADXL362',
+    'ADXRS450_Gyro',
+    'AnalogAccelerometer',
+    'AnalogInput',
+    'AnalogGyro',
+    'AnalogOutput',
+    'AnalogPotentiometer',
+    'AnalogTrigger',
+    'AnalogTriggerOutput',
+    'BuiltInAccelerometer',
+    'CameraServer',
+    'Compressor',
+    'ControllerPower',
+    'Counter',
+    'DigitalGlitchFilter',
+    'DigitalInput',
+    'DigitalOutput',
+    'DigitalSource',
+    'DMC60',
+    'DoubleSolenoid',
+    'DriverStation',
+    'Encoder',
+    'Filter',
+    'GearTooth',
+    'GyroBase',
+    'I2C',
+    'InterruptableSensorBase',
+    'IterativeRobot',
+    'IterativeRobotBase',
+    'Jaguar',
+    'Joystick',
+    'LinearDigitalFilter',
+    'LiveWindow',
+    'LiveWindowSendable',
+    'MotorSafety',
+    'NidecBrushless',
+    'Notifier',
+    'PIDController',
+    'PowerDistributionPanel',
+    'Preferences',
+    'PWM',
+    'PWMSpeedController',
+    'PWMTalonSRX',
+    'PWMVictorSPX',
+    'Relay',
+    'Resource',
+    'RobotBase',
+    'RobotController',
+    'RobotDrive',
+    'RobotState',
+    'SafePWM',
+    'SampleRobot',
+    'SD540',
+    'Sendable',
+    'SendableBase',
+    'SendableBuilder',
+    'SendableChooser',
+    'SensorBase',
+    'SerialPort',
+    'Servo',
+    'SmartDashboard',
+    'SolenoidBase',
+    'Solenoid',
+    'Spark',
+    'SpeedControllerGroup',
+    'SPI',
+    'Talon',
+    'TimedRobot',
+    'Timer',
+    'Ultrasonic',
+    'Utility',
+    'Victor',
+    'VictorSP',
+    'XboxController',
+)
+
+
+class WPILibLazyLoader:
+    # TODO: use module __getattr__ when we drop support for Python < 3.7
+
+    # Re-export things that Python expects at module level that are rarely used.
+    __doc__ = __doc__
+    __all__ = __all__
+    __file__ = __file__
+    __loader__ = __loader__
+    __spec__ = __spec__
+
+    __version__ = __version__
+
+    def __init__(self):
+        self._impl = _impl  # noqa: F821
+        self.run = run
+
+        # Re-export things used by the Python import machinery.
+        self.__name__ = __name__
+        self.__package__ = __package__
+        self.__path__ = __path__
+
+    def __getattr__(self, name):
+        if not name[0].isupper():
+            raise AttributeError("module 'wpilib' has no attribute {!r}".format(name))
+        mod = importlib.import_module('.' + name.lower(), 'wpilib')
+        cls = getattr(mod, name)
+        setattr(self, name, cls)
+        return cls
+
+
+sys.modules['wpilib'] = WPILibLazyLoader()

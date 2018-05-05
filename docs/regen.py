@@ -18,7 +18,6 @@ mod_doc = '''
 %(header)s
 
 .. automodule:: %(module)s
-    :members:
 
 .. autosummary::
     %(cls_names)s
@@ -74,8 +73,12 @@ def gen_package(mod):
         os.mkdir(docdir)
     
     classes = []
+    if hasattr(mod, '__all__'):
+        members = [(attr, getattr(mod, attr)) for attr in mod.__all__]
+    else:
+        members = inspect.getmembers(mod, inspect.isclass)
     
-    for clsname, cls in inspect.getmembers(mod, inspect.isclass):
+    for clsname, cls in members:
         fname = join(docdir, '%s.rst' % clsname)
         clsmodname = cls.__module__
         write_if_changed(
