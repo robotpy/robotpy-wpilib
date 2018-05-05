@@ -44,6 +44,11 @@ def hal_data(_module_patch):
     return hal_impl.data.hal_data
 
 
+def unlazy_import(mod):
+    for attr in mod.__all__:
+        getattr(mod, attr)
+
+
 @pytest.fixture(scope="function")
 def wpilib(_module_patch, hal, hal_data, networktables):
     """Actual wpilib implementation"""
@@ -53,6 +58,7 @@ def wpilib(_module_patch, hal, hal_data, networktables):
     import wpilib.drive
     import wpilib.interfaces
     
+    unlazy_import(wpilib)
     yield wpilib
     
     # Note: even though the wpilib module is freshly loaded each time a new
@@ -114,6 +120,7 @@ def wpimock(request, halmock):
     import wpilib.drive
     import wpilib.interfaces
     
+    unlazy_import(wpilib)
     return wpilib
 
 
