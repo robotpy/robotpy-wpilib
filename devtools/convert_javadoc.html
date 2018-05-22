@@ -7,8 +7,6 @@
   <textarea id="inbox" rows="10" cols="100"></textarea><p>
   Out: python docstring, optionally with a function definition<br/>
   <input type="radio" name="mtype" value="normal" onclick="xfer()" checked/> normal
-  <input type="radio" name="mtype" value="classmethod" onclick="xfer()"/> @classmethod
-  <input type="radio" name="mtype" value="staticmethod" onclick="xfer()"/> @staticmethod
   <input type="radio" name="mtype" value="yamlgen" onclick="xfer()"/> yamlgen
   <br/>
   <textarea id="outbox" rows="10" cols="100"></textarea><p>
@@ -101,7 +99,11 @@
         
         text += '\r\n' + pname + ' '.repeat(pindent.length - pname.length) + pp[0] + "\r\n";
         for (j = 1; j < pp.length; j++) {
-          text += pindent + pp[j] + "\r\n";
+          if (pp[j]) {
+            text += pindent + pp[j] + "\r\n";
+          } else {
+            text += "\r\n";
+          }
         }
       }
       
@@ -110,7 +112,11 @@
         // returns always needs a newline before it
         text += "\r\n:returns: " + returns[0];
         for (i = 1; i < returns.length; i++) {
-          text += '          ' + returns[i] + "\r\n";
+          if (returns[i]) {
+            text += '          ' + returns[i] + "\r\n";
+          } else {
+            text += "\r\n";
+          }
         }
       }
       
@@ -178,8 +184,8 @@
     function formatDocstring(text) {
       // indent all
       var lines =  text.split(/\r?\n/);
-      for (var i = 0; i < lines.length; i++) {
-        if (i != 0)
+      for (var i = 1; i < lines.length; i++) {
+        if (lines[i])
           lines[i] = indent + lines[i];
       }
       
@@ -196,26 +202,26 @@
       txt = txt.replace(/^\+/gm, '');
       
       // try to find a function definition
-      var s = txt.split(/(.*)\n\s+(?:(?:public|protected|private|static|final|synchronized|abstract|default|native)\s+)+(?:([\w<>[\]]+)\s+)?(\w+)\s*\(([^)]*)\)/);
+      var s = txt.split(/(.*)\n\s*((?:(?:public|protected|private|static|final|synchronized|abstract|default|native)\s+)+)(?:([\w<>[\]]+)\s+)?(\w+)\s*\(([^)]*)\)/);
       var t = processDoc(s[0]);
       
       if (getOutputMethodType() == "yamlgen") {
         t = '  doc: |\r\n    ' + t.replace(/\r\n/g, '\r\n    ');
+        return t;
       } else {
         t = formatDocstring(t);
       }
       
       // add the function definition in if present
       if (s.length > 1) {
-        var retType = s[2];
-        var funcName = s[3];
-        var args = s[4];
+        var modifiers = s[2];
+        var retType = s[3];
+        var funcName = s[4];
+        var args = s[5];
 
         if (args) {
-          var pyArgs = [];
-          args = args.split(", ");
-          for (var i = 0; i<args.length; i++) {
-              var split = args[i].split(" ");
+          var pyArgs = args.split(", ").map(function (arg) {
+              var split = arg.split(" ");
               var argName, argType;
               if (split[0] != "final") {
                   argType = split[0];
@@ -224,8 +230,8 @@
                   argType = split[1];
                   argName = split[2];
               }
-              pyArgs.push(argName + ": " + javaTypeToPython(argType));
-          }
+              return argName + ": " + javaTypeToPython(argType);
+          });
           args = ", " + pyArgs.join(", ");
         }
         if (retType) {
@@ -234,23 +240,13 @@
             funcName = "__init__";
             retType = "None";
         }
-        
-        switch (getOutputMethodType()) {
-          case "normal":
-            t = "def " + funcName + "(self" + args +
-                  ") -> " + retType + ":\n        " + t;
-            break;
-          case "classmethod":
-            t = "@classmethod\n    def " + funcName + "(cls" + args +
-                  ") -> " + retType + ":\n        " + t;
-            break;
-          case "staticmethod":
-            if (args.startsWith(",")) {
-              args = args.substring(1);
-            }
-            t = "@staticmethod\n    def " + funcName + "(" + args +
-                  ") -> " + retType + ":\n        " + t;
-            break;
+
+        if (modifiers.includes("static")) {
+          t = "@classmethod\n    def " + funcName + "(cls" + args +
+                ") -> " + retType + ":\n        " + t;
+        } else {
+          t = "def " + funcName + "(self" + args +
+                ") -> " + retType + ":\n        " + t;
         }
       }
       return t;
