@@ -14,7 +14,7 @@ class PIDOutput:
     its output.
     """
 
-    def pidWrite(self, output):
+    def pidWrite(self, output: float) -> None:
         """Set the output to the value calculated by :class:`.PIDController`.
 
         :param output: the value calculated by PIDController

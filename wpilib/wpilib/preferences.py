@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 import logging
+from typing import List
 
 from networktables import NetworkTables
 
@@ -41,7 +42,7 @@ class Preferences:
     TABLE_NAME = "Preferences"
 
     @staticmethod
-    def getInstance():
+    def getInstance() -> "Preferences":
         """Returns the preferences instance.
 
         :returns: the preferences instance
@@ -51,11 +52,11 @@ class Preferences:
         return Preferences.instance
 
     @classmethod
-    def _reset(cls):
+    def _reset(cls) -> None:
         if hasattr(cls, "instance"):
             del cls.instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Creates a preference class that will automatically read the file in
         a different thread. Any call to its methods will be blocked until the
         thread is finished reading.
@@ -68,19 +69,19 @@ class Preferences:
 
         hal.report(hal.UsageReporting.kResourceType_Preferences, 0)
 
-    def getKeys(self):
+    def getKeys(self) -> [str]:
         """:returns: a list of the keys
         """
         with self.lock:
             return [x for x in self.table.getKeys()]
 
-    def keys(self):
+    def keys(self) -> List[str]:
         """Python style get list of keys.
         """
         with self.lock:
             return [x for x in self.table.getKeys()]
 
-    def putString(self, key, value):
+    def putString(self, key: str, value: str) -> None:
         """Puts the given string into the preferences table.
 
         The value may not have quotation marks, nor may the key have any
@@ -100,7 +101,7 @@ class Preferences:
         self.table.putString(key, value)
         self.table.setPersistent(key)
 
-    def putInt(self, key, value):
+    def putInt(self, key: str, value: int) -> None:
         """Puts the given int into the preferences table.
 
         The key may not have any whitespace nor an equals sign.
@@ -115,7 +116,7 @@ class Preferences:
         self.table.putNumber(key, value)
         self.table.setPersistent(key)
 
-    def putFloat(self, key, value):
+    def putFloat(self, key: str, value: float) -> None:
         """Puts the given float into the preferences table.
 
         The key may not have any whitespace nor an equals sign.
@@ -130,7 +131,7 @@ class Preferences:
         self.table.putNumber(key, value)
         self.table.setPersistent(key)
 
-    def putBoolean(self, key, value):
+    def putBoolean(self, key: str, value: bool) -> None:
         """Puts the given float into the preferences table.
 
         The key may not have any whitespace nor an equals sign.
@@ -149,7 +150,7 @@ class Preferences:
         """Python style setting of key/value."""
         self.table.putString(key, str(value))
 
-    def containsKey(self, key):
+    def containsKey(self, key: str) -> bool:
         """Returns whether or not there is a key with the given name.
 
         :param key: the key
@@ -161,7 +162,7 @@ class Preferences:
         """Python style contains key."""
         return self.table.containsKey(key)
 
-    def remove(self, key):
+    def remove(self, key: str) -> None:
         """Remove a preference
 
         :param key: the key
@@ -173,7 +174,7 @@ class Preferences:
         """
         self.table.delete(key)
 
-    def getString(self, key, backup=None):
+    def getString(self, key: str, backup: str = None) -> str:
         """Returns the string at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -183,7 +184,7 @@ class Preferences:
         """
         return self.table.getString(key, backup)
 
-    def getInt(self, key, backup=None):
+    def getInt(self, key: str, backup: int = None) -> int:
         """Returns the int at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -194,7 +195,7 @@ class Preferences:
         """
         return self.table.getNumber(key, backup)
 
-    def getFloat(self, key, backup=None):
+    def getFloat(self, key: str, backup: float = None) -> float:
         """Returns the float at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -205,7 +206,7 @@ class Preferences:
         """
         return self.table.getNumber(key, backup)
 
-    def getBoolean(self, key, backup=None):
+    def getBoolean(self, key: str, backup: bool = None) -> bool:
         """Returns the boolean at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -215,5 +216,5 @@ class Preferences:
         """
         return self.table.getBoolean(key, backup)
 
-    def valueChangedEx(self, source, key, value, isNew):
+    def valueChangedEx(self, source, key, value, isNew) -> None:
         self.table.setPersistent(key)

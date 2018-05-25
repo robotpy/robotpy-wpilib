@@ -2,6 +2,9 @@
 
 import ctypes
 import enum
+
+from typing import Tuple
+
 import hal
 import struct
 import threading
@@ -15,7 +18,7 @@ from .notifier import Notifier
 __all__ = ["SPI"]
 
 
-def _freeSPI(port):
+def _freeSPI(port) -> None:
     hal.closeSPI(port)
 
 
@@ -41,14 +44,13 @@ class SPI:
     devices = 0
 
     @staticmethod
-    def _reset():
+    def _reset() -> None:
         SPI.devices = 0
 
-    def __init__(self, port, simPort=None):
+    def __init__(self, port: Port, simPort: object = None) -> None:
         """Constructor
 
         :param port: the physical SPI port
-        :type port: :class:`.SPI.Port`
         :param simPort: This must be an object that implements all of
                         the spi* functions from hal_impl that you use.
                         See ``test_spi.py`` for an example.
@@ -89,12 +91,12 @@ class SPI:
         hal.report(hal.UsageReporting.kResourceType_SPI, SPI.devices)
 
     @property
-    def port(self):
+    def port(self) -> Port:
         if not self.__finalizer.alive:
             raise ValueError("Cannot use SPI after free() has been called")
         return self._port
 
-    def close(self):
+    def close(self) -> None:
         if self.accum is not None:
             self.accum.close()
             self.accum = None
@@ -199,7 +201,6 @@ class SPI:
         on the MISO input during the transfer into the receive FIFO.
 
         :param dataToSend: Data to send
-        :type dataToSend: iterable of bytes
 
         :returns: Number of bytes written
 
@@ -239,7 +240,6 @@ class SPI:
         """Perform a simultaneous read/write transaction with the device
 
         :param dataToSend: The data to be written out to the device
-        :type dataToSend: iterable of bytes
 
         :returns: data received from the device
 
@@ -317,8 +317,8 @@ class SPI:
         hal.forceSPIAutoRead(self.port)
 
     def readAutoReceivedData(
-        self, buffer, numToRead: int, timeout: float
-    ) -> (int, bytes):
+        self, buffer: bytes, numToRead: int, timeout: float
+    ) -> Tuple[(int, bytes)]:
         """Read data that has been transferred by the automatic SPI transfer engine.
 
         Transfers may be made a byte at a time, so it's necessary for the caller
@@ -364,7 +364,7 @@ class SPI:
             dataSize: int,
             isSigned: bool,
             bigEndian: bool,
-        ):
+        ) -> None:
             self._mutex = threading.RLock()
             self._notifier = Notifier(self._update)
             self._buf = (ctypes.c_uint32 * (xferSize * self.kAccumulateDepth))()
@@ -391,7 +391,7 @@ class SPI:
             self._deadband = 0
             self._integratedCenter = 0.0
 
-        def free(self):
+        def free(self) -> None:
             """
             .. deprecated:: 2019.0.0
                 Use close instead
@@ -402,7 +402,7 @@ class SPI:
         def close(self):
             self._notifier.close()
 
-        def _update(self):
+        def _update(self) -> None:
             with self._mutex:
                 done = False
                 while not done:

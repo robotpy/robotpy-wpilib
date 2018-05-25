@@ -4,6 +4,7 @@ from networktables import NetworkTables
 
 from .sensorutil import SensorUtil
 from .sendablebase import SendableBase
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["Compressor"]
 
@@ -22,7 +23,7 @@ class Compressor(SendableBase):
     You can only turn off closed loop control, thereby stopping the compressor from operating.
     """
 
-    def __init__(self, module=None):
+    def __init__(self, module: int = None) -> None:
         """Makes a new instance of the compressor using the provided CAN device ID.
         
         :param module: The PCM CAN device ID. (0 - 62 inclusive)
@@ -36,7 +37,7 @@ class Compressor(SendableBase):
         self.setName("Compressor", module)
         self.module = module
 
-    def start(self):
+    def start(self) -> None:
         """Start the compressor running in closed loop control mode.
 
         Use the method in cases where you would like to manually stop and
@@ -46,7 +47,7 @@ class Compressor(SendableBase):
         """
         self.setClosedLoopControl(True)
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the compressor from running in closed loop control mode.
 
         Use the method in cases where you would like to manually stop and
@@ -56,90 +57,85 @@ class Compressor(SendableBase):
         """
         self.setClosedLoopControl(False)
 
-    def enabled(self):
+    def enabled(self) -> bool:
         """Get the enabled status of the compressor.
         
         :returns: True if the compressor is on
-        :rtype: bool
         """
         return hal.getCompressor(self.compressorHandle)
 
-    def getPressureSwitchValue(self):
+    def getPressureSwitchValue(self) -> bool:
         """ Get the pressure switch value.
  
         :returns: True if the pressure is low
-        :rtype: bool
         """
         return hal.getCompressorPressureSwitch(self.compressorHandle)
 
-    def getCompressorCurrent(self):
+    def getCompressorCurrent(self) -> float:
         """Get the current being used by the compressor.
         
         :returns: Current consumed by the compressor in amps
-        :rtype: float
         """
         return hal.getCompressorCurrent(self.compressorHandle)
 
-    def setClosedLoopControl(self, on):
+    def setClosedLoopControl(self, on: bool) -> None:
         """Set the PCM in closed loop control mode.
         
         :param on: If True sets the compressor to be in closed loop control
                    mode (default)
-        :type  on: bool
         """
         hal.setCompressorClosedLoopControl(self.compressorHandle, True if on else False)
 
-    def getClosedLoopControl(self):
+    def getClosedLoopControl(self) -> bool:
         """Gets the current operating mode of the PCM.
         
         :returns: True if compressor is operating on closed-loop mode
-        :rtype: bool
         """
         return hal.getCompressorClosedLoopControl(self.compressorHandle)
 
-    def getCompressorCurrentTooHighFault(self):
+    def getCompressorCurrentTooHighFault(self) -> bool:
         """
         :returns: True if PCM is in fault state : Compressor Drive is
             disabled due to compressor current being too high
         """
         return hal.getCompressorCurrentTooHighFault(self.compressorHandle)
 
-    def getCompressorCurrentTooHighStickyFault(self):
+    def getCompressorCurrentTooHighStickyFault(self) -> bool:
         """
         :returns: True if PCM sticky fault is set : Compressor is
             disabled due to compressor current being too high
         """
         return hal.getCompressorCurrentTooHighStickyFault(self.compressorHandle)
 
-    def getCompressorShortedFault(self):
+    def getCompressorShortedFault(self) -> bool:
         """
         :returns: True if PCM is in fault state : Compressor output
             appears to be shorted
         """
         return hal.getCompressorShortedFault(self.compressorHandle)
 
-    def getCompressorShortedStickyFault(self):
+    def getCompressorShortedStickyFault(self) -> bool:
         """
         :returns: True if PCM sticky fault is set : Compressor output
             appears to be shorted
         """
         return hal.getCompressorShortedStickyFault(self.compressorHandle)
 
-    def getCompressorNotConnectedFault(self):
+    def getCompressorNotConnectedFault(self) -> bool:
         """
         :returns: True if PCM is in fault state : Compressor does not appear
             to be wired, i.e. compressor is not drawing enough current.
         """
         return hal.getCompressorNotConnectedFault(self.compressorHandle)
 
-    def getCompressorNotConnectedStickyFault(self):
+    def getCompressorNotConnectedStickyFault(self) -> bool:
         """
         :returns: True if PCM sticky fault is set : Compressor does not appear
             to be wired, i.e. compressor is not drawing enough current.
         """
         return hal.getCompressorNotConnectedStickyFault(self.compressorHandle)
 
-    def clearAllPCMStickyFaults(self):
+    def clearAllPCMStickyFaults(self) -> None:
         """Clear ALL sticky faults inside PCM that Compressor is wired to.
 
         If a sticky fault is set, then it will be persistently cleared. The compressor might 
@@ -150,12 +146,12 @@ class Compressor(SendableBase):
         """
         hal.clearAllPCMStickyFaults(self.module)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Compressor")
         builder.addBooleanProperty("Enabled", self.enabled, self.enabledChanged)
         builder.addBooleanProperty("Pressure switch", self.getPressureSwitchValue, None)
 
-    def enabledChanged(self, value):
+    def enabledChanged(self, value) -> None:
         if value:
             self.start()
         else:

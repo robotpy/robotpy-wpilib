@@ -48,7 +48,7 @@ class SensorUtil:
     kPCMModules = hal.getNumPCMModules()
 
     @staticmethod
-    def checkSolenoidModule(moduleNumber):
+    def checkSolenoidModule(moduleNumber: int) -> None:
         """Verify that the solenoid module is correct.
 
         :param moduleNumber: The solenoid module module number to check.
@@ -60,7 +60,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def checkDigitalChannel(channel):
+    def checkDigitalChannel(channel: int) -> None:
         """Check that the digital channel number is valid.
         Verify that the channel number is one of the legal channel numbers.
         Channel numbers are 0-based.
@@ -74,7 +74,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def checkRelayChannel(channel):
+    def checkRelayChannel(channel: int) -> None:
         """Check that the digital channel number is valid.
         Verify that the channel number is one of the legal channel numbers.
         Channel numbers are 0-based.
@@ -88,7 +88,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def checkPWMChannel(channel):
+    def checkPWMChannel(channel: int) -> None:
         """Check that the digital channel number is valid.
         Verify that the channel number is one of the legal channel numbers.
         Channel numbers are 0-based.
@@ -102,7 +102,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def checkAnalogInputChannel(channel):
+    def checkAnalogInputChannel(channel: int) -> None:
         """Check that the analog input number is value.
         Verify that the analog input number is one of the legal channel
         numbers.  Channel numbers are 0-based.
@@ -116,7 +116,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def checkAnalogOutputChannel(channel):
+    def checkAnalogOutputChannel(channel: int) -> None:
         """Check that the analog input number is value.
         Verify that the analog input number is one of the legal channel
         numbers.  Channel numbers are 0-based.
@@ -130,7 +130,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def checkSolenoidChannel(channel):
+    def checkSolenoidChannel(channel: int) -> None:
         """Verify that the solenoid channel number is within limits.  Channel
         numbers are 0-based.
 
@@ -143,7 +143,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def checkPDPChannel(channel):
+    def checkPDPChannel(channel: int) -> None:
         """Verify that the power distribution channel number is within limits.
         Channel numbers are 0-based.
 
@@ -156,7 +156,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def checkPDPModule(module):
+    def checkPDPModule(module: int) -> None:
         """Verify that the power distribution module number is within limits.
         Module numbers are 0-based.
 
@@ -169,7 +169,7 @@ class SensorUtil:
             )
 
     @staticmethod
-    def getDefaultSolenoidModule():
+    def getDefaultSolenoidModule() -> int:
         """Get the number of the default solenoid module.
 
         :returns: The number of the default solenoid module.

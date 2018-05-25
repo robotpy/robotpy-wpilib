@@ -15,12 +15,14 @@ from .livewindow import LiveWindow
 from .resource import Resource
 from .sendablebase import SendableBase
 from .sensorutil import SensorUtil
+from .sendablebuilder import SendableBuilder
+from .sensorbase import SensorBase
 from .timer import Timer
 
 __all__ = ["AnalogInput"]
 
 
-def _freeAnalogInput(port):
+def _freeAnalogInput(port: hal.AnalogInputHandle) -> None:
     hal.freeAnalogInputPort(port)
 
 
@@ -46,7 +48,7 @@ class AnalogInput(SendableBase):
 
     PIDSourceType = PIDSource.PIDSourceType
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Construct an analog channel.
 
         :param channel: The channel number to represent. 0-3 are on-board 4-7 are on the MXP port.
@@ -73,7 +75,7 @@ class AnalogInput(SendableBase):
             return None
         return self._port
 
-    def close(self):
+    def close(self) -> None:
         """ Channel destructor """
         super().close()
         if self.channel is None:
@@ -83,7 +85,7 @@ class AnalogInput(SendableBase):
         self.channel = None
         self.accumulatorOffset = 0
 
-    def getValue(self):
+    def getValue(self) -> int:
         """Get a sample straight from this channel. The sample is a 12-bit
         value representing the 0V to 5V range of the A/D converter. The units
         are in A/D converter codes. Use :func:`getVoltage` to get the analog
@@ -93,7 +95,7 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogValue(self.port)
 
-    def getAverageValue(self):
+    def getAverageValue(self) -> float:
         """Get a sample from the output of the oversample and average engine
         for this channel. The sample is 12-bit + the bits configured in
         :func:`setOversampleBits`. The value configured in
@@ -108,7 +110,7 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogAverageValue(self.port)
 
-    def getVoltage(self):
+    def getVoltage(self) -> float:
         """Get a scaled sample straight from this channel. The value is scaled
         to units of Volts using the calibrated scaling data from
         :func:`getLSBWeight` and :func:`getOffset`.
@@ -117,7 +119,7 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogVoltage(self.port)
 
-    def getAverageVoltage(self):
+    def getAverageVoltage(self) -> float:
         """Get a scaled sample from the output of the oversample and average
         engine for this channel. The value is scaled to units of Volts using
         the calibrated scaling data from :func:`getLSBWeight` and
@@ -131,7 +133,7 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogAverageVoltage(self.port)
 
-    def getLSBWeight(self):
+    def getLSBWeight(self) -> float:
         """Get the factory scaling least significant bit weight constant. The
         least significant bit weight constant for the channel that was
         calibrated in manufacturing and stored in an eeprom.
@@ -142,7 +144,7 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogLSBWeight(self.port)
 
-    def getOffset(self):
+    def getOffset(self) -> int:
         """Get the factory scaling offset constant. The offset constant for the
         channel that was calibrated in manufacturing and stored in an eeprom.
 
@@ -152,14 +154,14 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogOffset(self.port)
 
-    def getChannel(self):
+    def getChannel(self) -> int:
         """Get the channel number.
 
         :returns: The channel number.
         """
         return self.channel
 
-    def setAverageBits(self, bits):
+    def setAverageBits(self, bits: int) -> None:
         """Set the number of averaging bits. This sets the number of
         averaging bits.  The actual number of averaged samples is 2^bits.
         The averaging is done automatically in the FPGA.
@@ -168,7 +170,7 @@ class AnalogInput(SendableBase):
         """
         hal.setAnalogAverageBits(self.port, bits)
 
-    def getAverageBits(self):
+    def getAverageBits(self) -> int:
         """Get the number of averaging bits. This gets the number of averaging
         bits from the FPGA. The actual number of averaged samples is 2^bits.
         The averaging is done automatically in the FPGA.
@@ -177,7 +179,7 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogAverageBits(self.port)
 
-    def setOversampleBits(self, bits):
+    def setOversampleBits(self, bits: int) -> None:
         """Set the number of oversample bits. This sets the number of
         oversample bits. The actual number of oversampled values is 2^bits.
         The oversampling is done automatically in the FPGA.
@@ -186,7 +188,7 @@ class AnalogInput(SendableBase):
         """
         hal.setAnalogOversampleBits(self.port, bits)
 
-    def getOversampleBits(self):
+    def getOversampleBits(self) -> int:
         """Get the number of oversample bits. This gets the number of
         oversample bits from the FPGA. The actual number of oversampled values
         is 2^bits.  The oversampling is done automatically in the FPGA.
@@ -195,7 +197,7 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogOversampleBits(self.port)
 
-    def initAccumulator(self):
+    def initAccumulator(self) -> None:
         """Initialize the accumulator.
         """
         if not self.isAccumulatorChannel():
@@ -209,7 +211,7 @@ class AnalogInput(SendableBase):
         self.accumulatorOffset = 0
         hal.initAccumulator(self.port)
 
-    def setAccumulatorInitialValue(self, initialValue):
+    def setAccumulatorInitialValue(self, initialValue: float) -> None:
         """Set an initial value for the accumulator.
 
         This will be added to all values returned to the user.
@@ -219,7 +221,7 @@ class AnalogInput(SendableBase):
         """
         self.accumulatorOffset = initialValue
 
-    def resetAccumulator(self):
+    def resetAccumulator(self) -> None:
         """Resets the accumulator to the initial value.
         """
         hal.resetAccumulator(self.port)
@@ -232,7 +234,7 @@ class AnalogInput(SendableBase):
         if not hal.HALIsSimulation():
             Timer.delay(sampleTime * overSamples * averageSamples)
 
-    def setAccumulatorCenter(self, center):
+    def setAccumulatorCenter(self, center: int) -> None:
         """Set the center value of the accumulator.
 
         The center value is subtracted from each A/D value before it is added
@@ -246,12 +248,12 @@ class AnalogInput(SendableBase):
         """
         hal.setAccumulatorCenter(self.port, center)
 
-    def setAccumulatorDeadband(self, deadband):
+    def setAccumulatorDeadband(self, deadband: int) -> None:
         """Set the accumulator's deadband.
         """
         hal.setAccumulatorDeadband(self.port, deadband)
 
-    def getAccumulatorValue(self):
+    def getAccumulatorValue(self) -> float:
         """Read the accumulated value.
 
         Read the value that has been accumulating. The accumulator
@@ -261,7 +263,7 @@ class AnalogInput(SendableBase):
         """
         return hal.getAccumulatorValue(self.port) + self.accumulatorOffset
 
-    def getAccumulatorCount(self):
+    def getAccumulatorCount(self) -> float:
         """Read the number of accumulated values.
 
         Read the count of the accumulated values since the last call to
@@ -285,7 +287,7 @@ class AnalogInput(SendableBase):
 
         return AccumulatorResult(value + self.accumulatorOffset, count)
 
-    def isAccumulatorChannel(self):
+    def isAccumulatorChannel(self) -> bool:
         """Is the channel attached to an accumulator.
 
         :returns: The analog channel is attached to an accumulator.
@@ -293,7 +295,7 @@ class AnalogInput(SendableBase):
         return self.channel in AnalogInput.kAccumulatorChannels
 
     @staticmethod
-    def setGlobalSampleRate(samplesPerSecond):
+    def setGlobalSampleRate(samplesPerSecond: float) -> None:
         """Set the sample rate per channel.
 
         This is a global setting for all channels.
@@ -305,7 +307,7 @@ class AnalogInput(SendableBase):
         hal.setAnalogSampleRate(float(samplesPerSecond))
 
     @staticmethod
-    def getGlobalSampleRate():
+    def getGlobalSampleRate() -> float:
         """Get the current sample rate.
 
         This assumes one entry in the scan list. This is a global setting for
@@ -315,21 +317,21 @@ class AnalogInput(SendableBase):
         """
         return hal.getAnalogSampleRate()
 
-    def setPIDSourceType(self, pidSource):
+    def setPIDSourceType(self, pidSource: PIDSourceType) -> None:
         """:see: :meth:`.PIDSource.setPIDSourceType`"""
         self.pidSource = pidSource
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         """:see: :meth:`.PIDSource.getPIDSourceType`"""
         return self.pidSource
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         """Get the average voltage for use with PIDController
 
         :returns: the average voltage
         """
         return self.getAverageVoltage()
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Analog Input")
         builder.addDoubleProperty("Value", self.getAverageVoltage, None)

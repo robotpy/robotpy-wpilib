@@ -20,7 +20,7 @@ class Spark(PWMSpeedController):
         .. not_implemented: initSpark
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Constructor.
 
         :param channel: The PWM channel that the SPARK is attached to. 0-9 are on-board, 10-19 are on the MXP port

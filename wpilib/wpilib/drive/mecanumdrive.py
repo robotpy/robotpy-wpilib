@@ -11,6 +11,8 @@ import math
 import hal
 from .robotdrivebase import RobotDriveBase
 from .vector2d import Vector2d
+from ..interfaces.speedcontroller import SpeedController
+from ..sendablebuilder import SendableBuilder
 
 __all__ = ["MecanumDrive"]
 
@@ -57,7 +59,13 @@ class MecanumDrive(RobotDriveBase):
 
     instances = 0
 
-    def __init__(self, frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor):
+    def __init__(
+        self,
+        frontLeftMotor: SpeedController,
+        rearLeftMotor: SpeedController,
+        frontRightMotor: SpeedController,
+        rearRightMotor: SpeedController,
+    ) -> None:
         """Constructor for MecanumDrive.
 
         If motors need to be inverted, do so beforehand.
@@ -86,7 +94,9 @@ class MecanumDrive(RobotDriveBase):
         self.rightSideInvertMultiplier = -1.0
         self.reported = False
 
-    def driveCartesian(self, ySpeed, xSpeed, zRotation, gyroAngle=0.0):
+    def driveCartesian(
+        self, ySpeed: float, xSpeed: float, zRotation: float, gyroAngle: float = 0.0
+    ) -> None:
         """Drive method for Mecanum platform.
 
         Angles are measured clockwise from the positive X axis. The robot's speed is independent
@@ -138,7 +148,7 @@ class MecanumDrive(RobotDriveBase):
 
         self.feed()
 
-    def drivePolar(self, magnitude, angle, zRotation):
+    def drivePolar(self, magnitude: float, angle: float, zRotation: float) -> None:
         """Drive method for Mecanum platform.
 
         Angles are measured counter-clockwise from straight ahead. The speed at which the robot
@@ -168,7 +178,7 @@ class MecanumDrive(RobotDriveBase):
 
     def isRightSideInverted(self):
         """
-        Gets if the power sent to the right side of the drivetrain is 
+        Gets if the power sent to the right side of the drivetrain is
         multipled by -1.
 
         :returns: true if the right side is inverted
@@ -177,25 +187,25 @@ class MecanumDrive(RobotDriveBase):
 
     def setRightSideInverted(self, rightSideInverted: bool) -> None:
         """
-        Sets if the power sent to the right side of the drivetrain should 
+        Sets if the power sent to the right side of the drivetrain should
         be multipled by -1.
 
-        :param rightSideInverted: true if right side power should be multipled 
+        :param rightSideInverted: true if right side power should be multipled
                                   by -1
         """
         self.rightSideInvertMultiplier = -1.0 if rightSideInverted else 1.0
 
-    def stopMotor(self):
+    def stopMotor(self) -> None:
         self.frontLeftMotor.stopMotor()
         self.rearLeftMotor.stopMotor()
         self.frontRightMotor.stopMotor()
         self.rearRightMotor.stopMotor()
         self.feed()
 
-    def getDescription(self):
+    def getDescription(self) -> str:
         return "Mecanum Drive"
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("MecanumDrive")
         builder.setActuator(True)
         builder.setSafeState(self.stopMotor)

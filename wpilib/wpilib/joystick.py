@@ -91,48 +91,46 @@ class Joystick(GenericHID):
 
         hal.report(hal.UsageReporting.kResourceType_Joystick, port)
 
-    def setXChannel(self, channel: int):
+    def setXChannel(self, channel: int) -> None:
         """Set the channel associated with the X axis.
 
         :param channel: The channel to set the axis to.
         """
         self.axes[self.Axis.kX] = channel
 
-    def setYChannel(self, channel: int):
+    def setYChannel(self, channel: int) -> None:
         """Set the channel associated with the Y axis.
 
         :param channel: The channel to set the axis to.
         """
         self.axes[self.Axis.kY] = channel
 
-    def setZChannel(self, channel: int):
+    def setZChannel(self, channel: int) -> None:
         """Set the channel associated with the Z axis.
 
         :param channel: The channel to set the axis to.
         """
         self.axes[self.Axis.kZ] = channel
 
-    def setThrottleChannel(self, channel: int):
+    def setThrottleChannel(self, channel: int) -> None:
         """Set the channel associated with the Throttle axis.
 
         :param channel: The channel to set the axis to.
         """
         self.axes[self.Axis.kThrottle] = channel
 
-    def setTwistChannel(self, channel: int) -> int:
+    def setTwistChannel(self, channel: int) -> None:
         """Set the channel associated with the Twist axis.
 
         :param channel: The channel to set the axis to.
         """
         self.axes[self.Axis.kTwist] = channel
 
-    def setAxisChannel(self, axis, channel):
+    def setAxisChannel(self, axis, channel) -> None:
         """Set the channel associated with a specified axis.
 
         :param axis: The axis to set the channel for.
-        :type  axis: int
         :param channel: The channel to set the axis to.
-        :type  channel: int
 
         .. deprecated:: 2018.0.0
             Use the more specific axis channel setter functions
@@ -254,7 +252,6 @@ class Joystick(GenericHID):
         example :func:`getX`).
 
         :param axis: The axis to read.
-        :type axis: :class:`Joystick.AxisType`
         :returns: The value of the axis.
 
         ..deprecated: 2018.0.0
@@ -291,14 +288,14 @@ class Joystick(GenericHID):
         """
         return self.getRawButton(self.Button.kTrigger)
 
-    def getTriggerPressed(self):
+    def getTriggerPressed(self) -> bool:
         """Whether the trigger was pressed since the last check
 
         :returns: Whether the button was pressed since the last check
         """
         return self.getRawButtonPressed(self.Button.kTrigger)
 
-    def getTriggerReleased(self):
+    def getTriggerReleased(self) -> bool:
         """Whether the trigger was released since the last check.
 
         :returns: Whether the button was released since the last check.
@@ -314,14 +311,14 @@ class Joystick(GenericHID):
         """
         return self.getRawButton(self.Button.kTop)
 
-    def getTopPressed(self):
+    def getTopPressed(self) -> bool:
         """Whether the trigger was pressed since the last check
 
         :returns: Whether the button was pressed since the last check
         """
         return self.getRawButtonPressed(self.Button.kTop)
 
-    def getTopReleased(self):
+    def getTopReleased(self) -> bool:
         """Whether the trigger was released since the last check.
 
         :returns: Whether the button was released since the last check.

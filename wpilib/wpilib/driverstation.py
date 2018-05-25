@@ -35,7 +35,7 @@ class MatchInfoData:
         "gameSpecificMessage",
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.eventName = ""
         self.matchType = 0
         self.matchNumber = 0
@@ -44,7 +44,7 @@ class MatchInfoData:
 
 
 class MatchDataSender:
-    def __init__(self):
+    def __init__(self) -> None:
         self.table = NetworkTables.getTable("FMSInfo")
         self.typeMetadata = self.table.getEntry(".type")
         self.typeMetadata.forceSetString("FMSInfo")
@@ -95,7 +95,7 @@ class DriverStation:
         Elimination = 3
 
     @classmethod
-    def _reset(cls):
+    def _reset(cls) -> None:
         ds = getattr(cls, "instance", None)
         if ds is not None:
             ds.release()
@@ -104,7 +104,7 @@ class DriverStation:
             del cls.instance
 
     @classmethod
-    def getInstance(cls):
+    def getInstance(cls) -> "DriverStation":
         """Gets the global instance of the DriverStation.
 
         :returns: :class:`DriverStation`
@@ -116,7 +116,7 @@ class DriverStation:
             cls.instance = cls()
             return cls.instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         """DriverStation constructor.
 
         The single DriverStation instance is created statically with the
@@ -179,12 +179,12 @@ class DriverStation:
         self.thread.daemon = True
         self.thread.start()
 
-    def release(self):
+    def release(self) -> None:
         """Kill the thread."""
         self.threadKeepAlive = False
 
     @staticmethod
-    def reportError(error, printTrace):
+    def reportError(error: str, printTrace: bool) -> None:
         """Report error to Driver Station, and also prints error to `sys.stderr`.
         Optionally appends stack trace to error message.
 
@@ -193,7 +193,7 @@ class DriverStation:
         DriverStation._reportErrorImpl(True, 1, error, printTrace)
 
     @staticmethod
-    def reportWarning(error, printTrace):
+    def reportWarning(error: str, printTrace: bool) -> None:
         """Report warning to Driver Station, and also prints error to `sys.stderr`.
         Optionally appends stack trace to error message.
 
@@ -202,7 +202,9 @@ class DriverStation:
         DriverStation._reportErrorImpl(False, 1, error, printTrace)
 
     @staticmethod
-    def _reportErrorImpl(isError, code, error, printTrace, exc_info=None):
+    def _reportErrorImpl(
+        isError: bool, code: int, error: str, printTrace: bool, exc_info=None
+    ) -> None:
         traceString = ""
         locString = ""
 
@@ -606,7 +608,7 @@ class DriverStation:
             self._updateControlWord(False)
             return self.controlWordCache.fmsAttached != 0
 
-    def isSysActive(self):
+    def isSysActive(self) -> bool:
         """
         Gets a value indicating whether the FPGA outputs are enabled. The
         outputs may be disabled if the robot is disabled or e-stopped, the
@@ -619,7 +621,7 @@ class DriverStation:
         """
         return hal.getSystemActive()
 
-    def isBrownedOut(self):
+    def isBrownedOut(self) -> bool:
         """
         Check if the system is browned out.
 
@@ -733,7 +735,7 @@ class DriverStation:
         """
         return hal.getMatchTime()
 
-    def getBatteryVoltage(self):
+    def getBatteryVoltage(self) -> float:
         """Read the battery voltage.
 
         .. deprecated:: 2018.0.0
@@ -743,7 +745,7 @@ class DriverStation:
         """
         return hal.getVinVoltage()
 
-    def InDisabled(self, entering):
+    def InDisabled(self, entering: bool) -> None:
         """Only to be used to tell the Driver Station what code you claim to
         be executing for diagnostic purposes only.
 
@@ -752,7 +754,7 @@ class DriverStation:
         """
         self.userInDisabled = entering
 
-    def InAutonomous(self, entering):
+    def InAutonomous(self, entering: bool) -> None:
         """Only to be used to tell the Driver Station what code you claim to
         be executing for diagnostic purposes only.
 
@@ -761,7 +763,7 @@ class DriverStation:
         """
         self.userInAutonomous = entering
 
-    def InOperatorControl(self, entering):
+    def InOperatorControl(self, entering: bool) -> None:
         """Only to be used to tell the Driver Station what code you claim to
         be executing for diagnostic purposes only.
 
@@ -770,7 +772,7 @@ class DriverStation:
         """
         self.userInTeleop = entering
 
-    def InTest(self, entering):
+    def InTest(self, entering: bool) -> None:
         """Only to be used to tell the Driver Station what code you claim to
         be executing for diagnostic purposes only.
 
@@ -779,7 +781,7 @@ class DriverStation:
         """
         self.userInTest = entering
 
-    def _sendMatchData(self):
+    def _sendMatchData(self) -> None:
         alliance = hal.getAllianceStation()
         hAid = hal.AllianceStationID
         isRedAlliance = alliance in {hAid.kRed1, hAid.kRed2, hAid.kRed3}
@@ -803,7 +805,7 @@ class DriverStation:
         with self.controlWordMutex:
             self.matchDataSender.controlWord.setDouble(self.controlWordCache.bits)
 
-    def _getData(self):
+    def _getData(self) -> None:
         """Copy data from the DS task for the user.
         If no new data exists, it will just be returned, otherwise
         the data will be copied from the DS polling loop.
@@ -861,7 +863,7 @@ class DriverStation:
 
         self._sendMatchData()
 
-    def _reportJoystickUnpluggedError(self, message):
+    def _reportJoystickUnpluggedError(self, message: str) -> None:
         """
         Reports errors related to unplugged joysticks and throttles them so that they don't overwhelm the DS.
         """
@@ -870,7 +872,7 @@ class DriverStation:
             self.reportError(message, False)
             self.nextMessageTime = currentTime + JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL
 
-    def _reportJoystickUnpluggedWarning(self, message):
+    def _reportJoystickUnpluggedWarning(self, message: str) -> None:
         """
         Reports errors related to unplugged joysticks and throttles them so that they don't overwhelm the DS.
         """
@@ -879,7 +881,7 @@ class DriverStation:
             self.reportWarning(message, False)
             self.nextMessageTime = currentTime + JOYSTICK_UNPLUGGED_MESSAGE_INTERVAL
 
-    def _run(self):
+    def _run(self) -> None:
         """Provides the service routine for the DS polling thread."""
         safetyCounter = 0
 
@@ -907,7 +909,7 @@ class DriverStation:
             if self.userInTest:
                 hal.observeUserProgramTest()
 
-    def _updateControlWord(self, force):
+    def _updateControlWord(self, force: bool) -> None:
         """Updates the data in the control word cache.
 
         Updates if the force parameter is set, or if 50ms have passed since the last update.

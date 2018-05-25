@@ -45,7 +45,7 @@ class SampleRobot(RobotBase):
     #: is recommended to use this instead of print statements.
     logger = logging.getLogger("robot")
 
-    def robotInit(self):
+    def robotInit(self) -> None:
         """Robot-wide initialization code should go here.
 
         Users should override this method for default Robot-wide initialization
@@ -64,7 +64,7 @@ class SampleRobot(RobotBase):
             "Default robotInit() method running, consider providing your own"
         )
 
-    def disabled(self):
+    def disabled(self) -> None:
         """Disabled should go here.
         Users should overload this method to run code that should run while
         the field is disabled.
@@ -75,7 +75,7 @@ class SampleRobot(RobotBase):
             "Default disabled() method running, consider providing your own"
         )
 
-    def autonomous(self):
+    def autonomous(self) -> None:
         """Autonomous should go here.
         Users should add autonomous code to this method that should run while
         the field is in the autonomous period.
@@ -86,7 +86,7 @@ class SampleRobot(RobotBase):
             "Default autonomous() method running, consider providing your own"
         )
 
-    def operatorControl(self):
+    def operatorControl(self) -> None:
         """Operator control (tele-operated) code should go here.
         Users should add Operator Control code to this method that should run
         while the field is in the Operator Control (tele-operated) period.
@@ -97,14 +97,14 @@ class SampleRobot(RobotBase):
             "Default operatorControl() method running, consider providing your own"
         )
 
-    def test(self):
+    def test(self) -> None:
         """Test code should go here.
         Users should add test code to this method that should run while the
         robot is in test mode.
         """
         self.logger.info("Default test() method running, consider providing your own")
 
-    def robotMain(self):
+    def robotMain(self) -> None:
         """Robot main program for free-form programs.
 
         This should be overridden by user subclasses if the intent is to not
@@ -127,7 +127,7 @@ class SampleRobot(RobotBase):
         """
         self._no_robot_main = True
 
-    def startCompetition(self):
+    def startCompetition(self) -> None:
         """Start a competition.
         This code tracks the order of the field starting to ensure that
         everything happens in the right order. Repeatedly run the correct

@@ -14,5 +14,5 @@ __all__ = ["Potentiometer"]
 class Potentiometer(PIDSource):
     """Interface for a Potentiometer."""
 
-    def get(self):
+    def get(self) -> float:
         raise NotImplementedError

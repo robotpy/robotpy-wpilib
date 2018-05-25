@@ -14,13 +14,14 @@ from .interfaces.counterbase import CounterBase
 from .interfaces.pidsource import PIDSource
 from .analogtriggeroutput import AnalogTriggerOutput
 from .digitalinput import DigitalInput
+from .sendablebuilder import SendableBuilder
 from .sendablebase import SendableBase
 from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Counter"]
 
 
-def _freeCounter(counterObj):
+def _freeCounter(counterObj: "Counter") -> None:
     hal.setCounterUpdateWhenEmpty(counterObj._counter, True)
 
     counterObj.clearUpSource()
@@ -66,7 +67,7 @@ class Counter(SendableBase):
     allocatedUpSource = False
     allocatedDownSource = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """Counter constructor.
 
         The counter will start counting immediately.
@@ -189,17 +190,17 @@ class Counter(SendableBase):
             raise ValueError("Cannot use counter after close() has been called")
         return self._counter
 
-    def close(self):
+    def close(self) -> None:
         super().close()
         self.__finalizer()
 
-    def getFPGAIndex(self):
+    def getFPGAIndex(self) -> int:
         """
         :returns: The Counter's FPGA index.
         """
         return self.index
 
-    def setUpSource(self, *args, **kwargs):
+    def setUpSource(self, *args, **kwargs) -> None:
         """Set the up counting source for the counter.
 
         This function accepts either a digital channel index, a
@@ -273,20 +274,18 @@ class Counter(SendableBase):
             self.upSource.getAnalogTriggerTypeForRouting(),
         )
 
-    def setUpSourceEdge(self, risingEdge, fallingEdge):
+    def setUpSourceEdge(self, risingEdge: bool, fallingEdge: bool) -> None:
         """Set the edge sensitivity on an up counting source. Set the up
         source to either detect rising edges or falling edges.
 
         :param risingEdge: True to count rising edge
-        :type  risingEdge: bool
         :param fallingEdge: True to count falling edge
-        :type  fallingEdge: bool
         """
         if self.upSource is None:
             raise ValueError("Up Source must be set before setting the edge")
         hal.setCounterUpSourceEdge(self.counter, risingEdge, fallingEdge)
 
-    def clearUpSource(self):
+    def clearUpSource(self) -> None:
         """Disable the up counting source to the counter."""
         if self.upSource is not None and self.allocatedUpSource:
             self.upSource.close()
@@ -294,7 +293,7 @@ class Counter(SendableBase):
         self.upSource = None
         hal.clearCounterUpSource(self._counter)
 
-    def setDownSource(self, *args, **kwargs):
+    def setDownSource(self, *args, **kwargs) -> None:
         """Set the down counting source for the counter.
 
         This function accepts either a digital channel index, a
@@ -368,21 +367,19 @@ class Counter(SendableBase):
             self.downSource.getAnalogTriggerTypeForRouting(),
         )
 
-    def setDownSourceEdge(self, risingEdge, fallingEdge):
+    def setDownSourceEdge(self, risingEdge: bool, fallingEdge: bool) -> None:
         """Set the edge sensitivity on an down counting source. Set the down
         source to either detect rising edges or falling edges.
 
         :param risingEdge: True to count rising edge
-        :type  risingEdge: bool
         :param fallingEdge: True to count falling edge
-        :type  fallingEdge: bool
         """
         if self.downSource is None:
             raise ValueError("Down Source must be set before setting the edge")
 
         hal.setCounterDownSourceEdge(self.counter, risingEdge, fallingEdge)
 
-    def clearDownSource(self):
+    def clearDownSource(self) -> None:
         """Disable the down counting source to the counter.
         """
         if self.downSource is not None and self.allocatedDownSource:
@@ -392,63 +389,60 @@ class Counter(SendableBase):
 
         hal.clearCounterDownSource(self._counter)
 
-    def setUpDownCounterMode(self):
+    def setUpDownCounterMode(self) -> None:
         """Set standard up / down counting mode on this counter. Up and down
         counts are sourced independently from two inputs.
         """
         hal.setCounterUpDownMode(self.counter)
 
-    def setExternalDirectionMode(self):
+    def setExternalDirectionMode(self) -> None:
         """Set external direction mode on this counter. Counts are sourced on
         the Up counter input. The Down counter input represents the direction
         to count.
         """
         hal.setCounterExternalDirectionMode(self.counter)
 
-    def setSemiPeriodMode(self, highSemiPeriod):
+    def setSemiPeriodMode(self, highSemiPeriod: float) -> None:
         """Set Semi-period mode on this counter. Counts up on both rising and
         falling edges.
 
         :param highSemiPeriod: True to count up on both rising and falling
-        :type  highSemiPeriod: bool
         """
         hal.setCounterSemiPeriodMode(self.counter, highSemiPeriod)
 
-    def setPulseLengthMode(self, threshold):
+    def setPulseLengthMode(self, threshold: float) -> None:
         """Configure the counter to count in up or down based on the length
         of the input pulse. This mode is most useful for direction sensitive
         gear tooth sensors.
 
         :param threshold: The pulse length beyond which the counter counts the
             opposite direction. Units are seconds.
-        :type  threshold: float, int
         """
         hal.setCounterPulseLengthMode(self.counter, float(threshold))
 
-    def get(self):
+    def get(self) -> int:
         """Read the current counter value. Read the value at this instant. It
         may still be running, so it reflects the current value. Next time it
         is read, it might have a different value.
         """
         return hal.getCounter(self.counter)
 
-    def getDistance(self):
+    def getDistance(self) -> float:
         """Read the current scaled counter value. Read the value at this
         instant, scaled by the distance per pulse (defaults to 1).
 
         :returns: Scaled value
-        :rtype: float
         """
         return self.get() * self.distancePerPulse
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the Counter to zero. Set the counter value to zero. This
         doesn't effect the running state of the counter, just sets the
         current value to zero.
         """
         hal.resetCounter(self.counter)
 
-    def setMaxPeriod(self, maxPeriod):
+    def setMaxPeriod(self, maxPeriod: float) -> None:
         """Set the maximum period where the device is still considered
         "moving".  Sets the maximum period where the device is considered
         moving. This value is used to determine the "stopped" state of the
@@ -456,11 +450,10 @@ class Counter(SendableBase):
 
         :param maxPeriod: The maximum period where the counted device is
             considered moving in seconds.
-        :type maxPeriod: float or int
         """
         hal.setCounterMaxPeriod(self.counter, float(maxPeriod))
 
-    def setUpdateWhenEmpty(self, enabled):
+    def setUpdateWhenEmpty(self, enabled: bool) -> None:
         """Select whether you want to continue updating the event timer
         output when there are no samples captured. The output of the event
         timer has a buffer of periods that are averaged and posted to a
@@ -476,11 +469,10 @@ class Counter(SendableBase):
         there are no samples to average).
 
         :param enabled: True to continue updating
-        :type  enabled: bool
         """
         hal.setCounterUpdateWhenEmpty(self.counter, enabled)
 
-    def getStopped(self):
+    def getStopped(self) -> bool:
         """Determine if the clock is stopped. Determine if the clocked input
         is stopped based on the MaxPeriod value set using the
         :func:`setMaxPeriod` method.  If the clock exceeds the MaxPeriod,
@@ -489,72 +481,65 @@ class Counter(SendableBase):
 
         :returns: Returns True if the most recent counter period exceeds the
             MaxPeriod value set by SetMaxPeriod.
-        :rtype: bool
         """
         return hal.getCounterStopped(self.counter)
 
-    def getDirection(self):
+    def getDirection(self) -> bool:
         """The last direction the counter value changed.
 
         :returns: The last direction the counter value changed.
-        :rtype: bool
         """
         return hal.getCounterDirection(self.counter)
 
-    def setReverseDirection(self, reverseDirection):
+    def setReverseDirection(self, reverseDirection: bool) -> None:
         """Set the Counter to return reversed sensing on the direction. This
         allows counters to change the direction they are counting in the case
         of 1X and 2X quadrature encoding only. Any other counter mode isn't
         supported.
 
         :param reverseDirection: True if the value counted should be negated.
-        :type  reverseDirection: bool 
         """
         hal.setCounterReverseDirection(self.counter, reverseDirection)
 
-    def getPeriod(self):
+    def getPeriod(self) -> float:
         """Get the Period of the most recent count. Returns the time interval
         of the most recent count. This can be used for velocity calculations
         to determine shaft speed.
 
         :returns: The period of the last two pulses in units of seconds.
-        :rtype: float
         """
         return hal.getCounterPeriod(self.counter)
 
-    def getRate(self):
+    def getRate(self) -> float:
         """Get the current rate of the Counter. Read the current rate of the
         counter accounting for the distance per pulse value. The default
         value for distance per pulse (1) yields units of pulses per second.
 
         :returns: The rate in units/sec
-        :rtype: float
         """
         return self.distancePerPulse / self.getPeriod()
 
-    def setSamplesToAverage(self, samplesToAverage):
+    def setSamplesToAverage(self, samplesToAverage: int) -> None:
         """Set the Samples to Average which specifies the number of samples
         of the timer to average when calculating the period. Perform averaging
         to account for mechanical imperfections or as oversampling to increase
         resolution.
 
         :param samplesToAverage: The number of samples to average from 1 to 127.
-        :type  samplesToAverage: int
         """
         hal.setCounterSamplesToAverage(self.counter, samplesToAverage)
 
-    def getSamplesToAverage(self):
+    def getSamplesToAverage(self) -> int:
         """Get the Samples to Average which specifies the number of samples
         of the timer to average when calculating the period. Perform averaging
         to account for mechanical imperfections or as oversampling to increase
         resolution.
 
         :returns: The number of samples being averaged (from 1 to 127)
-        :rtype: int
         """
         return hal.getCounterSamplesToAverage(self.counter)
 
-    def setDistancePerPulse(self, distancePerPulse):
+    def setDistancePerPulse(self, distancePerPulse: float) -> None:
         """Set the distance per pulse for this counter. This sets the
         multiplier used to determine the distance driven based on the count
         value from the encoder. Set this value based on the Pulses per
@@ -564,17 +549,15 @@ class Counter(SendableBase):
         :param distancePerPulse:
             The scale factor that will be used to convert pulses to useful
             units.
-        :type  distancePerPulse: float
         """
         self.distancePerPulse = distancePerPulse
 
-    def setPIDSourceType(self, pidSource):
+    def setPIDSourceType(self, pidSource: PIDSourceType) -> None:
         """Set which parameter of the encoder you are using as a process
         control variable. The counter class supports the rate and distance
         parameters.
 
         :param pidSource: An enum to select the parameter.
-        :type  pidSource: :class:`Counter.PIDSourceType`
         """
         if pidSource not in (
             self.PIDSourceType.kDisplacement,
@@ -583,10 +566,10 @@ class Counter(SendableBase):
             raise ValueError("Invalid pidSource argument '%s'" % pidSource)
         self.pidSource = pidSource
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         return self.pidSource
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         if self.pidSource == self.PIDSourceType.kDisplacement:
             return self.getDistance()
         elif self.pidSource == self.PIDSourceType.kRate:
@@ -594,6 +577,6 @@ class Counter(SendableBase):
         else:
             return 0.0
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Counter")
         builder.addDoubleProperty("Value", self.get, None)

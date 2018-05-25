@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import List
 
 from ..motorsafety import MotorSafety
 from ..sendablebase import SendableBase
@@ -42,7 +43,7 @@ class RobotDriveBase(SendableBase, MotorSafety):
     kDefaultDeadband = 0.02
     kDefaultMaxOutput = 1.0
 
-    def __init__(self):
+    def __init__(self) -> None:
         SendableBase.__init__(self)
         MotorSafety.__init__(self)
 
@@ -52,7 +53,7 @@ class RobotDriveBase(SendableBase, MotorSafety):
         self.setSafetyEnabled(True)
         self.setName("RobotDriveBase")
 
-    def setDeadband(self, deadband: float):
+    def setDeadband(self, deadband: float) -> None:
         """Sets the deadband applied to the drive inputs (e.g. joystick values).
 
         The default value is :const:`kDefaultDeadband`. Inputs smaller than the deadband are set to
@@ -62,7 +63,7 @@ class RobotDriveBase(SendableBase, MotorSafety):
         """
         self.deadband = deadband
 
-    def setMaxOutput(self, maxOutput: float):
+    def setMaxOutput(self, maxOutput: float) -> None:
         """Configure the scaling factor for using drive methods with motor controllers in a mode
         other than PercentVbus or to limit the maximum output.
 
@@ -82,7 +83,7 @@ class RobotDriveBase(SendableBase, MotorSafety):
         self.feed()
 
     @staticmethod
-    def limit(value):
+    def limit(value: float) -> float:
         """Limit motor values to the -1.0 to +1.0 range."""
         if value > 1.0:
             return 1.0
@@ -91,7 +92,7 @@ class RobotDriveBase(SendableBase, MotorSafety):
         return value
 
     @staticmethod
-    def applyDeadband(value, deadband):
+    def applyDeadband(value: float, deadband: float) -> float:
         """Returns 0.0 if the given value is within the specified range around zero. The remaining range
         between the deadband and 1.0 is scaled from 0.0 to 1.0.
 
@@ -106,7 +107,7 @@ class RobotDriveBase(SendableBase, MotorSafety):
         return 0.0
 
     @staticmethod
-    def normalize(wheelSpeeds):
+    def normalize(wheelSpeeds: List[float]) -> None:
         """Normalize all wheel speeds if the magnitude of any wheel is greater
         than 1.0.
 

@@ -6,8 +6,9 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from .interfaces.speedcontroller import SpeedController
+from .sendablebuilder import SendableBuilder
 from .sendablebase import SendableBase
+from .interfaces.speedcontroller import SpeedController
 
 __all__ = ["SpeedControllerGroup"]
 
@@ -17,11 +18,12 @@ class SpeedControllerGroup(SendableBase, SpeedController):
 
     instances = 0
 
-    def __init__(self, speedController, *args):
+    def __init__(
+        self, speedController: SpeedController, *args: SpeedController
+    ) -> None:
         """Create a new SpeedControllerGroup with the provided SpeedControllers.
 
         :param args: SpeedControllers to add
-        :type args: :class:`.SpeedController`
         """
         SendableBase.__init__(self)
         SpeedController.__init__(self)
@@ -36,33 +38,33 @@ class SpeedControllerGroup(SendableBase, SpeedController):
         SpeedControllerGroup.instances += 1
         self.setName("SpeedControllerGroup", self.instances)
 
-    def set(self, speed):
+    def set(self, speed: float) -> None:
         for speedController in self.speedControllers:
             speedController.set(-speed if self.isInverted else speed)
 
-    def get(self):
+    def get(self) -> float:
         if len(self.speedControllers) > 0:
             return self.speedControllers[0].get() * (-1 if self.isInverted else 1)
         return 0.0
 
-    def setInverted(self, isInverted):
+    def setInverted(self, isInverted: bool) -> None:
         self.isInverted = isInverted
 
-    def getInverted(self):
+    def getInverted(self) -> bool:
         return self.isInverted
 
-    def stopMotor(self):
+    def stopMotor(self) -> None:
         for speedController in self.speedControllers:
             speedController.stopMotor()
 
-    def disable(self):
+    def disable(self) -> None:
         for speedController in self.speedControllers:
             speedController.disable()
 
-    def pidWrite(self, output):
+    def pidWrite(self, output: float) -> None:
         self.set(output)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Speed Controller")
         builder.setActuator(True)
         builder.setSafeState(self.stopMotor)

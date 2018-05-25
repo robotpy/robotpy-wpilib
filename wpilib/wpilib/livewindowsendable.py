@@ -5,11 +5,12 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-
 import warnings
 
+from .command.subsystem import Subsystem
 from networktables import NetworkTables
 from .sendable import Sendable
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["LiveWindowSendable"]
 
@@ -21,7 +22,7 @@ class LiveWindowSendable(Sendable):
         Use :class:`.Sendable` directly instead.
     """
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
         warnings.warn(
             "LiveWindowSendable is deprecated, use Sendable directly instead",
@@ -29,13 +30,13 @@ class LiveWindowSendable(Sendable):
             stacklevel=2,
         )
 
-    def updateTable(self):
+    def updateTable(self) -> None:
         """Update the table for this sendable object with the latest
         values.
         """
         raise NotImplementedError
 
-    def startLiveWindowMode(self):
+    def startLiveWindowMode(self) -> None:
         """Start having this sendable object automatically respond to
         value changes reflect the value on the table.
 
@@ -54,7 +55,7 @@ class LiveWindowSendable(Sendable):
                 | NetworkTables.NotifyFlags.UPDATE,
             )
 
-    def stopLiveWindowMode(self):
+    def stopLiveWindowMode(self) -> None:
         """Stop having this sendable object automatically respond to value
         changes.
         """
@@ -66,17 +67,17 @@ class LiveWindowSendable(Sendable):
         valueEntry.removeListener(valueListener)
         self.valueListener = None
 
-    def getName(self):
+    def getName(self) -> str:
         return ""
 
-    def _setName(self, name):
+    def _setName(self, name: str) -> None:
         pass
 
-    def getSubsystem(self):
+    def getSubsystem(self) -> Subsystem:
         return ""
 
-    def setSubsystem(self, subsystem):
+    def setSubsystem(self, subsystem: Subsystem) -> None:
         pass
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setUpdateTable(self.updateTable)

@@ -9,7 +9,10 @@
 import math
 
 import hal
+
 from .robotdrivebase import RobotDriveBase
+from ..sendablebuilder import SendableBuilder
+from ..interfaces.speedcontroller import SpeedController
 
 __all__ = ["DifferentialDrive"]
 
@@ -98,7 +101,7 @@ class DifferentialDrive(RobotDriveBase):
 
     instances = 0
 
-    def __init__(self, leftMotor, rightMotor):
+    def __init__(self, leftMotor: SpeedController, rightMotor: SpeedController) -> None:
         """Constructor for DifferentialDrive.
 
         .. note:: To pass multiple motors per side, use a :class:`.SpeedControllerGroup`.
@@ -106,8 +109,6 @@ class DifferentialDrive(RobotDriveBase):
 
         :param leftMotor: Left motor(s)
         :param rightMotor: Right motor(s)
-        :type leftMotor: :class:`.SpeedController`
-        :type rightMotor: :class:`.SpeedController`
         """
         super().__init__()
 
@@ -125,7 +126,9 @@ class DifferentialDrive(RobotDriveBase):
         DifferentialDrive.instances += 1
         self.setName("DifferentialDrive", self.instances)
 
-    def arcadeDrive(self, xSpeed, zRotation, squareInputs=True):
+    def arcadeDrive(
+        self, xSpeed: float, zRotation: float, squareInputs: bool = True
+    ) -> None:
         """Arcade drive method for differential drive platform.
 
         :param xSpeed: The robot's speed along the X axis `[-1.0..1.0]`. Forward is positive
@@ -137,7 +140,7 @@ class DifferentialDrive(RobotDriveBase):
             hal.report(
                 hal.UsageReporting.kResourceType_RobotDrive,
                 2,
-                hal.UsageReporting.kRobotDrive2_DifferentialArcade,
+                hal.UsageReporting.kRobotDrive_ArcadeStandard,
             )
             self.reported = True
 
@@ -178,7 +181,9 @@ class DifferentialDrive(RobotDriveBase):
 
         self.feed()
 
-    def curvatureDrive(self, xSpeed, zRotation, isQuickTurn):
+    def curvatureDrive(
+        self, xSpeed: float, zRotation: float, isQuickTurn: bool
+    ) -> None:
         """
         Curvature drive method for differential drive platform.
 
@@ -257,7 +262,9 @@ class DifferentialDrive(RobotDriveBase):
 
         self.feed()
 
-    def tankDrive(self, leftSpeed, rightSpeed, squareInputs=True):
+    def tankDrive(
+        self, leftSpeed: float, rightSpeed: float, squareInputs: bool = True
+    ) -> None:
         """Provide tank steering using the stored robot configuration.
 
         :param leftSpeed: The robot's left side speed along the X axis `[-1.0..1.0]`. Forward is positive.
@@ -292,7 +299,7 @@ class DifferentialDrive(RobotDriveBase):
 
         self.feed()
 
-    def setQuickStopThreshold(self, threshold):
+    def setQuickStopThreshold(self, threshold: float) -> None:
         """Sets the QuickStop speed threshold in curvature drive.
 
         QuickStop compensates for the robot's moment of inertia when stopping after a QuickTurn.
@@ -306,7 +313,7 @@ class DifferentialDrive(RobotDriveBase):
         """
         self.quickStopThreshold = threshold
 
-    def setQuickStopAlpha(self, alpha):
+    def setQuickStopAlpha(self, alpha: float) -> None:
         """Sets the low-pass filter gain for QuickStop in curvature drive.
 
         The low-pass filter filters incoming rotation rate commands to smooth out high frequency
@@ -330,20 +337,20 @@ class DifferentialDrive(RobotDriveBase):
         """
         Sets if the power sent to the right side of the drivetrain should be multipled by -1.
 
-        :param rightSideInverted: true if right side power should be multipled by -1 
+        :param rightSideInverted: true if right side power should be multipled by -1
         """
         self.rightSideInvertMultiplier = -1.0 if rightSideInverted else 1.0
 
-    def stopMotor(self):
+    def stopMotor(self) -> None:
         self.leftMotor.stopMotor()
         self.rightMotor.stopMotor()
 
         self.feed()
 
-    def getDescription(self):
+    def getDescription(self) -> str:
         return "Differential Drive"
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("DifferentialDrive")
         builder.setActuator(True)
         builder.setSafeState(self.stopMotor)

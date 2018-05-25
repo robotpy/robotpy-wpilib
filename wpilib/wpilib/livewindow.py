@@ -5,12 +5,16 @@
 #  must be accompanied by the FIRST BSD license file in the root directory of
 #  the project.
 # ----------------------------------------------------------------------------
+import logging
 import threading
+import warnings
+
 from networktables import NetworkTablesInstance
+from networktables.entry import NetworkTableEntry
+from networktables.networktable import NetworkTable
+from .sendable import Sendable
 from .sendablebuilder import SendableBuilder
 
-import warnings
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +22,7 @@ __all__ = ["LiveWindow"]
 
 
 class Component:
-    def __init__(self, sendable, parent):
+    def __init__(self, sendable: Sendable, parent: Sendable) -> None:
         self.sendable = sendable
         self.parent = parent
         self.builder = SendableBuilder()
@@ -32,7 +36,7 @@ class _LiveWindowComponent:
     the first time the robot enters Test mode. This allows the components to
     be inserted, then renamed."""
 
-    def __init__(self, subsystem, name, isSensor):
+    def __init__(self, subsystem, name: str, isSensor: bool) -> None:
         self.subsystem = subsystem
         self.name = str(name)
         self.isSensor = isSensor
@@ -52,7 +56,7 @@ class LiveWindow:
     mutex = threading.RLock()
 
     @classmethod
-    def liveWindowTable(cls):
+    def liveWindowTable(cls) -> NetworkTable:
         if cls._liveWindowTable is None:
             cls._liveWindowTable = NetworkTablesInstance.getDefault().getTable(
                 "LiveWindow"
@@ -60,19 +64,19 @@ class LiveWindow:
         return cls._liveWindowTable
 
     @classmethod
-    def statusTable(cls):
+    def statusTable(cls) -> NetworkTable:
         if cls._statusTable is None:
             cls._statusTable = cls.liveWindowTable().getSubTable(".status")
         return cls._statusTable
 
     @classmethod
-    def enabledEntry(cls):
+    def enabledEntry(cls) -> NetworkTableEntry:
         if cls._enabledEntry is None:
             cls._enabledEntry = cls.statusTable().getEntry("LW Enabled")
         return cls._enabledEntry
 
     @classmethod
-    def _reset(cls):
+    def _reset(cls) -> None:
         cls.components = {}
         cls._liveWindowTable = None
         cls._statusTable = None
@@ -82,11 +86,11 @@ class LiveWindow:
         cls.telemetryEnabled = True
 
     @classmethod
-    def isEnabled(cls):
+    def isEnabled(cls) -> bool:
         return cls.liveWindowEnabled
 
     @classmethod
-    def setEnabled(cls, enabled):
+    def setEnabled(cls, enabled: bool) -> None:
         """Set the enabled state of LiveWindow. If it's being enabled, turn
         off the scheduler and remove all the commands from the queue and
         enable all the components registered for LiveWindow. If it's being
@@ -118,7 +122,7 @@ class LiveWindow:
                 cls.enabledEntry().setBoolean(enabled)
 
     @classmethod
-    def run(cls):
+    def run(cls) -> None:
         """The run method is called repeatedly to keep the values refreshed
         on the screen in test mode.
 
@@ -133,7 +137,7 @@ class LiveWindow:
         cls.updateValues()
 
     @classmethod
-    def addSensor(cls, subsystem, name, component):
+    def addSensor(cls, subsystem: str, name: str, component: Sendable) -> None:
         """Add a Sensor associated with the subsystem and with call it by the
         given name.
 
@@ -156,8 +160,8 @@ class LiveWindow:
             component.setName(subsystem, name)
 
     @classmethod
-    def addActuator(cls, subsystem, name, component):
-        """Add an Actuator associated with the subsystem and with call it by
+    def addActuator(cls, subsystem, name: str, component: Sendable) -> None:
+        """Add an Actuator associated with the subsystsubsystem.Subsystemem and with call it by
         the given name.
 
         :param subsystem: The subsystem this component is part of.
@@ -178,7 +182,9 @@ class LiveWindow:
             component.setName(subsystem, name)
 
     @classmethod
-    def addSensorChannel(cls, moduleType, channel, component):
+    def addSensorChannel(
+        cls, moduleType: str, channel: int, component: Sendable
+    ) -> None:
         """Add Sensor to LiveWindow. The components are shown with the type
         and channel like this: Gyro[0] for a gyro object connected to the
         first analog channel.
@@ -201,7 +207,9 @@ class LiveWindow:
         component.setName("Ungrouped", "%s[%s]" % (moduleType, channel))
 
     @classmethod
-    def addActuatorChannel(cls, moduleType, channel, component):
+    def addActuatorChannel(
+        cls, moduleType: str, channel: int, component: Sendable
+    ) -> None:
         """Add Actuator to LiveWindow. The components are shown with the
         module type, slot and channel like this: Servo[0,2] for a servo
         object connected to the first digital module and PWM port 2.
@@ -225,7 +233,9 @@ class LiveWindow:
         component.setName("Ungrouped", "%s[%s]" % (moduleType, channel))
 
     @classmethod
-    def addActuatorModuleChannel(cls, moduleType, moduleNumber, channel, component):
+    def addActuatorModuleChannel(
+        cls, moduleType: str, moduleNumber: int, channel: int, component: Sendable
+    ) -> None:
         """Add Actuator to LiveWindow. The components are shown with the
         module type, slot and channel like this: Servo[0,2] for a servo
         object connected to the first digital module and PWM port 2.
@@ -252,7 +262,7 @@ class LiveWindow:
         )
 
     @classmethod
-    def add(cls, sendable):
+    def add(cls, sendable: Sendable) -> None:
         """
         Add a component to the LiveWindow.
 
@@ -263,7 +273,7 @@ class LiveWindow:
                 cls.components[sendable] = Component(sendable, None)
 
     @classmethod
-    def addChild(cls, parent, child):
+    def addChild(cls, parent: Sendable, child: object) -> None:
         """
         Add a child component to a component.
 
@@ -280,7 +290,7 @@ class LiveWindow:
             component.telemetryEnabled = False
 
     @classmethod
-    def remove(cls, sendable):
+    def remove(cls, sendable: Sendable) -> None:
         """
         Remove a component from the LiveWindow.
 
@@ -294,7 +304,7 @@ class LiveWindow:
                     component.builder.stopLiveWindowMode()
 
     @classmethod
-    def enableTelemetry(cls, sendable):
+    def enableTelemetry(cls, sendable: Sendable) -> None:
         """
         Enable telemetry for a single component.
 
@@ -307,7 +317,7 @@ class LiveWindow:
                 component.telemetryEnabled = True
 
     @classmethod
-    def disableTelemetry(cls, sendable):
+    def disableTelemetry(cls, sendable: Sendable) -> None:
         """
         Disable telemetry for a single component.  
 
@@ -319,7 +329,7 @@ class LiveWindow:
                 component.telemetryEnabled = False
 
     @classmethod
-    def disableAllTelemetry(cls):
+    def disableAllTelemetry(cls) -> None:
         """ Disable ALL telemetry """
         with cls.mutex:
             cls.telemetryEnabled = False
@@ -327,7 +337,7 @@ class LiveWindow:
                 component.telemetryEnabled = False
 
     @classmethod
-    def updateValues(cls):
+    def updateValues(cls) -> None:
         with cls.mutex:
             # only do this if either LiveWindow mode or telemetry is enabled
             if not cls.liveWindowEnabled and not cls.telemetryEnabled:

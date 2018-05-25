@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import List, Tuple
 
 import hal
 import math
@@ -17,7 +18,7 @@ from .talon import Talon
 __all__ = ["RobotDrive"]
 
 
-def _freeRobotDrive(allocatedSpeedControllers):
+def _freeRobotDrive(allocatedSpeedControllers) -> None:
     """
     Free the speed controllers if they were allocated locally
     """
@@ -75,7 +76,7 @@ class RobotDrive(MotorSafety):
     kMecanumCartesian_Reported = False
     kMecanumPolar_Reported = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """Constructor for RobotDrive.
 
         Either 2 or 4 motors can be passed to the constructor to implement
@@ -168,7 +169,7 @@ class RobotDrive(MotorSafety):
         # start off not moving
         self.drive(0, 0)
 
-    def drive(self, outputMagnitude, curve):
+    def drive(self, outputMagnitude: float, curve: float) -> None:
         """Drive the motors at "outputMagnitude" and "curve".
 
         Both outputMagnitude and curve are -1.0 to +1.0 values, where 0.0
@@ -218,7 +219,7 @@ class RobotDrive(MotorSafety):
 
         self.setLeftRightMotorOutputs(leftOutput, rightOutput)
 
-    def tankDrive(self, *args, **kwargs):
+    def tankDrive(self, *args, **kwargs) -> None:
         """Provide tank steering using the stored robot configuration.
 
         Either two joysticks (with optional specified axis) or two raw values
@@ -321,7 +322,7 @@ class RobotDrive(MotorSafety):
 
         self.setLeftRightMotorOutputs(leftValue, rightValue)
 
-    def arcadeDrive(self, *args, **kwargs):
+    def arcadeDrive(self, *args, **kwargs) -> None:
         """Provide tank steering using the stored robot configuration.
 
         Either one or two joysticks (with optional specified axis) or two raw
@@ -445,7 +446,9 @@ class RobotDrive(MotorSafety):
 
         self.setLeftRightMotorOutputs(leftMotorSpeed, rightMotorSpeed)
 
-    def mecanumDrive_Cartesian(self, x, y, rotation, gyroAngle):
+    def mecanumDrive_Cartesian(
+        self, x: float, y: float, rotation: float, gyroAngle: float
+    ) -> None:
         """Drive method for Mecanum wheeled robots.
 
         A method for driving with Mecanum wheeled robots. There are 4 wheels
@@ -497,7 +500,9 @@ class RobotDrive(MotorSafety):
 
         self.feed()
 
-    def mecanumDrive_Polar(self, magnitude, direction, rotation):
+    def mecanumDrive_Polar(
+        self, magnitude: float, direction: float, rotation: float
+    ) -> None:
         """Drive method for Mecanum wheeled robots.
 
         A method for driving with Mecanum wheeled robots. There are 4 wheels
@@ -544,7 +549,9 @@ class RobotDrive(MotorSafety):
 
         self.feed()
 
-    def holonomicDrive(self, magnitude, direction, rotation):
+    def holonomicDrive(
+        self, magnitude: float, direction: float, rotation: float
+    ) -> None:
         """Holonomic Drive method for Mecanum wheeled robots.
 
         This is an alias to :func:`mecanumDrive_Polar` for backward
@@ -559,7 +566,7 @@ class RobotDrive(MotorSafety):
         """
         self.mecanumDrive_Polar(magnitude, direction, rotation)
 
-    def setLeftRightMotorOutputs(self, leftOutput, rightOutput):
+    def setLeftRightMotorOutputs(self, leftOutput: float, rightOutput: float) -> None:
         """Set the speed of the right and left motors.
 
         This is used once an appropriate drive setup function is called such as
@@ -586,7 +593,7 @@ class RobotDrive(MotorSafety):
         self.feed()
 
     @staticmethod
-    def limit(number):
+    def limit(number: float) -> float:
         """Limit motor values to the -1.0 to +1.0 range."""
         if number > 1.0:
             return 1.0
@@ -595,7 +602,7 @@ class RobotDrive(MotorSafety):
         return number
 
     @staticmethod
-    def normalize(wheelSpeeds):
+    def normalize(wheelSpeeds: List[float]) -> None:
         """Normalize all wheel speeds if the magnitude of any wheel is greater
         than 1.0.
         """
@@ -605,14 +612,14 @@ class RobotDrive(MotorSafety):
                 wheelSpeeds[i] = wheelSpeeds[i] / maxMagnitude
 
     @staticmethod
-    def rotateVector(x, y, angle):
+    def rotateVector(x: float, y: float, angle: float) -> Tuple[(float, float)]:
         """Rotate a vector in Cartesian space."""
         angle = math.radians(angle)
         cosA = math.cos(angle)
         sinA = math.sin(angle)
         return (x * cosA - y * sinA), (x * sinA + y * cosA)
 
-    def setInvertedMotor(self, motor, isInverted):
+    def setInvertedMotor(self, motor: int, isInverted: bool) -> bool:
         """Invert a motor direction.
 
         This is used when a motor should run in the opposite direction as
@@ -634,7 +641,7 @@ class RobotDrive(MotorSafety):
         else:
             raise ValueError("Invalid motor type specified")
 
-    def setSensitivity(self, sensitivity):
+    def setSensitivity(self, sensitivity: float) -> None:
         """Set the turning sensitivity.
 
         This only impacts the drive() entry-point.
@@ -644,7 +651,7 @@ class RobotDrive(MotorSafety):
         """
         self.sensitivity = sensitivity
 
-    def setMaxOutput(self, maxOutput):
+    def setMaxOutput(self, maxOutput: float) -> None:
         """Configure the scaling factor for using RobotDrive with motor
         controllers in a mode other than PercentVbus.
 
@@ -653,7 +660,7 @@ class RobotDrive(MotorSafety):
         """
         self.maxOutput = maxOutput
 
-    def free(self):
+    def free(self) -> None:
         self.__finalizer()
         self.frontLeftMotor = None
         self.frontRightMotor = None
@@ -662,10 +669,10 @@ class RobotDrive(MotorSafety):
         self.allocatedSpeedControllers = list()
         self.setSafetyEnabled(False)
 
-    def getDescription(self):
+    def getDescription(self) -> str:
         return "Robot Drive"
 
-    def stopMotor(self):
+    def stopMotor(self) -> None:
         if self.frontLeftMotor is not None:
             self.frontLeftMotor.stopMotor()
         if self.frontRightMotor is not None:
@@ -676,7 +683,7 @@ class RobotDrive(MotorSafety):
             self.rearRightMotor.stopMotor()
         self.feed()
 
-    def getNumMotors(self):
+    def getNumMotors(self) -> int:
         motors = 0
         if self.frontLeftMotor is not None:
             motors += 1

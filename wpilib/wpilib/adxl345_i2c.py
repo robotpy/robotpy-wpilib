@@ -5,12 +5,13 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Tuple
 
 import hal
-
-from .interfaces import Accelerometer
 from .i2c import I2C
 from .sendablebase import SendableBase
+from .interfaces import Accelerometer
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["ADXL345_I2C"]
 
@@ -44,13 +45,11 @@ class ADXL345_I2C(SendableBase):
         kY = 0x02
         kZ = 0x04
 
-    def __init__(self, port, range, address=None):
+    def __init__(self, port: I2C.Port, range: Range, address: int = None) -> None:
         """Constructor.
 
         :param port: The I2C port the accelerometer is attached to.
-        :type port: :class:`.I2C.Port`
         :param range: The range (+ or -) that the accelerometer will measure.
-        :type range: :class:`.ADXL345_I2C.Range`
         :param address: the I2C address of the accelerometer (0x1D or 0x53)
         """
         if address is None:
@@ -69,18 +68,17 @@ class ADXL345_I2C(SendableBase):
 
         self.setName("ADXL345_I2C", port)
 
-    def close(self):
+    def close(self) -> None:
         self.i2c.close()
         super().close()
 
     # Accelerometer interface
 
-    def setRange(self, range):
+    def setRange(self, range: Range) -> None:
         """Set the measuring range of the accelerometer.
 
         :param range: The maximum acceleration, positive or negative, that
                       the accelerometer will measure.
-        :type  range: :class:`ADXL345_I2C.Range`
         """
         if range == self.Range.k2G:
             value = 0
@@ -96,28 +94,28 @@ class ADXL345_I2C(SendableBase):
         # Specify the data format to read
         self.i2c.write(self.kDataFormatRegister, self.kDataFormat_FullRes | value)
 
-    def getX(self):
+    def getX(self) -> float:
         """Get the x axis acceleration
 
         :returns: The acceleration along the x axis in g-forces
         """
         return self.getAcceleration(self.Axes.kX)
 
-    def getY(self):
+    def getY(self) -> float:
         """Get the y axis acceleration
 
         :returns: The acceleration along the y axis in g-forces
         """
         return self.getAcceleration(self.Axes.kY)
 
-    def getZ(self):
+    def getZ(self) -> float:
         """Get the z axis acceleration
 
         :returns: The acceleration along the z axis in g-forces
         """
         return self.getAcceleration(self.Axes.kZ)
 
-    def getAcceleration(self, axis):
+    def getAcceleration(self, axis: Axes) -> float:
         """Get the acceleration of one axis in Gs.
 
         :param axis: The axis to read from.
@@ -128,7 +126,7 @@ class ADXL345_I2C(SendableBase):
         rawAccel = (data[1] << 8) | data[0]
         return rawAccel * self.kGsPerLSB
 
-    def getAccelerations(self):
+    def getAccelerations(self) -> Tuple[float, float, float]:
         """Get the acceleration of all axes in Gs.
 
         :returns: X,Y,Z tuple of acceleration measured on all axes of the
@@ -147,13 +145,13 @@ class ADXL345_I2C(SendableBase):
             rawData[2] * self.kGsPerLSB,
         )
 
-    def _updateValues(self):
+    def _updateValues(self) -> None:
         data = self.getAccelerations()
         self._entryX.setDouble(data[0])
         self._entryY.setDouble(data[1])
         self._entryZ.setDouble(data[2])
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("3AxisAccelerometer")
         self._entryX = builder.getEntry("X")
         self._entryY = builder.getEntry("Y")

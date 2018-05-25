@@ -20,11 +20,10 @@ class PWMTalonSRX(PWMSpeedController):
     .. seealso:: See :class:`ctre.cantalon.CANTalon` for CAN control of Talon SRX.
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Constructor for a TalonSRX connected via PWM.
 
         :param channel: The PWM channel that the PWMTalonSRX is attached to. 0-9 are on-board, 10-19 are on the MXP port.
-        :type  channel: int
 
         .. note ::
 

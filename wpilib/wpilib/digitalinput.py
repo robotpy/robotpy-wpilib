@@ -10,6 +10,7 @@ import hal
 
 from .digitalsource import DigitalSource
 from .sensorutil import SensorUtil
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["DigitalInput"]
 
@@ -24,12 +25,11 @@ class DigitalInput(DigitalSource):
     etc. that aren't implemented anywhere else.
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Create an instance of a Digital Input class. Creates a digital
         input given a channel.
 
         :param channel: the DIO channel for the digital input. 0-9 are on-board, 10-25 are on the MXP
-        :type  channel: int
         """
 
         super().__init__()
@@ -41,54 +41,51 @@ class DigitalInput(DigitalSource):
         hal.report(hal.UsageReporting.kResourceType_DigitalInput, channel)
         self.setName("DigitalInput", channel)
 
-    def close(self):
+    def close(self) -> None:
         super().close()
+
         if self.interrupt:
             self.cancelInterrupts()
 
         hal.freeDIOPort(self.handle)
         self.handle = 0
 
-    def get(self):
+    def get(self) -> bool:
         """Get the value from a digital input channel. Retrieve the value of
         a single digital input channel from the FPGA.
 
         :returns: the state of the digital input
-        :rtype: bool
         """
         return hal.getDIO(self.handle)
 
-    def getChannel(self):
+    def getChannel(self) -> int:
         """Get the channel of the digital input.
 
         :returns: The GPIO channel number that this object represents.
-        :rtype: int
         """
         return self.channel
 
-    def getAnalogTriggerTypeForRouting(self):
+    def getAnalogTriggerTypeForRouting(self) -> int:
         """Get the analog trigger type.
 
         :returns: false
-        :rtype: int
         """
         return 0
 
-    def isAnalogTrigger(self):
+    def isAnalogTrigger(self) -> bool:
         """Is this an analog trigger.
 
         :returns: true if this is an analog trigger
-        :rtype: bool
         """
         return False
 
-    def getPortHandleForRouting(self):
+    def getPortHandleForRouting(self) -> hal.DigitalHandle:
         """Get the HAL Port Handle.
 
         :return: The HAL Handle to the specified source
         """
         return self.handle
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Digital Input")
         builder.addBooleanProperty("Value", self.get, None)

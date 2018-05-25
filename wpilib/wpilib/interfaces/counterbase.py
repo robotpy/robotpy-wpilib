@@ -30,39 +30,39 @@ class CounterBase:
         #: Count rising and falling on both channels
         k4X = 2
 
-    def get(self):
+    def get(self) -> int:
         """Get the count
         
         :returns: the count
         """
         raise NotImplementedError
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the count to zero"""
         raise NotImplementedError
 
-    def getPeriod(self):
+    def getPeriod(self) -> float:
         """Get the time between the last two edges counted
         
         :returns: the time between the last two ticks in seconds
         """
         raise NotImplementedError
 
-    def setMaxPeriod(self, maxPeriod):
+    def setMaxPeriod(self, maxPeriod: float) -> None:
         """Set the maximum time between edges to be considered stalled
         
         :param maxPeriod: the maximum period in seconds
         """
         raise NotImplementedError
 
-    def getStopped(self):
+    def getStopped(self) -> bool:
         """Determine if the counter is not moving
         
         :returns: True if the counter has not changed for the max period
         """
         raise NotImplementedError
 
-    def getDirection(self):
+    def getDirection(self) -> bool:
         """Determine which direction the counter is going
         
         :returns: True for one direction, False for the other

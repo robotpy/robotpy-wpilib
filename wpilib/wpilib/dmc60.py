@@ -18,7 +18,7 @@ class DMC60(PWMSpeedController):
     Digilent DMC 60 Speed Controller.
     """
 
-    def __init__(self, channel: int):
+    def __init__(self, channel: int) -> None:
         """Constructor.
 
         :param channel: The PWM channel that the DMC60 is attached to.

@@ -11,15 +11,15 @@ import enum
 import warnings
 import weakref
 
-from .livewindow import LiveWindow
 from .resource import Resource
 from .sensorutil import SensorUtil
+from .sendablebuilder import SendableBuilder
 from .solenoidbase import SolenoidBase
 
 __all__ = ["DoubleSolenoid"]
 
 
-def _freeSolenoid(fwdHandle, revHandle):
+def _freeSolenoid(fwdHandle: hal.SolenoidHandle, revHandle: hal.SolenoidHandle) -> None:
     hal.freeSolenoidPort(fwdHandle)
     hal.freeSolenoidPort(revHandle)
 
@@ -38,7 +38,7 @@ class DoubleSolenoid(SolenoidBase):
         kForward = 1
         kReverse = 2
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """Constructor.
 
         Arguments can be supplied as positional or keyword.  Acceptable
@@ -119,18 +119,17 @@ class DoubleSolenoid(SolenoidBase):
             self, _freeSolenoid, self.forwardHandle, self.reverseHandle
         )
 
-    def close(self):
+    def close(self) -> None:
         """Mark the solenoid as freed."""
         super().close()
         self.__finalizer()
         self.forwardHandle = None
         self.reverseHandle = None
 
-    def set(self, value):
+    def set(self, value: Value) -> None:
         """Set the value of a solenoid.
 
         :param value: The value to set (Off, Forward, Reverse)
-        :type  value: :class:`DoubleSolenoid.Value`
         """
 
         if value == self.Value.kOff:
@@ -145,11 +144,10 @@ class DoubleSolenoid(SolenoidBase):
         else:
             raise ValueError("Invalid argument '%s'" % value)
 
-    def get(self):
+    def get(self) -> Value:
         """Read the current value of the solenoid.
 
         :returns: The current value of the solenoid.
-        :rtype: :class:`DoubleSolenoid.Value`
         """
         if hal.getSolenoid(self.forwardHandle):
             return self.Value.kForward
@@ -157,7 +155,7 @@ class DoubleSolenoid(SolenoidBase):
             return self.Value.kReverse
         return self.Value.kOff
 
-    def isFwdSolenoidBlackListed(self):
+    def isFwdSolenoidBlackListed(self) -> bool:
         """
         Check if the forward solenoid is blacklisted.
             If a solenoid is shorted, it is added to the blacklist and disabled until power cycle, or until faults are
@@ -169,7 +167,7 @@ class DoubleSolenoid(SolenoidBase):
 
         return (blacklist & self.forwardMask) != 0
 
-    def isRevSolenoidBlackListed(self):
+    def isRevSolenoidBlackListed(self) -> bool:
         """
         Check if the reverse solenoid is blacklisted.
             If a solenoid is shorted, it is added to the blacklist and disabled until power cycle, or until faults are
@@ -181,7 +179,7 @@ class DoubleSolenoid(SolenoidBase):
 
         return blacklist & (1 << self.reverseMask) != 0
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Double Solenoid")
         builder.setActuator(True)
         builder.setSafeState(lambda: self.set(self.Value.kOff))
@@ -189,7 +187,7 @@ class DoubleSolenoid(SolenoidBase):
             "Value", lambda: self.get().name[1:], self._valueChanged
         )
 
-    def _valueChanged(self, value):
+    def _valueChanged(self, value: str) -> None:
         if value == "Reverse":
             self.set(self.Value.kReverse)
         elif value == "Forward":

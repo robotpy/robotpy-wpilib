@@ -15,7 +15,7 @@ from .interruptablesensorbase import InterruptableSensorBase
 __all__ = ["DigitalSource"]
 
 
-def _freeDigitalSource(handle):
+def _freeDigitalSource(handle: hal.DigitalHandle) -> None:
     hal.freeDIOPort(handle)
 
 
@@ -28,8 +28,8 @@ class DigitalSource(InterruptableSensorBase):
     not both.
     """
 
-    def isAnalogTrigger(self):
+    def isAnalogTrigger(self) -> bool:
         raise NotImplementedError
 
-    def getChannel(self):
+    def getChannel(self) -> int:
         raise NotImplementedError

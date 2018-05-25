@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Tuple
 
 import hal
 
@@ -192,9 +193,9 @@ class RobotController:
         return hal.getUserCurrentFaults6V()
 
     @staticmethod
-    def getCANStatus():
+    def getCANStatus() -> Tuple[(float, int, int, int, int)]:
         """Get the current status of the CAN bus.
-        
+
         :returns: The status of the CAN bus as a tuple: "percentBusUtilization", "busOffCount", "txFullCount", "receiveErrorCount", "transmitErrorCount"
         """
         return hal.CAN_GetCANStatus()

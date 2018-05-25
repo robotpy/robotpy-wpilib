@@ -17,7 +17,7 @@ class InternalButton(Button):
     Also includes a setting for whether or not it should invert its value.
     """
 
-    def __init__(self, inverted=False):
+    def __init__(self, inverted: bool = False) -> None:
         """Creates an InternalButton which is inverted depending on the input.
 
         :param inverted: If False, then this button is pressed when set to
@@ -26,11 +26,11 @@ class InternalButton(Button):
         self.pressed = inverted
         self.inverted = inverted
 
-    def setInverted(self, inverted):
+    def setInverted(self, inverted: bool) -> None:
         self.inverted = inverted
 
-    def setPressed(self, pressed):
+    def setPressed(self, pressed: bool) -> None:
         self.pressed = pressed
 
-    def get(self):
+    def get(self) -> int:
         return self.pressed ^ self.inverted

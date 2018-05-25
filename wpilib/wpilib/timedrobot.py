@@ -28,7 +28,7 @@ class TimedRobot(IterativeRobotBase):
 
     kDefaultPeriod = 0.02
 
-    def __init__(self, period: float = None):
+    def __init__(self, period: float = None) -> None:
         if period is None:
             period = TimedRobot.kDefaultPeriod
         super().__init__(period)
@@ -66,7 +66,7 @@ class TimedRobot(IterativeRobotBase):
 
             self.loopFunc()
 
-    def getPeriod(self):
+    def getPeriod(self) -> float:
         """Get time period between calls to Periodic() functions."""
         return self.period
 

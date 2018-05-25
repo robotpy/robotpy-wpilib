@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Type
 
 import hal
 from networktables import NetworkTables
@@ -37,7 +38,7 @@ class RobotBase:
     .. not_implemented: getBooleanProperty
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         NetworkTables.setNetworkIdentity("Robot")
 
         if self.isReal():
@@ -58,7 +59,7 @@ class RobotBase:
 
         self.__initialized = True
 
-    def free(self):
+    def free(self) -> None:
         """Free the resources for a RobotBase class."""
         pass
 
@@ -124,12 +125,12 @@ class RobotBase:
         """
         return self.ds.isNewControlData()
 
-    def startCompetition(self):
+    def startCompetition(self) -> None:
         """Provide an alternate "main loop" via startCompetition()."""
         raise NotImplementedError
 
     @staticmethod
-    def initializeHardwareConfiguration():
+    def initializeHardwareConfiguration() -> None:
         """Common initialization for all robot programs."""
 
         # Python specific: do not call this, initialize() is already called when
@@ -142,7 +143,7 @@ class RobotBase:
         RobotState.impl = DriverStation.getInstance()
 
     @staticmethod
-    def main(robot_cls):
+    def main(robot_cls: Type["RobotBase"]) -> bool:
         """Starting point for the applications."""
         RobotBase.initializeHardwareConfiguration()
 

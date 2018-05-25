@@ -18,7 +18,7 @@ class WaitCommand(TimedCommand):
     .. seealso:: :class:`.CommandGroup`
     """
 
-    def __init__(self, timeout, name=None):
+    def __init__(self, timeout: float, name: str = None) -> None:
         """Instantiates a WaitCommand with the given timeout.
         
         :param timeout: the time the command takes to run (seconds)

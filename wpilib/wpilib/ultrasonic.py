@@ -5,15 +5,19 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Union
 
 import hal
 import threading
 import weakref
 
 from .counter import Counter
+from .digitalinput import DigitalInput
+from .digitaloutput import DigitalOutput
 from .interfaces import PIDSource
 from .resource import Resource
 from .sendablebase import SendableBase
+from .sendablebuilder import SendableBuilder
 from .timer import Timer
 
 __all__ = ["Ultrasonic"]
@@ -64,12 +68,12 @@ class Ultrasonic(SendableBase):
     _thread = None
 
     @staticmethod
-    def isAutomaticMode():
+    def isAutomaticMode() -> bool:
         with Ultrasonic._static_mutex:
             return Ultrasonic.automaticEnabled
 
     @staticmethod
-    def ultrasonicChecker():
+    def ultrasonicChecker() -> None:
         """Background task that goes through the list of ultrasonic sensors
         and pings each one in turn. The counter is configured to read the
         timing of the returned echo pulse.
@@ -95,7 +99,12 @@ class Ultrasonic(SendableBase):
             if not count:
                 return
 
-    def __init__(self, pingChannel, echoChannel, units=Unit.kInches):
+    def __init__(
+        self,
+        pingChannel: Union[DigitalOutput, int],
+        echoChannel: Union[DigitalInput, int],
+        units: Unit = Unit.kInches,
+    ) -> None:
         """Create an instance of the Ultrasonic Sensor.
         This is designed to supchannel the Daventech SRF04 and Vex ultrasonic
         sensors.
@@ -113,14 +122,10 @@ class Ultrasonic(SendableBase):
         self.echoAllocated = False
 
         if not hasattr(pingChannel, "channel"):
-            from .digitaloutput import DigitalOutput
-
             pingChannel = DigitalOutput(pingChannel)
             self.pingAllocated = True
 
         if not hasattr(echoChannel, "channel"):
-            from .digitalinput import DigitalInput
-
             echoChannel = DigitalInput(echoChannel)
             self.echoAllocated = True
 
@@ -151,7 +156,7 @@ class Ultrasonic(SendableBase):
         hal.report(hal.UsageReporting.kResourceType_Ultrasonic, Ultrasonic.instances)
         self.setName("Ultrasonic", echoChannel.getChannel())
 
-    def close(self):
+    def close(self) -> None:
         isAutomatic = Ultrasonic.isAutomaticMode()
         self.setAutomaticMode(False)
 
@@ -177,7 +182,7 @@ class Ultrasonic(SendableBase):
 
         super().close()
 
-    def setAutomaticMode(self, enabling):
+    def setAutomaticMode(self, enabling: bool) -> None:
         """Turn Automatic mode on/off. When in Automatic mode, all sensors
         will fire in round robin, waiting a set time between each sensor.
 
@@ -188,7 +193,6 @@ class Ultrasonic(SendableBase):
             same time. If another scheduling algorithm is preferred, it
             can be implemented by pinging the sensors manually and waiting
             for the results to come back.
-        :type enabling: bool
         """
         enabling = bool(enabling)
         if enabling == Ultrasonic.isAutomaticMode():
@@ -222,7 +226,7 @@ class Ultrasonic(SendableBase):
                 if u is not None:
                     u.counter.reset()
 
-    def ping(self):
+    def ping(self) -> None:
         """Single ping to ultrasonic sensor. Send out a single ping to the
         ultrasonic sensor. This only works if automatic (round robin) mode is
         disabled. A single ping is sent out, and the counter should count the
@@ -236,59 +240,54 @@ class Ultrasonic(SendableBase):
         # do the ping to start getting a single range
         self.pingChannel.pulse(Ultrasonic.kPingTime)
 
-    def isRangeValid(self):
+    def isRangeValid(self) -> bool:
         """Check if there is a valid range measurement. The ranges are
         accumulated in a counter that will increment on each edge of the
         echo (return) signal. If the count is not at least 2, then the range
         has not yet been measured, and is invalid.
 
         :returns: True if the range is valid
-        :rtype: bool
         """
         return self.counter.get() > 1
 
-    def getRangeInches(self):
+    def getRangeInches(self) -> float:
         """Get the range in inches from the ultrasonic sensor.
 
         :returns: Range in inches of the target returned from the ultrasonic
             sensor. If there is no valid value yet, i.e. at least one
             measurement hasn't completed, then return 0.
-        :rtype: float
         """
         if self.isRangeValid():
             return self.counter.getPeriod() * Ultrasonic.kSpeedOfSoundInchesPerSec / 2.0
         else:
             return 0
 
-    def getRangeMM(self):
+    def getRangeMM(self) -> float:
         """Get the range in millimeters from the ultrasonic sensor.
 
         :returns: Range in millimeters of the target returned by the
             ultrasonic sensor. If there is no valid value yet, i.e. at least
             one measurement hasn't complted, then return 0.
-        :rtype: float
         """
         return self.getRangeInches() * 25.4
 
-    def setPIDSourceType(self, pidSource):
+    def setPIDSourceType(self, pidSource: PIDSourceType) -> None:
         """Set which parameter you are using as a process
         control variable. 
 
         :param pidSource: An enum to select the parameter.
-        :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
         if pidSource != self.PIDSourceType.kDisplacement:
             raise ValueError("Only displacement PID is allowed for ultrasonics.")
         self.pidSource = pidSource
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         return self.pidSource
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         """Get the range in the current DistanceUnit (PIDSource interface).
 
         :returns: The range in DistanceUnit
-        :rtype: float
         """
         if self.units == self.Unit.kInches:
             return self.getRangeInches()
@@ -297,7 +296,7 @@ class Ultrasonic(SendableBase):
         else:
             return 0.0
 
-    def setDistanceUnits(self, units):
+    def setDistanceUnits(self, units: Unit) -> None:
         """Set the current DistanceUnit that should be used for the
         PIDSource interface.
 
@@ -309,7 +308,7 @@ class Ultrasonic(SendableBase):
 
         self.units = units
 
-    def getDistanceUnits(self):
+    def getDistanceUnits(self) -> Unit:
         """Get the current DistanceUnit that is used for the PIDSource
         interface.
 
@@ -317,21 +316,20 @@ class Ultrasonic(SendableBase):
         """
         return self.units
 
-    def isEnabled(self):
+    def isEnabled(self) -> bool:
         """Is the ultrasonic enabled.
 
         :returns: True if the ultrasonic is enabled
         """
         return self.enabled
 
-    def setEnabled(self, enable):
+    def setEnabled(self, enable: bool) -> None:
         """Set if the ultrasonic is enabled.
 
         :param enable: set to True to enable the ultrasonic
-        :type  enable: bool
         """
         self.enabled = bool(enable)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Ultrasonic")
         builder.addDoubleProperty("Value", self.getRangeInches, None)

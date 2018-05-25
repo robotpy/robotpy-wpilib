@@ -17,7 +17,7 @@ class Accelerometer:
         k8G = 2
         k16G = 3
 
-    def setRange(self, range):
+    def setRange(self, range: Range) -> None:
         """Common interface for setting the measuring range of an
         accelerometer.
 
@@ -27,21 +27,21 @@ class Accelerometer:
         """
         raise NotImplementedError
 
-    def getX(self):
+    def getX(self) -> float:
         """Common interface for getting the x axis acceleration
 
         :returns: The acceleration along the x axis in g-forces
         """
         raise NotImplementedError
 
-    def getY(self):
+    def getY(self) -> float:
         """Common interface for getting the y axis acceleration
 
         :returns: The acceleration along the y axis in g-forces
         """
         raise NotImplementedError
 
-    def getZ(self):
+    def getZ(self) -> float:
         """Common interface for getting the z axis acceleration
 
         :returns: The acceleration along the z axis in g-forces

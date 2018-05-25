@@ -21,7 +21,7 @@ class SendableBase(Sendable):
     functions for checking channels and error processing.
     """
 
-    def __init__(self, addLiveWindow=True):
+    def __init__(self, addLiveWindow: bool = True) -> None:
         """
         Creates an instance of the sensor base.
    
@@ -34,7 +34,7 @@ class SendableBase(Sendable):
         if addLiveWindow:
             LiveWindow.add(self)
 
-    def free(self):
+    def free(self) -> None:
         """
         Free the resources used by this object.
 
@@ -50,15 +50,15 @@ class SendableBase(Sendable):
         """
         LiveWindow.remove(self)
 
-    def getName(self):
+    def getName(self) -> str:
         with self.mutex:
             return self.name
 
-    def _setName(self, name):
+    def _setName(self, name: str) -> None:
         with self.mutex:
             self.name = name
 
-    def setName(self, *args, **kwargs):
+    def setName(self, *args, **kwargs) -> None:
         """
         Sets the name of this Sendable object.
 
@@ -104,15 +104,15 @@ class SendableBase(Sendable):
         elif index == 3:
             self._setName("{moduleType}[{moduleNumber},{channel}]".format_map(results))
 
-    def getSubsystem(self):
+    def getSubsystem(self) -> str:
         with self.mutex:
             return self.subsystem
 
-    def setSubsystem(self, subsystem):
+    def setSubsystem(self, subsystem: str) -> None:
         with self.mutex:
             self.subsystem = subsystem
 
-    def addChild(self, child):
+    def addChild(self, child: object) -> None:
         """
         Add a child component
 

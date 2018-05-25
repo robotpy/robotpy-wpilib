@@ -10,9 +10,15 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import List
 
 import hal
 import threading
+
+from networktables.entry import NetworkTableEntry
+from networktables.networktable import NetworkTable
+
+from .sendable import Sendable
 from ._impl.utils import match_arglist, HasAttribute
 from .sendablebuilder import SendableBuilder
 
@@ -20,7 +26,7 @@ __all__ = ["SmartDashboard"]
 
 
 class Data:
-    def __init__(self, sendable):
+    def __init__(self, sendable: Sendable) -> None:
         self.sendable = sendable
         self.builder = SendableBuilder()
 
@@ -50,12 +56,12 @@ class SmartDashboard:
     mutex = threading.RLock()
 
     @classmethod
-    def _reset(cls):
+    def _reset(cls) -> None:
         cls.tablesToData = {}
         cls.table = None
 
     @classmethod
-    def getTable(cls):
+    def getTable(cls) -> NetworkTable:
         if cls.table is None:
             from networktables import NetworkTables
 
@@ -64,7 +70,7 @@ class SmartDashboard:
         return cls.table
 
     @classmethod
-    def putData(cls, *args, **kwargs):
+    def putData(cls, *args, **kwargs) -> None:
         """
         Maps the specified key (name of the :class:`.Sendable` if not provided) 
         to the specified value in this table.
@@ -77,11 +83,8 @@ class SmartDashboard:
         - value
         
         :param key: the key (cannot be None)
-        :type  key: str
         :param data: the value
-        :type data: :class:`.Sendable`
         :param value: the value
-        :type value: :class:`.Sendable`
         """
         with cls.mutex:
             key_arg = ("key", [str])
@@ -116,33 +119,31 @@ class SmartDashboard:
                 dataTable.getEntry(".name").setString(key)
 
     @classmethod
-    def getData(cls, key):
+    def getData(cls, key: str) -> Sendable:
         """Returns the value at the specified key.
         
         :param key: the key
-        :type  key: str
-        
+
         :returns: the value
         
         :raises: :exc:`KeyError` if the key doesn't exist
         """
-        data = cls.tablesToData.get(subtable, None)
+        data = cls.tablesToData.get(key, None)
         if data is None:
             raise KeyError("SmartDashboard data does not exist: '%s'" % key)
         return data.sendable
 
     @classmethod
-    def getEntry(cls, key):
+    def getEntry(cls, key: str) -> NetworkTableEntry:
         """Gets the entry for the specified key.
         
         :param key: the key name
-        :rtype: :class:`.NetworkTableEntry`
         """
         table = cls.getTable()
         return table.getEntry(key)
 
     @classmethod
-    def containsKey(cls, key):
+    def containsKey(cls, key: str) -> bool:
         """Checks the table and tells if it contains the specified key.
 
         :param key: key the key to search for
@@ -153,7 +154,7 @@ class SmartDashboard:
         return table.containsKey(key)
 
     @classmethod
-    def getKeys(cls, types=0):
+    def getKeys(cls, types: int = 0) -> List[str]:
         """Get the keys stored in the SmartDashboard table of NetworkTables.
 
         :param types: bitmask of types; 0 is treated as a "don't care".
@@ -164,7 +165,7 @@ class SmartDashboard:
         return table.getKeys(types)
 
     @classmethod
-    def setPersistent(cls, key):
+    def setPersistent(cls, key: str) -> None:
         """Makes a key's value persistent through program restarts.
         The key cannot be null.
 
@@ -174,7 +175,7 @@ class SmartDashboard:
         table.setPersistent(key)
 
     @classmethod
-    def clearPersistent(cls, key):
+    def clearPersistent(cls, key: str) -> None:
         """Stop making a key's value persistent through program restarts.
         The key cannot be null.
 
@@ -184,7 +185,7 @@ class SmartDashboard:
         table.clearPersistent(key)
 
     @classmethod
-    def isPersistent(cls, key):
+    def isPersistent(cls, key: str) -> bool:
         """Returns whether the value is persistent through program restarts.
         The key cannot be null.
 
@@ -196,7 +197,7 @@ class SmartDashboard:
         return table.isPersistent(key)
 
     @classmethod
-    def setFlags(cls, key, flags):
+    def setFlags(cls, key: str, flags: int) -> None:
         """Sets flags on the specified key in this table. The key can
         not be null.
 
@@ -207,7 +208,7 @@ class SmartDashboard:
         table.setFlags(key, flags)
 
     @classmethod
-    def clearFlags(cls, key, flags):
+    def clearFlags(cls, key: str, flags: int) -> None:
         """Clears flags on the specified key in this table. The key can
         not be null.
 
@@ -218,7 +219,7 @@ class SmartDashboard:
         table.clearFlags(key, flags)
 
     @classmethod
-    def getFlags(cls, key):
+    def getFlags(cls, key: str) -> int:
         """ Returns the flags for the specified key.
 
         :param key: the key name
@@ -229,7 +230,7 @@ class SmartDashboard:
         return table.getFlags(key)
 
     @classmethod
-    def delete(cls, key):
+    def delete(cls, key: str) -> None:
         """Deletes the specified key in this table. The key can
         not be null.
 
@@ -239,7 +240,7 @@ class SmartDashboard:
         table.delete(key)
 
     @classmethod
-    def putBoolean(cls, key, value):
+    def putBoolean(cls, key: str, value: bool) -> bool:
         """Put a boolean in the table.
 
         :param key: the key to be assigned to
@@ -251,7 +252,7 @@ class SmartDashboard:
         return table.putBoolean(key, value)
 
     @classmethod
-    def setDefaultBoolean(cls, key, defaultValue):
+    def setDefaultBoolean(cls, key: str, defaultValue: bool) -> bool:
         """Gets the current value in the table, setting it if it does not exist.
         
         :param key: the key
@@ -263,12 +264,11 @@ class SmartDashboard:
         return table.setDefaultBoolean(key, defaultValue)
 
     @classmethod
-    def getBoolean(cls, key, defaultValue):
+    def getBoolean(cls, key: str, defaultValue: bool) -> bool:
         """Returns the boolean the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
         :param key: the key to look up
-        :type  key: str
         :param defaultValue: returned if the key doesn't exist
         
         :returns: the value associated with the given key or the given default value
@@ -278,7 +278,7 @@ class SmartDashboard:
         return table.getBoolean(key, defaultValue)
 
     @classmethod
-    def putNumber(cls, key, value):
+    def putNumber(cls, key: str, value: float) -> bool:
         """Put a number in the table.
         
         :param key: the key to be assigned to
@@ -290,7 +290,7 @@ class SmartDashboard:
         return table.putNumber(key, value)
 
     @classmethod
-    def setDefaultNumber(cls, key, defaultValue):
+    def setDefaultNumber(cls, key: str, defaultValue: float) -> bool:
         """Gets the current value in the table, setting it if it does not exist.
         
         :param key: the key
@@ -302,12 +302,11 @@ class SmartDashboard:
         return table.setDefaultNumber(key, defaultValue)
 
     @classmethod
-    def getNumber(cls, key, defaultValue):
+    def getNumber(cls, key: str, defaultValue: float) -> float:
         """Returns the number the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
         :param key: the key to look up
-        :type  key: str
         :param defaultValue: returned if the key doesn't exist
         
         :returns: the value associated with the given key or the given default value
@@ -317,7 +316,7 @@ class SmartDashboard:
         return table.getNumber(key, defaultValue)
 
     @classmethod
-    def putString(cls, key, value):
+    def putString(cls, key: str, value: str) -> bool:
         """Put a string in the table.
         
         :param key: the key to be assigned to
@@ -329,7 +328,7 @@ class SmartDashboard:
         return table.putString(key, value)
 
     @classmethod
-    def setDefaultString(cls, key, defaultValue):
+    def setDefaultString(cls, key: str, defaultValue: str) -> bool:
         """Gets the current value in the table, setting it if it does not exist.
         
         :param key: the key
@@ -341,12 +340,11 @@ class SmartDashboard:
         return table.setDefaultString(key, defaultValue)
 
     @classmethod
-    def getString(cls, key, defaultValue):
+    def getString(cls, key: str, defaultValue: str) -> str:
         """Returns the string the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
         :param key: the key to look up
-        :type  key: str
         :param defaultValue: returned if the key doesn't exist
         
         :returns: the value associated with the given key or the given default value
@@ -356,7 +354,7 @@ class SmartDashboard:
         return table.getString(key, defaultValue)
 
     @classmethod
-    def putBooleanArray(cls, key, value):
+    def putBooleanArray(cls, key: str, value: List[bool]) -> bool:
         """Put a boolean array in the table.
         
         :param key: the key to be assigned to
@@ -368,7 +366,7 @@ class SmartDashboard:
         return table.putBooleanArray(key, value)
 
     @classmethod
-    def setDefaultBooleanArray(cls, key, defaultValue):
+    def setDefaultBooleanArray(cls, key: str, defaultValue: List[bool]) -> bool:
         """Gets the current value in the table, setting it if it does not exist.
         
         :param key: the key
@@ -380,12 +378,11 @@ class SmartDashboard:
         return table.setDefaultBooleanArray(key, defaultValue)
 
     @classmethod
-    def getBooleanArray(cls, key, defaultValue):
+    def getBooleanArray(cls, key: str, defaultValue: List[bool]) -> List[bool]:
         """Returns the boolean array the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
         :param key: the key to look up
-        :type  key: str
         :param defaultValue: returned if the key doesn't exist
         
         :returns: the value associated with the given key or the given default value
@@ -395,7 +392,7 @@ class SmartDashboard:
         return table.getBooleanArray(key, defaultValue)
 
     @classmethod
-    def putNumberArray(cls, key, value):
+    def putNumberArray(cls, key: str, value: List[float]) -> bool:
         """Put a number array in the table.
         
         :param key: the key to be assigned to
@@ -407,7 +404,7 @@ class SmartDashboard:
         return table.putNumberArray(key, value)
 
     @classmethod
-    def setDefaultNumberArray(cls, key, defaultValue):
+    def setDefaultNumberArray(cls, key: str, defaultValue: List[float]) -> bool:
         """Gets the current value in the table, setting it if it does not exist.
         
         :param key: the key
@@ -419,12 +416,11 @@ class SmartDashboard:
         return table.setDefaultNumberArray(key, defaultValue)
 
     @classmethod
-    def getNumberArray(cls, key, defaultValue):
+    def getNumberArray(cls, key: str, defaultValue: List[float]) -> List[float]:
         """Returns the number array the key maps to. If the key does not exist or is of
         different type, it will return the default value.
 
         :param key: the key to look up
-        :type  key: str
         :param defaultValue: returned if the key doesn't exist
         
         :returns: the value associated with the given key or the given default value
@@ -434,55 +430,46 @@ class SmartDashboard:
         return table.getNumberArray(key, defaultValue)
 
     @classmethod
-    def putStringArray(cls, key, value):
+    def putStringArray(cls, key: str, value: List[str]) -> bool:
         """Put a string array in the table
         
         :param key: the key to be assigned to
-        :type key: str
         :param value: the value that will be assigned
-        :type value: list(str)
-        
+
         :returns: False if the table key already exists with a different type
-        :rtype: bool
         """
         table = cls.getTable()
         return table.putStringArray(key, value)
 
     @classmethod
-    def setDefaultStringArray(cls, key, defaultValue):
+    def setDefaultStringArray(cls, key: str, defaultValue: List[str]) -> bool:
         """If the key doesn't currently exist, then the specified value will
         be assigned to the key.
         
         :param key: the key to be assigned to
-        :type key: str
         :param defaultValue: the default value to set if key doesn't exist.
-        :type defaultValue: list(str)
-        
+
         :returns: False if the table key exists with a different type
-        :rtype: bool
         """
         table = cls.getTable()
         return table.setDefaultStringArray(key, defaultValue)
 
     @classmethod
-    def getStringArray(cls, key, defaultValue):
+    def getStringArray(cls, key: str, defaultValue: List[str]) -> List[str]:
         """Returns the string array the key maps to. If the key does not exist or is
         of different type, it will return the default value.
         
         :param key: the key to look up
-        :type key: str
         :param defaultValue: the value to be returned if no value is found
-        :type defaultValue: list(str)
-        
+
         :returns: the value associated with the given key or the given default value
                   if there is no value associated with the key
-        :rtype: list(str)
         """
         table = cls.getTable()
         return table.getStringArray(key, defaultValue)
 
     @classmethod
-    def putRaw(cls, key, value):
+    def putRaw(cls, key: str, value: bytes) -> bool:
         """Put a raw value (byte array) in the table.
         
         :param key: the key to be assigned to
@@ -494,7 +481,7 @@ class SmartDashboard:
         return table.putRaw(key, value)
 
     @classmethod
-    def setDefaultRaw(cls, key, defaultValue):
+    def setDefaultRaw(cls, key: str, defaultValue: bytes) -> bool:
         """Gets the current value in the table, setting it if it does not exist.
         
         :param key: the key
@@ -506,12 +493,11 @@ class SmartDashboard:
         return table.setDefaultRaw(key, defaultValue)
 
     @classmethod
-    def getRaw(cls, key, defaultValue):
+    def getRaw(cls, key: str, defaultValue: bytes) -> bytes:
         """Returns the raw value (byte array) the key maps to. If the key does not exist or is of
         different type, it will return the default value.
 
         :param key: the key to look up
-        :type  key: str
         :param defaultValue: returned if the key doesn't exist
         
         :returns: the value associated with the given key or the given default value
@@ -521,7 +507,7 @@ class SmartDashboard:
         return table.getRaw(key, defaultValue)
 
     @classmethod
-    def updateValues(cls):
+    def updateValues(cls) -> None:
         with cls.mutex:
             for data in cls.tablesToData.values():
                 data.builder.updateTable()

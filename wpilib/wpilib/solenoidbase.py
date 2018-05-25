@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Union
 
 import hal
 
@@ -17,7 +18,7 @@ class SolenoidBase(SendableBase):
     """SolenoidBase class is the common base class for the Solenoid and
     DoubleSolenoid classes."""
 
-    def __init__(self, moduleNumber):
+    def __init__(self, moduleNumber: int) -> None:
         """Constructor.
 
         :param moduleNumber: The PCM CAN ID
@@ -25,7 +26,7 @@ class SolenoidBase(SendableBase):
         super().__init__()
         self.moduleNumber = moduleNumber
 
-    def getAll(moduleNumber):
+    def getAll(moduleNumber: Union[int, "SolenoidBase"]) -> int:
         """Read all 8 solenoids from the specified module as a
         single byte.
 
@@ -36,7 +37,7 @@ class SolenoidBase(SendableBase):
             moduleNumber = moduleNumber.moduleNumber
         return hal.getAllSolenoids(moduleNumber)
 
-    def getPCMSolenoidBlackList(moduleNumber):
+    def getPCMSolenoidBlackList(moduleNumber: Union[int, "SolenoidBase"]) -> int:
         """
         Reads complete solenoid blacklist for all 8 solenoids as a single byte.
             If a solenoid is shorted, it is added to the blacklist and
@@ -50,7 +51,9 @@ class SolenoidBase(SendableBase):
             moduleNumber = moduleNumber.moduleNumber
         return hal.getPCMSolenoidBlackList(moduleNumber)
 
-    def getPCMSolenoidVoltageStickyFault(moduleNumber):
+    def getPCMSolenoidVoltageStickyFault(
+        moduleNumber: Union[int, "SolenoidBase"]
+    ) -> bool:
         """
         :param moduleNumber: in a static context, the module number to read. otherwise don't provide it.
         :returns: True if PCM Sticky fault is set : The common
@@ -61,7 +64,7 @@ class SolenoidBase(SendableBase):
             moduleNumber = moduleNumber.moduleNumber
         return hal.getPCMSolenoidVoltageStickyFault(moduleNumber)
 
-    def getPCMSolenoidVoltageFault(moduleNumber):
+    def getPCMSolenoidVoltageFault(moduleNumber: Union[int, "SolenoidBase"]) -> bool:
         """
         :param moduleNumber: in a static context, the module number to read. otherwise don't provide it.
         :returns: True if PCM is in fault state : The common
@@ -72,7 +75,7 @@ class SolenoidBase(SendableBase):
             moduleNumber = moduleNumber.moduleNumber
         return hal.getPCMSolenoidVoltageFault(moduleNumber)
 
-    def clearAllPCMStickyFaults(moduleNumber):
+    def clearAllPCMStickyFaults(moduleNumber: Union[int, "SolenoidBase"]) -> None:
         """
         Clear ALL sticky faults inside the PCM that Solenoid is wired to.
 

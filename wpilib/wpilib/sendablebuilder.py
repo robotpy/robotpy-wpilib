@@ -5,21 +5,25 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Callable, Any, List, Optional
 from networktables import NetworkTables
-
+from networktables.entry import NetworkTableEntry
+from networktables.networktable import NetworkTable
 
 __all__ = ["SendableBuilder"]
 
 
 class Property:
-    def __init__(self, table, key, update, setter):
+    def __init__(
+        self, table: NetworkTable, key: str, update: Callable, setter: Callable
+    ) -> None:
         self.entry = table.getEntry(key)
         self.key = key
         self.update = update
         self.setter = setter
         self.listener = None
 
-    def createListener(self, entry):
+    def createListener(self, entry: NetworkTableEntry) -> None:
         self.listener = entry.addListener(
             lambda entry, key, value, param: self.setter(value),
             NetworkTables.NotifyFlags.IMMEDIATE
@@ -27,18 +31,18 @@ class Property:
             | NetworkTables.NotifyFlags.UPDATE,
         )
 
-    def startListener(self):
+    def startListener(self) -> None:
         if self.listener is None and self.setter is not None:
             self.createListener(self.entry)
 
-    def stopListener(self):
+    def stopListener(self) -> None:
         if self.listener is not None:
             self.entry.removeListener(self.listener)
             self.listener = None
 
 
 class SendableBuilder:
-    def __init__(self):
+    def __init__(self) -> None:
         self.table = None
         self._updateTable = None
         self.safeState = None
@@ -46,34 +50,30 @@ class SendableBuilder:
         self.controllableEntry = None
         self.actuator = False
 
-    def setTable(self, table):
+    def setTable(self, table: NetworkTable) -> None:
         """
         Set the network table.  Must be called prior to any Add* functions being called.
 
         :param table: Network table
-        :type table: :class:`networktables.networktable.NetworkTable`
         """
         self.table = table
         self.controllableEntry = table.getEntry(".controllable")
 
-    def getTable(self):
+    def getTable(self) -> NetworkTable:
         """
         Get the network table.
 
         :returns: The network table
-        :rtype: :class:`networktables.networktable.NetworkTable`
         """
         return self.table
 
-    def isActuator(self):
+    def isActuator(self) -> bool:
         """
         Return whether this sendable should be treated as an actuator.
-
-        :returns: True if actuator, false if not.
         """
         return self.actuator
 
-    def updateTable(self):
+    def updateTable(self) -> None:
         """
         Update the network table values by calling the getters for all properties.
         """
@@ -84,19 +84,19 @@ class SendableBuilder:
         if self._updateTable is not None:
             self._updateTable()
 
-    def startListeners(self):
+    def startListeners(self) -> None:
         """Hook setters for all properties"""
         for prop in self.properties:
             prop.startListener()
         self.controllableEntry.setBoolean(True)
 
-    def stopListeners(self):
+    def stopListeners(self) -> None:
         """Unhook setters for all properties"""
         for prop in self.properties:
             prop.stopListener()
         self.controllableEntry.setBoolean(False)
 
-    def startLiveWindowMode(self):
+    def startLiveWindowMode(self) -> None:
         """
         Start LiveWindow mode by hooking the setters for all properties. Also calls
         the safeState function if one was provided.
@@ -106,7 +106,7 @@ class SendableBuilder:
 
         self.startListeners()
 
-    def stopLiveWindowMode(self):
+    def stopLiveWindowMode(self) -> None:
         """
         Stop LiveWindow mode by unhooking the setters for all properties. Also calls
         the safeState function if one was provided.
@@ -115,17 +115,16 @@ class SendableBuilder:
         if self.safeState is not None:
             self.safeState()
 
-    def setSmartDashboardType(self, type):
+    def setSmartDashboardType(self, type: str) -> None:
         """
         Set the string representation of the named data type that will be used
         by the smart dashboard for this sendable.
    
         :param type: data type
-        :type type: str
         """
         self.table.getEntry(".type").setString(type)
 
-    def setActuator(self, value):
+    def setActuator(self, value) -> None:
         """
         Set a flag indicating if this sendable should be treated as an actuator.
         By default this flag is false.
@@ -135,7 +134,7 @@ class SendableBuilder:
         self.table.getEntry(".actuator").setBoolean(value)
         self.actuator = value
 
-    def setSafeState(self, func):
+    def setSafeState(self, func: Callable) -> None:
         """
         Set the function that should be called to set the Sendable into a safe
         state.  This is called when entering and exiting Live Window mode.
@@ -144,7 +143,7 @@ class SendableBuilder:
         """
         self.safeState = func
 
-    def setUpdateTable(self, func):
+    def setUpdateTable(self, func: Callable) -> None:
         """
         Set the function that should be called to update the network table
         for things other than properties.  Note this function is not passed
@@ -155,122 +154,134 @@ class SendableBuilder:
         """
         self._updateTable = func
 
-    def getEntry(self, key):
+    def getEntry(self, key: str) -> NetworkTableEntry:
         """
         Add a property without getters or setters.  This can be used to get
         entry handles for the function called by setUpdateTable().
 
         :param key:   property name
-        :type key: str
         :returns: Network table entry
-        :rtype: :class:`networktables.entry.NetworkTableEntry`
         """
         return self.table.getEntry(key)
 
-    def _addProperty(self, key, updater, setter):
+    def _addProperty(self, key: str, updater: Callable, setter: Callable) -> None:
         prop = Property(self.table, key, updater, setter)
         self.properties.append(prop)
 
-    def addBooleanProperty(self, key, getter, setter):
+    def addBooleanProperty(
+        self,
+        key: str,
+        getter: Optional[Callable[[], bool]],
+        setter: Optional[Callable[[bool], Any]],
+    ) -> None:
         """
         Add a boolean property.
    
         :param key:     property name
-        :type getter: str
         :param getter:  getter function (returns current value)
-        :type getter: () -> bool
         :param setter:  setter function (sets new value)
-        :type setter: (bool) -> Any
         """
         updater = None if getter is None else lambda entry: entry.setBoolean(getter())
         self._addProperty(key, updater, setter)
 
-    def addDoubleProperty(self, key, getter, setter):
+    def addDoubleProperty(
+        self,
+        key: str,
+        getter: Optional[Callable[[], float]],
+        setter: Optional[Callable[[float], Any]],
+    ) -> None:
         """
         Add a double property.
    
         :param key:     property name
-        :type key: str
         :param getter:  getter function (returns current value)
-        :type getter: () -> float
         :param setter:  setter function (sets new value)
-        :type setter: (float) -> Any
         """
         updater = None if getter is None else lambda entry: entry.setDouble(getter())
         self._addProperty(key, updater, setter)
 
-    def addStringProperty(self, key, getter, setter):
+    def addStringProperty(
+        self,
+        key: str,
+        getter: Optional[Callable[[], str]],
+        setter: Optional[Callable[[str], Any]],
+    ) -> None:
         """
         Add a string property.
    
         :param key:     property name
-        :type key: str
         :param getter:  getter function (returns current value)
-        :type getter: () -> str
         :param setter:  setter function (sets new value)
-        :type setter: (str) -> Any
         """
         updater = None if getter is None else lambda entry: entry.setString(getter())
         self._addProperty(key, updater, setter)
 
-    def addBooleanArrayProperty(self, key, getter, setter):
+    def addBooleanArrayProperty(
+        self,
+        key: str,
+        getter: Optional[Callable[[], List[bool]]],
+        setter: Optional[Callable[[List[bool]], Any]],
+    ) -> None:
         """
         Add a boolean array property.
    
         :param key:     property name
-        :type key: str
         :param getter:  getter function (returns current value)
-        :type getter: () -> bool[]
         :param setter:  setter function (sets new value)
-        :type setter: (bool[]) -> Any
         """
         updater = (
             None if getter is None else lambda entry: entry.setBooleanArray(getter())
         )
         self._addProperty(key, updater, setter)
 
-    def addDoubleArrayProperty(self, key, getter, setter):
+    def addDoubleArrayProperty(
+        self,
+        key: str,
+        getter: Optional[Callable[[], List[float]]],
+        setter: Optional[Callable[[List[float]], Any]],
+    ) -> None:
         """
         Add a double array property.
    
         :param key:     property name
-        :type key: str
         :param getter:  getter function (returns current value)
-        :type getter: () -> float[]
         :param setter:  setter function (sets new value)
-        :type setter: (float[]) -> Any
         """
         updater = (
             None if getter is None else lambda entry: entry.setDoubleArray(getter())
         )
         self._addProperty(key, updater, setter)
 
-    def addStringArrayProperty(self, key, getter, setter):
+    def addStringArrayProperty(
+        self,
+        key: str,
+        getter: Optional[Callable[[], List[str]]],
+        setter: Optional[Callable[[List[str]], Any]],
+    ) -> None:
         """
         Add a string array property.
    
         :param key:     property name
-        :type key: str
         :param getter:  getter function (returns current value)
-        :type getter: () -> str[]
         :param setter:  setter function (sets new value)
-        :type setter: (str[]) -> Any
         """
         updater = (
             None if getter is None else lambda entry: entry.setStringArray(getter())
         )
         self._addProperty(key, updater, setter)
 
-    def addRawProperty(self, key, getter, setter):
+    def addRawProperty(
+        self,
+        key: str,
+        getter: Optional[Callable[[], bytes]],
+        setter: Optional[Callable[[bytes], Any]],
+    ) -> None:
         """
         Add a raw property.
    
         :param key:     property name
-        :type key: str
         :param getter:  getter function (returns current value)
-        :type getter: () -> bytes
         :param setter:  setter function (sets new value)
-        :type setter: (bytes) -> Any
         """
         updater = None if getter is None else lambda entry: entry.setRaw(getter())
         self._addProperty(key, updater, setter)

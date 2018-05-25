@@ -20,7 +20,7 @@ class JoystickBase(GenericHID):
         Inherit directly from GenericHID instead.
     """
 
-    def __init__(self, port):
+    def __init__(self, port: int) -> None:
         warnings.warn(
             "JoystickBase is deprecated. Inherit directly from GenericHID instead",
             DeprecationWarning,
@@ -28,7 +28,7 @@ class JoystickBase(GenericHID):
         )
         super().__init__(port)
 
-    def getZ(self, hand=None):
+    def getZ(self, hand: GenericHID.Hand = None) -> float:
         """Get the z position of the HID.
 
         :param hand: which hand, left or right
@@ -37,7 +37,7 @@ class JoystickBase(GenericHID):
 
         raise NotImplementedError
 
-    def getTwist(self):
+    def getTwist(self) -> float:
         """Get the twist value.
 
         :returns: the twist value
@@ -45,7 +45,7 @@ class JoystickBase(GenericHID):
 
         raise NotImplementedError
 
-    def getThrottle(self):
+    def getThrottle(self) -> float:
         """Get the throttle.
 
         :returns: the throttle value

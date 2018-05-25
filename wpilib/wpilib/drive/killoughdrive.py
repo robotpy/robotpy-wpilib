@@ -9,8 +9,11 @@
 import math
 import hal
 
+
 from .robotdrivebase import RobotDriveBase
 from .vector2d import Vector2d
+from ..interfaces.speedcontroller import SpeedController
+from ..sendablebuilder import SendableBuilder
 
 __all__ = ["KilloughDrive"]
 
@@ -47,13 +50,13 @@ class KilloughDrive(RobotDriveBase):
 
     def __init__(
         self,
-        leftMotor,
-        rightMotor,
-        backMotor,
-        leftMotorAngle=kDefaultLeftMotorAngle,
-        rightMotorAngle=kDefaultRightMotorAngle,
-        backMotorAngle=kDefaultBackMotorAngle,
-    ):
+        leftMotor: SpeedController,
+        rightMotor: SpeedController,
+        backMotor: SpeedController,
+        leftMotorAngle: float = kDefaultLeftMotorAngle,
+        rightMotorAngle: float = kDefaultRightMotorAngle,
+        backMotorAngle: float = kDefaultBackMotorAngle,
+    ) -> None:
         """Construct a Killough drive with the given motors and default motor angles.
 
         Angles are measured in degrees clockwise from the positive X axis.
@@ -97,7 +100,9 @@ class KilloughDrive(RobotDriveBase):
 
         self.reported = False
 
-    def driveCartesian(self, ySpeed, xSpeed, zRotation, gyroAngle=0.0):
+    def driveCartesian(
+        self, ySpeed: float, xSpeed: float, zRotation: float, gyroAngle: float = 0.0
+    ) -> None:
         """Drive method for Killough platform.
 
         Angles are measured clockwise from the positive X axis. The robot's speed is independent
@@ -142,7 +147,7 @@ class KilloughDrive(RobotDriveBase):
 
         self.feed()
 
-    def drivePolar(self, magnitude, angle, zRotation):
+    def drivePolar(self, magnitude: float, angle: float, zRotation: float) -> None:
         """Drive method for Killough platform.
 
         Angles are measured counter-clockwise from straight ahead. The speed at which the robot
@@ -169,16 +174,16 @@ class KilloughDrive(RobotDriveBase):
             0,
         )
 
-    def stopMotor(self):
+    def stopMotor(self) -> None:
         self.leftMotor.stopMotor()
         self.rightMotor.stopMotor()
         self.backMotor.stopMotor()
         self.feed()
 
-    def getDescription(self):
+    def getDescription(self) -> str:
         return "Killough Drive"
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("KilloughDrive")
         builder.setActuator(True)
         builder.setSafeState(self.stopMotor)

@@ -11,7 +11,7 @@ __all__ = ["Gyro"]
 class Gyro:
     """Interface for yaw rate gyros"""
 
-    def calibrate(self):
+    def calibrate(self) -> None:
         """Calibrate the gyro by running for a number of samples and computing the
         center value. Then use the center value as the Accumulator center value for
         subsequent measurements.
@@ -26,7 +26,7 @@ class Gyro:
         """
         raise NotImplementedError
 
-    def reset(self):
+    def reset(self) -> None:
         """
         Reset the gyro. Resets the gyro to a heading of zero. This can be used if
         there is significant drift in the gyro and it needs to be recalibrated
@@ -34,7 +34,7 @@ class Gyro:
         """
         raise NotImplementedError
 
-    def getAngle(self):
+    def getAngle(self) -> float:
         """
         Return the actual angle in degrees that the robot is currently facing.
         
@@ -44,30 +44,30 @@ class Gyro:
         allows algorithms that wouldn't want to see a discontinuity in the gyro
         output as it sweeps past from 360 to 0 on the second time around.
 
-        The angle is expected to increase as the gyro turns clockwise when 
-        looked at from the top. It needs to follow NED axis conventions in 
+        The angle is expected to increase as the gyro turns clockwise when
+        looked at from the top. It needs to follow NED axis conventions in
         order to work properly with dependent control loops.
-        
+
         :returns: the current heading of the robot in degrees. This heading is based
                   on integration of the returned rate from the gyro.
         """
         raise NotImplementedError
 
-    def getRate(self):
+    def getRate(self) -> float:
         """
         Return the rate of rotation of the gyro
     
         The rate is based on the most recent reading of the gyro analog value
     
-        The rate is expected to be positive as the gyro turns clockwise when 
-        looked at from the top. It needs to follow NED axis conventions in 
+        The rate is expected to be positive as the gyro turns clockwise when
+        looked at from the top. It needs to follow NED axis conventions in
         order to work properly with dependent control loops.
 
         :returns: the current rate in degrees per second
         """
         raise NotImplementedError
 
-    def free(self):
+    def free(self) -> None:
         """
         Free the resources used by the gyro
 

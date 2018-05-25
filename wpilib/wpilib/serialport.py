@@ -19,7 +19,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def _freeSerialPort(port):
+def _freeSerialPort(port: int) -> None:
     hal.closeSerial(port)
 
 
@@ -69,13 +69,13 @@ class SerialPort:
 
     def __init__(
         self,
-        baudRate,
-        port,
-        dataBits=8,
-        parity=Parity.kNone,
-        stopBits=StopBits.kOne,
-        simPort=None,
-    ):
+        baudRate: int,
+        port: Port,
+        dataBits: int = 8,
+        parity: Parity = Parity.kNone,
+        stopBits: StopBits = StopBits.kOne,
+        simPort: object = None,
+    ) -> None:
         """Create an instance of a Serial Port class.
         
         :param baudRate: The baud rate to configure the serial port.
@@ -136,16 +136,16 @@ class SerialPort:
         Resource._add_global_resource(self)
 
     @property
-    def port(self):
+    def port(self) -> Port:
         if not self.__finalizer.alive:
             raise ValueError("Cannot use serial port after free() has been called")
         return self._port
 
-    def free(self):
+    def free(self) -> None:
         """Destructor"""
-        self._finalizer()
+        self.__finalizer()
 
-    def setFlowControl(self, flowControl):
+    def setFlowControl(self, flowControl: FlowControl) -> None:
         """Set the type of flow control to enable on this port.
         
         By default, flow control is disabled.
@@ -154,7 +154,7 @@ class SerialPort:
         """
         hal.setSerialFlowControl(self.port, flowControl)
 
-    def enableTermination(self, terminator=b"\n"):
+    def enableTermination(self, terminator: bytes = b"\n") -> None:
         """Enable termination and specify the termination character.
         
         Termination is currently only implemented for receive. When the the terminator is received,
@@ -165,18 +165,18 @@ class SerialPort:
         """
         hal.enableSerialTermination(self.port, terminator)
 
-    def disableTermination(self):
+    def disableTermination(self) -> None:
         """Disable termination behavior."""
         hal.disableSerialTermination(self.port)
 
-    def getBytesReceived(self):
+    def getBytesReceived(self) -> int:
         """Get the number of bytes currently available to read from the serial port.
         
         :returns: The number of bytes available to read.
         """
         return hal.getSerialBytesReceived(self.port)
 
-    def readString(self, count=None):
+    def readString(self, count: int = None) -> str:
         """Read a string out of the buffer. Reads the entire contents of the buffer
         
         :param count: the number of characters to read into the string
@@ -191,7 +191,7 @@ class SerialPort:
             logger.warning("Error decoding serial port output")
             return ""
 
-    def read(self, count):
+    def read(self, count: int) -> bytes:
         """Read raw bytes out of the buffer.
         
         :param count: The maximum number of bytes to read.
@@ -199,16 +199,15 @@ class SerialPort:
         """
         return hal.readSerial(self.port, count)
 
-    def write(self, buffer):
+    def write(self, buffer: bytes) -> int:
         """Write raw bytes to the serial port.
         
         :param buffer: The buffer of bytes to write.
-        :param count: The maximum number of bytes to write.
         :returns: The number of bytes actually written into the port.
         """
         return hal.writeSerial(self.port, buffer)
 
-    def writeString(self, data):
+    def writeString(self, data: str) -> int:
         """Write an ASCII encoded string to the serial port
         
         :param data: The string to write to the serial port.
@@ -216,7 +215,7 @@ class SerialPort:
         """
         return self.write(data.encode("ascii"))
 
-    def setTimeout(self, timeout):
+    def setTimeout(self, timeout: float) -> None:
         """Configure the timeout of the serial self.port.
         
         This defines the timeout for transactions with the hardware. It will affect reads if less
@@ -226,7 +225,7 @@ class SerialPort:
         """
         hal.setSerialTimeout(self.port, timeout)
 
-    def setReadBufferSize(self, size):
+    def setReadBufferSize(self, size: int) -> None:
         """Specify the size of the input buffer.
         
         Specify the amount of data that can be stored before data from the device is returned to
@@ -239,7 +238,7 @@ class SerialPort:
         """
         hal.setSerialReadBufferSize(self.port, size)
 
-    def setWriteBufferSize(self, size):
+    def setWriteBufferSize(self, size: int) -> None:
         """Specify the size of the output buffer.
         
         Specify the amount of data that can be stored before being transmitted to the device.
@@ -248,7 +247,7 @@ class SerialPort:
         """
         hal.setSerialWriteBufferSize(self.port, size)
 
-    def setWriteBufferMode(self, mode):
+    def setWriteBufferMode(self, mode: WriteBufferMode) -> None:
         """Specify the flushing behavior of the output buffer.
         
         When set to kFlushOnAccess, data is synchronously written to the serial port after each
@@ -258,11 +257,10 @@ class SerialPort:
         is full or when flush() is called.
         
         :param mode: The write buffer mode.
-        :type mode: WriteBufferMode
         """
         hal.setSerialWriteMode(self.port, mode)
 
-    def flush(self):
+    def flush(self) -> None:
         """Force the output buffer to be written to the port.
         
         This is used when :meth:`setWriteBufferMode` is set to kFlushWhenFull to force a flush before the
@@ -270,7 +268,7 @@ class SerialPort:
         """
         hal.flushSerial(self.port)
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the serial port driver to a known state.
         
         Empty the transmit and receive buffers in the device and formatted I/O.

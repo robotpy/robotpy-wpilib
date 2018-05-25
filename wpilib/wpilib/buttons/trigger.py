@@ -6,9 +6,9 @@
 # the project.
 # ----------------------------------------------------------------------------
 
-
-from ..command.command import Command
+from ..command import command
 from ..sendablebase import SendableBase
+from ..sendablebuilder import SendableBuilder
 
 __all__ = ["Trigger"]
 
@@ -42,13 +42,13 @@ class Trigger(SendableBase):
         """
         return self.get() or getattr(self, "sendablePressed", False)
 
-    def whenActive(self, command: Command) -> None:
+    def whenActive(self, command: "command.Command") -> None:
         """Starts the given command whenever the trigger just becomes active.
 
         :param command: the command to start
         """
 
-        def execute():
+        def execute() -> None:
             pressed = self.grab()
 
             if not execute.pressedLast and pressed:
@@ -61,7 +61,7 @@ class Trigger(SendableBase):
 
         Scheduler.getInstance().addButton(execute)
 
-    def whileActive(self, command):
+    def whileActive(self, command: "command.Command") -> None:
         """Constantly starts the given command while the button is held.
 
         :meth:`Command.start` will be called repeatedly while the trigger is
@@ -70,7 +70,7 @@ class Trigger(SendableBase):
         :param command: the command to start
         """
 
-        def execute():
+        def execute() -> None:
             pressed = self.grab()
 
             if pressed:
@@ -85,13 +85,13 @@ class Trigger(SendableBase):
 
         Scheduler.getInstance().addButton(execute)
 
-    def whenInactive(self, command: Command):
+    def whenInactive(self, command: "command.Command") -> None:
         """Starts the command when the trigger becomes inactive.
 
         :param command: the command to start
         """
 
-        def execute():
+        def execute() -> None:
             pressed = self.grab()
 
             if execute.pressedLast and not pressed:
@@ -104,13 +104,13 @@ class Trigger(SendableBase):
 
         Scheduler.getInstance().addButton(execute)
 
-    def toggleWhenActive(self, command: Command):
+    def toggleWhenActive(self, command: "command.Command") -> None:
         """Toggles a command when the trigger becomes active.
 
         :param command: the command to toggle
         """
 
-        def execute():
+        def execute() -> None:
             pressed = self.grab()
 
             if not execute.pressedLast and pressed:
@@ -126,13 +126,13 @@ class Trigger(SendableBase):
 
         Scheduler.getInstance().addButton(execute)
 
-    def cancelWhenActive(self, command: Command) -> None:
+    def cancelWhenActive(self, command: "command.Command") -> None:
         """Cancels a command when the trigger becomes active.
 
         :param command: the command to cancel
         """
 
-        def execute():
+        def execute() -> None:
             pressed = self.grab()
 
             if not execute.pressedLast and pressed:
@@ -151,7 +151,7 @@ class Trigger(SendableBase):
     def _setPressed(self, value: bool) -> None:
         self.sendablePressed = value
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Button")
         builder.setSafeState(self._safeState)
         builder.addBooleanProperty("pressed", self.grab, self._setPressed)

@@ -18,7 +18,7 @@ class Jaguar(PWMSpeedController):
         Texas Instruments / Vex Robotics Jaguar Speed Controller as a PWM device.
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Constructor.
 
         :param channel: The PWM channel that the Jaguar is attached to. 0-9 are on-board, 10-19 are on the MXP port

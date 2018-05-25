@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 from .sendablebase import SendableBase
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["SendableChooser"]
 
@@ -44,7 +45,7 @@ class SendableChooser(SendableBase):
     OPTIONS = "options"
     # A table linking strings to the objects the represent
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Instantiates a SendableChooser.
         """
         super().__init__(addLiveWindow=False)
@@ -52,7 +53,7 @@ class SendableChooser(SendableBase):
         self.tableSelected = None
         self.defaultChoice = ""
 
-    def addObject(self, name, object):
+    def addObject(self, name: str, object: object) -> None:
         """Adds the given object to the list of options. On the
         :class:`.SmartDashboard` on the desktop, the object will appear as the
         given name.
@@ -62,7 +63,7 @@ class SendableChooser(SendableBase):
         """
         self.map[name] = object
 
-    def addDefault(self, name, object):
+    def addDefault(self, name: str, object: object) -> None:
         """Add the given object to the list of options and marks it as the
         default.  Functionally, this is very close to :meth:`.addObject` except
         that it will use this as the default option if none other is
@@ -76,7 +77,7 @@ class SendableChooser(SendableBase):
         self.defaultChoice = name
         self.addObject(name, object)
 
-    def getSelected(self):
+    def getSelected(self) -> object:
         """Returns the object associated with the selected option. If there
         is none selected, it will return the default. If there is none
         selected and no default, then it will return None.
@@ -88,7 +89,7 @@ class SendableChooser(SendableBase):
             selected = self.tableSelected.getString(self.defaultChoice)
         return self.map.get(selected)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("String Chooser")
         builder.addStringProperty(self.DEFAULT, lambda: self.defaultChoice, None)
         builder.addStringArrayProperty(self.OPTIONS, lambda: self.map.keys(), None)

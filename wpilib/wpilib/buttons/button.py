@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-
+from ..command import command
 from .trigger import Trigger
 
 __all__ = ["Button"]
@@ -23,14 +23,14 @@ class Button(Trigger):
     the method names renamed to fit the Button object use.
     """
 
-    def whenPressed(self, command):
+    def whenPressed(self, command: "command.Command") -> None:
         """Starts the given command whenever the button is newly pressed.
 
         :param command: the command to start
         """
         self.whenActive(command)
 
-    def whileHeld(self, command):
+    def whileHeld(self, command: "command.Command") -> None:
         """Constantly starts the given command while the button is held.
 
         :meth:`.Command.start` will be called repeatedly while the button is
@@ -40,14 +40,14 @@ class Button(Trigger):
         """
         self.whileActive(command)
 
-    def whenReleased(self, command):
+    def whenReleased(self, command: "command.Command") -> None:
         """Starts the command when the button is released.
 
         :param command: the command to start
         """
         self.whenInactive(command)
 
-    def toggleWhenPressed(self, command):
+    def toggleWhenPressed(self, command: "command.Command") -> None:
         """Toggles the command whenever the button is pressed (on then off
         then on).
 
@@ -55,7 +55,7 @@ class Button(Trigger):
         """
         self.toggleWhenActive(command)
 
-    def cancelWhenPressed(self, command):
+    def cancelWhenPressed(self, command: "command.Command") -> None:
         """Cancel the command when the button is pressed.
 
         :param command:
