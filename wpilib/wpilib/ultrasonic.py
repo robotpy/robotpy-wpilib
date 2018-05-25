@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
+import enum
 
 import hal
 import threading
@@ -35,7 +36,7 @@ class Ultrasonic(SensorBase):
     .. not_implemented: initialize
     """
 
-    class Unit:
+    class Unit(enum.IntEnum):
         """The units to return when PIDGet is called"""
         kInches = 0
         kMillimeters = 1

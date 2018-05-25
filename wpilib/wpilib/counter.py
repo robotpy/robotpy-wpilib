@@ -6,9 +6,9 @@
 # the project.
 #----------------------------------------------------------------------------
 
+import enum
 import hal
 import weakref
-from enum import IntEnum
 
 from .interfaces.counterbase import CounterBase
 from .interfaces.pidsource import PIDSource
@@ -45,7 +45,7 @@ class Counter(SensorBase):
     .. not_implemented: initCounter
     """
 
-    class Mode(IntEnum):
+    class Mode(enum.IntEnum):
         """Mode determines how and what the counter counts"""
         
         #: two pulse mode

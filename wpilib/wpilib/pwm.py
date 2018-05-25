@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
+import enum
 
 import hal
 import weakref
@@ -52,7 +53,7 @@ class PWM(SendableBase):
       controllers. Due to the shipping firmware on the Jaguar, we can't run the
       update period less than 5.05 ms.
     """
-    class PeriodMultiplier:
+    class PeriodMultiplier(enum.IntEnum):
         """Represents the amount to multiply the minimum servo-pulse pwm
         period by.
         """

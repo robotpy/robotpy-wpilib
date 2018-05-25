@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
+import enum
 
 import hal
 import warnings
@@ -28,7 +29,7 @@ class I2C:
         # Write bytes 'text', and receive 4 bytes in data
         data = i2c.transaction(b'text', 4)
     """
-    class Port:
+    class Port(enum.IntEnum):
         kOnboard = 0
         kMXP = 1
 

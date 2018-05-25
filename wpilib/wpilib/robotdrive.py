@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 
 import hal
 import math
@@ -45,7 +46,7 @@ class RobotDrive(MotorSafety):
     .. not_implemented: setupMotorSafety
     """
 
-    class MotorType:
+    class MotorType(enum.IntEnum):
         """The location of a motor on the robot for the purpose of driving."""
 
         #: Front left

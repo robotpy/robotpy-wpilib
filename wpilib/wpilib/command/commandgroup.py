@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
+import enum
 
 from .command import Command
 

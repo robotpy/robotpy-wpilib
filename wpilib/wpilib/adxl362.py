@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 #----------------------------------------------------------------------------
+import enum
 
 import hal
 
@@ -43,7 +44,7 @@ class ADXL362(SensorBase):
 
     Range = Accelerometer.Range
 
-    class Axes:
+    class Axes(enum.IntEnum):
         kX = 0x00
         kY = 0x02
         kZ = 0x04
