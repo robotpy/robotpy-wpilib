@@ -43,7 +43,7 @@ def generate_sidebar(conf, conf_api):
         elif not do_gen:
             return
         else:
-            args = desc, 'http://robotpy.readthedocs.io/en/%s/%s.html' % (version, link)
+            args = desc, 'https://robotpy.readthedocs.io/en/%s/%s.html' % (version, link)
             
         lines.append('    %s <%s>' % args)
     
@@ -51,7 +51,7 @@ def generate_sidebar(conf, conf_api):
         if project != conf_api:
             if do_gen:
                 args = desc, project, version
-                lines.append('    %s API <http://robotpy.readthedocs.io/projects/%s/en/%s/api.html>' % args)
+                lines.append('    %s API <https://robotpy.readthedocs.io/projects/%s/en/%s/api.html>' % args)
         else:
             lines.append('    %s API <api>' % desc)
     
@@ -74,6 +74,7 @@ def generate_sidebar(conf, conf_api):
     write_api('utilities', 'Utilities')
     write_api('pyfrc', 'PyFRC')
     write_api('ctre', 'CTRE Libraries')
+    write_api('navx', 'NavX Library')
     endl()
     
     toctree('Additional Info')
