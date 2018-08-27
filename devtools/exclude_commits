@@ -12,3 +12,6 @@ f151892db5722aa630c42488e9417e075e22e780 # license update
 # don't add this; e1195e8b9dab602f036da0c801ba0cc505730b80 # another reorg
 eedb8910c36b732f7294886921b8d5d72847041b # wpilibj styleguide beginning newline
 0ef9803363380c58804a0d885a7cc7ea8233a1ac # copyright year bump
+adb6098353b2e4a7f8d2cb8e78d6587b138f8646 # styleguide remove extra newlines
+e548a5f7054ccc221ede1917bb62f512d1fb0fe3 # PMD 6.3.0
+40cc743cc7666e9558f1ac5e7263906e37b8a119 # checkstyle 8.10
