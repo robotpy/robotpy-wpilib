@@ -1,4 +1,4 @@
-# validated: 2017-02-19 DS 12f759860eea edu/wpi/first/wpilibj/I2C.java
+# validated: 2018-08-27 DV f9bece2ffbf7 edu/wpi/first/wpilibj/I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
