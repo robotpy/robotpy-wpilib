@@ -11,24 +11,37 @@ def test_command_init1(wpilib):
     command = wpilib.command.Command()
     assert command.getName() == "Command"
     assert command.timeout == -1
+    assert len(command.requirements) == 0
 
 
 def test_command_init2(wpilib):
     command = wpilib.command.Command("Percival")
     assert command.getName() == "Percival"
     assert command.timeout == -1
+    assert len(command.requirements) == 0
 
 
 def test_command_init3(wpilib):
     command = wpilib.command.Command(timeout=2.0)
     assert command.getName() == "Command"
     assert command.timeout == 2.0
+    assert len(command.requirements) == 0
 
 
 def test_command_init4(wpilib):
     command = wpilib.command.Command(name="Percival", timeout=2.0)
     assert command.getName() == "Percival"
     assert command.timeout == 2.0
+    assert len(command.requirements) == 0
+
+
+def test_command_init5(wpilib):
+    subsystem = wpilib.command.Subsystem()
+    command = wpilib.command.Command(name="Percival", timeout=2.0, requirement=subsystem)
+
+    assert command.getName() == "Percival"
+    assert command.timeout == 2.0
+    assert subsystem in command.requirements
 
 
 def test_command_setTimeout(command):
@@ -290,3 +303,116 @@ def test_command_initSendable_set2(command, sendablebuilder, input, is_running, 
     prop.setter(input)
     assert command.cancel.called == cancel_called
     assert command.start.called == start_called
+
+
+def test_instantcommand_init1(wpilib):
+    command = wpilib.command.InstantCommand()
+
+    assert command.getName() == "InstantCommand"
+    assert command.timeout == -1
+    assert len(command.requirements) == 0
+
+
+def test_instantcommand_init2(wpilib):
+    command = wpilib.command.InstantCommand("Percival")
+
+    assert command.getName() == "Percival"
+    assert command.timeout == -1
+    assert len(command.requirements) == 0
+
+
+def test_instantcommand_init3(wpilib):
+    subsystem = wpilib.command.Subsystem()
+    command = wpilib.command.InstantCommand("Percival", subsystem)
+
+    assert command.getName() == "Percival"
+    assert command.timeout == -1
+    assert subsystem in command.requirements
+
+
+def test_timedcommand_init1(wpilib):
+    command = wpilib.command.TimedCommand("Percival", 3.0)
+
+    assert command.getName() == "Percival"
+    assert command.timeout == 3.0
+    assert len(command.requirements) == 0
+
+
+def test_timedcommand_init2(wpilib):
+    subsystem = wpilib.command.Subsystem()
+    command = wpilib.command.TimedCommand("Percival", 3.0, subsystem)
+
+    assert command.getName() == "Percival"
+    assert command.timeout == 3.0
+    assert subsystem in command.requirements
+
+
+def test_pidcommand_init1(wpilib):
+    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0);
+
+    assert command.getName() == "PIDCommand"
+    assert command.timeout == -1
+    assert command.controller is not None
+    assert command.controller.getP() == pytest.approx(1.0, 0.01)
+    assert command.controller.getI() == pytest.approx(2.0, 0.01)
+    assert command.controller.getD() == pytest.approx(3.0, 0.01)
+    assert command.controller.period == wpilib.PIDController.kDefaultPeriod
+    assert command.controller.getF() == pytest.approx(0, 0.01)
+    assert len(command.requirements) == 0
+
+
+def test_pidcommand_init2(wpilib):
+    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0, 4.0);
+
+    assert command.getName() == "PIDCommand"
+    assert command.timeout == -1
+    assert command.controller is not None
+    assert command.controller.getP() == pytest.approx(1.0, 0.01)
+    assert command.controller.getI() == pytest.approx(2.0, 0.01)
+    assert command.controller.getD() == pytest.approx(3.0, 0.01)
+    assert command.controller.period == pytest.approx(4.0, 0.01)
+    assert command.controller.getF() == pytest.approx(0, 0.01)
+    assert len(command.requirements) == 0
+
+
+def test_pidcommand_init3(wpilib):
+    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0, 4.0, 5.0);
+
+    assert command.getName() == "PIDCommand"
+    assert command.timeout == -1
+    assert command.controller is not None
+    assert command.controller.getP() == pytest.approx(1.0, 0.01)
+    assert command.controller.getI() == pytest.approx(2.0, 0.01)
+    assert command.controller.getD() == pytest.approx(3.0, 0.01)
+    assert command.controller.period == pytest.approx(4.0, 0.01)
+    assert command.controller.getF() == pytest.approx(5.0, 0.01)
+    assert len(command.requirements) == 0
+
+
+def test_pidcommand_init4(wpilib):
+    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0, 4.0, 5.0, "Percival");
+
+    assert command.getName() == "Percival"
+    assert command.timeout == -1
+    assert command.controller is not None
+    assert command.controller.getP() == pytest.approx(1.0, 0.01)
+    assert command.controller.getI() == pytest.approx(2.0, 0.01)
+    assert command.controller.getD() == pytest.approx(3.0, 0.01)
+    assert command.controller.period == pytest.approx(4.0, 0.01)
+    assert command.controller.getF() == pytest.approx(5.0, 0.01)
+    assert len(command.requirements) == 0
+
+
+def test_pidcommand_init5(wpilib):
+    subsystem = wpilib.command.Subsystem()
+    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0, 4.0, 5.0, "Percival", subsystem);
+
+    assert command.getName() == "Percival"
+    assert command.timeout == -1
+    assert command.controller is not None
+    assert command.controller.getP() == pytest.approx(1.0, 0.01)
+    assert command.controller.getI() == pytest.approx(2.0, 0.01)
+    assert command.controller.getD() == pytest.approx(3.0, 0.01)
+    assert command.controller.period == pytest.approx(4.0, 0.01)
+    assert command.controller.getF() == pytest.approx(5.0, 0.01)
+    assert subsystem in command.requirements
