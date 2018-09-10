@@ -1,4 +1,4 @@
-# validated: 2018-08-27 DV f9bece2ffbf7 edu/wpi/first/wpilibj/I2C.java
+# validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/I2C.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -74,8 +74,17 @@ class I2C:
         if not self.__finalizer.alive:
             raise ValueError("Cannot use i2c port after free() has been called")
         return self._port
-    
+
     def free(self):
+        """
+        .. deprecated:: 2019.0.0
+            Use close instead
+        """
+        warnings.warn("use close instead",
+                      DeprecationWarning, stacklevel=2)
+        self.close()
+    
+    def close(self):
         self.__finalizer()
 
     def transaction(self, dataToSend, receiveSize):
