@@ -1,4 +1,4 @@
-# validated: 2017-10-03 EN e1195e8b9dab edu/wpi/first/wpilibj/command/TimedCommand.java
+# validated: 2018-09-09 EN e28295fc7bbe edu/wpi/first/wpilibj/command/TimedCommand.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -13,13 +13,14 @@ __all__ = ["TimedCommand"]
 class TimedCommand(Command):
     '''A command that runs for a set period of time.'''
 
-    def __init__(self, name, timeoutInSeconds):
+    def __init__(self, name, timeoutInSeconds, requirement=None):
         """Instantiates a TimedCommand with the given name and timeout.
 
         :param name: the name of the command
         :param timeoutInSeconds: the time the command takes to run
+        :param requirement: the subsystem that this command requires
         """
-        super().__init__(name, timeoutInSeconds)
+        super().__init__(name, timeoutInSeconds, requirement)
 
 
     def isFinished(self):

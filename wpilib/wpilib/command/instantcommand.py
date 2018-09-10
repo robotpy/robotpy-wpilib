@@ -1,4 +1,4 @@
-# validated: 2017-10-03 EN e1195e8b9dab edu/wpi/first/wpilibj/command/InstantCommand.java
+# validated: 2018-09-09 EN e28295fc7bbe edu/wpi/first/wpilibj/command/InstantCommand.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -15,8 +15,8 @@ class InstantCommand(Command):
     method to carry out desired actions.
     '''
 
-    def __init__(self, name=None):
-        super().__init__(name)
+    def __init__(self, name=None, requirement=None):
+        super().__init__(name, requirement=requirement)
 
 
     def isFinished(self):
