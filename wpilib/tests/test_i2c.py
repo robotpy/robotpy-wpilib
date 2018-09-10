@@ -58,7 +58,7 @@ def test_i2c(wpilib):
     
     # TODO: test verifySensor
     
-    i2c.free()
+    i2c.close()
     assert sim.closed == port
     
     with pytest.raises(ValueError):
