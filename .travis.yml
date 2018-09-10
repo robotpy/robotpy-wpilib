@@ -1,27 +1,19 @@
 language: python
-sudo: false
+sudo: required
+services: docker
 stages:
 - test
 - deploy-pypi
 - deploy-github
 
 env:
-- RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
+- DOCKER=python:3.5-stretch RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1 
+- DOCKER=python:3.6-stretch RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1 
+- DOCKER=python:3.7-stretch RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1 
 
-# reverse order because travis already has latest python installed
-python:
-- "3.6"
-- "3.5"
-
-# command to install dependencies
-install:
-  - pip install -U pip
-  - "pushd wpilib; pip install -r travis-requirements.txt; popd"
-  - pip install -r docs/requirements.txt
-# command to run tests
 script:
-  - wpilib/tests/run_tests.sh
-  - "pushd docs && make html && popd"
+- pwd && ls
+- docker run -v$(pwd)/:/src -e "RUNCOVERAGE=$RUNCOVERAGE" -e "ROBOTPY_NO_DEPS=$ROBOTPY_NO_DEPS" -t $DOCKER bash /src/docker_run.sh
 
 jobs:
   include:
