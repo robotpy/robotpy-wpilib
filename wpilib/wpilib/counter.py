@@ -1,4 +1,4 @@
-# validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Counter.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/Counter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -14,7 +14,7 @@ from .interfaces.counterbase import CounterBase
 from .interfaces.pidsource import PIDSource
 from .analogtriggeroutput import AnalogTriggerOutput
 from .digitalinput import DigitalInput
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Counter"]
@@ -32,7 +32,7 @@ def _freeCounter(counterObj):
     counterObj._counter = None
 
 
-class Counter(SensorBase):
+class Counter(SendableBase):
     """Counts the number of ticks on a :class:`.DigitalInput` channel.
     
     This is a general purpose class for counting repetitive events. It can return
@@ -172,11 +172,11 @@ class Counter(SensorBase):
     @property
     def counter(self):
         if not self.__finalizer.alive:
-            raise ValueError("Cannot use counter after free() has been called")
+            raise ValueError("Cannot use counter after close() has been called")
         return self._counter
 
-    def free(self):
-        super().free()
+    def close(self):
+        super().close()
         self.__finalizer()
 
     def getFPGAIndex(self):
@@ -268,7 +268,7 @@ class Counter(SensorBase):
     def clearUpSource(self):
         """Disable the up counting source to the counter."""
         if self.upSource is not None and self.allocatedUpSource:
-            self.upSource.free()
+            self.upSource.close()
             self.allocatedUpSource = False
         self.upSource = None
         hal.clearCounterUpSource(self._counter)
@@ -358,7 +358,7 @@ class Counter(SensorBase):
         """Disable the down counting source to the counter.
         """
         if self.downSource is not None and self.allocatedDownSource:
-            self.downSource.free()
+            self.downSource.close()
             self.allocatedDownSource = False
         self.downSource = None
 
