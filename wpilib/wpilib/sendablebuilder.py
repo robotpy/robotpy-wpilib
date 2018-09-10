@@ -1,4 +1,4 @@
-# validated: 2018-01-01 EN 40eb6dfc9b83 edu/wpi/first/wpilibj/smartdashboard/SendableBuilderImpl.java
+# validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/smartdashboard/SendableBuilderImpl.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -41,6 +41,8 @@ class SendableBuilder:
         self._updateTable = None
         self.safeState = None
         self.properties = []
+        self.controllableEntry = None
+        self.actuator = False
 
     def setTable(self, table): 
         """
@@ -50,6 +52,7 @@ class SendableBuilder:
         :type table: :class:`networktables.networktable.NetworkTable`
         """
         self.table = table
+        self.controllableEntry = table.getEntry(".controllable")
 
     def getTable(self):
         """
@@ -59,6 +62,14 @@ class SendableBuilder:
         :rtype: :class:`networktables.networktable.NetworkTable`
         """
         return self.table
+
+    def isActuator(self):
+        """
+        Return whether this sendable should be treated as an actuator.
+
+        :returns: True if actuator, false if not.
+        """
+        return self.actuator
 
     def updateTable(self):
         """
@@ -75,11 +86,13 @@ class SendableBuilder:
         """Hook setters for all properties"""
         for prop in self.properties:
             prop.startListener()
+        self.controllableEntry.setBoolean(True)
 
     def stopListeners(self):
         """Unhook setters for all properties"""
         for prop in self.properties:
             prop.stopListener()
+        self.controllableEntry.setBoolean(False)
 
     def startLiveWindowMode(self):
         """
@@ -109,6 +122,16 @@ class SendableBuilder:
         :type type: str
         """
         self.table.getEntry(".type").setString(type)
+
+    def setActuator(self, value):
+        """
+        Set a flag indicating if this sendable should be treated as an actuator.
+        By default this flag is false.
+
+        :param value: true if actuator, false if not
+        """
+        self.table.getEntry(".actuator").setBoolean(value)
+        self.actuator = value
 
     def setSafeState(self, func):
         """
