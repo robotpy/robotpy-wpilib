@@ -80,7 +80,7 @@ def test_spi(wpilib, monkeypatch):
     #assert spi.getAccumulatorAverage() == 0x88
     #assert spi.getAccumulatorOutput() == (0x99, 1)
 
-    spi.free()
+    spi.close()
     assert sim.closed == True
 
     with pytest.raises(ValueError):

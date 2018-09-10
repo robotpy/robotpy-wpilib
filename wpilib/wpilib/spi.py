@@ -1,4 +1,4 @@
-# validated: 2018-01-19 DS a3e5378d1468 edu/wpi/first/wpilibj/SPI.java
+# validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/SPI.java
 
 import ctypes
 import enum
@@ -91,9 +91,9 @@ class SPI:
             raise ValueError("Cannot use SPI after free() has been called")
         return self._port
 
-    def free(self):
+    def close(self):
         if self.accum is not None:
-            self.accum.free()
+            self.accum.close()
             self.accum = None
         self.__finalizer()
 
@@ -137,14 +137,37 @@ class SPI:
         hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
 
+    def setSampleDataOnLeadingEdge(self) -> None:
+        """Configure that the data is stable on the leading edge and the data changes on the trailing edge."""
+        self.dataOnTrailing = False
+        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
+                       self.clockPolarity)
+
+    def setSampleDataOnTrailingEdge(self) -> None:
+        """Configure that the data is stable on the trailing edge and the data changes on the leading edge."""
+        self.dataOnTrailing = True
+        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
+                       self.clockPolarity)
+
     def setSampleDataOnFalling(self) -> None:
-        """Configure that the data is stable on the falling edge and the data changes on the rising edge."""
+        """
+        Configure that the data is stable on the falling edge and the data changes on the rising edge.
+        Note that this gets reversed if setClockActiveLow is set
+
+        .. deprecated:: 2019.0.0
+            Use setSampleDataOnTrailingEdge in most cases
+        """
         self.dataOnTrailing = True
         hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
 
     def setSampleDataOnRising(self) -> None:
-        """Configure that the data is stable on the rising edge and the data changes on the falling edge."""
+        """
+        Configure that the data is stable on the rising edge and the data changes on the falling edge.
+
+        .. deprecated:: 2019.0.0
+            Use setSampleDataOnLeadingEdge in most cases
+        """
         self.dataOnTrailing = False
         hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
                        self.clockPolarity)
@@ -345,7 +368,16 @@ class SPI:
             self._deadband = 0
 
         def free(self):
-            self._notifier.stop()
+            """
+            .. deprecated:: 2019.0.0
+                Use close instead
+            """
+            warnings.warn("use close instead",
+                          DeprecationWarning, stacklevel=2)
+            self.close()
+
+        def close(self):
+            self._notifier.close()
 
         def _update(self):
             with self._mutex:
@@ -437,7 +469,7 @@ class SPI:
     def freeAccumulator(self) -> None:
         """Frees the accumulator."""
         if self.accum:
-            self.accum.free()
+            self.accum.close()
             self.accum = None
         self.freeAuto()
 
