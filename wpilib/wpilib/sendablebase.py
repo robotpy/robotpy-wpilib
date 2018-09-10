@@ -1,4 +1,4 @@
-# validated: 2017-12-07 EN f9bece2ffbf7 edu/wpi/first/wpilibj/SendableBase.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/SendableBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2017 FIRST. All Rights Reserved.                             
 # Open Source Software - may be modified and shared by FRC teams. The code   
@@ -6,6 +6,7 @@
 # the project.                                                               
 #----------------------------------------------------------------------------
 import threading
+import warnings
 from .sendable import Sendable
 from .livewindow import LiveWindow
 from ._impl.utils import match_arglist
@@ -34,6 +35,17 @@ class SendableBase(Sendable):
             LiveWindow.add(self)
 
     def free(self):
+        """
+        Free the resources used by this object.
+
+        .. deprecated:: 2019.0.0
+            Use close instead 
+        """
+        warnings.warn("use close instead",
+                      DeprecationWarning, stacklevel=2)
+        self.close()
+
+    def close(self):
         """
         Free the resources used by this object.
         """
