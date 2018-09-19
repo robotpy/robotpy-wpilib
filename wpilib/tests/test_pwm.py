@@ -33,16 +33,16 @@ def test_pwm_create_limits(wpilib):
     with pytest.raises(IndexError):
         _ = wpilib.PWM(-1)
     with pytest.raises(IndexError):
-        _ = wpilib.PWM(wpilib.SensorBase.kPwmChannels)
+        _ = wpilib.PWM(wpilib.SensorUtil.kPwmChannels)
 
 def test_pwm_create_all(wpilib):
     pwms = []
-    for i in range(wpilib.SensorBase.kPwmChannels):
+    for i in range(wpilib.SensorUtil.kPwmChannels):
         pwms.append(wpilib.PWM(i))
 
-def test_pwm_free(pwm, pwm_data, wpilib):
+def test_pwm_close(pwm, pwm_data, wpilib):
     assert pwm.handle == pwm._handle
-    pwm.free()
+    pwm.close()
     
     with pytest.raises(ValueError):
         _ = pwm.handle
@@ -59,7 +59,7 @@ def test_pwm_enableDeadbandElimination(value, pwm, pwm_data):
     assert pwm_data['elim_deadband'] == value
 
 def test_pwm_setBounds(pwm, hal_data, wpilib):
-    hal_data['pwm_loop_timing'] = wpilib.SensorBase.kSystemClockTicksPerMicrosecond
+    hal_data['pwm_loop_timing'] = wpilib.SensorUtil.kSystemClockTicksPerMicrosecond
     # use victor settings for test
     pwm.setBounds(2.027, 1.525, 1.507, 1.49, 1.026)
     # TODO: someday store/convert the values
@@ -93,7 +93,7 @@ def test_pwm_setRaw(pwm, pwm_data):
     assert pwm_data['raw_value'] == 60
 
 def test_pwm_setRaw_freed(pwm, pwm_data):
-    pwm.free()
+    pwm.close()
     with pytest.raises(ValueError):
         pwm.setRaw(60)
     assert pwm_data['raw_value'] == 0
@@ -103,7 +103,7 @@ def test_pwm_getRaw(pwm, pwm_data):
     assert pwm.getRaw() == 1234
 
 def test_pwm_getRaw_freed(pwm):
-    pwm.free()
+    pwm.close()
     with pytest.raises(ValueError):
         pwm.getRaw()
 
@@ -113,7 +113,7 @@ def test_pwm_setPeriodMultiplier(param, expected, pwm, pwm_data):
     assert pwm_data['period_scale'] == expected
 
 def test_pwm_setPeriodMultiplier_freed(pwm, pwm_data):
-    pwm.free()
+    pwm.close()
     with pytest.raises(ValueError):
         pwm.setPeriodMultiplier(pwm.PeriodMultiplier.k4X)
     assert pwm_data['period_scale'] is None
@@ -128,7 +128,7 @@ def test_pwm_setZeroLatch(pwm, pwm_data):
     assert pwm_data['zero_latch'] == True
 
 def test_pwm_setZeroLatch_freed(pwm, pwm_data):
-    pwm.free()
+    pwm.close()
     with pytest.raises(ValueError):
         pwm.setZeroLatch()
     assert pwm_data['zero_latch'] == False
