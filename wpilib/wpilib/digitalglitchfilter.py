@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/DigitalGlitchFilter.java
+# validated: 2018-09-09 EN d54c2665dc54 edu/wpi/first/wpilibj/DigitalGlitchFilter.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2015-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -11,11 +11,12 @@ import threading
 from .digitalsource import DigitalSource
 from .encoder import Encoder
 from .counter import Counter
-from .sensorbase import SensorBase
+from .sensorutil import SensorUtil
+from .sendablebase import SendableBase
 
 __all__ = ['DigitalGlitchFilter']
 
-class DigitalGlitchFilter(SensorBase):
+class DigitalGlitchFilter(SendableBase):
     '''
     Class to enable glitch filtering on a set of digital inputs.
     This class will manage adding and removing digital inputs from a FPGA glitch
@@ -34,15 +35,15 @@ class DigitalGlitchFilter(SensorBase):
                 if not v:
                     self.channelIndex = i
                     self.filterAllocated[i] = True
-                    hal.report(hal.UsageReporting.kResourceType_DigitalFilter,
+                    hal.report(hal.UsageReporting.kResourceType_DigitalGlitchFilter,
                                self.channelIndex, 0)
                     self.setName("DigitalGlitchFilter", i)
                     break
             else:
                 raise ValueError("No more filters available")
 
-    def free(self):
-        super().free()
+    def close(self):
+        super().close()
         if self.channelIndex >= 0:
             with self.mutex:
                 self.filterAllocated[self.channelIndex] = False
@@ -111,7 +112,7 @@ class DigitalGlitchFilter(SensorBase):
 
         :param nanoseconds: The number of nanoseconds.
         '''
-        fpga_cycles = int(nanoseconds * self.kSystemClockTicksPerMicrosecond / 4 / 1000)
+        fpga_cycles = int(nanoseconds * SensorUtil.kSystemClockTicksPerMicrosecond / 4 / 1000)
         self.setPeriodCycles(fpga_cycles)
 
     def getPeriodCycles(self):
@@ -131,7 +132,7 @@ class DigitalGlitchFilter(SensorBase):
         :returns: The number of nanoseconds.
         '''
         fpga_cycles = self.getPeriodCycles()
-        return fpga_cycles * 1000 / (self.kSystemClockTicksPerMicrosecond / 4)
+        return fpga_cycles * 1000 / (SensorUtil.kSystemClockTicksPerMicrosecond / 4)
 
     def initSendable(self, builder):
         pass
