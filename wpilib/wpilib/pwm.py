@@ -1,4 +1,4 @@
-# validated: 2018-03-04 DV 5175829babeb edu/wpi/first/wpilibj/PWM.java
+# validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/PWM.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -11,7 +11,7 @@ import weakref
 
 from .sendablebase import SendableBase
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sensorutil import SensorUtil
 
 __all__ = ["PWM"]
 
@@ -73,7 +73,7 @@ class PWM(SendableBase):
         :type channel: int
         """
         super().__init__()
-        SensorBase.checkPWMChannel(channel)
+        SensorUtil.checkPWMChannel(channel)
         self.channel = channel
         
         self._handle = hal.initializePWMPort(hal.getPort(channel))
@@ -96,13 +96,13 @@ class PWM(SendableBase):
             raise ValueError("Cannot use channel after free() has been called")
         return self._handle
 
-    def free(self):
+    def close(self):
         """Free the PWM channel.
 
         Free the resource associated with the PWM channel and set the value
         to 0.
         """
-        super().free()
+        super().close()
         if self._handle is None:
             return
         self.__finalizer()
