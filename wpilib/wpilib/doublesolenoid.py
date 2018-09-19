@@ -1,4 +1,4 @@
-# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/DoubleSolenoid.java
+# validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/DoubleSolenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -13,7 +13,7 @@ import weakref
 
 from .livewindow import LiveWindow
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sensorutil import SensorUtil
 from .solenoidbase import SolenoidBase
 
 __all__ = ["DoubleSolenoid"]
@@ -68,7 +68,7 @@ class DoubleSolenoid(SolenoidBase):
             raise ValueError("don't know how to handle %d positional arguments" % len(args))
 
         if moduleNumber is None:
-            moduleNumber = SensorBase.getDefaultSolenoidModule()
+            moduleNumber = SensorUtil.getDefaultSolenoidModule()
         if forwardChannel is None:
             raise ValueError("must specify forward channel")
         if reverseChannel is None:
@@ -77,9 +77,9 @@ class DoubleSolenoid(SolenoidBase):
         super().__init__(moduleNumber)
         
         self.valueEntry = None
-        SensorBase.checkSolenoidModule(moduleNumber)
-        SensorBase.checkSolenoidChannel(forwardChannel)
-        SensorBase.checkSolenoidChannel(reverseChannel)
+        SensorUtil.checkSolenoidModule(moduleNumber)
+        SensorUtil.checkSolenoidChannel(forwardChannel)
+        SensorUtil.checkSolenoidChannel(reverseChannel)
 
         portHandle = hal.getPortWithModule(moduleNumber, forwardChannel)
         self.forwardHandle = hal.initializeSolenoidPort(portHandle)
@@ -110,9 +110,9 @@ class DoubleSolenoid(SolenoidBase):
         self.__finalizer = weakref.finalize(self, _freeSolenoid,
                                             self.forwardHandle, self.reverseHandle)
 
-    def free(self):
+    def close(self):
         """Mark the solenoid as freed."""
-        super().free()
+        super().close()
         self.__finalizer()
         self.forwardHandle = None
         self.reverseHandle = None
@@ -174,6 +174,7 @@ class DoubleSolenoid(SolenoidBase):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Double Solenoid")
+        builder.setActuator(True)
         builder.setSafeState(lambda: self.set(self.Value.kOff))
         builder.addStringProperty("Value", lambda: self.get().name[1:], self._valueChanged)
 

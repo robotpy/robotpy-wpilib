@@ -46,7 +46,7 @@ def test_doublesolenoid_set(wpilib, hal, hal_data):
     assert hal_data['solenoid'][0]['value'] == False
     assert hal_data['solenoid'][1]['value'] == True
     
-    ds.free()
+    ds.close()
     
     ds = wpilib.DoubleSolenoid(0, 1)
 
@@ -86,7 +86,7 @@ def test_doublesolenoid_initSendable_setter(doublesolenoid, sendablebuilder, inp
 
 def test_solenoid(wpilib, hal, hal_data):
 
-    for i in range(wpilib.SensorBase.kSolenoidChannels):
+    for i in range(wpilib.SensorUtil.kSolenoidChannels):
         
         # ensure that it can be freed and allocated again
         for _ in range(2):        
@@ -105,7 +105,7 @@ def test_solenoid(wpilib, hal, hal_data):
                 hal_data['solenoid'][i]['value'] = nv 
                 assert s.get() == nv
                 
-            s.free()
+            s.close()
             
             with pytest.raises(ValueError):
                 s.set(True)
@@ -152,6 +152,7 @@ def test_solenoid_initSendable_update(solenoid, sendablebuilder, hal_data):
     solenoid.initSendable(sendablebuilder)
     prop = sendablebuilder.properties[0]
 
+    assert sendablebuilder.isActuator()
     assert prop.key == "Value"
     hal_data['solenoid'][4]['value'] = True
     sendablebuilder.updateTable()
