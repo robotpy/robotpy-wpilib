@@ -1,4 +1,4 @@
-# validated: 2017-12-09 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Ultrasonic.java
+# validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/Ultrasonic.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -14,12 +14,12 @@ from .counter import Counter
 from .interfaces import PIDSource
 from .livewindow import LiveWindow
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 from .timer import Timer
 
 __all__ = ["Ultrasonic"]
 
-class Ultrasonic(SensorBase):
+class Ultrasonic(SendableBase):
     """Ultrasonic rangefinder control
     
     The Ultrasonic rangefinder measures
@@ -149,7 +149,7 @@ class Ultrasonic(SensorBase):
                       Ultrasonic.instances)
         LiveWindow.addSensor("Ultrasonic", self.echoChannel.getChannel(), self)
 
-    def free(self):
+    def close(self):
         isAutomatic = Ultrasonic.isAutomaticMode()
         self.setAutomaticMode(False)
             
@@ -162,18 +162,18 @@ class Ultrasonic(SensorBase):
             self.setAutomaticMode(True)
         
         if self.pingAllocated and self.pingChannel:
-            self.pingChannel.free()
+            self.pingChannel.close()
             self.pingChannel = None
             
         if self.echoAllocated and self.echoChannel:
-            self.echoChannel.free()
+            self.echoChannel.close()
             self.echoChannel = None
         
         if self.counter != None:
-            self.counter.free()
+            self.counter.close()
             self.counter = None
         
-        super().free()
+        super().close()
 
     def setAutomaticMode(self, enabling):
         """Turn Automatic mode on/off. When in Automatic mode, all sensors
