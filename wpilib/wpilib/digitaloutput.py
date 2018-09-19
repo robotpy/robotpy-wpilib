@@ -1,4 +1,4 @@
-# validated: 2017-12-23 EN f9bece2ffbf7 edu/wpi/first/wpilibj/DigitalOutput.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/DigitalOutput.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -12,14 +12,14 @@ import weakref
 import hal
 
 from .digitalsource import DigitalSource
-from .sensorbase import SensorBase
+from .sensorutil import SensorUtil
 from .sendablebase import SendableBase
 
 __all__ = ["DigitalOutput"]
 
 def _freePWMGenerator(pwmGenerator):
     # Disable the output by routing to a dead bit.
-    hal.setDigitalPWMOutputChannel(pwmGenerator, SensorBase.kDigitalChannels)
+    hal.setDigitalPWMOutputChannel(pwmGenerator, SensorUtil.kDigitalChannels)
     hal.freeDigitalPWM(pwmGenerator)
 
 class DigitalOutput(SendableBase):
@@ -41,7 +41,7 @@ class DigitalOutput(SendableBase):
         self._pwmGenerator = None
         self._pwmGenerator_finalizer = None
 
-        SensorBase.checkDigitalChannel(channel)
+        SensorUtil.checkDigitalChannel(channel)
         self.channel = channel
 
         self.handle = hal.initializeDIOPort(hal.getPort(channel), False)
@@ -58,9 +58,9 @@ class DigitalOutput(SendableBase):
             return None
         return self._pwmGenerator
 
-    def free(self):
+    def close(self):
         """Free the resources associated with a digital output."""
-        super().free()
+        super().close()
         # finalize the pwm only if we have allocated it
         if self.pwmGenerator is not None:
             self._pwmGenerator_finalizer()
@@ -151,7 +151,7 @@ class DigitalOutput(SendableBase):
         """
         if self.pwmGenerator is not self.invalidPwmGenerator:
             return
-        hal.setDigitalPWMOutputChannel(self._pwmGenerator, SensorBase.kDigitalChannels)
+        hal.setDigitalPWMOutputChannel(self._pwmGenerator, SensorUtil.kDigitalChannels)
         hal.freeDigitalPWM(self._pwmGenerator)
         self._pwmGenerator_finalizer()
 
