@@ -1,4 +1,4 @@
-# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Relay.java
+# validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/Relay.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -13,7 +13,7 @@ from enum import IntEnum
 from .livewindow import LiveWindow
 from .motorsafety import MotorSafety
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sensorutil import SensorUtil
 from .sendablebase import SendableBase
 
 __all__ = ["Relay"]
@@ -42,7 +42,7 @@ class Relay(SendableBase, MotorSafety):
     .. not_implemented: initRelay
     """
 
-    relayChannels = Resource(SensorBase.kRelayChannels * 2)
+    relayChannels = Resource(SensorUtil.kRelayChannels * 2)
 
     class Value(IntEnum):
         """The state to drive a Relay to."""
@@ -104,7 +104,7 @@ class Relay(SendableBase, MotorSafety):
         MotorSafety.__init__(self)
 
     def _initRelay(self):
-        SensorBase.checkRelayChannel(self.channel)
+        SensorUtil.checkRelayChannel(self.channel)
         portHandle = hal.getPort(self.channel)
 
         try:
@@ -131,17 +131,17 @@ class Relay(SendableBase, MotorSafety):
     @property
     def forwardHandle(self):
         if not self.__finalizer.alive:
-            raise ValueError("Cannot use relay after free() has been called")
+            raise ValueError("Cannot use relay after close() has been called")
         return self._forwardHandle
 
     @property
     def reverseHandle(self):
         if not self.__finalizer.alive:
-            raise ValueError("Cannot use relay after free() has been called")
+            raise ValueError("Cannot use relay after close() has been called")
         return self._reverseHandle
 
-    def free(self):
-        super().free()
+    def close(self):
+        super().close()
         self.freeRelay()
 
     def freeRelay(self):
@@ -270,6 +270,7 @@ class Relay(SendableBase, MotorSafety):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Relay")
+        builder.setActuator(True)
         builder.setSafeState(lambda: self.set(self.Value.kOff))
         builder.addStringProperty("Value", 
             lambda: self.get().getPrettyValue(), 

@@ -71,7 +71,7 @@ def test_relay_create(direction, hal, hal_data, wpilib, relay_data):
 
 def test_relay_create_all(wpilib):
     relays = []
-    for i in range(wpilib.SensorBase.kRelayChannels):
+    for i in range(wpilib.SensorUtil.kRelayChannels):
         relays.append(wpilib.Relay(i))
 
 
@@ -81,12 +81,12 @@ def test_relay_create_error(hal, wpilib):
         _ = wpilib.Relay(3)
 
 
-def test_relay_free(relay, hal, wpilib):
+def test_relay_close(relay, hal, wpilib):
     #wasport = relay._port
     assert relay.forwardHandle == relay._forwardHandle
     assert relay.reverseHandle == relay._reverseHandle
 
-    relay.free()
+    relay.close()
     
     with pytest.raises(ValueError):
         _ = relay.forwardHandle
@@ -135,7 +135,7 @@ def test_relay_set_badvalue(relay):
 
 
 def test_relay_set_freed(relay):
-    relay.free()
+    relay.close()
     #hal.reset_mock()
     with pytest.raises(ValueError):
         relay.set(relay.Value.kOff)
@@ -170,7 +170,7 @@ def test_relay_get(dir, value, fwd, rev, wpilib, relay_data):
 
 
 def test_relay_get_freed(relay, hal):
-    relay.free()
+    relay.close()
     #hal.reset_mock()
     with pytest.raises(ValueError):
         relay.get()
@@ -328,6 +328,8 @@ def test_relay_initSendable_set(wpilib, relay_data, sendablebuilder, dir, value,
 def test_relay_initSendable_safe(relay, sendablebuilder):
     relay.set = MagicMock()
     relay.initSendable(sendablebuilder)
+
+    assert sendablebuilder.isActuator()
 
     sendablebuilder.startLiveWindowMode()
 
