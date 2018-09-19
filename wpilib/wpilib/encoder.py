@@ -1,4 +1,4 @@
-# validated: 2018-01-01 EN c647a801ad80 edu/wpi/first/wpilibj/Encoder.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/Encoder.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -17,7 +17,7 @@ from .counter import Counter
 from .digitalinput import DigitalInput
 from .livewindow import LiveWindow
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 from ._impl.utils import match_arglist, HasAttribute
 
@@ -26,7 +26,7 @@ __all__ = ["Encoder"]
 def _freeEncoder(encoder):
     hal.freeEncoder(encoder)
 
-class Encoder(SensorBase):
+class Encoder(SendableBase):
     """Class to read quadrature encoders.
     
     Quadrature encoders are devices that count
@@ -231,17 +231,17 @@ class Encoder(SensorBase):
         """
         return hal.getEncoderEncodingScale(self.encoder)
 
-    def free(self):
+    def close(self):
         """Free the resources used by this object."""
-        super().free()
+        super().close()
         if self.aSource is not None and self.allocatedA:
-            self.aSource.free()
+            self.aSource.close()
             self.allocatedA = False
         if self.bSource is not None and self.allocatedB:
-            self.bSource.free()
+            self.bSource.close()
             self.allocatedB = False
         if self.indexSource is not None and self.allocatedIndex:
-            self.indexSource.free()
+            self.indexSource.close()
             self.allocatedIndex = False
         self.aSource = None
         self.bSource = None
