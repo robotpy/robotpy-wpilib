@@ -1,4 +1,4 @@
-# validated: 2017-12-24 DS f9bece2ffbf7 edu/wpi/first/wpilibj/GyroBase.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/GyroBase.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,11 +8,11 @@
 
 
 from .interfaces import PIDSource
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ['GyroBase']
 
-class GyroBase(SensorBase):
+class GyroBase(SendableBase):
     '''
         GyroBase is the common base class for Gyro implementations such as
         :class:`.AnalogGyro`.
