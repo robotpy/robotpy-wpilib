@@ -10,7 +10,6 @@ import hal
 import weakref
 
 from .resource import Resource
-from .sensorbase import SensorBase
 from .interruptablesensorbase import InterruptableSensorBase
 
 __all__ = ["DigitalSource"]
