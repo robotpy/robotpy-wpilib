@@ -153,3 +153,9 @@ def robotstate_impl():
     impl_mock.isDisabled.return_value = False
     with patch("wpilib.robotstate.RobotState.impl", new=impl_mock) as impl:
         yield impl
+
+
+@pytest.fixture(scope='function')
+def SimTimerTask(wpilib):
+    with patch('wpilib.pidcontroller.TimerTask', new=MagicMock()) as timertask:
+        yield timertask
