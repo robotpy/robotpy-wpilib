@@ -1,8 +1,8 @@
-# validated: 2017-12-06 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Compressor.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/Compressor.java
 import hal
 from networktables import NetworkTables
 
-from .sensorbase import SensorBase
+from .sensorutil import SensorUtil
 from .sendablebase import SendableBase
 
 __all__ = ["Compressor"]
@@ -29,7 +29,7 @@ class Compressor(SendableBase):
         super().__init__()
         self.table = None
         if module is None:
-            module = SensorBase.getDefaultSolenoidModule()
+            module = SensorUtil.getDefaultSolenoidModule()
         self.compressorHandle = hal.initializeCompressor(module)
         hal.report(hal.UsageReporting.kResourceType_Compressor, module)
         self.setName("Compressor", module)
