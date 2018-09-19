@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/BuiltInAccelerometer.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/BuiltInAccelerometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -8,11 +8,11 @@
 import hal
 
 from .interfaces import Accelerometer
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["BuiltInAccelerometer"]
 
-class BuiltInAccelerometer(SensorBase):
+class BuiltInAccelerometer(SendableBase):
     """Built-in accelerometer device
 
     This class allows access to the roboRIO's internal accelerometer.
