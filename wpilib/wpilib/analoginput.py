@@ -1,4 +1,4 @@
-# validated: 2017-12-22 EN f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogInput.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/AnalogInput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -13,7 +13,8 @@ from .accumulatorresult import AccumulatorResult
 from .interfaces import PIDSource
 from .livewindow import LiveWindow
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
+from .sensorutil import SensorUtil
 from .timer import Timer
 
 __all__ = ["AnalogInput"]
@@ -21,7 +22,7 @@ __all__ = ["AnalogInput"]
 def _freeAnalogInput(port):
     hal.freeAnalogInputPort(port)
 
-class AnalogInput(SensorBase):
+class AnalogInput(SendableBase):
     """Analog input
 
     Each analog channel is read from hardware as a 12-bit number representing
@@ -39,7 +40,7 @@ class AnalogInput(SensorBase):
 
     kAccumulatorSlot = 1
     kAccumulatorChannels = (0, 1)
-    channels = Resource(SensorBase.kAnalogInputChannels)
+    channels = Resource(SensorUtil.kAnalogInputChannels)
     
     PIDSourceType = PIDSource.PIDSourceType
 
@@ -50,7 +51,7 @@ class AnalogInput(SensorBase):
         """
         
         super().__init__()
-        SensorBase.checkAnalogInputChannel(channel)
+        hal.checkAnalogInputChannel(channel)
         
         self.channel = channel
         self.accumulatorOffset = 0
@@ -71,9 +72,9 @@ class AnalogInput(SensorBase):
             return None
         return self._port
 
-    def free(self):
+    def close(self):
         """ Channel destructor """
-        super().free()
+        super().close()
         if self.channel is None:
             return
         AnalogInput.channels.free(self.channel)
@@ -328,3 +329,6 @@ class AnalogInput(SensorBase):
     def initSendable(self, builder):
         builder.setSmartDashboardType("Analog Input")
         builder.addDoubleProperty("Value", self.getAverageVoltage, None)
+
+    def getSimObject(self):
+        return AnalogInSim(self.channel)
