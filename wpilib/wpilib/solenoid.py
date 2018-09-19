@@ -1,4 +1,4 @@
-# validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Solenoid.java
+# validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/Solenoid.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -12,7 +12,7 @@ import warnings
 
 from .livewindow import LiveWindow
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sensorutil import SensorUtil
 from .solenoidbase import SolenoidBase
 
 __all__ = ["Solenoid"]
@@ -62,15 +62,15 @@ class Solenoid(SolenoidBase):
             raise ValueError("don't know how to handle %d positional arguments" % len(args))
 
         if moduleNumber is None:
-            moduleNumber = SensorBase.getDefaultSolenoidModule()
+            moduleNumber = SensorUtil.getDefaultSolenoidModule()
         if channel is None:
             raise ValueError("must specify channel")
 
         super().__init__(moduleNumber)
         self.channel = channel
 
-        SensorBase.checkSolenoidModule(moduleNumber)
-        SensorBase.checkSolenoidChannel(channel)
+        SensorUtil.checkSolenoidModule(moduleNumber)
+        SensorUtil.checkSolenoidChannel(channel)
         
         portHandle = hal.getPortWithModule(moduleNumber, channel)
         self._solenoidHandle = hal.initializeSolenoidPort(portHandle)
@@ -87,12 +87,12 @@ class Solenoid(SolenoidBase):
     @property
     def solenoidHandle(self):
         if not self.__finalizer.alive:
-            raise ValueError("Cannot use channel after free() has been called")
+            raise ValueError("Cannot use channel after close() has been called")
         return self._solenoidHandle
 
-    def free(self):
-        """Mark the solenoid as freed."""
-        super().free()
+    def close(self):
+        """Mark the solenoid as close."""
+        super().close()
 
         self.__finalizer()
         self._solenoidHandle = None
@@ -149,5 +149,6 @@ class Solenoid(SolenoidBase):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Solenoid")
+        builder.setActuator(True)
         builder.setSafeState(lambda: self.set(False))
         builder.addBooleanProperty("Value", self.get, self.set)
