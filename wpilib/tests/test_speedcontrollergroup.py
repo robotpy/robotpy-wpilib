@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 def test_init_speedgroupcontroller(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorBase.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
 
     m1 = MagicMock()
     m2 = MagicMock()
