@@ -34,7 +34,7 @@ def test_ultrasonic_auto(ultrasonic, hal_data):
     hal_data['counter'][0]['count'] = 5
     assert ultrasonic.isRangeValid() == True
     
-    ultrasonic.free()
+    ultrasonic.close()
     
 
 def test_ultrasonic_ping(ultrasonic, wpilib, hal_data):
@@ -46,7 +46,7 @@ def test_ultrasonic_ping(ultrasonic, wpilib, hal_data):
         ]['count'] = 5
     assert ultrasonic.isRangeValid() == True
     
-    ultrasonic.free()
+    ultrasonic.close()
 
 
 def test_ultrasonic_getrange(ultrasonic, hal_data):
@@ -90,6 +90,7 @@ def test_ultrasonic_initSendable1(ultrasonic, sendablebuilder, hal_data):
     ultrasonic.initSendable(sendablebuilder)
 
     assert sendablebuilder.getTable().getString(".type", None) == "Ultrasonic"
+    assert not sendablebuilder.isActuator()
 
     ultrasonic.ping()
     hal_data['counter'][0]['count'] = 2
