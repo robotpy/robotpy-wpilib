@@ -1,4 +1,4 @@
-# validated: 2017-12-26 EN 8b7aa61091df edu/wpi/first/wpilibj/AnalogPotentiometer.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/AnalogPotentiometer.java
 #----------------------------------------------------------------------------*/
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 # Open Source Software - may be modified and shared by FRC teams. The code   */
@@ -10,11 +10,11 @@ import hal
 
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["AnalogPotentiometer"]
 
-class AnalogPotentiometer(SensorBase):
+class AnalogPotentiometer(SendableBase):
     """Reads a potentiometer via an :class:`.AnalogInput`
     
     Analog potentiometers read
@@ -93,9 +93,9 @@ class AnalogPotentiometer(SensorBase):
         if self.analog_input is not None:
             self.analog_input.initSendable(builder)
 
-    def free(self):
-        super().free()
+    def close(self):
+        super().close()
         if self.init_analog_input:
-            self.analog_input.free()
+            self.analog_input.close()
             del self.analog_input
             self.init_analog_input = False
