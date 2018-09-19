@@ -33,7 +33,7 @@ def test_encoder_channel_channel_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == False
-    x.free()
+    x.close()
     assert encoder_data["initialized"] == False
 
 
@@ -42,7 +42,7 @@ def test_encoder_channel_channel_reverse_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == True
-    x.free()
+    x.close()
     assert encoder_data["initialized"] == False
 
 
@@ -51,7 +51,7 @@ def test_encoder_channel_channel_reverse_type_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == True
-    x.free()
+    x.close()
     assert encoder_data["initialized"] == False
 
 
@@ -60,7 +60,7 @@ def test_encoder_channel_channel_channel_reverse_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == True
-    x.free()
+    x.close()
     assert encoder_data["initialized"] == False
 
 
@@ -69,7 +69,7 @@ def test_encoder_channel_channel_channel_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == False
-    x.free()
+    x.close()
     assert encoder_data["initialized"] == False
 
 
@@ -80,9 +80,9 @@ def test_encoder_source_source_reverse_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == True
-    x.free()
-    s1.free()
-    s2.free()
+    x.close()
+    s1.close()
+    s2.close()
     assert encoder_data["initialized"] == False
 
 
@@ -93,9 +93,9 @@ def test_encoder_source_source_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == False
-    x.free()
-    s1.free()
-    s2.free()
+    x.close()
+    s1.close()
+    s2.close()
     assert encoder_data["initialized"] == False
 
 
@@ -106,9 +106,9 @@ def test_encoder_source_source_reverse_type_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == True
-    x.free()
-    s1.free()
-    s2.free()
+    x.close()
+    s1.close()
+    s2.close()
     assert encoder_data["initialized"] == False
 
 
@@ -120,10 +120,10 @@ def test_encoder_source_source_source_reverse_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == True
-    x.free()
-    s1.free()
-    s2.free()
-    s3.free()
+    x.close()
+    s1.close()
+    s2.close()
+    s3.close()
     assert encoder_data["initialized"] == False
 
 
@@ -135,10 +135,10 @@ def test_encoder_source_source_source_init(wpilib, encoder_data):
     assert encoder_data["initialized"] == True
     check_config(encoder_data["config"], 1, False, 2, False)
     assert encoder_data['reverse_direction'] == False
-    x.free()
-    s1.free()
-    s2.free()
-    s3.free()
+    x.close()
+    s1.close()
+    s2.close()
+    s3.close()
     assert encoder_data["initialized"] == False
 
 
