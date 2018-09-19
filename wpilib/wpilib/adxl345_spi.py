@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/ADXL345_SPI.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/ADXL345_SPI.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -10,11 +10,11 @@ import hal
 
 from .interfaces import Accelerometer
 from .spi import SPI
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["ADXL345_SPI"]
 
-class ADXL345_SPI(SensorBase):
+class ADXL345_SPI(SendableBase):
     """
         ADXL345 accelerometer device via spi
         
@@ -59,7 +59,7 @@ class ADXL345_SPI(SensorBase):
         self.spi = SPI(port)
         self.spi.setClockRate(500000)
         self.spi.setMSBFirst()
-        self.spi.setSampleDataOnFalling()
+        self.spi.setSampleDataOnTrailingEdge()
         self.spi.setClockActiveLow()
         self.spi.setChipSelectActiveHigh()
 
@@ -73,9 +73,9 @@ class ADXL345_SPI(SensorBase):
 
         self.setName("ADXL345_SPI", port)
 
-    def free(self):
-        self.spi.free()
-        super().free()
+    def close(self):
+        self.spi.close()
+        super().close()
 
     # Accelerometer interface
 

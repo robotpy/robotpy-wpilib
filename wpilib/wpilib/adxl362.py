@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/ADXL362.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/ADXL362.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -11,11 +11,11 @@ import hal
 from .driverstation import DriverStation
 from .interfaces import Accelerometer
 from .spi import SPI
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["ADXL362"]
 
-class ADXL362(SensorBase):
+class ADXL362(SendableBase):
     """
         ADXL362 SPI Accelerometer.
     
@@ -62,7 +62,7 @@ class ADXL362(SensorBase):
         self.spi = SPI(port)
         self.spi.setClockRate(3000000)
         self.spi.setMSBFirst()
-        self.spi.setSampleDataOnFalling()
+        self.spi.setSampleDataOnTrailingEdge()
         self.spi.setClockActiveLow()
         self.spi.setChipSelectActiveLow()
 
@@ -71,7 +71,7 @@ class ADXL362(SensorBase):
         data = self.spi.transaction(data)
         if data[2] != 0xF2:
             DriverStation.reportError("could not find ADXL362 on SPI port " + port, False)
-            self.spi.free()
+            self.spi.close()
             self.spi = None
             return
     
@@ -86,11 +86,11 @@ class ADXL362(SensorBase):
 
         self.setName("ADXL362", port)
 
-    def free(self):
+    def close(self):
         if self.spi:
-            self.spi.free()
+            self.spi.close()
             self.spi = None
-        super().free()
+        super().close()
 
     # Accelerometer interface
 
