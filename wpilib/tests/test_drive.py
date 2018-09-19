@@ -5,7 +5,7 @@ import math
 
 def test_init_diffdrive(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorBase.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
 
     left = MagicMock()
     right = MagicMock()
@@ -23,7 +23,7 @@ def test_init_diffdrive(wpimock, halmock):
 
 def test_init_killough(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorBase.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
 
     left = MagicMock()
     right = MagicMock()
@@ -46,7 +46,7 @@ def test_init_killough(wpimock, halmock):
 
 def test_init_mecanum(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorBase.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
 
     fleft = MagicMock()
     fright = MagicMock()

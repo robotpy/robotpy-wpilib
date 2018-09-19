@@ -7,7 +7,7 @@ import math
          (True, None), (True, ""), (True, "Victor")])
 def test_init_two(kw, mc, wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorBase.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
 
     if mc is None:
         left = MagicMock()
@@ -57,7 +57,7 @@ def test_init_two(kw, mc, wpimock, halmock):
          (True, None), (True, ""), (True, "Victor")])
 def test_init_four(kw, mc, wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorBase.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
 
     if mc is None:
         fleft = MagicMock()
