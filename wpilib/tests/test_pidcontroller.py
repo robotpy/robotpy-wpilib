@@ -12,12 +12,6 @@ class str_like:
 
 
 @pytest.fixture(scope='function')
-def SimTimerTask(wpilib):
-    with patch('wpilib.pidcontroller.TimerTask', new=MagicMock()) as timertask:
-        yield timertask
-
-
-@pytest.fixture(scope='function')
 def sim_print():
     with patch("wpilib._impl.utils._print", new=MagicMock()) as sim_print:
         yield sim_print
