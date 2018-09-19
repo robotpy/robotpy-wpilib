@@ -18,11 +18,11 @@ def test_digitalinput_init(wpilib, di_data):
     assert di_data['is_input']
 
 
-def test_digitalinput_free(digitalinput, wpilib):
+def test_digitalinput_close(digitalinput, wpilib):
     with pytest.raises(hal.exceptions.HALError):
         di2 = wpilib.DigitalInput(2)
 
-    digitalinput.free()
+    digitalinput.close()
 
     di2 = wpilib.DigitalInput(2)
 

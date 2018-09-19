@@ -1,4 +1,4 @@
-# validated: 2017-12-23 EN f9bece2ffbf7 edu/wpi/first/wpilibj/DigitalInput.java
+# validated: 2018-09-18 EN ecfe95383cdf edu/wpi/first/wpilibj/DigitalInput.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -9,6 +9,7 @@
 import hal
 
 from .digitalsource import DigitalSource
+from .sensorutil import SensorUtil
 
 __all__ = ["DigitalInput"]
 
@@ -32,7 +33,7 @@ class DigitalInput(DigitalSource):
         """
 
         super().__init__()
-        self.checkDigitalChannel(channel)
+        SensorUtil.checkDigitalChannel(channel)
         self.channel = channel
 
         self.handle = hal.initializeDIOPort(hal.getPort(channel), True)
@@ -41,12 +42,13 @@ class DigitalInput(DigitalSource):
                    channel)
         self.setName("DigitalInput", channel)
 
-    def free(self):
-        super().free()
+    def close(self):
+        super().close()
         if self.interrupt:
             self.cancelInterrupts()
 
         hal.freeDIOPort(self.handle)
+        self.handle = 0
 
     def get(self):
         """Get the value from a digital input channel. Retrieve the value of
