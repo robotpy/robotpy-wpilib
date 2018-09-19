@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogOutput.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/AnalogOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -10,17 +10,18 @@ import hal
 import weakref
 
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
+from .sensorutil import SensorUtil
 
 __all__ = ["AnalogOutput"]
 
 def _freeAnalogOutput(port):
     hal.freeAnalogOutputPort(port)
 
-class AnalogOutput(SensorBase):
+class AnalogOutput(SendableBase):
     """Analog output"""
 
-    channels = Resource(SensorBase.kAnalogOutputChannels)
+    channels = Resource(SensorUtil.kAnalogOutputChannels)
 
     def __init__(self, channel):
         """Construct an analog output on a specified MXP channel.
@@ -28,7 +29,7 @@ class AnalogOutput(SensorBase):
         :param channel: The channel number to represent.
         """
         super().__init__()
-        SensorBase.checkAnalogOutputChannel(channel)
+        SensorUtil.checkAnalogOutputChannel(channel)
         
         self.channel = channel
 
@@ -47,10 +48,10 @@ class AnalogOutput(SensorBase):
             return None
         return self._port
     
-    def free(self):
+    def close(self):
         """Channel destructor.
         """
-        super().free()
+        super().close()
         if self.channel is None:
             return
         AnalogOutput.channels.free(self.channel)
@@ -72,3 +73,5 @@ class AnalogOutput(SensorBase):
         builder.setSmartDashboardType("Analog Output")
         builder.addDoubleProperty("Value", self.getVoltage, self.setVoltage)
 
+    def getSimObject(self):
+        return AnalogOutputSim(self.channel)

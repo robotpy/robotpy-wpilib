@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogTrigger.java
+# validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/AnalogTrigger.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -12,7 +12,7 @@ import hal
 from .analoginput import AnalogInput
 from .analogtriggeroutput import AnalogTriggerOutput
 from .resource import Resource
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["AnalogTrigger"]
 
@@ -21,7 +21,7 @@ def _freeAnalogTrigger(port):
     hal.cleanAnalogTrigger(port)
 
 
-class AnalogTrigger(SensorBase):
+class AnalogTrigger(SendableBase):
     """
         Converts an analog signal into a digital signal
         
@@ -69,15 +69,15 @@ class AnalogTrigger(SensorBase):
     @property
     def port(self):
         if not self.__finalizer.alive:
-            raise ValueError("Cannot use AnalogTrigger after free() has been called")
+            raise ValueError("Cannot use AnalogTrigger after close() has been called")
         return self._port
 
-    def free(self):
+    def close(self):
         """Release the resources used by this object"""
-        super().free()
+        super().close()
         self.__finalizer()
         if self.analogInput:
-            self.analogInput.free()
+            self.analogInput.close()
 
     def setLimitsRaw(self, lower, upper):
         """Set the upper and lower limits of the analog trigger. The limits are
