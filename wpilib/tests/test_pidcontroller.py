@@ -18,7 +18,7 @@ def sim_print():
 
 
 @pytest.fixture(scope="function")
-def pid(wpilib, SimTimerTask):
+def pid(wpilib, MockNotifier):
     return _get_pid(wpilib)
 
 
@@ -35,7 +35,7 @@ def pid_table(networktables):
     return networktables.NetworkTables.getTable("pidtable")
 
 
-def test_pidcontroller_init_args1(wpilib, SimTimerTask):
+def test_pidcontroller_init_args1(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, 4.0, source, output, 5.0)
@@ -47,7 +47,7 @@ def test_pidcontroller_init_args1(wpilib, SimTimerTask):
     assert pid.period == pytest.approx(5.0, 0.01)
 
 
-def test_pidcontroller_init_args2(wpilib, SimTimerTask):
+def test_pidcontroller_init_args2(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, source, output, 5.0)
@@ -59,7 +59,7 @@ def test_pidcontroller_init_args2(wpilib, SimTimerTask):
     assert pid.period == pytest.approx(5.0, 0.01)
 
 
-def test_pidcontroller_init_args3(wpilib, SimTimerTask):
+def test_pidcontroller_init_args3(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, source, output)
@@ -71,7 +71,7 @@ def test_pidcontroller_init_args3(wpilib, SimTimerTask):
     assert pid.period == pytest.approx(0.05, 0.01)
 
 
-def test_pidcontroller_init_args4(wpilib, SimTimerTask):
+def test_pidcontroller_init_args4(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, 4.0, source, output)
@@ -83,7 +83,7 @@ def test_pidcontroller_init_args4(wpilib, SimTimerTask):
     assert pid.period == pytest.approx(0.05, 0.01)
 
 
-def test_pidcontroller_init_args4(wpilib, SimTimerTask):
+def test_pidcontroller_init_args4(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(
@@ -97,7 +97,7 @@ def test_pidcontroller_init_args4(wpilib, SimTimerTask):
     assert pid.period == pytest.approx(5.0, 0.01)
 
 
-def test_pidcontroller_init_args5(wpilib, SimTimerTask):
+def test_pidcontroller_init_args5(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     with pytest.raises(TypeError) as exinfo:
@@ -109,7 +109,7 @@ def test_pidcontroller_init_args5(wpilib, SimTimerTask):
     )
 
 
-def test_pidcontroller_init_args6(wpilib, SimTimerTask):
+def test_pidcontroller_init_args6(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     with pytest.raises(TypeError) as exinfo:
@@ -121,7 +121,7 @@ def test_pidcontroller_init_args6(wpilib, SimTimerTask):
     )
 
 
-def test_pidcontroller_init_args7(wpilib, SimTimerTask):
+def test_pidcontroller_init_args7(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     with pytest.raises(TypeError) as exinfo:
@@ -133,7 +133,7 @@ def test_pidcontroller_init_args7(wpilib, SimTimerTask):
     )
 
 
-def test_pidcontroller_init_args8(wpilib, SimTimerTask):
+def test_pidcontroller_init_args8(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     with pytest.raises(TypeError) as exinfo:
@@ -145,7 +145,7 @@ def test_pidcontroller_init_args8(wpilib, SimTimerTask):
     )
 
 
-def test_pidcontroller_init_args9(wpilib, SimTimerTask, sim_print):
+def test_pidcontroller_init_args9(wpilib, MockNotifier, sim_print):
     source = lambda: 77.0
     output = MagicMock()
     with pytest.raises(ValueError) as exinfo:
@@ -190,7 +190,7 @@ def test_pidcontroller_init_args9(wpilib, SimTimerTask, sim_print):
     )
 
 
-def test_pidcontroller_init_args10(wpilib, SimTimerTask):
+def test_pidcontroller_init_args10(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(
@@ -205,7 +205,7 @@ def test_pidcontroller_init_args10(wpilib, SimTimerTask):
     assert pid.period == pytest.approx(0.05, 0.01)
 
 
-def test_pidcontroller_init_args11(wpilib, SimTimerTask, sim_print):
+def test_pidcontroller_init_args11(wpilib, MockNotifier, sim_print):
     source = lambda: 77.0
     output = MagicMock()
     with pytest.raises(ValueError) as exinfo:
@@ -255,7 +255,7 @@ def test_pidcontroller_init_args11(wpilib, SimTimerTask, sim_print):
     )
 
 
-def test_pidcontroller_init_source1(wpilib, SimTimerTask):
+def test_pidcontroller_init_source1(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, source=source, output=output)
@@ -267,7 +267,7 @@ def test_pidcontroller_init_source1(wpilib, SimTimerTask):
     )
 
 
-def test_pidcontroller_init_source2(wpilib, SimTimerTask):
+def test_pidcontroller_init_source2(wpilib, MockNotifier):
     class PidInput:
         def pidGet(self):
             return 78.0
@@ -286,7 +286,7 @@ def test_pidcontroller_init_source2(wpilib, SimTimerTask):
     )
 
 
-def test_pidcontroller_init_output1(wpilib, SimTimerTask):
+def test_pidcontroller_init_output1(wpilib, MockNotifier):
     source = lambda: 77.0
     mock_output = MagicMock()
 
@@ -306,7 +306,7 @@ def test_pidcontroller_init_output1(wpilib, SimTimerTask):
     assert mock_output.called
 
 
-def test_pidcontroller_init_output2(wpilib, SimTimerTask):
+def test_pidcontroller_init_output2(wpilib, MockNotifier):
     source = lambda: 77.0
     mock_output = MagicMock()
 
@@ -327,24 +327,26 @@ def test_pidcontroller_init_output2(wpilib, SimTimerTask):
     assert mock_output.called
 
 
-def test_pidcontroller_init_startstask(wpilib, SimTimerTask):
+def test_pidcontroller_init_startstask(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, 4.0, source, output, 5.0)
 
-    SimTimerTask.assert_called_with("PIDTask0", 5.0, pid._calculate)
-    assert pid.pid_task.start.called
+    MockNotifier.assert_called_with(pid._calculate)
+    assert pid.controlLoop.startPeriodic.called
 
 
-def test_pidcontroller_free(pid, SimTimerTask):
+def test_pidcontroller_close(pid, MockNotifier):
     pid.removeListeners = MagicMock()
-    assert pid.pid_task.start.called
+    assert pid.controlLoop.startPeriodic.called
     assert pid.pidInput is not None
     assert pid.pidOutput is not None
 
+    loop = pid.controlLoop
     pid.close()
 
-    assert pid.pid_task.cancel.called
+    assert loop.close.called
+    assert pid.controlLoop is None
     assert pid.pidInput is None
     assert pid.pidOutput is None
 
@@ -667,7 +669,7 @@ def test_pidcontroller_calculateFeedForward_rate(pid, f, setpoint, expected):
 
 
 def test_pidcontroller_calculateFeedForward_displacement(
-    sim_hooks, wpilib, SimTimerTask
+    sim_hooks, wpilib, MockNotifier
 ):
     sim_hooks.time = 1.0
     pid0 = _get_pid(wpilib)
@@ -755,7 +757,7 @@ def test_pidcontroller_setSetpoint2(pid, sendablebuilder):
     assert sendablebuilder.getTable().getNumber("setpoint", 0.0) == 1.0
 
 
-def test_pidcontroller_setPIDSourceType1(wpilib, SimTimerTask):
+def test_pidcontroller_setPIDSourceType1(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, 4.0, source, output, 5.0)
@@ -764,7 +766,7 @@ def test_pidcontroller_setPIDSourceType1(wpilib, SimTimerTask):
         pid.setPIDSourceType(pid.PIDSourceType.kRate)
 
 
-def test_pidcontroller_setPIDSourceType2(wpilib, SimTimerTask):
+def test_pidcontroller_setPIDSourceType2(wpilib, MockNotifier):
     source = MagicMock()
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, 4.0, source, output, 5.0)
@@ -774,7 +776,7 @@ def test_pidcontroller_setPIDSourceType2(wpilib, SimTimerTask):
     assert source.setPIDSourceType.called_with(pid.PIDSourceType.kRate)
 
 
-def test_pidcontroller_getPIDSourceType1(wpilib, SimTimerTask):
+def test_pidcontroller_getPIDSourceType1(wpilib, MockNotifier):
     source = lambda: 77.0
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, 4.0, source, output, 5.0)
@@ -782,7 +784,7 @@ def test_pidcontroller_getPIDSourceType1(wpilib, SimTimerTask):
     assert pid.getPIDSourceType() == pid.PIDSourceType.kDisplacement
 
 
-def test_pidcontroller_getPIDSourceType2(wpilib, SimTimerTask):
+def test_pidcontroller_getPIDSourceType2(wpilib, MockNotifier):
     source = MagicMock()
     output = MagicMock()
     pid = wpilib.PIDController(1.0, 2.0, 3.0, 4.0, source, output, 5.0)
@@ -861,6 +863,36 @@ def test_pidcontroller_initSendable_safe(pid, sendablebuilder):
     pid.initSendable(sendablebuilder)
     sendablebuilder.startLiveWindowMode()
     assert pid.reset.called
+
+
+@pytest.mark.parametrize(
+    "error, input_range, expected, continuous",
+    [
+        # fmt: off
+        # the % operator has different semantics in java and python,
+        # so it is possible the behavior of getContinuousError can/will differ.
+        # be sure expected values are obtained/validated from the java 
+        # implementation
+        ( 1.80, 2.00, -0.20, True),
+        (-1.80, 2.00,  0.20, True),
+        ( 0.80, 2.00,  0.80, True),
+        (-0.80, 2.00, -0.80, True),
+        ( 1.80, 2.00,  1.80, False),
+        (-1.80, 2.00, -1.80, False),
+        ( 0.80, 2.00,  0.80, False),
+        (-0.80, 2.00, -0.80, False),
+        # fmt: on
+    ],
+)
+def test_pidcontroller_getContinuousError(
+    pid, error, input_range, expected, continuous
+):
+    pid.setInputRange(0, input_range)
+    pid.setContinuous(continuous)
+    result = pid.getContinuousError(error)
+    assert pid.inputRange == input_range
+    assert pid.continuous == continuous
+    assert result == pytest.approx(expected, 0.01)
 
 
 def test_pidcontroller_reset(pid):
