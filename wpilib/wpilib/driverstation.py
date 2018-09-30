@@ -1,4 +1,4 @@
-# validated: 2018-01-28 DV 48ae6c954a75 edu/wpi/first/wpilibj/DriverStation.java
+# validated: 2018-12-07 EN fe5d7dd6ba60 edu/wpi/first/wpilibj/DriverStation.java
 # Copyright (c) 2008-2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
@@ -128,6 +128,8 @@ class DriverStation:
                 "Do not create DriverStation instances, use DriverStation.getInstance() instead"
             )
 
+        # robotpy doesn't need to do this
+        # hal.initialize(500, 0)
         self.waitForDataCount = 0
         self.waitForDataCond = threading.Condition()
 
@@ -140,12 +142,8 @@ class DriverStation:
         ]
         self.matchInfo = MatchInfoData()
 
-        self.joystickButtonsPressed = [
-            hal.JoystickButtons() for _ in range(self.kJoystickPorts)
-        ]
-        self.joystickButtonsReleased = [
-            hal.JoystickButtons() for _ in range(self.kJoystickPorts)
-        ]
+        self.joystickButtonsPressed = [0 for _ in range(self.kJoystickPorts)]
+        self.joystickButtonsReleased = [0 for _ in range(self.kJoystickPorts)]
 
         self.joystickAxesCache = [
             hal.JoystickAxes() for _ in range(self.kJoystickPorts)
@@ -249,6 +247,107 @@ class DriverStation:
             True,
         )
 
+    def getStickButton(self, stick: int, button: int) -> bool:
+        """The state of a button on the joystick. Button indexes begin at 1.
+
+        :param stick: The joystick port number
+        :param button: The button index, beginning at 1.
+
+        :returns: The state of the button.
+        """
+        if stick < 0 or stick >= self.kJoystickPorts:
+            raise IndexError(
+                "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
+            )
+
+        if button <= 0:
+            self._reportJoystickUnpluggedError("Button indexes begin at 1 for WPILib")
+            return False
+
+        with self.cacheDataMutex:
+            joystickButtons = self.joystickButtons[stick]
+            button_unavailable = button > joystickButtons.count
+            if not button_unavailable:
+                return ((0x1 << (button - 1)) & joystickButtons.buttons) != 0
+
+        self._reportJoystickUnpluggedWarning(
+            "Joystick Button %d on port %d not available, check if controller is plugged in"
+            % (button, stick)
+        )
+        return False
+
+    def getStickButtonPressed(self, stick: int, button: int) -> bool:
+        """Whether one joystick button was pressed since the last check.
+        Button indices begin at 1.
+
+        :param stick: Joystick to read
+        :param button: Button index, beginning at 1
+        :returns: Whether the joystick button was pressed since the last check
+        """
+        if button <= 0:
+            self._reportJoystickUnpluggedError("Button indexes begin at 1 for WPILib")
+            return False
+        if not 0 <= stick < self.kJoystickPorts:
+            raise IndexError(
+                "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
+            )
+
+        error = False
+        retVal = False
+        with self.cacheDataMutex:
+            if button > self.joystickButtons[stick].count:
+                error = True
+                retVal = False
+            else:
+                if self.joystickButtonsPressed[stick] & 1 << (button - 1):
+                    self.joystickButtonsPressed[stick] &= ~(1 << (button - 1))
+                    retVal = True
+                else:
+                    retVal = False
+        if error:
+            self._reportJoystickUnpluggedWarning(
+                "Joystick Button %s on port %s not available, check if controller is plugged in\n"
+                % (button, stick)
+            )
+
+        return retVal
+
+    def getStickButtonReleased(self, stick: int, button: int) -> bool:
+        """Whether one joystick button was released since the last check.
+        Button indices begin at 1.
+
+        :param stick: Joystick to read
+        :param button: Button index, beginning at 1
+        :returns: Whether the joystick button was released since the last check
+        """
+        if button <= 0:
+            self._reportJoystickUnpluggedError("Button indexes begin at 1 for WPILib")
+            return False
+        if not 0 <= stick < self.kJoystickPorts:
+            raise IndexError(
+                "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
+            )
+
+        error = False
+        retVal = False
+        with self.cacheDataMutex:
+            if button > self.joystickButtons[stick].count:
+                error = True
+                retVal = False
+            else:
+                if self.joystickButtonsReleased[stick] & 1 << (button - 1):
+                    self.joystickButtonsReleased[stick] &= ~(1 << (button - 1))
+                    retVal = True
+                else:
+                    retVal = False
+        if error:
+            self._reportJoystickUnpluggedWarning(
+                "Joystick Button %s on port %s not available, check if controller is plugged in\n"
+                % (button, stick)
+            )
+
+        return retVal
+
     def getStickAxis(self, stick: int, axis: int) -> float:
         """Get the value of the axis on a joystick.
 
@@ -297,14 +396,14 @@ class DriverStation:
 
         with self.cacheDataMutex:
             joystickPOVs = self.joystickPOVs[stick]
+            pov_not_available = pov >= joystickPOVs.count
 
-            if pov >= joystickPOVs.count:
-                self._reportJoystickUnpluggedWarning(
-                    "Joystick POV %d on port %d not available, check if controller is plugged in\n"
-                    % (pov, stick)
-                )
-                return -1
-            return joystickPOVs.povs[pov]
+        if pov_not_available:
+            self._reportJoystickUnpluggedWarning(
+                "Joystick POV %d on port %d not available, check if controller is plugged in\n"
+                % (pov, stick)
+            )
+        return joystickPOVs.povs[pov]
 
     def getStickButtons(self, stick: int) -> int:
         """The state of all the buttons on the joystick.
@@ -320,76 +419,6 @@ class DriverStation:
 
         with self.cacheDataMutex:
             return self.joystickButtons[stick].buttons
-
-    def getStickButton(self, stick: int, button: int) -> bool:
-        """The state of a button on the joystick. Button indexes begin at 1.
-
-        :param stick: The joystick port number
-        :param button: The button index, beginning at 1.
-
-        :returns: The state of the button.
-        """
-        if stick < 0 or stick >= self.kJoystickPorts:
-            raise IndexError(
-                "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
-            )
-
-        with self.cacheDataMutex:
-            joystickButtons = self.joystickButtons[stick]
-            if button > joystickButtons.count:
-                self._reportJoystickUnpluggedWarning(
-                    "Joystick Button %d on port %d not available, check if controller is plugged in"
-                    % (button, stick)
-                )
-                return False
-            if button <= 0:
-                self._reportJoystickUnpluggedError(
-                    "Button indexes begin at 1 for WPILib"
-                )
-                return False
-            return ((0x1 << (button - 1)) & joystickButtons.buttons) != 0
-
-    def getStickButtonPressed(self, stick: int, button: int) -> bool:
-        """Whether one joystick button was pressed since the last check.
-        Button indices begin at 1.
-
-        :param stick: Joystick to read
-        :param button: Button index, beginning at 1
-        :returns: Whether the joystick button was pressed since the last check
-        """
-        if button <= 0:
-            self._reportJoystickUnpluggedError("Button indexes begin at 1 for WPILib")
-            return False
-        if not 0 <= stick < self.kJoystickPorts:
-            raise IndexError(
-                "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
-            )
-
-        if self.joystickButtonsPressed[stick].buttons & 1 << (button - 1):
-            self.joystickButtonsPressed[stick].buttons &= ~(1 << (button - 1))
-            return True
-        return False
-
-    def getStickButtonReleased(self, stick: int, button: int) -> bool:
-        """Whether one joystick button was released since the last check.
-        Button indices begin at 1.
-
-        :param stick: Joystick to read
-        :param button: Button index, beginning at 1
-        :returns: Whether the joystick button was released since the last check
-        """
-        if button <= 0:
-            self._reportJoystickUnpluggedError("Button indexes begin at 1 for WPILib")
-            return False
-        if not 0 <= stick < self.kJoystickPorts:
-            raise IndexError(
-                "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
-            )
-
-        if self.joystickButtonsReleased[stick].buttons & 1 << (button - 1):
-            self.joystickButtonsReleased[stick].buttons &= ~(1 << (button - 1))
-            return True
-        return False
 
     def getStickAxisCount(self, stick: int) -> int:
         """Returns the number of axes on a given joystick port.
@@ -448,17 +477,6 @@ class DriverStation:
                 "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
             )
 
-        with self.cacheDataMutex:
-            # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
-            if 1 > self.joystickButtons[stick].count and 1 > len(
-                self.joystickAxes[stick]
-            ):
-                self._reportJoystickUnpluggedWarning(
-                    "WARNING: Joystick on port {} not avaliable, check if controller is "
-                    "plugged in.\n".format(stick)
-                )
-                return False
-
         return hal.getJoystickIsXbox(stick)
 
     def getJoystickType(self, stick: int) -> int:
@@ -473,17 +491,6 @@ class DriverStation:
             raise IndexError(
                 "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
             )
-
-        with self.cacheDataMutex:
-            # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
-            if 1 > self.joystickButtons[stick].count and 1 > len(
-                self.joystickAxes[stick]
-            ):
-                self._reportJoystickUnpluggedWarning(
-                    "Joystick on port {} not avaliable, check if controller is "
-                    "plugged in.\n".format(stick)
-                )
-                return -1
 
         return hal.getJoystickType(stick)
 
@@ -500,17 +507,6 @@ class DriverStation:
                 "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
             )
 
-        with self.cacheDataMutex:
-            # TODO: Remove this when calling for descriptor on empty stick no longer crashes.
-            if 1 > self.joystickButtons[stick].count and 1 > len(
-                self.joystickAxes[stick].axes
-            ):
-                self._reportJoystickUnpluggedError(
-                    "WARNING: Joystick on port {} not avaliable, check if controller is "
-                    "plugged in.\n".format(stick)
-                )
-                return ""
-
         return hal.getJoystickName(stick)
 
     def getJoystickAxisType(self, stick: int, axis: int) -> int:
@@ -526,8 +522,7 @@ class DriverStation:
                 "Joystick index is out of range, should be 0-%s" % self.kJoystickPorts
             )
 
-        with self.cacheDataMutex:
-            return hal.getJoystickAxisType(stick, axis)
+        return hal.getJoystickAxisType(stick, axis)
 
     def isEnabled(self) -> bool:
         """Gets a value indicating whether the Driver Station requires the
@@ -828,12 +823,12 @@ class DriverStation:
         # lock joystick mutex to swap cache data
         with self.cacheDataMutex:
             for i in range(self.kJoystickPorts):
-                self.joystickButtonsPressed[i].buttons |= (
+                self.joystickButtonsPressed[i] |= (
                     ~self.joystickButtons[i].buttons
                     & self.joystickButtonsCache[i].buttons
                 )
 
-                self.joystickButtonsReleased[i].buttons |= (
+                self.joystickButtonsReleased[i] |= (
                     self.joystickButtons[i].buttons
                     & ~self.joystickButtonsCache[i].buttons
                 )
