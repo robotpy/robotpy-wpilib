@@ -1,4 +1,4 @@
-# validated: 2017-11-09 TW ef3267833fc3 edu/wpi/first/wpilibj/IterativeRobot.java
+# validated: 2018-09-30 EN a818c7fd4741 edu/wpi/first/wpilibj/IterativeRobot.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -23,12 +23,14 @@ class IterativeRobot(IterativeRobotBase):
     the driver station.
     """
 
+    kPacketPeriod = 0.02
+
     #: A python logging object that you can use to send messages to the log. It
     #: is recommended to use this instead of print statements.
     logger = logging.getLogger("robot")
 
-    def __init__(self):
-        """Constructor for RobotIterativeBase.
+    def __init__(self) -> None:
+        """Constructor for IterativeRobot.
 
         The constructor initializes the instance variables for the robot to
         indicate the status of initialization for disabled, autonomous, and
@@ -38,12 +40,12 @@ class IterativeRobot(IterativeRobotBase):
                      the base class constructor. This must be used to ensure that
                      the communications code starts.
         """
-        super().__init__()
+        super().__init__(IterativeRobot.kPacketPeriod)
 
         hal.report(hal.UsageReporting.kResourceType_Framework,
                    hal.UsageReporting.kFramework_Iterative)
 
-    def startCompetition(self):
+    def startCompetition(self) -> None:
         """Provide an alternate "main loop" via startCompetition()."""
 
         self.robotInit()
