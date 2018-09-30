@@ -1,4 +1,4 @@
-# validated: 2018-01-01 DV 02131639bc2c edu/wpi/first/wpilibj/DMC60.java
+# validated: 2018-09-30 EN d54c2665dc54 edu/wpi/first/wpilibj/DMC60.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,7 +6,7 @@
 # the project.
 #----------------------------------------------------------------------------
 
-#import hal
+import hal
 
 from .pwmspeedcontroller import PWMSpeedController
 
@@ -45,5 +45,5 @@ class DMC60(PWMSpeedController):
         self.setSpeed(0)
         self.setZeroLatch()
 
-        #hal.report(hal.UsageReporting.kResourceType_VictorSP, self.getChannel())
+        hal.report(hal.UsageReporting.kResourceType_DigilentDMC60, self.getChannel())
         self.setName("DMC60", self.getChannel())
