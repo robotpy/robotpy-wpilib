@@ -1,4 +1,4 @@
-# validated: 2017-11-13 TW 595b1df380f7 edu/wpi/first/wpilibj/Joystick.java
+# validated: 2018-09-30 EN 64b03704f8db edu/wpi/first/wpilibj/Joystick.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -24,6 +24,12 @@ class Joystick(GenericHID):
     single class instance for each joystick and the mapping of ports to
     hardware buttons depends on the code in the Driver Station.
     """
+
+    kDefaultXChannel = 0
+    kDefaultYChannel = 1
+    kDefaultZChannel = 2
+    kDefaultTwistChannel = 2
+    kDefaultThrottleChannel = 3
 
     kDefaultXAxis = 0
     kDefaultYAxis = 1
@@ -74,11 +80,11 @@ class Joystick(GenericHID):
         super().__init__(port)
 
         self.axes = [0] * self.Axis.kNumAxes
-        self.axes[self.Axis.kX] = self.kDefaultXAxis
-        self.axes[self.Axis.kY] = self.kDefaultYAxis
-        self.axes[self.Axis.kZ] = self.kDefaultZAxis
-        self.axes[self.Axis.kTwist] = self.kDefaultTwistAxis
-        self.axes[self.Axis.kThrottle] = self.kDefaultThrottleAxis
+        self.axes[self.Axis.kX] = self.kDefaultXChannel
+        self.axes[self.Axis.kY] = self.kDefaultYChannel
+        self.axes[self.Axis.kZ] = self.kDefaultZChannel
+        self.axes[self.Axis.kTwist] = self.kDefaultTwistChannel
+        self.axes[self.Axis.kThrottle] = self.kDefaultThrottleChannel
 
         hal.report(hal.UsageReporting.kResourceType_Joystick, port)
 
