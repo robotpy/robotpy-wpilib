@@ -1,4 +1,4 @@
-# validated: 2018-03-03 DV 67de595c85fe edu/wpi/first/wpilibj/ADXRS450_Gyro.java
+# validated: 2018-09-30 EN cbaff528500c edu/wpi/first/wpilibj/ADXRS450_Gyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2015-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -63,13 +63,13 @@ class ADXRS450_Gyro(GyroBase):
 
         self.spi.setClockRate(3000000)
         self.spi.setMSBFirst()
-        self.spi.setSampleDataOnRising()
+        self.spi.setSampleDataOnLeadingEdge()
         self.spi.setClockActiveHigh()
         self.spi.setChipSelectActiveLow()
 
         # Validate the part ID
         if (self._readRegister(self.kPIDRegister) & 0xff00) != 0x5200:
-            self.spi.free()
+            self.spi.close()
             self.spi = None
             DriverStation.reportError("could not find ADXRS450 gyro on SPI port %s" % port, False)
             return
@@ -154,11 +154,11 @@ class ADXRS450_Gyro(GyroBase):
         if self.spi is not None:
             self.spi.resetAccumulator()
 
-    def free(self):
+    def close(self):
         """Delete (free) the spi port used for the gyro and stop accumulating."""
-        super().free()
+        super().close()
         if self.spi is not None:
-            self.spi.free()
+            self.spi.close()
             self.spi = None
 
     def getAngle(self):
