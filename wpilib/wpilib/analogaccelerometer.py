@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogAccelerometer.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/AnalogAccelerometer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -10,11 +10,11 @@ import hal
 
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["AnalogAccelerometer"]
 
-class AnalogAccelerometer(SensorBase):
+class AnalogAccelerometer(SendableBase):
     """Analog Accelerometer
     
     The accelerometer reads acceleration directly through the sensor. Many
@@ -48,10 +48,10 @@ class AnalogAccelerometer(SensorBase):
                       self.analogChannel.getChannel())
         self.setName("Accelerometer", self.analogChannel.getChannel())
 
-    def free(self):
-        super().free()
+    def close(self):
+        super().close()
         if self.analogChannel and self.allocatedChannel:
-            self.analogChannel.free()
+            self.analogChannel.close()
         self.analogChannel = None
 
 
