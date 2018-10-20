@@ -83,6 +83,17 @@ class UsageReporting:
     kResourceType_CTRE_future4 = 68
     kResourceType_CTRE_future5 = 69
     kResourceType_CTRE_future6 = 70
+    kResourceType_LinearFilter = 71
+    kResourceType_XboxController = 72
+    kResourceType_UsbCamera = 73
+    kResourceType_NavX = 74
+    kResourceType_Pixy = 75
+    kResourceType_Pixy2 = 76
+    kResourceType_ScanseSweep = 77
+    kResourceType_Shuffleboard = 78
+    kResourceType_CAN = 79
+    kResourceType_DigilentDMC60 = 80
+    kResourceType_PWMVictorSPX = 81
 
     # enum tInstances
     kLanguage_LabVIEW = 1
@@ -97,6 +108,10 @@ class UsageReporting:
     kFramework_Iterative = 1
     kFramework_Sample = 2
     kFramework_CommandControl = 3
+    kFramework_Timed = 4
+    kFramework_ROS = 5
+    kFramework_RobotBuilder = 6
+
 
     kRobotDrive_ArcadeStandard = 1
     kRobotDrive_ArcadeButtonSpin = 2
@@ -104,6 +119,14 @@ class UsageReporting:
     kRobotDrive_Tank = 4
     kRobotDrive_MecanumPolar = 5
     kRobotDrive_MecanumCartesian = 6
+    kRobotDrive2_DifferentialArcade = 7
+    kRobotDrive2_DifferentialTank = 8
+    kRobotDrive2_DifferentialCurvature = 9
+    kRobotDrive2_MecanumCartesian = 10
+    kRobotDrive2_MecanumPolar = 11
+    kRobotDrive2_KilloughCartesian = 12
+    kRobotDrive2_KilloughPolar = 13
+
 
     kDriverStationCIO_Analog = 1
     kDriverStationCIO_DigitalIn = 2
