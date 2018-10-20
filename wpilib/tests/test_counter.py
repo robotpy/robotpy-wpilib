@@ -111,7 +111,7 @@ def test_counter_clear_up_source(wpilib, hal_data):
     check_init(hal_data, 0, 0, 0, (False, False), (False, False))
 
 
-def test_counter_free(wpilib, hal_data):
+def test_counter_close(wpilib, hal_data):
     assert not hal_data["counter"][0]["initialized"]
     assert not hal_data["dio"][0]["initialized"]
     assert not hal_data["dio"][1]["initialized"]
@@ -121,7 +121,7 @@ def test_counter_free(wpilib, hal_data):
     assert hal_data["counter"][0]["initialized"]
     assert hal_data["dio"][0]["initialized"]
     assert hal_data["dio"][1]["initialized"]
-    ctr.free()
+    ctr.close()
     with pytest.raises(ValueError):
         _ = ctr.counter
     assert not hal_data["counter"][0]["initialized"]
