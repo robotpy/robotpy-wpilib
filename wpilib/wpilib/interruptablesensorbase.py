@@ -1,4 +1,4 @@
-# validated: 2018-01-06 TW f9bece2ffbf7 edu/wpi/first/wpilibj/InterruptableSensorBase.java
+# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/InterruptableSensorBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -10,12 +10,12 @@ import enum
 import weakref
 
 import hal
-from .sensorbase import SensorBase
+from .sendablebase import SendableBase
 
 __all__ = ["InterruptableSensorBase"]
 
 
-class InterruptableSensorBase(SensorBase):
+class InterruptableSensorBase(SendableBase):
     """Base for sensors to be used with interrupts"""
 
     class WaitResult(enum.IntEnum):
@@ -41,8 +41,8 @@ class InterruptableSensorBase(SensorBase):
             return None
         return self._interrupt
 
-    def free(self):
-        super().free()
+    def close(self):
+        super().close()
         if self.interrupt is not None:
             self.cancelInterrupts()
 
