@@ -1,4 +1,4 @@
-# validated: 2017-12-26 DV f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogGyro.java
+# validated: 2018-09-30 EN cbaff528500c edu/wpi/first/wpilibj/AnalogGyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -88,11 +88,11 @@ class AnalogGyro(GyroBase):
         """:see: :meth:`.Gyro.reset`"""
         hal.resetAnalogGyro(self.gyroHandle)
 
-    def free(self):
-        """:see: :meth:`.Gyro.free`"""
-        super().free()
+    def close(self):
+        """:see: :meth:`.Gyro.close`"""
+        super().close()
         if self.analog is not None and self.channelAllocated:
-            self.analog.free()
+            self.analog.close()
             self.analog = None
         hal.freeAnalogGyro(self.gyroHandle)
         self.gyroHandle = 0
