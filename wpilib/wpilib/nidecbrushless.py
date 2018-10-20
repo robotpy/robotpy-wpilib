@@ -1,4 +1,4 @@
-# validated: 2017-12-22 EN f9bece2ffbf7 edu/wpi/first/wpilibj/NidecBrushless.java
+# validated: 2018-09-30 EN 0614913f1abb edu/wpi/first/wpilibj/NidecBrushless.java
 # ----------------------------------------------------------------------------
 #  Copyright (c) 2017 FIRST. All Rights Reserved.                             
 #  Open Source Software - may be modified and shared by FRC teams. The code   
@@ -43,11 +43,11 @@ class NidecBrushless(SendableBase, MotorSafety, SpeedController):
         hal.report(hal.UsageReporting.kResourceType_NidecBrushless, pwmChannel)
         self.setName("Nidec Brushless", pwmChannel)
 
-    def free(self):
+    def close(self):
         """Free the resources used by this object."""
-        super().free()
-        self.dio.free()
-        self.pwm.free()
+        super().close()
+        self.dio.close()
+        self.pwm.close()
 
     def set(self, speed):
         """ 
@@ -135,5 +135,6 @@ class NidecBrushless(SendableBase, MotorSafety, SpeedController):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Nidec Brushless")
+        builder.setActuator(True)
         builder.setSafeState(self.stopMotor)
         builder.addDoubleProperty("Value", self.get, self.set)
