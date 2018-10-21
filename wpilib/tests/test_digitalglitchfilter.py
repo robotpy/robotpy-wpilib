@@ -21,6 +21,6 @@ def test_glitch_filters(wpilib, hal_data):
     # free them
     for i, d, f in filters:
         f.remove(d)
-        f.free()
+        f.close()
         
         assert hal_data['dio'][i]['filterIndex'] is None

@@ -69,7 +69,7 @@ class UsageReporting:
     kResourceType_ADXRS450 = 54
     kResourceType_RevSPARK = 55
     kResourceType_MindsensorsSD540 = 56
-    kResourceType_DigitalFilter = 57
+    kResourceType_DigitalGlitchFilter = 57
     kResourceType_ADIS16448 = 58
     kResourceType_PDP = 59
     kResourceType_PCM = 60
