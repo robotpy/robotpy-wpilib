@@ -1,4 +1,4 @@
-# validated: 2017-12-08 DV 85157a56c3a7 edu/wpi/first/wpilibj/filters/LinearDigitalFilter.java
+# validated: 2018-09-30 EN a11fcb605d15 edu/wpi/first/wpilibj/filters/LinearDigitalFilter.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,6 +6,7 @@
 # the project.
 #----------------------------------------------------------------------------
 
+import hal
 import collections
 import math
 from operator import mul
@@ -75,6 +76,8 @@ class LinearDigitalFilter(Filter):
     * :meth:`singlePoleIIR`
     
     """
+
+    instances = 0
     
     def __init__(self, source, ffGains, fbGains):
         """Constructor. Create a linear FIR or IIR filter
@@ -94,8 +97,12 @@ class LinearDigitalFilter(Filter):
     
         self.inputs = collections.deque([0.0]*lf, maxlen=lf)
         self.outputs = collections.deque([0.0]*lb, maxlen=lb)
-        self.inputGains = ffGains
-        self.outputGains = fbGains
+        self.inputGains = ffGains.copy()
+        self.outputGains = fbGains.copy()
+
+        LinearDigitalFilter.instances += 1
+        hal.report(hal.UsageReporting.kResourceType_LinearFilter, 
+            LinearDigitalFilter.instances)
     
     @staticmethod
     def singlePoleIIR(source, timeConstant, period):
