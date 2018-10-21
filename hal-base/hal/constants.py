@@ -69,7 +69,7 @@ class UsageReporting:
     kResourceType_ADXRS450 = 54
     kResourceType_RevSPARK = 55
     kResourceType_MindsensorsSD540 = 56
-    kResourceType_DigitalFilter = 57
+    kResourceType_DigitalGlitchFilter = 57
     kResourceType_ADIS16448 = 58
     kResourceType_PDP = 59
     kResourceType_PCM = 60
@@ -112,7 +112,6 @@ class UsageReporting:
     kFramework_ROS = 5
     kFramework_RobotBuilder = 6
 
-
     kRobotDrive_ArcadeStandard = 1
     kRobotDrive_ArcadeButtonSpin = 2
     kRobotDrive_ArcadeRatioCurve = 3
@@ -126,7 +125,6 @@ class UsageReporting:
     kRobotDrive2_MecanumPolar = 11
     kRobotDrive2_KilloughCartesian = 12
     kRobotDrive2_KilloughPolar = 13
-
 
     kDriverStationCIO_Analog = 1
     kDriverStationCIO_DigitalIn = 2

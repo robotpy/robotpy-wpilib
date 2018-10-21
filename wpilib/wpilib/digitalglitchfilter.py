@@ -34,7 +34,7 @@ class DigitalGlitchFilter(SensorBase):
                 if not v:
                     self.channelIndex = i
                     self.filterAllocated[i] = True
-                    hal.report(hal.UsageReporting.kResourceType_DigitalFilter,
+                    hal.report(hal.UsageReporting.kResourceType_DigitalGlitchFilter,
                                self.channelIndex, 0)
                     self.setName("DigitalGlitchFilter", i)
                     break
