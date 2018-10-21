@@ -15,3 +15,4 @@ eedb8910c36b732f7294886921b8d5d72847041b # wpilibj styleguide beginning newline
 adb6098353b2e4a7f8d2cb8e78d6587b138f8646 # styleguide remove extra newlines
 e548a5f7054ccc221ede1917bb62f512d1fb0fe3 # PMD 6.3.0
 40cc743cc7666e9558f1ac5e7263906e37b8a119 # checkstyle 8.10
+337e89cf6e791d67f6e80fbba8c613cc98d2a36a # Java simulation API
