@@ -329,6 +329,3 @@ class AnalogInput(SendableBase):
     def initSendable(self, builder):
         builder.setSmartDashboardType("Analog Input")
         builder.addDoubleProperty("Value", self.getAverageVoltage, None)
-
-    def getSimObject(self):
-        return AnalogInSim(self.channel)
