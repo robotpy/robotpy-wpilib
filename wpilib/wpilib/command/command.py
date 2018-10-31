@@ -1,4 +1,4 @@
-# validated: 2018-09-09 EN e28295fc7bbe edu/wpi/first/wpilibj/command/Command.java
+# validated: 2018-10-30 EN 0b113ad9ce93 edu/wpi/first/wpilibj/command/Command.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -41,14 +41,14 @@ class Command(SendableBase):
     .. seealso:: :class:`.Subsystem`, :class:`.CommandGroup`
     """
 
-    def __init__(self, name=None, timeout=None, requirement=None):
+    def __init__(self, name=None, timeout=None, subsystem=None):
         """Creates a new command.
         
         :param name: The name for this command; if unspecified or None,
                      The name of this command will be set to its class name.
         :param timeout: The time (in seconds) before this command "times out".
                         Default is no timeout.  See isTimedOut().
-        :param requirement: The subsystem that this command requires
+        :param subsystem: The subsystem that this command requires
         """
         super().__init__(False)
         self.mutex = threading.RLock()
@@ -88,8 +88,8 @@ class Command(SendableBase):
         # The CommandGroup this is in
         self.parent = None
 
-        if requirement is not None:
-            self.requires(requirement)
+        if subsystem is not None:
+            self.requires(subsystem)
 
     def setTimeout(self, seconds):
         """Sets the timeout of this command.
