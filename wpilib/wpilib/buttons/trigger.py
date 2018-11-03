@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/buttons/Trigger.java
+# validated: 2018-10-30 EN 0a2ab4f0d782 edu/wpi/first/wpilibj/buttons/Trigger.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -49,12 +49,12 @@ class Trigger(SendableBase):
         """
 
         def execute():
-            if self.grab():
-                if not execute.pressedLast:
-                    execute.pressedLast = True
-                    command.start()
-            else:
-                execute.pressedLast = False
+            pressed = self.grab()
+
+            if not execute.pressedLast and pressed:
+                command.start()
+
+            execute.pressedLast = pressed
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
@@ -70,13 +70,14 @@ class Trigger(SendableBase):
         """
 
         def execute():
-            if self.grab():
-                execute.pressedLast = True
+            pressed = self.grab()
+
+            if pressed:
                 command.start()
-            else:
-                if execute.pressedLast:
-                    execute.pressedLast = False
-                    command.cancel()
+            elif execute.pressedLast and not pressed:
+                command.cancel()
+
+            execute.pressedLast = pressed
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
@@ -89,12 +90,12 @@ class Trigger(SendableBase):
         """
 
         def execute():
-            if self.grab():
-                execute.pressedLast = True
-            else:
-                if execute.pressedLast:
-                    execute.pressedLast = False
-                    command.start()
+            pressed = self.grab()
+
+            if execute.pressedLast and not pressed:
+                command.start()
+
+            execute.pressedLast = pressed
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
@@ -107,15 +108,15 @@ class Trigger(SendableBase):
         """
 
         def execute():
-            if self.grab():
-                if not execute.pressedLast:
-                    execute.pressedLast = True
-                    if command.isRunning():
-                        command.cancel()
-                    else:
-                        command.start()
-            else:
-                execute.pressedLast = False
+            pressed = self.grab()
+
+            if not execute.pressedLast and pressed:
+                if command.isRunning():
+                    command.cancel()
+                else:
+                    command.start()
+
+            execute.pressedLast = pressed
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
@@ -128,12 +129,12 @@ class Trigger(SendableBase):
         """
 
         def execute():
-            if self.grab():
-                if not execute.pressedLast:
-                    execute.pressedLast = True
-                    command.cancel()
-            else:
-                execute.pressedLast = False
+            pressed = self.grab()
+
+            if not execute.pressedLast and pressed:
+                command.cancel()
+
+            execute.pressedLast = pressed
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
