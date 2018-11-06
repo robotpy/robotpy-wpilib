@@ -1,4 +1,4 @@
-# validated: 2017-11-12 TW 21585f70a88e edu/wpi/first/wpilibj/XboxController.java
+# validated: 2018-11-05 EN e2100730447d edu/wpi/first/wpilibj/XboxController.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -41,7 +41,7 @@ class XboxController(GenericHID):
         """
         super().__init__(port)
 
-        hal.report(hal.UsageReporting.kResourceType_Joystick, port)
+        hal.report(hal.UsageReporting.kResourceType_XboxController, port)
 
     def getX(self, hand: GenericHID.Hand) -> float:
         """Get the X axis value of the controller.
