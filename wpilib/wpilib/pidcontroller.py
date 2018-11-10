@@ -138,9 +138,9 @@ class PIDController(SendableBase):
                    PIDController.instances)
         self.setName("PIDController", PIDController.instances)
 
-    def free(self):
+    def close(self):
         """Free the PID object"""
-        super().free()
+        super().close()
         # TODO: is this useful in Python?  Should make TableListener weakref.
         self.pid_task.cancel()
         with self.mutex:

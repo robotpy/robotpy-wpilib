@@ -14,7 +14,7 @@ def test_notifier_single(wpilib):
         n.startSingle(0.05)
         assert c.wait(timeout=1.0)
     
-    n.free()
+    n.close()
 
 
 def test_notifier_periodic(wpilib):
@@ -30,6 +30,6 @@ def test_notifier_periodic(wpilib):
         assert c.wait(timeout=1.0)
         assert c.wait(timeout=1.0)
         n.stop()
-    n.free()
+    n.close()
 
 # TODO: better tests

@@ -40,15 +40,21 @@ class Resource:
                 if ref is None:
                     continue
                 obj = ref()
-                if obj is not None and hasattr(obj, 'free'):
-                    obj.free()
+                if obj is not None:
+                    if hasattr(obj, 'close'):
+                        obj.close()
+                    elif hasattr(obj, 'free'):
+                        obj.free()
             
             resource.numAllocated = [None]*len(resource.numAllocated)
         
         for ref in Resource._global_resources:
             obj = ref()
-            if obj is not None and hasattr(obj, 'free'):
-                obj.free()
+            if obj is not None:
+                if hasattr(obj, 'close'):
+                    obj.close()
+                elif hasattr(obj, 'free'):
+                    obj.free()
         
         del Resource._global_resources[:]
 

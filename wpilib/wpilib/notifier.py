@@ -1,4 +1,4 @@
-# validated: 2017-12-24 DS 8b7aa61091df edu/wpi/first/wpilibj/Notifier.java
+# validated: 2018-11-08 EN e2100730447d edu/wpi/first/wpilibj/Notifier.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -16,6 +16,12 @@ from .robotcontroller import RobotController
 
 class Notifier:
     def __init__(self, run: callable) -> None:
+        """
+        Create a Notifier for timer event notification.
+
+        :param run: The handler that is called at the notification time which is
+                    set using :meth:`.startSingle` or :meth:`.startPeriodic`.
+        """
         #: The lock for the process information.
         self._processLock = threading.RLock()
         
@@ -38,15 +44,17 @@ class Notifier:
         self._period = 0
         
         #: The thread waiting on the HAL alarm
-        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._thread = threading.Thread(target=self._run, name="Notifier", daemon=True)
         self._thread.start()
         
         # python-specific
         Resource._add_global_resource(self)
     
-    # python-specific: this is called finalize in Java
-    def free(self) -> None:
+    def close(self) -> None:
         handle, self._notifier = self._notifier, None
+        if not handle:
+            return
+
         hal.stopNotifier(handle)
         
         # Join the thread to ensure the handler has exited.
@@ -55,13 +63,20 @@ class Notifier:
             self._thread.join()
         
         hal.cleanNotifier(handle)
+        self._thread = None
 
-    def _updateAlarm(self) -> None:
-        """Update the alarm hardware to reflect the next alarm."""
+    def _updateAlarm(self, triggerTime=None) -> None:
+        """
+        Update the alarm hardware to reflect the next alarm.
+
+        :param triggerTime: the time at which the next alarm will be triggered
+        """
+        if triggerTime is None:
+            triggerTime = int(self._expirationTime * 1e6)
         handle = self._notifier
         if handle:
-            hal.updateNotifierAlarm(handle, int(self._expirationTime * 1e6))
-    
+            hal.updateNotifierAlarm(handle, triggerTime)
+
     def _run(self) -> None:
         while True:
             notifier = self._notifier
@@ -77,6 +92,9 @@ class Notifier:
                 if self._periodic:
                     self._expirationTime += self._period
                     self._updateAlarm()
+                else:
+                    # need to update the alarm to cause it to wait again
+                    self._updateAlarm(-1)
             
             if handler:
                 handler()
