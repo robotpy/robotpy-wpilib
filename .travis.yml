@@ -1,5 +1,6 @@
 language: python
-sudo: false
+sudo: required
+dist: xenial
 stages:
 - test
 - deploy-pypi
@@ -10,8 +11,12 @@ env:
 
 # reverse order because travis already has latest python installed
 python:
+- "3.7"
 - "3.6"
 - "3.5"
+
+matrix:
+  fast_finish: true
 
 # command to install dependencies
 install:
