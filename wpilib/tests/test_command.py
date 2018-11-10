@@ -37,7 +37,7 @@ def test_command_init4(wpilib):
 
 def test_command_init5(wpilib):
     subsystem = wpilib.command.Subsystem()
-    command = wpilib.command.Command(name="Percival", timeout=2.0, requirement=subsystem)
+    command = wpilib.command.Command(name="Percival", timeout=2.0, subsystem=subsystem)
 
     assert command.getName() == "Percival"
     assert command.timeout == 2.0
