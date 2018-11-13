@@ -1,4 +1,4 @@
-# validated: 2018-02-09 DS 64a7e57fe058 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
+# validated: 2018-11-12 EN da9a575526a7 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -118,24 +118,25 @@ class DifferentialDrive(RobotDriveBase):
         self.quickStopAlpha = self.kDefaultQuickStopAlpha
         self.quickStopAccumulator = 0.0
         self.reported = False
+        self.rightSideInvertMultiplier = -1.0
 
         self.addChild(self.leftMotor)
         self.addChild(self.rightMotor)
         DifferentialDrive.instances += 1
         self.setName("DifferentialDrive", self.instances)
 
-    def arcadeDrive(self, xSpeed, zRotation, squaredInputs=True):
+    def arcadeDrive(self, xSpeed, zRotation, squareInputs=True):
         """Arcade drive method for differential drive platform.
 
         :param xSpeed: The robot's speed along the X axis `[-1.0..1.0]`. Forward is positive
         :param zRotation: The robot's zRotation rate around the Z axis `[-1.0..1.0]`. Clockwise is positive
-        :param squaredInputs: If set, decreases the sensitivity at low speeds.
+        :param squareInputs: If set, decreases the sensitivity at low speeds.
         """
 
         if not self.reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,
                        2,
-                       hal.UsageReporting.kRobotDrive_ArcadeStandard)
+                       hal.UsageReporting.kRobotDrive2_DifferentialArcade)
             self.reported = True
 
         xSpeed = RobotDriveBase.limit(xSpeed)
@@ -144,7 +145,7 @@ class DifferentialDrive(RobotDriveBase):
         zRotation = RobotDriveBase.limit(zRotation)
         zRotation = RobotDriveBase.applyDeadband(zRotation, self.deadband)
 
-        if squaredInputs:
+        if squareInputs:
             # Square the inputs (while preserving the sign) to increase fine
             # control while permitting full power.
             xSpeed = math.copysign(xSpeed * xSpeed, xSpeed)
@@ -171,7 +172,7 @@ class DifferentialDrive(RobotDriveBase):
         rightMotorSpeed = RobotDriveBase.limit(rightMotorSpeed) * self.maxOutput
 
         self.leftMotor.set(leftMotorSpeed)
-        self.rightMotor.set(-rightMotorSpeed)
+        self.rightMotor.set(rightMotorSpeed * self.rightSideInvertMultiplier)
 
         self.feed()
 
@@ -190,9 +191,9 @@ class DifferentialDrive(RobotDriveBase):
                           turn-in-place maneuvers.
         """
         if not self.reported:
-            # hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-            #           2,
-            #           hal.UsageReporting.kRobotDrive_Curvature)
+            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
+                       2,
+                       hal.UsageReporting.kRobotDrive2_Curvature)
             self.reported = True
 
         xSpeed = RobotDriveBase.limit(xSpeed)
@@ -244,22 +245,22 @@ class DifferentialDrive(RobotDriveBase):
             rightMotorSpeed /= maxMagnitude
 
         self.leftMotor.set(leftMotorSpeed * self.maxOutput)
-        self.rightMotor.set(-rightMotorSpeed * self.maxOutput)
+        self.rightMotor.set(rightMotorSpeed * self.maxOutput * self.rightSideInvertMultiplier)
 
         self.feed()
 
-    def tankDrive(self, leftSpeed, rightSpeed, squaredInputs=True):
+    def tankDrive(self, leftSpeed, rightSpeed, squareInputs=True):
         """Provide tank steering using the stored robot configuration.
 
         :param leftSpeed: The robot's left side speed along the X axis `[-1.0..1.0]`. Forward is positive.
         :param rightSpeed: The robot's right side speed along the X axis`[-1.0..1.0]`. Forward is positive.
-        :param squaredInputs: If set, decreases the input sensitivity at low speeds
+        :param squareInputs: If set, decreases the input sensitivity at low speeds
         """
 
         if not self.reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,
                        2,
-                       hal.UsageReporting.kRobotDrive_Tank)
+                       hal.UsageReporting.kRobotDrive2_DifferentialTank)
             self.reported = True
 
         leftSpeed = RobotDriveBase.limit(leftSpeed)
@@ -270,12 +271,12 @@ class DifferentialDrive(RobotDriveBase):
 
         # square the inputs (while preserving the sign) to increase fine
         # control while permitting full power
-        if squaredInputs:
+        if squareInputs:
             leftSpeed = math.copysign(leftSpeed * leftSpeed, leftSpeed)
             rightSpeed = math.copysign(rightSpeed * rightSpeed, rightSpeed)
 
         self.leftMotor.set(leftSpeed * self.maxOutput)
-        self.rightMotor.set(-rightSpeed * self.maxOutput)
+        self.rightMotor.set(rightSpeed * self.maxOutput * self.rightSideInvertMultiplier)
 
         self.feed()
 
@@ -305,6 +306,22 @@ class DifferentialDrive(RobotDriveBase):
         """
         self.quickStopAlpha = alpha
 
+    def isRightSideInverted(self) -> bool:
+        """
+        Gets if the power sent to the right side of the drivetrain is multipled by -1.
+
+        :returns: true if the right side is inverted
+        """
+        return self.rightSideInvertMultiplier == -1.0
+
+    def setRightSideInverted(self, rightSideInverted: bool) -> None:
+        """
+        Sets if the power sent to the right side of the drivetrain should be multipled by -1.
+
+        :param rightSideInverted: true if right side power should be multipled by -1 
+        """
+        self.rightSideInvertMultiplier = -1.0 if rightSideInverted else 1.0
+
     def stopMotor(self):
         self.leftMotor.stopMotor()
         self.rightMotor.stopMotor()
@@ -316,8 +333,10 @@ class DifferentialDrive(RobotDriveBase):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("DifferentialDrive")
+        builder.setActuator(True)
+        builder.setSafeState(self.stopMotor)
         builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
         builder.addDoubleProperty(
             "Right Motor Speed",
-            lambda: -self.rightMotor.get(),
-            lambda x: self.rightMotor.set(-x))
+            lambda: self.rightMotor.get() * self.rightSideInvertMultiplier,
+            lambda x: self.rightMotor.set(x * self.rightSideInvertMultiplier))
