@@ -327,9 +327,34 @@ def test_setMaxOutput(drive_diff):
     drive_diff.setDeadband(0)
     assert drive_diff.maxOutput == 0.5
     # drive to make sure it took effect
-    drive_diff.tankDrive(1.0, 0.75, squaredInputs=False)
+    drive_diff.tankDrive(1.0, 0.75, squareInputs=False)
     drive_diff.leftMotor.set.assert_called_once_with(0.5)
     drive_diff.rightMotor.set.assert_called_once_with(-0.375)
+
+@pytest.mark.parametrize("r_inverted, expected_r_output", [
+    (True, -1.0),
+    (False, 1.0),
+])
+def test_setRightSideInverted_tank(drive_diff, r_inverted, expected_r_output):
+    drive_diff.setDeadband(0)
+    drive_diff.setRightSideInverted(r_inverted)
+    assert drive_diff.isRightSideInverted() == r_inverted
+    drive_diff.tankDrive(1.0, 1.0, squareInputs=False)
+    drive_diff.leftMotor.set.assert_called_once_with(1.0)
+    drive_diff.rightMotor.set.assert_called_once_with(expected_r_output)
+
+
+@pytest.mark.parametrize("r_inverted, expected_r_output", [
+    (True, -1.0),
+    (False, 1.0),
+])
+def test_setRightSideInverted_arcade(drive_diff, r_inverted, expected_r_output):
+    drive_diff.setDeadband(0)
+    drive_diff.setRightSideInverted(r_inverted)
+    assert drive_diff.isRightSideInverted() == r_inverted
+    drive_diff.arcadeDrive(1.0, 0, squareInputs=False)
+    drive_diff.leftMotor.set.assert_called_once_with(1.0)
+    drive_diff.rightMotor.set.assert_called_once_with(expected_r_output)
 
 
 def test_getDescription(drive_diff, drive_killough, drive_mecanum):
