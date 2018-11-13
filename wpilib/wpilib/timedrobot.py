@@ -1,4 +1,4 @@
-# validated: 2018-02-09 DS 5ca00dddbeff edu/wpi/first/wpilibj/TimedRobot.java
+# validated: 2018-11-10 EN 0e9172f9a708 edu/wpi/first/wpilibj/TimedRobot.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -25,17 +25,15 @@ class TimedRobot(IterativeRobotBase):
 
     periodic() functions from the base class are called on an interval by a Notifier instance.
     """
-    DEFAULT_PERIOD = .02
+    kDefaultPeriod = .02
 
 
-    def __init__(self):
-        super().__init__()
-        hal.report(hal.UsageReporting.kResourceType_Framework, hal.UsageReporting.kFramework_Iterative)
+    def __init__(self, period: float=None):
+        if period is None:
+            period = TimedRobot.kDefaultPeriod
+        super().__init__(period)
+        hal.report(hal.UsageReporting.kResourceType_Framework, hal.UsageReporting.kFramework_Timed)
 
-        self.period = TimedRobot.DEFAULT_PERIOD
-        # Prevents loop from starting if user calls setPeriod() in robotInit()
-        self.startLoop = False
-        
         self._expirationTime = 0
         self._notifier = hal.initializeNotifier()
         
@@ -52,8 +50,6 @@ class TimedRobot(IterativeRobotBase):
 
         hal.observeUserProgramStarting()
 
-        self.startLoop = True
-        
         self._expirationTime = RobotController.getFPGATime() * 1e-6 + self.period
         self._updateAlarm()
 
@@ -67,21 +63,10 @@ class TimedRobot(IterativeRobotBase):
             
             self.loopFunc()
 
-
-    def setPeriod(self, period: float) -> None:
-        """Set time period between calls to Periodic() functions.
-
-        :param period: Period in seconds
-        """
-        self.period = period
-
-        if self.startLoop:
-            self._expirationTime = RobotController.getFPGATime() * 1e-6 + self.period
-            self._updateAlarm()
-    
     def getPeriod(self):
         """Get time period between calls to Periodic() functions."""
         return self.period
     
     def _updateAlarm(self) -> None:
+        """Update the alarm hardware to reflect the next alarm."""
         hal.updateNotifierAlarm(self._notifier, int(self._expirationTime * 1e6))
