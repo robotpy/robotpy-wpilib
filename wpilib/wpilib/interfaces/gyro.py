@@ -1,4 +1,4 @@
-# validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/interfaces/Gyro.java
+# validated: 2018-11-17 EN 1ebb83e0f241 edu/wpi/first/wpilibj/interfaces/Gyro.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -43,6 +43,10 @@ class Gyro:
         is continuous, that is it will continue from 360 to 361 degrees. This
         allows algorithms that wouldn't want to see a discontinuity in the gyro
         output as it sweeps past from 360 to 0 on the second time around.
+
+        The angle is expected to increase as the gyro turns clockwise when 
+        looked at from the top. It needs to follow NED axis conventions in 
+        order to work properly with dependent control loops.
         
         :returns: the current heading of the robot in degrees. This heading is based
                   on integration of the returned rate from the gyro.
@@ -55,10 +59,22 @@ class Gyro:
     
         The rate is based on the most recent reading of the gyro analog value
     
+        The rate is expected to be positive as the gyro turns clockwise when 
+        looked at from the top. It needs to follow NED axis conventions in 
+        order to work properly with dependent control loops.
+
         :returns: the current rate in degrees per second
         """
         raise NotImplementedError
     
     def free(self):
+        """
+        Free the resources used by the gyro
+
+        .. deprecated:: 2019.0.0
+        """
+        raise NotImplementedError
+
+    def close(self):
         """Free the resources used by the gyro"""
         raise NotImplementedError

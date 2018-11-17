@@ -1,4 +1,4 @@
-# validated: 2017-12-27 TW f9bece2ffbf7 edu/wpi/first/wpilibj/AnalogTriggerOutput.java
+# validated: 2018-11-17 EN 0e9172f9a708 edu/wpi/first/wpilibj/AnalogTriggerOutput.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

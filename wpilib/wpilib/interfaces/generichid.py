@@ -1,4 +1,4 @@
-# validated: 2017-11-13 TW 21585f70a88e edu/wpi/first/wpilibj/GenericHID.java
+# validated: 2018-11-17 EN e7cf6bf7c58b edu/wpi/first/wpilibj/GenericHID.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

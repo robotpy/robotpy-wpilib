@@ -1,4 +1,4 @@
-# validated: 2018-09-30 EN a818c7fd4741 edu/wpi/first/wpilibj/Watchdog.java
+# validated: 2018-11-17 EN 6171856020e2 edu/wpi/first/wpilibj/Watchdog.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -47,7 +47,12 @@ class Watchdog:
         return self._isExpired
 
     def addEpoch(self, epochName: str) -> None:
-        """Adds time since last epoch to the list printed by printEpochs().
+        """
+        Adds time since last epoch to the list printed by printEpochs().
+
+        Epochs are a way to partition the time elapsed so that when overruns 
+        occur, one can determine which parts of an operation consumed the 
+        most time
 
         :param epochName: The name to associate with the epoch.
         """
