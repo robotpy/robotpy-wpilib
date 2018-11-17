@@ -1,4 +1,4 @@
-# validated: 2018-02-09 DS 77d6c11743a8 edu/wpi/first/wpilibj/drive/MecanumDrive.java
+# validated: 2018-11-17 EN 0614913f1abb edu/wpi/first/wpilibj/drive/MecanumDrive.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -83,6 +83,7 @@ class MecanumDrive(RobotDriveBase):
         MecanumDrive.instances += 1
         self.setName("MecanumDrive", self.instances)
 
+        self.rightSideInvertMultiplier = -1.0
         self.reported = False
 
     def driveCartesian(self, ySpeed, xSpeed, zRotation, gyroAngle=0.0):
@@ -100,7 +101,7 @@ class MecanumDrive(RobotDriveBase):
         if not self.reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,
                        4,
-                       hal.UsageReporting.kRobotDrive_MecanumCartesian)
+                       hal.UsageReporting.kRobotDrive2_MecanumCartesian)
             self.reported = True
 
         ySpeed = RobotDriveBase.limit(ySpeed)
@@ -119,9 +120,9 @@ class MecanumDrive(RobotDriveBase):
             # Rear Left
             -input.x + input.y + zRotation,
             # Front Right
-            input.x - input.y + zRotation,
+            -input.x + input.y - zRotation,
             # Rear Right
-            -input.x - input.y + zRotation
+            input.x + input.y - zRotation
         ]
 
         RobotDriveBase.normalize(wheelSpeeds)
@@ -130,8 +131,8 @@ class MecanumDrive(RobotDriveBase):
 
         self.frontLeftMotor.set(wheelSpeeds[0])
         self.rearLeftMotor.set(wheelSpeeds[1])
-        self.frontRightMotor.set(wheelSpeeds[2])
-        self.rearRightMotor.set(wheelSpeeds[3])
+        self.frontRightMotor.set(wheelSpeeds[2] * self.rightSideInvertMultiplier)
+        self.rearRightMotor.set(wheelSpeeds[3] * self.rightSideInvertMultiplier)
 
         self.feed()
 
@@ -149,7 +150,7 @@ class MecanumDrive(RobotDriveBase):
         if not self.reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,
                        4,
-                       hal.UsageReporting.kRobotDrive_MecanumPolar)
+                       hal.UsageReporting.kRobotDrive2_MecanumPolar)
             self.reported = True
 
         magnitude = RobotDriveBase.limit(magnitude) * math.sqrt(2)
@@ -157,6 +158,25 @@ class MecanumDrive(RobotDriveBase):
         self.driveCartesian(magnitude * math.cos(math.radians(angle)),
                             magnitude * math.sin(math.radians(angle)),
                             zRotation, 0.0)
+
+    def isRightSideInverted(self): 
+        """
+        Gets if the power sent to the right side of the drivetrain is 
+        multipled by -1.
+
+        :returns: true if the right side is inverted
+        """
+        return self.rightSideInvertMultiplier == -1.0
+
+    def setRightSideInverted(self, rightSideInverted: bool) -> None:
+        """
+        Sets if the power sent to the right side of the drivetrain should 
+        be multipled by -1.
+
+        :param rightSideInverted: true if right side power should be multipled 
+                                  by -1
+        """
+        self.rightSideInvertMultiplier = -1.0 if rightSideInverted else 1.0
 
     def stopMotor(self):
         self.frontLeftMotor.stopMotor()
@@ -170,7 +190,21 @@ class MecanumDrive(RobotDriveBase):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("MecanumDrive")
-        builder.addDoubleProperty("Front Left Motor Speed", self.frontLeftMotor.get, self.frontLeftMotor.set)
-        builder.addDoubleProperty("Front Right Motor Speed", lambda: -1*self.frontRightMotor.get(), lambda v: self.frontRightMotor.set(v))
-        builder.addDoubleProperty("Rear Left Motor Speed", self.rearLeftMotor.get, self.rearLeftMotor.set)
-        builder.addDoubleProperty("Rear Right Motor Speed", lambda: -1*self.rearRightMotor.get(), lambda v: self.rearRightMotor.set(v))
+        builder.setActuator(True)
+        builder.setSafeState(self.stopMotor)
+        builder.addDoubleProperty(
+            "Front Left Motor Speed", 
+            self.frontLeftMotor.get, 
+            self.frontLeftMotor.set)
+        builder.addDoubleProperty(
+            "Front Right Motor Speed", 
+            lambda: self.frontRightMotor.get() * self.rightSideInvertMultiplier, 
+            lambda v: self.frontRightMotor.set(v * self.rightSideInvertMultiplier))
+        builder.addDoubleProperty(
+            "Rear Left Motor Speed", 
+            self.rearLeftMotor.get, 
+            self.rearLeftMotor.set)
+        builder.addDoubleProperty(
+            "Rear Right Motor Speed", 
+            lambda: self.rearRightMotor.get() * self.rightSideInvertMultiplier, 
+            lambda v: self.rearRightMotor.set(v * self.rightSideInvertMultiplier))

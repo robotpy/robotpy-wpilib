@@ -375,3 +375,7 @@ def test_stopMotor_4(drive_mecanum):
     drive_mecanum.frontRightMotor.stopMotor.assert_called_once_with()
     drive_mecanum.rearLeftMotor.stopMotor.assert_called_once_with()
     drive_mecanum.rearRightMotor.stopMotor.assert_called_once_with()
+
+
+def test_feedWatchdog(drive_diff):
+    drive_diff.feedWatchdog()
