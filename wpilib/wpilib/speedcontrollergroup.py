@@ -1,4 +1,4 @@
-# validated: 2018-01-19 DS 0e8ff4663df9 edu/wpi/first/wpilibj/SpeedControllerGroup.java
+# validated: 2018-11-18 EN 0614913f1abb edu/wpi/first/wpilibj/SpeedControllerGroup.java
 
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
@@ -64,5 +64,6 @@ class SpeedControllerGroup(SendableBase, SpeedController):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Speed Controller")
+        builder.setActuator(True)
         builder.setSafeState(self.stopMotor)
         builder.addDoubleProperty("Value", self.get, self.set)
