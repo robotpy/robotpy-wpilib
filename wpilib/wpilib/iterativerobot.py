@@ -1,4 +1,4 @@
-# validated: 2018-09-30 EN a818c7fd4741 edu/wpi/first/wpilibj/IterativeRobot.java
+# validated: 2018-11-18 EN 81498e6af915 edu/wpi/first/wpilibj/IterativeRobot.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,6 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 
+import warnings
 import hal
 import logging
 
@@ -21,6 +22,10 @@ class IterativeRobot(IterativeRobotBase):
 
     periodic() functions from the base class are called each time a new packet is received from
     the driver station.
+
+    .. deprecated:: 2019.0.0
+        Use TimedRobot instead. It's a drop-in replacement that provides more 
+        regular execution periods.
     """
 
     kPacketPeriod = 0.02
@@ -41,6 +46,11 @@ class IterativeRobot(IterativeRobotBase):
                      the communications code starts.
         """
         super().__init__(IterativeRobot.kPacketPeriod)
+        warnings.warn(
+            "IterativeRobot is deprecated. Use TimedRobot instead. It's a " +
+            "drop-in replacement that provides more regular execution periods.",
+            DeprecationWarning
+        )
 
         hal.report(hal.UsageReporting.kResourceType_Framework,
                    hal.UsageReporting.kFramework_Iterative)

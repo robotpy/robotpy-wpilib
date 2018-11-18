@@ -1,4 +1,4 @@
-# validated: 2018-09-30 EN a818c7fd4741 edu/wpi/first/wpilibj/IterativeRobotBase.java
+# validated: 2018-11-18 EN 54fbec27df19 edu/wpi/first/wpilibj/IterativeRobotBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -15,6 +15,7 @@ from .smartdashboard import SmartDashboard
 from .driverstation import DriverStation
 from .robotbase import RobotBase
 from .watchdog import Watchdog
+from .shuffleboard import Shuffleboard
 
 __all__ = ["IterativeRobotBase"]
 
@@ -160,6 +161,7 @@ class IterativeRobotBase(RobotBase):
         if self.isDisabled():
             if self.last_mode is not self.Mode.kDisabled:
                 LiveWindow.setEnabled(False)
+                Shuffleboard.disableActuatorWidgets()
                 self.disabledInit()
                 self.watchdog.addEpoch("disabledInit()")
                 self.last_mode = self.Mode.kDisabled
@@ -169,6 +171,7 @@ class IterativeRobotBase(RobotBase):
         elif self.isAutonomous():
             if self.last_mode is not self.Mode.kAutonomous:
                 LiveWindow.setEnabled(False)
+                Shuffleboard.disableActuatorWidgets()
                 self.autonomousInit()
                 self.watchdog.addEpoch("autonomousInit()")
                 self.last_mode = self.Mode.kAutonomous
@@ -178,6 +181,7 @@ class IterativeRobotBase(RobotBase):
         elif self.isOperatorControl():
             if self.last_mode is not self.Mode.kTeleop:
                 LiveWindow.setEnabled(False)
+                Shuffleboard.disableActuatorWidgets()
                 self.teleopInit()
                 self.watchdog.addEpoch("teleopInit()")
                 self.last_mode = self.Mode.kTeleop
@@ -187,6 +191,7 @@ class IterativeRobotBase(RobotBase):
         else:
             if self.last_mode is not self.Mode.kTest:
                 LiveWindow.setEnabled(True)
+                Shuffleboard.enableActuatorWidgets()
                 self.testInit()
                 self.watchdog.addEpoch("testInit()")
                 self.last_mode = self.Mode.kTest
@@ -198,6 +203,7 @@ class IterativeRobotBase(RobotBase):
         self.watchdog.disable()
         SmartDashboard.updateValues()
         LiveWindow.updateValues()
+        Shuffleboard.update()
 
         if self.watchdog.isExpired():
             self.watchdog.printEpochs()

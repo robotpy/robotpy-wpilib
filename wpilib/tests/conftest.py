@@ -52,6 +52,7 @@ def wpilib(_module_patch, hal, hal_data, networktables):
     import wpilib.command
     import wpilib.drive
     import wpilib.interfaces
+    import wpilib.shuffleboard
     
     yield wpilib
     
