@@ -1,4 +1,4 @@
-# validated: 2018-03-04 DV 5175829babeb edu/wpi/first/wpilibj/PWMSpeedController.java
+# validated: 2018-11-18 EN 0614913f1abb edu/wpi/first/wpilibj/PWMSpeedController.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -20,6 +20,9 @@ class PWMSpeedController(SafePWM):
         super().__init__(channel)
         self.isInverted = False
     
+    def getDescription(self):
+        return "PWM %" % (self.getChannel(),)
+
     def set(self, speed):
         """Set the PWM value.
 
@@ -67,5 +70,6 @@ class PWMSpeedController(SafePWM):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Speed Controller")
+        builder.setActuator(True)
         builder.setSafeState(self.setDisabled)
         builder.addDoubleProperty("Value", self.getSpeed, self.setSpeed)

@@ -1,4 +1,4 @@
-# validated: 2018-01-01 DV 166d9e01bf75 edu/wpi/first/wpilibj/PWMVictorSPX.java
+# validated: 2018-11-18 EN d54c2665dc54 edu/wpi/first/wpilibj/PWMVictorSPX.java
 #----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -6,7 +6,7 @@
 # the project.
 #----------------------------------------------------------------------------
 
-#import hal
+import hal
 
 from .pwmspeedcontroller import PWMSpeedController
 
@@ -45,5 +45,5 @@ class PWMVictorSPX(PWMSpeedController):
         self.setSpeed(0)
         self.setZeroLatch()
 
-        #hal.report(hal.UsageReporting.kResourceType_PWMVictorSPX, self.getChannel())
+        hal.report(hal.UsageReporting.kResourceType_PWMVictorSPX, self.getChannel())
         self.setName("PWMVictorSPX", self.getChannel())
