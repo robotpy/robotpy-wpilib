@@ -1,4 +1,4 @@
-# validated: 2018-03-03 DV 7bb3e4efc319 edu/wpi/first/wpilibj/drive/RobotDriveBase.java
+# validated: 2018-11-17 EN 665a6e356a14 edu/wpi/first/wpilibj/drive/RobotDriveBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -71,6 +71,15 @@ class RobotDriveBase(SendableBase, MotorSafety):
         :param maxOutput: Multiplied with the output percentage computed by the drive functions.
         """
         self.maxOutput = maxOutput
+
+    def feedWatchdog(self):
+        """
+        Feed the motor safety object. Resets the timer that will stop the 
+        motors if it completes.
+
+        see :meth:`.MotorSafety.feed`
+        """
+        self.feed()
 
     @staticmethod
     def limit(value):

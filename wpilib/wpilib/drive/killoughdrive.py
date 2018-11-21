@@ -1,4 +1,4 @@
-# validated: 2017-12-25 TW f9bece2ffbf7 edu/wpi/first/wpilibj/drive/KilloughDrive.java
+# validated: 2018-11-17 EN 0614913f1abb edu/wpi/first/wpilibj/drive/KilloughDrive.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -97,9 +97,9 @@ class KilloughDrive(RobotDriveBase):
         """
 
         if not self.reported:
-            # hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-            #           3,
-            #           hal.UsageReporting.kRobotDrive_Curvature)
+            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
+                       3,
+                       hal.UsageReporting.kRobotDrive2_KilloughCurvature)
             self.reported = True
 
         ySpeed = RobotDriveBase.limit(ySpeed)
@@ -135,9 +135,9 @@ class KilloughDrive(RobotDriveBase):
         :param zRotation: The robot's rotation rate around the Z axis `[-1.0..1.0]`. Clockwise is positive.
         """
         if not self.reported:
-            # hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-            #           3,
-            #           hal.UsageReporting.kRobotDrive_KilloughPolar)
+            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
+                       3,
+                       hal.UsageReporting.kRobotDrive2_KilloughPolar)
             self.reported = True
 
         magnitude = RobotDriveBase.limit(magnitude) * math.sqrt(2)
@@ -156,6 +156,8 @@ class KilloughDrive(RobotDriveBase):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("KilloughDrive")
+        builder.setActuator(True)
+        buider.setSafeState(self.stopMotor)
         builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
         builder.addDoubleProperty("Right Motor Speed", self.rightMotor.get, self.rightMotor.set)
         builder.addDoubleProperty("Back Motor Speed", self.backMotor.get, self.backMotor.set)
