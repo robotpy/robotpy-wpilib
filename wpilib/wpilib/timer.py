@@ -1,4 +1,4 @@
-# validated: 2017-12-02 EN 614093c0c4fc edu/wpi/first/wpilibj/Timer.java
+# validated: 2018-11-17 EN 89d15f061b33 edu/wpi/first/wpilibj/Timer.java
 #----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

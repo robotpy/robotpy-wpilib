@@ -1,4 +1,4 @@
-# validated: 2018-01-06 DS ee33296e1fe6 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
+# validated: 2018-11-17 EN 89d15f061b33 edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.java
 
 # validation note: 2017-10-22: Not using the getEntry() stuff that Java uses,
 #                              as using the existing table stuff is more
@@ -58,8 +58,7 @@ class SmartDashboard:
         if cls.table is None:
             from networktables import NetworkTables
             cls.table = NetworkTables.getTable("SmartDashboard")
-            hal.report(hal.UsageReporting.kResourceType_SmartDashboard,
-                       hal.UsageReporting.kSmartDashboard_Instance)
+            hal.report(hal.UsageReporting.kResourceType_SmartDashboard, 0)
         return cls.table
 
     @classmethod

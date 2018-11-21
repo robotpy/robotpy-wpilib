@@ -81,10 +81,11 @@ class ConditionalCommand(Command):
         super()._initialize()
     
     def _cancel(self):
-        if self.chosenCommand is not None and self.chosenCommand.isRunning():
-            self.chosenCommand.cancel()
-            
-        super()._cancel()
+        with self.mutex:
+            if self.chosenCommand is not None and self.chosenCommand.isRunning():
+                self.chosenCommand.cancel()
+                
+            super()._cancel()
     
     def isFinished(self):
         if self.chosenCommand is not None:
