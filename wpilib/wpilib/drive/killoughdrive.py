@@ -7,6 +7,7 @@
 #----------------------------------------------------------------------------
 
 import math
+import hal
 
 from .robotdrivebase import RobotDriveBase
 from .vector2d import Vector2d
@@ -99,7 +100,7 @@ class KilloughDrive(RobotDriveBase):
         if not self.reported:
             hal.report(hal.UsageReporting.kResourceType_RobotDrive,
                        3,
-                       hal.UsageReporting.kRobotDrive2_KilloughCurvature)
+                       hal.UsageReporting.kRobotDrive2_KilloughCartesian)
             self.reported = True
 
         ySpeed = RobotDriveBase.limit(ySpeed)
@@ -157,7 +158,7 @@ class KilloughDrive(RobotDriveBase):
     def initSendable(self, builder):
         builder.setSmartDashboardType("KilloughDrive")
         builder.setActuator(True)
-        buider.setSafeState(self.stopMotor)
+        builder.setSafeState(self.stopMotor)
         builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
         builder.addDoubleProperty("Right Motor Speed", self.rightMotor.get, self.rightMotor.set)
         builder.addDoubleProperty("Back Motor Speed", self.backMotor.get, self.backMotor.set)

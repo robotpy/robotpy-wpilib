@@ -78,6 +78,88 @@ def test_init_error(wpimock, halmock):
         wpimock.drive.MecanumDrive()
 
 
+def test_differential_initSendable(wpilib, sendablebuilder):
+    m1, m2 = MagicMock(), MagicMock()
+    drive = wpilib.drive.DifferentialDrive(m1, m2)
+    m1.get.return_value = 0.4
+    m2.get.return_value = 0.5
+    drive.initSendable(sendablebuilder)
+    sendablebuilder.updateTable()
+    table = sendablebuilder.getTable()
+    assert table.getString(".type", "") == "DifferentialDrive"
+    assert table.getBoolean(".actuator", None) == True
+    assert table.getNumber("Left Motor Speed", None) == 0.4
+    assert table.getNumber("Right Motor Speed", None) == -0.5
+
+
+def test_differential_initSendable2(wpilib, sendablebuilder):
+    m1, m2 = MagicMock(), MagicMock()
+    drive = wpilib.drive.DifferentialDrive(m1, m2)
+    drive.setRightSideInverted(False)
+    m1.get.return_value = 0.4
+    m2.get.return_value = 0.5
+    drive.initSendable(sendablebuilder)
+    sendablebuilder.updateTable()
+    table = sendablebuilder.getTable()
+    assert table.getString(".type", "") == "DifferentialDrive"
+    assert table.getBoolean(".actuator", None) == True
+    assert table.getNumber("Left Motor Speed", None) == 0.4
+    assert table.getNumber("Right Motor Speed", None) == 0.5
+
+
+def test_killough_initSendable(wpilib, sendablebuilder):
+    m1, m2, m3 = [MagicMock() for x in range(3)]
+    drive = wpilib.drive.KilloughDrive(m1, m2, m3)
+    m1.get.return_value = 0.4
+    m2.get.return_value = 0.5
+    m3.get.return_value = -0.7
+    drive.initSendable(sendablebuilder)
+    sendablebuilder.updateTable()
+    table = sendablebuilder.getTable()
+    assert table.getString(".type", "") == "KilloughDrive"
+    assert table.getBoolean(".actuator", None) == True
+    assert table.getNumber("Left Motor Speed", None) == 0.4
+    assert table.getNumber("Right Motor Speed", None) == 0.5
+    assert table.getNumber("Back Motor Speed", None) == -0.7
+
+
+def test_mechanum_initSendable(wpilib, sendablebuilder):
+    m1, m2, m3, m4 = [MagicMock() for x in range(4)]
+    drive = wpilib.drive.MecanumDrive(m1, m2, m3, m4)
+    m1.get.return_value = 0.4
+    m2.get.return_value = 0.5
+    m3.get.return_value = -0.7
+    m4.get.return_value = -0.8
+    drive.initSendable(sendablebuilder)
+    sendablebuilder.updateTable()
+    table = sendablebuilder.getTable()
+    assert table.getString(".type", "") == "MecanumDrive"
+    assert table.getBoolean(".actuator", None) == True
+    assert table.getNumber("Front Left Motor Speed", None) == 0.4
+    assert table.getNumber("Front Right Motor Speed", None) == 0.7
+    assert table.getNumber("Rear Left Motor Speed", None) == 0.5
+    assert table.getNumber("Rear Right Motor Speed", None) == 0.8
+
+
+def test_mechanum_initSendable2(wpilib, sendablebuilder):
+    m1, m2, m3, m4 = [MagicMock() for x in range(4)]
+    drive = wpilib.drive.MecanumDrive(m1, m2, m3, m4)
+    drive.setRightSideInverted(False)
+    m1.get.return_value = 0.4
+    m2.get.return_value = 0.5
+    m3.get.return_value = -0.7
+    m4.get.return_value = -0.8
+    drive.initSendable(sendablebuilder)
+    sendablebuilder.updateTable()
+    table = sendablebuilder.getTable()
+    assert table.getString(".type", "") == "MecanumDrive"
+    assert table.getBoolean(".actuator", None) == True
+    assert table.getNumber("Front Left Motor Speed", None) == 0.4
+    assert table.getNumber("Front Right Motor Speed", None) == -0.7
+    assert table.getNumber("Rear Left Motor Speed", None) == 0.5
+    assert table.getNumber("Rear Right Motor Speed", None) == -0.8
+
+
 @pytest.fixture(scope="function")
 def drive_diff(wpimock, halmock):
     """Left/right drive (mocks out setLeftRightMotorOutputs)."""
@@ -379,3 +461,25 @@ def test_stopMotor_4(drive_mecanum):
 
 def test_feedWatchdog(drive_diff):
     drive_diff.feedWatchdog()
+
+
+def test_killough_driveCartesian(wpilib):
+    m1, m2, m3 = MagicMock(), MagicMock(), MagicMock()
+    drive = wpilib.drive.KilloughDrive(m1, m2, m3)
+
+    drive.driveCartesian(0.5, 0.5, 0.5, 90)
+
+    m1.set.assert_called_with(pytest.approx(0.566, 0.01))
+    m2.set.assert_called_with(pytest.approx(1.0, 0.01))
+    m3.set.assert_called_with(pytest.approx(-0.025, 0.01))
+
+
+def test_killough_drivePolar(wpilib):
+    m1, m2, m3 = MagicMock(), MagicMock(), MagicMock()
+    drive = wpilib.drive.KilloughDrive(m1, m2, m3)
+
+    drive.drivePolar(0.5, 80, 110)
+
+    m1.set.assert_called_with(pytest.approx(1.0, 0.01))
+    m2.set.assert_called_with(pytest.approx(0.998, 0.01))
+    m3.set.assert_called_with(pytest.approx(0.987, 0.01))
