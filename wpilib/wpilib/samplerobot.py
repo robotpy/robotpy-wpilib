@@ -13,6 +13,7 @@ import hal
 from .livewindow import LiveWindow
 from .robotbase import RobotBase
 from .timer import Timer
+from .shuffleboard import Shuffleboard
 
 __all__ = ["SampleRobot"]
 
@@ -153,12 +154,14 @@ class SampleRobot(RobotBase):
                         Timer.delay(0.01)
                 elif self.isTest():
                     LiveWindow.setEnabled(True)
+                    Shuffleboard.enableActuatorWidgets()
                     self.ds.InTest(True)
                     self.test()
                     self.ds.InTest(False)
                     while self.isTest() and self.isEnabled():
                         Timer.delay(0.01)
                     LiveWindow.setEnabled(False)
+                    Shuffleboard.disableActuatorWidgets()
                 else:
                     self.ds.InOperatorControl(True)
                     self.operatorControl()
