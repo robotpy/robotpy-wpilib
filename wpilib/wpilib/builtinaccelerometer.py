@@ -1,9 +1,9 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/BuiltInAccelerometer.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -11,6 +11,7 @@ from .interfaces import Accelerometer
 from .sendablebase import SendableBase
 
 __all__ = ["BuiltInAccelerometer"]
+
 
 class BuiltInAccelerometer(SendableBase):
     """Built-in accelerometer device
@@ -32,8 +33,12 @@ class BuiltInAccelerometer(SendableBase):
         self.xEntry = None
         self.yEntry = None
         self.zEntry = None
-        hal.report(hal.UsageReporting.kResourceType_Accelerometer, 0, 0,
-                      "Built-in accelerometer")
+        hal.report(
+            hal.UsageReporting.kResourceType_Accelerometer,
+            0,
+            0,
+            "Built-in accelerometer",
+        )
         self.setName("BuiltInAccel", 0)
 
     def setRange(self, range):
@@ -43,7 +48,7 @@ class BuiltInAccelerometer(SendableBase):
                       the accelerometer will measure.
         :type  range: :class:`BuiltInAccelerometer.Range`
         """
-        
+
         hal.setAccelerometerActive(False)
 
         if range == self.Range.k2G:

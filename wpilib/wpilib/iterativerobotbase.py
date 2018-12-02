@@ -99,7 +99,9 @@ class IterativeRobotBase(RobotBase):
         Users should override this method for initialization code which will be
         called each time the robot enters autonomous mode.
         """
-        self.logger.info("Default IterativeRobot.autonomousInit() method... Overload me!")
+        self.logger.info(
+            "Default IterativeRobot.autonomousInit() method... Overload me!"
+        )
 
     def teleopInit(self) -> None:
         """Initialization code for teleop mode should go here.
@@ -123,35 +125,45 @@ class IterativeRobotBase(RobotBase):
         """Periodic code for all robot modes should go here."""
         func = self.robotPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            self.logger.info("Default IterativeRobot.robotPeriodic() method... Overload me!")
+            self.logger.info(
+                "Default IterativeRobot.robotPeriodic() method... Overload me!"
+            )
             func.firstRun = False
 
     def disabledPeriodic(self) -> None:
         """Periodic code for disabled mode should go here."""
         func = self.disabledPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            self.logger.info("Default IterativeRobot.disabledPeriodic() method... Overload me!")
+            self.logger.info(
+                "Default IterativeRobot.disabledPeriodic() method... Overload me!"
+            )
             func.firstRun = False
 
     def autonomousPeriodic(self) -> None:
         """Periodic code for autonomous mode should go here."""
         func = self.autonomousPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            self.logger.info("Default IterativeRobot.autonomousPeriodic() method... Overload me!")
+            self.logger.info(
+                "Default IterativeRobot.autonomousPeriodic() method... Overload me!"
+            )
             func.firstRun = False
 
     def teleopPeriodic(self) -> None:
         """Periodic code for teleop mode should go here."""
         func = self.teleopPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            self.logger.warning("Default IterativeRobot.teleopPeriodic() method... Overload me!")
+            self.logger.warning(
+                "Default IterativeRobot.teleopPeriodic() method... Overload me!"
+            )
             func.firstRun = False
 
     def testPeriodic(self) -> None:
         """Periodic code for test mode should go here."""
         func = self.testPeriodic.__func__
         if not hasattr(func, "firstRun"):
-            self.logger.info("Default IterativeRobot.testPeriodic() method... Overload me!")
+            self.logger.info(
+                "Default IterativeRobot.testPeriodic() method... Overload me!"
+            )
             func.firstRun = False
 
     def loopFunc(self) -> None:
@@ -209,4 +221,6 @@ class IterativeRobotBase(RobotBase):
             self.watchdog.printEpochs()
 
     def printLoopOverrunMessage(self) -> None:
-        DriverStation.reportWarning("Loop time of %ss overrun\n" % (self.period,), False)
+        DriverStation.reportWarning(
+            "Loop time of %ss overrun\n" % (self.period,), False
+        )

@@ -4,16 +4,18 @@ from .root import ShuffleboardRoot
 from .complexwidget import ComplexWidget
 from .container import ShuffleboardContainer
 
+
 class ShuffleboardInstance(ShuffleboardRoot):
     def __init__(self, ntInstance):
         from .shuffleboard import Shuffleboard
+
         assert ntInstance is not None, "NetworkTable instance cannot be None"
         self.rootTable = ntInstance.getTable(Shuffleboard.kBaseTableName)
         self.rootMetaTable = self.rootTable.getSubTable(".metadata")
         self.tabsChanged = False
         self.tabs = {}
 
-    def getTab(self, title: str) -> 'ShuffleboardTab':
+    def getTab(self, title: str) -> "ShuffleboardTab":
         assert title is not None, "Tab title cannot be None"
         if title not in self.tabs:
             self.tabs[title] = ShuffleboardTab(self, title)
@@ -57,4 +59,3 @@ class ShuffleboardInstance(ShuffleboardRoot):
                 func(component)
             if isinstance(component, ShuffleboardContainer):
                 self._apply(component, func)
-                    

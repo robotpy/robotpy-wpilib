@@ -1,11 +1,13 @@
 # validated: 2018-11-18 EN 175c6c1f0130 edu/wpi/first/wpilibj/shuffleboard/ShuffleboardRoot.java
 
+
 class ShuffleboardRoot:
     """
     The root of the data placed in Shuffleboard. It contains the tabs, but no 
     data is placed directly in the root.
     """
-    def getTab(self, title: str) -> 'ShuffleboardTab':
+
+    def getTab(self, title: str) -> "ShuffleboardTab":
         """
         Gets the tab with the given title, creating it if it does not 
         already exist.

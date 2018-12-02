@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/ADXL362.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -15,6 +15,7 @@ from .sendablebase import SendableBase
 
 __all__ = ["ADXL362"]
 
+
 class ADXL362(SendableBase):
     """
         ADXL362 SPI Accelerometer.
@@ -23,20 +24,20 @@ class ADXL362(SendableBase):
         
         .. not_implemented: init
     """
-    
+
     kRegWrite = 0x0A
     kRegRead = 0x0B
-     
+
     kPartIdRegister = 0x02
     kDataRegister = 0x0E
     kFilterCtlRegister = 0x2C
     kPowerCtlRegister = 0x2D
-    
+
     kFilterCtl_Range2G = 0x00
     kFilterCtl_Range4G = 0x40
     kFilterCtl_Range8G = 0x80
     kFilterCtl_ODR_100Hz = 0x03
-    
+
     kPowerCtl_UltraLowNoise = 0x20
     kPowerCtl_AutoSleep = 0x04
     kPowerCtl_Measure = 0x02
@@ -58,7 +59,7 @@ class ADXL362(SendableBase):
         """
         if port is None:
             port = SPI.Port.kOnboardCS1
-        
+
         self.spi = SPI(port)
         self.spi.setClockRate(3000000)
         self.spi.setMSBFirst()
@@ -70,19 +71,25 @@ class ADXL362(SendableBase):
         data = [self.kRegRead, self.kPartIdRegister, 0]
         data = self.spi.transaction(data)
         if data[2] != 0xF2:
-            DriverStation.reportError("could not find ADXL362 on SPI port " + port, False)
+            DriverStation.reportError(
+                "could not find ADXL362 on SPI port " + port, False
+            )
             self.spi.close()
             self.spi = None
             return
-    
+
         self.setRange(range)
 
         # Turn on the measurements
-        self.spi.write([self.kRegWrite, self.kPowerCtlRegister,
-                        self.kPowerCtl_Measure | self.kPowerCtl_UltraLowNoise])
+        self.spi.write(
+            [
+                self.kRegWrite,
+                self.kPowerCtlRegister,
+                self.kPowerCtl_Measure | self.kPowerCtl_UltraLowNoise,
+            ]
+        )
 
-        hal.report(hal.UsageReporting.kResourceType_ADXL362,
-                      port)
+        hal.report(hal.UsageReporting.kResourceType_ADXL362, port)
 
         self.setName("ADXL362", port)
 
@@ -111,15 +118,15 @@ class ADXL362(SendableBase):
             value = self.kFilterCtl_Range4G
             self.gsPerLSB = 0.002
         # 16G not supported; treat as 8G
-        elif range == self.Range.k8G or \
-             range == self.Range.k16G:
+        elif range == self.Range.k8G or range == self.Range.k16G:
             value = self.kFilterCtl_Range8G
             self.gsPerLSB = 0x004
         else:
             raise ValueError("Invalid range argument '%s'" % range)
 
-        self.spi.write([self.kRegWrite, self.kFilterCtlRegister,
-                        self.kFilterCtl_ODR_100Hz | value])
+        self.spi.write(
+            [self.kRegWrite, self.kFilterCtlRegister, self.kFilterCtl_ODR_100Hz | value]
+        )
 
     def getX(self):
         """Get the x axis acceleration
@@ -150,9 +157,8 @@ class ADXL362(SendableBase):
         """
         if self.spi is None:
             return 0.0
-        
-        data = [self.kRegRead,
-                self.kDataRegister + axis, 0, 0]
+
+        data = [self.kRegRead, self.kDataRegister + axis, 0, 0]
         data = self.spi.transaction(data)
         # Sensor is little endian... swap bytes
         rawAccel = (data[2] << 8) | data[1]
@@ -165,7 +171,7 @@ class ADXL362(SendableBase):
         """
         if self.spi is None:
             return 0.0, 0.0, 0.0
-        
+
         # Select the data address.
         data = [0] * 8
         data[0] = self.kRegRead
@@ -175,11 +181,13 @@ class ADXL362(SendableBase):
         # Sensor is little endian... swap bytes
         rawData = []
         for i in range(3):
-            rawData.append((data[i*2+2] << 8) | data[i*2+1])
+            rawData.append((data[i * 2 + 2] << 8) | data[i * 2 + 1])
 
-        return (rawData[0] * self.gsPerLSB,
-                rawData[1] * self.gsPerLSB,
-                rawData[2] * self.gsPerLSB)
+        return (
+            rawData[0] * self.gsPerLSB,
+            rawData[1] * self.gsPerLSB,
+            rawData[2] * self.gsPerLSB,
+        )
 
     def _updateValues(self):
         data = self.getAccelerations()

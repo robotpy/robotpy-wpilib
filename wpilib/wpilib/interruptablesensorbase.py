@@ -71,8 +71,11 @@ class InterruptableSensorBase(SendableBase):
 
         assert self.interrupt is not None
 
-        hal.requestInterrupts(self.interrupt, self.getPortHandleForRouting(),
-                              self.getAnalogTriggerTypeForRouting())
+        hal.requestInterrupts(
+            self.interrupt,
+            self.getPortHandleForRouting(),
+            self.getAnalogTriggerTypeForRouting(),
+        )
         self.setUpSourceEdge(True, False)
 
     def allocateInterrupts(self, watcher):
@@ -86,7 +89,9 @@ class InterruptableSensorBase(SendableBase):
             raise ValueError("The interrupt has already been allocated")
         self.isSynchronousInterrupt = watcher
         self._interrupt = hal.initializeInterrupts(watcher)
-        self._interrupt_finalizer = weakref.finalize(self, hal.cleanInterrupts, self._interrupt)
+        self._interrupt_finalizer = weakref.finalize(
+            self, hal.cleanInterrupts, self._interrupt
+        )
 
     def cancelInterrupts(self):
         """Cancel interrupts on this device. This deallocates all the
@@ -165,8 +170,8 @@ class InterruptableSensorBase(SendableBase):
         :param fallingEdge: True to interrupt on falling edge
         """
         if self.interrupt is not None:
-            hal.setInterruptUpSourceEdge(self.interrupt,
-                                         1 if risingEdge else 0,
-                                         1 if fallingEdge else 0)
+            hal.setInterruptUpSourceEdge(
+                self.interrupt, 1 if risingEdge else 0, 1 if fallingEdge else 0
+            )
         else:
             raise ValueError("You must call RequestInterrupts before setUpSourceEdge")

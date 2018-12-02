@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/Encoder.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import warnings
@@ -23,8 +23,10 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Encoder"]
 
+
 def _freeEncoder(encoder):
     hal.freeEncoder(encoder)
+
 
 class Encoder(SendableBase):
     """Class to read quadrature encoders.
@@ -129,6 +131,7 @@ class Encoder(SendableBase):
         b_channel_arg = ("bChannel", int)
         index_channel_arg = ("indexChannel", int)
 
+        # fmt: off
         argument_templates = [[a_source_arg, b_source_arg],
                               [a_source_arg, b_source_arg, ("reverseDirection", bool)],
                               [a_source_arg, b_source_arg, ("reverseDirection", bool), ("encodingType", int)],
@@ -139,10 +142,10 @@ class Encoder(SendableBase):
                               [a_channel_arg, b_channel_arg, ("reverseDirection", bool), ("encodingType", int)],
                               [a_channel_arg, b_channel_arg, index_channel_arg],
                               [a_channel_arg, b_channel_arg, index_channel_arg, ("reverseDirection", bool)]]
+        # fmt: on
 
-        _, results = match_arglist('Encoder.__init__',
-                                   args, kwargs, argument_templates)
-        
+        _, results = match_arglist("Encoder.__init__", args, kwargs, argument_templates)
+
         # keyword arguments
         aSource = results.pop("aSource", None)
         bSource = results.pop("bSource", None)
@@ -186,26 +189,26 @@ class Encoder(SendableBase):
         self.speedEntry = None
         self.distanceEntry = None
         self.distancePerTickEntry = None
-        
+
         self._encoder = hal.initializeEncoder(
             aSource.getPortHandleForRouting(),
             aSource.getAnalogTriggerTypeForRouting(),
             bSource.getPortHandleForRouting(),
             bSource.getAnalogTriggerTypeForRouting(),
-            reverseDirection, encodingType
+            reverseDirection,
+            encodingType,
         )
-        
+
         self.__finalizer = weakref.finalize(self, _freeEncoder, self._encoder)
-        
+
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
-        
+
         if self.indexSource is not None:
             self.setIndexSource(self.indexSource)
 
         self.index = self.getFPGAIndex()
-        hal.report(hal.UsageReporting.kResourceType_Encoder,
-                      self.index, encodingType)
+        hal.report(hal.UsageReporting.kResourceType_Encoder, self.index, encodingType)
         self.setName("Encoder", self.index)
 
     @property
@@ -365,7 +368,7 @@ class Encoder(SendableBase):
         """
         hal.setEncoderDistancePerPulse(self.encoder, distancePerPulse)
 
-    def getDistancePerPulse(self): 
+    def getDistancePerPulse(self):
         """ 
         Get the distance per pulse for this encoder.
 
@@ -418,11 +421,13 @@ class Encoder(SendableBase):
 
         :param pidSource: An enum to select the parameter.
         """
-        if pidSource not in (self.PIDSourceType.kDisplacement,
-                             self.PIDSourceType.kRate):
+        if pidSource not in (
+            self.PIDSourceType.kDisplacement,
+            self.PIDSourceType.kRate,
+        ):
             raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
 
@@ -452,8 +457,12 @@ class Encoder(SendableBase):
         else:
             self.indexSource = DigitalInput(source)
 
-        hal.setEncoderIndexSource(self.encoder, self.indexSource.getPortHandleForRouting(),
-                                  self.indexSource.getAnalogTriggerTypeForRouting(), indexing_type)
+        hal.setEncoderIndexSource(
+            self.encoder,
+            self.indexSource.getPortHandleForRouting(),
+            self.indexSource.getAnalogTriggerTypeForRouting(),
+            indexing_type,
+        )
 
     def initSendable(self, builder):
         if self.encodingType == self.EncodingType.k4X:

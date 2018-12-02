@@ -2,9 +2,9 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 
-@pytest.fixture('function')
+@pytest.fixture("function")
 def MockThread():
-    with patch('threading.Thread', new=MagicMock()) as Thread:
+    with patch("threading.Thread", new=MagicMock()) as Thread:
         yield Thread
 
 
@@ -29,4 +29,3 @@ def test_init2(wpilib, sim_hooks, MockThread):
     assert doggo.startTime == 4.5
     assert not doggo.isExpired()
     assert doggo.getTime() == 0
-

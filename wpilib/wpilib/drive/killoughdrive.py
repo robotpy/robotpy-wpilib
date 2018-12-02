@@ -1,10 +1,10 @@
 # validated: 2018-11-17 EN 0614913f1abb edu/wpi/first/wpilibj/drive/KilloughDrive.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import math
 import hal
@@ -45,8 +45,15 @@ class KilloughDrive(RobotDriveBase):
 
     instances = 0
 
-    def __init__(self, leftMotor, rightMotor, backMotor, leftMotorAngle=kDefaultLeftMotorAngle,
-                 rightMotorAngle=kDefaultRightMotorAngle, backMotorAngle=kDefaultBackMotorAngle):
+    def __init__(
+        self,
+        leftMotor,
+        rightMotor,
+        backMotor,
+        leftMotorAngle=kDefaultLeftMotorAngle,
+        rightMotorAngle=kDefaultRightMotorAngle,
+        backMotorAngle=kDefaultBackMotorAngle,
+    ):
         """Construct a Killough drive with the given motors and default motor angles.
 
         Angles are measured in degrees clockwise from the positive X axis.
@@ -69,12 +76,18 @@ class KilloughDrive(RobotDriveBase):
         self.rightMotor = rightMotor
         self.backMotor = backMotor
 
-        self.leftVec = Vector2d(math.cos(math.radians(leftMotorAngle)),
-                                math.sin(math.radians(leftMotorAngle)))
-        self.rightVec = Vector2d(math.cos(math.radians(rightMotorAngle)),
-                                 math.sin(math.radians(rightMotorAngle)))
-        self.backVec = Vector2d(math.cos(math.radians(backMotorAngle)),
-                                math.sin(math.radians(backMotorAngle)))
+        self.leftVec = Vector2d(
+            math.cos(math.radians(leftMotorAngle)),
+            math.sin(math.radians(leftMotorAngle)),
+        )
+        self.rightVec = Vector2d(
+            math.cos(math.radians(rightMotorAngle)),
+            math.sin(math.radians(rightMotorAngle)),
+        )
+        self.backVec = Vector2d(
+            math.cos(math.radians(backMotorAngle)),
+            math.sin(math.radians(backMotorAngle)),
+        )
 
         self.addChild(self.leftMotor)
         self.addChild(self.rightMotor)
@@ -98,9 +111,11 @@ class KilloughDrive(RobotDriveBase):
         """
 
         if not self.reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       3,
-                       hal.UsageReporting.kRobotDrive2_KilloughCartesian)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                3,
+                hal.UsageReporting.kRobotDrive2_KilloughCartesian,
+            )
             self.reported = True
 
         ySpeed = RobotDriveBase.limit(ySpeed)
@@ -113,9 +128,11 @@ class KilloughDrive(RobotDriveBase):
         input = Vector2d(ySpeed, xSpeed)
         input.rotate(gyroAngle)
 
-        wheelSpeeds = [input.scalarProject(self.leftVec) + zRotation,
-                       input.scalarProject(self.rightVec) + zRotation,
-                       input.scalarProject(self.backVec) + zRotation]
+        wheelSpeeds = [
+            input.scalarProject(self.leftVec) + zRotation,
+            input.scalarProject(self.rightVec) + zRotation,
+            input.scalarProject(self.backVec) + zRotation,
+        ]
 
         RobotDriveBase.normalize(wheelSpeeds)
 
@@ -136,15 +153,21 @@ class KilloughDrive(RobotDriveBase):
         :param zRotation: The robot's rotation rate around the Z axis `[-1.0..1.0]`. Clockwise is positive.
         """
         if not self.reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       3,
-                       hal.UsageReporting.kRobotDrive2_KilloughPolar)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                3,
+                hal.UsageReporting.kRobotDrive2_KilloughPolar,
+            )
             self.reported = True
 
         magnitude = RobotDriveBase.limit(magnitude) * math.sqrt(2)
 
-        self.driveCartesian(magnitude * math.cos(math.radians(angle)), magnitude * math.sin(math.radians(angle)),
-                            zRotation, 0)
+        self.driveCartesian(
+            magnitude * math.cos(math.radians(angle)),
+            magnitude * math.sin(math.radians(angle)),
+            zRotation,
+            0,
+        )
 
     def stopMotor(self):
         self.leftMotor.stopMotor()
@@ -159,6 +182,12 @@ class KilloughDrive(RobotDriveBase):
         builder.setSmartDashboardType("KilloughDrive")
         builder.setActuator(True)
         builder.setSafeState(self.stopMotor)
-        builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
-        builder.addDoubleProperty("Right Motor Speed", self.rightMotor.get, self.rightMotor.set)
-        builder.addDoubleProperty("Back Motor Speed", self.backMotor.get, self.backMotor.set)
+        builder.addDoubleProperty(
+            "Left Motor Speed", self.leftMotor.get, self.leftMotor.set
+        )
+        builder.addDoubleProperty(
+            "Right Motor Speed", self.rightMotor.get, self.rightMotor.set
+        )
+        builder.addDoubleProperty(
+            "Back Motor Speed", self.backMotor.get, self.backMotor.set
+        )

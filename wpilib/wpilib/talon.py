@@ -1,16 +1,17 @@
 # validated: 2017-12-09 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Talon.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
 from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Talon"]
+
 
 class Talon(PWMSpeedController):
     """
@@ -44,6 +45,5 @@ class Talon(PWMSpeedController):
         self.setSpeed(0.0)
         self.setZeroLatch()
 
-        hal.report(hal.UsageReporting.kResourceType_Talon,
-                   self.getChannel())
+        hal.report(hal.UsageReporting.kResourceType_Talon, self.getChannel())
         self.setName("Talon", self.getChannel())

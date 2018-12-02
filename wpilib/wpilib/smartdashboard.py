@@ -4,12 +4,12 @@
 #                              as using the existing table stuff is more
 #                              efficient
 
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import threading
@@ -41,6 +41,7 @@ class SmartDashboard:
         # sd.putXXX and sd.getXXX work as expected here
     
     """
+
     # The NetworkTable used by SmartDashboard
     table = None
     # A table linking tables in the SmartDashboard to the SmartDashboardData
@@ -57,6 +58,7 @@ class SmartDashboard:
     def getTable(cls):
         if cls.table is None:
             from networktables import NetworkTables
+
             cls.table = NetworkTables.getTable("SmartDashboard")
             hal.report(hal.UsageReporting.kResourceType_SmartDashboard, 0)
         return cls.table
@@ -85,13 +87,13 @@ class SmartDashboard:
             key_arg = ("key", [str])
             data_arg = ("data", [HasAttribute("initSendable")])
             value_arg = ("value", [HasAttribute("initSendable")])
-            templates = [[key_arg, data_arg],
-                         [value_arg],]
+            templates = [[key_arg, data_arg], [value_arg]]
 
-            index, results = match_arglist('SmartDashboard.putData',
-                                       args, kwargs, templates)
+            index, results = match_arglist(
+                "SmartDashboard.putData", args, kwargs, templates
+            )
             if index == 0:
-                key = results['key']
+                key = results["key"]
                 data = results["data"]
             elif index == 1:
                 data = results["value"]
@@ -111,7 +113,7 @@ class SmartDashboard:
                 data.initSendable(sddata.builder)
                 sddata.builder.updateTable()
                 sddata.builder.startListeners()
-                dataTable.getEntry('.name').setString(key)
+                dataTable.getEntry(".name").setString(key)
 
     @classmethod
     def getData(cls, key):
@@ -128,7 +130,7 @@ class SmartDashboard:
         if data is None:
             raise KeyError("SmartDashboard data does not exist: '%s'" % key)
         return data.sendable
-    
+
     @classmethod
     def getEntry(cls, key):
         """Gets the entry for the specified key.
@@ -430,7 +432,7 @@ class SmartDashboard:
         """
         table = cls.getTable()
         return table.getNumberArray(key, defaultValue)
-    
+
     @classmethod
     def putStringArray(cls, key, value):
         """Put a string array in the table
@@ -445,7 +447,7 @@ class SmartDashboard:
         """
         table = cls.getTable()
         return table.putStringArray(key, value)
-    
+
     @classmethod
     def setDefaultStringArray(cls, key, defaultValue):
         """If the key doesn't currently exist, then the specified value will
@@ -461,7 +463,7 @@ class SmartDashboard:
         """
         table = cls.getTable()
         return table.setDefaultStringArray(key, defaultValue)
-    
+
     @classmethod
     def getStringArray(cls, key, defaultValue):
         """Returns the string array the key maps to. If the key does not exist or is

@@ -1,6 +1,6 @@
-'''
+"""
     This is the core of WPILib.
-'''
+"""
 
 from .accumulatorresult import *
 from .adxl345_i2c import *
@@ -87,4 +87,4 @@ from ._impl.main import run
 try:
     from .version import __version__
 except ImportError:
-    __version__ = 'master'
+    __version__ = "master"

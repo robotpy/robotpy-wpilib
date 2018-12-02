@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock, call, patch
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def command(wpilib, robotstate_impl):
     return wpilib.command.Command()
 
@@ -58,7 +58,7 @@ def test_command_timeSinceInitialized(wpilib, sim_hooks):
     command.startTiming()
     sim_hooks.time = 5.0
     assert command.timeSinceInitialized() == pytest.approx(3.0)
-    
+
 
 def test_command_isTimedOut1(wpilib, sim_hooks):
     command = wpilib.command.Command()
@@ -69,7 +69,7 @@ def test_command_isTimedOut1(wpilib, sim_hooks):
     assert not command.isTimedOut()
     sim_hooks.time = 500000.0
     assert not command.isTimedOut()
-    
+
 
 def test_command_isTimedOut2(wpilib, sim_hooks):
     command = wpilib.command.Command(timeout=2.0)
@@ -80,7 +80,7 @@ def test_command_isTimedOut2(wpilib, sim_hooks):
     assert not command.isTimedOut()
     sim_hooks.time = 2.1
     assert command.isTimedOut()
-    
+
 
 def test_command_requires1(command, wpilib):
     subsystem = wpilib.command.Subsystem()
@@ -88,7 +88,7 @@ def test_command_requires1(command, wpilib):
     command.requires(subsystem)
 
     assert subsystem in command.requirements
-    
+
 
 def test_command_requires2(command, wpilib):
     subsystem = wpilib.command.Subsystem()
@@ -98,14 +98,14 @@ def test_command_requires2(command, wpilib):
     with pytest.raises(ValueError) as excinfo:
         command.requires(subsystem)
 
-    assert excinfo.value.args[0] == 'Can not add new requirement to command'
+    assert excinfo.value.args[0] == "Can not add new requirement to command"
 
-    
+
 def test_command_requires3(command):
     with pytest.raises(ValueError) as excinfo:
         command.requires(None)
 
-    assert excinfo.value.args[0] == 'Subsystem must not be None.'
+    assert excinfo.value.args[0] == "Subsystem must not be None."
 
 
 def test_command_removed1(command):
@@ -195,7 +195,9 @@ def test_command_run2(command):
     command.run()
     command.run()
 
-    mock.assert_has_calls([call("initialize"), call("execute"), call("execute"), call("execute")])
+    mock.assert_has_calls(
+        [call("initialize"), call("execute"), call("execute"), call("execute")]
+    )
 
 
 def test_command_run3(command):
@@ -210,12 +212,15 @@ def test_command_run3(command):
     mock.assert_has_calls([])
 
 
-@pytest.mark.parametrize("is_finished, is_canceled, expected", [
-    (True, False, False),
-    (False, False, True),
-    (True, True, False),
-    (False, True, False),
-    ])
+@pytest.mark.parametrize(
+    "is_finished, is_canceled, expected",
+    [
+        (True, False, False),
+        (False, False, True),
+        (True, True, False),
+        (False, True, False),
+    ],
+)
 def test_command_run4(command, is_finished, is_canceled, expected):
     command.isFinished = MagicMock(return_value=is_finished)
     command.isCanceled = MagicMock(return_value=is_canceled)
@@ -256,7 +261,7 @@ def test_command_setParent(command, wpilib):
     assert not command.isParented()
     command.setParent(parent)
     assert command.isParented()
-    
+
 
 def test_command_clearRequirements(command, wpilib):
     subsystem = wpilib.command.Subsystem()
@@ -284,13 +289,18 @@ def test_command_initSendable_set1(command, sendablebuilder):
     assert sendablebuilder.properties[2].key == ".isParented"
 
 
-@pytest.mark.parametrize("input, is_running, start_called, cancel_called", [
-    (True, True, False, False),
-    (True, False, True, False),
-    (False, True, False, True),
-    (False, False, False, False),
-    ])
-def test_command_initSendable_set2(command, sendablebuilder, input, is_running, start_called, cancel_called):
+@pytest.mark.parametrize(
+    "input, is_running, start_called, cancel_called",
+    [
+        (True, True, False, False),
+        (True, False, True, False),
+        (False, True, False, True),
+        (False, False, False, False),
+    ],
+)
+def test_command_initSendable_set2(
+    command, sendablebuilder, input, is_running, start_called, cancel_called
+):
     command.initSendable(sendablebuilder)
     command.start = MagicMock()
     command.cancel = MagicMock()
@@ -348,7 +358,7 @@ def test_timedcommand_init2(wpilib):
 
 
 def test_pidcommand_init1(wpilib, SimTimerTask):
-    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0);
+    command = wpilib.command.PIDCommand(1.0, 2.0, 3.0)
 
     assert command.getName() == "PIDCommand"
     assert command.timeout == -1
@@ -362,7 +372,7 @@ def test_pidcommand_init1(wpilib, SimTimerTask):
 
 
 def test_pidcommand_init2(wpilib, SimTimerTask):
-    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0, 4.0);
+    command = wpilib.command.PIDCommand(1.0, 2.0, 3.0, 4.0)
 
     assert command.getName() == "PIDCommand"
     assert command.timeout == -1
@@ -376,7 +386,7 @@ def test_pidcommand_init2(wpilib, SimTimerTask):
 
 
 def test_pidcommand_init3(wpilib, SimTimerTask):
-    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0, 4.0, 5.0);
+    command = wpilib.command.PIDCommand(1.0, 2.0, 3.0, 4.0, 5.0)
 
     assert command.getName() == "PIDCommand"
     assert command.timeout == -1
@@ -390,7 +400,7 @@ def test_pidcommand_init3(wpilib, SimTimerTask):
 
 
 def test_pidcommand_init4(wpilib, SimTimerTask):
-    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0, 4.0, 5.0, "Percival");
+    command = wpilib.command.PIDCommand(1.0, 2.0, 3.0, 4.0, 5.0, "Percival")
 
     assert command.getName() == "Percival"
     assert command.timeout == -1
@@ -405,7 +415,7 @@ def test_pidcommand_init4(wpilib, SimTimerTask):
 
 def test_pidcommand_init5(wpilib, SimTimerTask):
     subsystem = wpilib.command.Subsystem()
-    command = wpilib.command.PIDCommand(1.0 ,2.0, 3.0, 4.0, 5.0, "Percival", subsystem);
+    command = wpilib.command.PIDCommand(1.0, 2.0, 3.0, 4.0, 5.0, "Percival", subsystem)
 
     assert command.getName() == "Percival"
     assert command.timeout == -1

@@ -7,6 +7,7 @@ from .sendablebase import SendableBase
 
 __all__ = ["Compressor"]
 
+
 class Compressor(SendableBase):
     """Class for operating a compressor connected to a PCM (Pneumatic Control Module).
     

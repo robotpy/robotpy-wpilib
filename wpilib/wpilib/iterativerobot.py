@@ -47,13 +47,15 @@ class IterativeRobot(IterativeRobotBase):
         """
         super().__init__(IterativeRobot.kPacketPeriod)
         warnings.warn(
-            "IterativeRobot is deprecated. Use TimedRobot instead. It's a " +
-            "drop-in replacement that provides more regular execution periods.",
-            DeprecationWarning
+            "IterativeRobot is deprecated. Use TimedRobot instead. It's a "
+            + "drop-in replacement that provides more regular execution periods.",
+            DeprecationWarning,
         )
 
-        hal.report(hal.UsageReporting.kResourceType_Framework,
-                   hal.UsageReporting.kFramework_Iterative)
+        hal.report(
+            hal.UsageReporting.kResourceType_Framework,
+            hal.UsageReporting.kFramework_Iterative,
+        )
 
     def startCompetition(self) -> None:
         """Provide an alternate "main loop" via startCompetition()."""

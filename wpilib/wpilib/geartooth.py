@@ -1,10 +1,10 @@
 # validated: 2017-12-26 EN f9bece2ffbf7 edu/wpi/first/wpilibj/GearTooth.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -12,6 +12,7 @@ from .counter import Counter
 from .livewindow import LiveWindow
 
 __all__ = ["GearTooth"]
+
 
 class GearTooth(Counter):
     """Interface to the gear tooth sensor supplied by FIRST
@@ -41,11 +42,18 @@ class GearTooth(Counter):
         self.enableDirectionSensing(directionSensitive)
         if hasattr(self.upSource, "getChannel"):
             if directionSensitive:
-                hal.report(hal.UsageReporting.kResourceType_GearTooth,
-                           self.upSource.getChannel(), 0, "D")
+                hal.report(
+                    hal.UsageReporting.kResourceType_GearTooth,
+                    self.upSource.getChannel(),
+                    0,
+                    "D",
+                )
             else:
-                hal.report(hal.UsageReporting.kResourceType_GearTooth,
-                           self.upSource.getChannel(), 0)
+                hal.report(
+                    hal.UsageReporting.kResourceType_GearTooth,
+                    self.upSource.getChannel(),
+                    0,
+                )
         self.setName("GearTooth", self.upSource.getChannel())
 
     def initSendable(self, builder):

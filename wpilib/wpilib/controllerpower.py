@@ -8,7 +8,7 @@
 
 import hal
 
-__all__ = ['ControllerPower']
+__all__ = ["ControllerPower"]
 
 
 class ControllerPower:
@@ -68,7 +68,7 @@ class ControllerPower:
             :returns: True if enabled, False otherwise
             :rtype: bool
         """
-        return hal.getUserActive3V3();
+        return hal.getUserActive3V3()
 
     @staticmethod
     def getFaultCount3V3():

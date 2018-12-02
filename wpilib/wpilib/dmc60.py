@@ -1,10 +1,10 @@
 # validated: 2018-09-30 EN d54c2665dc54 edu/wpi/first/wpilibj/DMC60.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -40,7 +40,7 @@ class DMC60(PWMSpeedController):
             - 0.997ms = full "reverse"
         """
         super().__init__(channel)
-        self.setBounds(2.004, 1.52, 1.50, 1.48, .997)
+        self.setBounds(2.004, 1.52, 1.50, 1.48, 0.997)
         self.setPeriodMultiplier(self.PeriodMultiplier.k1X)
         self.setSpeed(0)
         self.setZeroLatch()

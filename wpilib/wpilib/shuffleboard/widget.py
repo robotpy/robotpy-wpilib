@@ -2,10 +2,12 @@
 from .component import ShuffleboardComponent
 from .container import ShuffleboardContainer
 
+
 class ShuffleboardWidget(ShuffleboardComponent):
     """
     Abstract superclass for widgets.
     """
+
     def __init__(self, parent: ShuffleboardContainer, title: str):
         super().__init__(parent, title)
 

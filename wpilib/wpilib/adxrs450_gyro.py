@@ -1,10 +1,10 @@
 # validated: 2018-09-30 EN cbaff528500c edu/wpi/first/wpilibj/ADXRS450_Gyro.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) 2015-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -13,7 +13,8 @@ from .gyrobase import GyroBase
 from .spi import SPI
 from .timer import Timer
 
-__all__ = ['ADXRS450_Gyro']
+__all__ = ["ADXRS450_Gyro"]
+
 
 class ADXRS450_Gyro(GyroBase):
     """
@@ -57,6 +58,7 @@ class ADXRS450_Gyro(GyroBase):
         simPort = None
         if hal.HALIsSimulation():
             from hal_impl.spi_helpers import ADXRS450_Gyro_Sim
+
             simPort = ADXRS450_Gyro_Sim(self)
 
         self.spi = SPI(port, simPort=simPort)
@@ -68,18 +70,31 @@ class ADXRS450_Gyro(GyroBase):
         self.spi.setChipSelectActiveLow()
 
         # Validate the part ID
-        if (self._readRegister(self.kPIDRegister) & 0xff00) != 0x5200:
+        if (self._readRegister(self.kPIDRegister) & 0xFF00) != 0x5200:
             self.spi.close()
             self.spi = None
-            DriverStation.reportError("could not find ADXRS450 gyro on SPI port %s" % port, False)
+            DriverStation.reportError(
+                "could not find ADXRS450 gyro on SPI port %s" % port, False
+            )
             return
 
         # python-specific: make this easier to simulate
         if hal.isSimulation():
-            self.spi.initAccumulator(self.kSamplePeriod, 0x20000000, 4, 0x0, 0x0, 0, 32, True, True)
+            self.spi.initAccumulator(
+                self.kSamplePeriod, 0x20000000, 4, 0x0, 0x0, 0, 32, True, True
+            )
         else:
-            self.spi.initAccumulator(self.kSamplePeriod, 0x20000000, 4, 0x0c00000e, 0x04000000,
-                10, 16, True, True)
+            self.spi.initAccumulator(
+                self.kSamplePeriod,
+                0x20000000,
+                4,
+                0x0C00000E,
+                0x04000000,
+                10,
+                16,
+                True,
+                True,
+            )
 
         self.calibrate()
 
@@ -129,19 +144,16 @@ class ADXRS450_Gyro(GyroBase):
         cmdhi = 0x8000 | (reg << 1)
         parity = self._calcParity(cmdhi)
 
-        data = [cmdhi >> 8,
-                cmdhi & 0xff,
-                0,
-                0 if parity else 1]
+        data = [cmdhi >> 8, cmdhi & 0xFF, 0, 0 if parity else 1]
 
         self.spi.write(data)
         data = self.spi.read(False, 4)
 
-        if (data[0] & 0xe0) == 0:
+        if (data[0] & 0xE0) == 0:
             return 0  # error, return 0
 
-        val = int.from_bytes(data[:4], byteorder='big')
-        return (val >> 5) & 0xffff
+        val = int.from_bytes(data[:4], byteorder="big")
+        return (val >> 5) & 0xFFFF
 
     def reset(self):
         """
@@ -176,7 +188,11 @@ class ADXRS450_Gyro(GyroBase):
         """
         if self.spi is None:
             return 0.0
-        return self.spi.getAccumulatorValue() * self.kDegreePerSecondPerLSB * self.kSamplePeriod
+        return (
+            self.spi.getAccumulatorValue()
+            * self.kDegreePerSecondPerLSB
+            * self.kSamplePeriod
+        )
 
     def getRate(self):
         """Return the rate of rotation of the gyro

@@ -1,14 +1,15 @@
 # validated: 2017-11-21 EN b65447b6f5a8 edu/wpi/first/wpilibj/Resource.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import weakref
 
 __all__ = ["Resource"]
+
 
 class Resource:
     """Tracks resources in the program.
@@ -22,46 +23,45 @@ class Resource:
 
     .. not_implemented: restartProgram
     """
-    
+
     _resource_objects = []
     _global_resources = []
-    
+
     @staticmethod
     def _reset():
-        '''
+        """
             This clears all resources in the program and calls free() on any
             objects that have a free method.
-        '''
-        
+        """
+
         for resource in Resource._resource_objects:
-            
+
             # free all the resources, if a free method is defined
             for ref in resource.numAllocated:
                 if ref is None:
                     continue
                 obj = ref()
                 if obj is not None:
-                    if hasattr(obj, 'close'):
+                    if hasattr(obj, "close"):
                         obj.close()
-                    elif hasattr(obj, 'free'):
+                    elif hasattr(obj, "free"):
                         obj.free()
-            
-            resource.numAllocated = [None]*len(resource.numAllocated)
-        
+
+            resource.numAllocated = [None] * len(resource.numAllocated)
+
         for ref in Resource._global_resources:
             obj = ref()
             if obj is not None:
-                if hasattr(obj, 'close'):
+                if hasattr(obj, "close"):
                     obj.close()
-                elif hasattr(obj, 'free'):
+                elif hasattr(obj, "free"):
                     obj.free()
-        
+
         del Resource._global_resources[:]
 
     @staticmethod
     def _add_global_resource(obj):
         Resource._global_resources.append(weakref.ref(obj))
-        
 
     def __init__(self, size):
         """Allocate storage for a new instance of Resource.
@@ -72,7 +72,7 @@ class Resource:
         :param size: The number of blocks to allocate
         """
         Resource._resource_objects.append(self)
-        self.numAllocated = [None]*size
+        self.numAllocated = [None] * size
 
     def allocate(self, obj, index=None):
         """Allocate a resource.

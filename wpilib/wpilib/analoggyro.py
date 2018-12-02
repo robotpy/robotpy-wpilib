@@ -1,10 +1,10 @@
 # validated: 2018-09-30 EN cbaff528500c edu/wpi/first/wpilibj/AnalogGyro.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -13,6 +13,7 @@ from .gyrobase import GyroBase
 from .interfaces import PIDSource
 
 __all__ = ["AnalogGyro"]
+
 
 class AnalogGyro(GyroBase):
     """Interface to a gyro device via an :class:`.AnalogInput`
@@ -33,9 +34,9 @@ class AnalogGyro(GyroBase):
     kSamplesPerSecond = 50.0
     kCalibrationSampleTime = 5.0
     kDefaultVoltsPerDegreePerSecond = 0.007
-    
+
     PIDSourceType = PIDSource.PIDSourceType
-    
+
     def __init__(self, channel, center=None, offset=None):
         """Gyro constructor.
 
@@ -55,35 +56,37 @@ class AnalogGyro(GyroBase):
         :type offset: float
         """
         super().__init__()
-        
+
         if not hasattr(channel, "initAccumulator"):
             channel = AnalogInput(channel)
             self.channelAllocated = True
             self.addChild(channel)
         else:
             self.channelAllocated = False
-            
+
         self.analog = channel
 
         self.gyroHandle = hal.initializeAnalogGyro(self.analog.port)
-    
+
         self.setDeadband(0.0)
 
         hal.setupAnalogGyro(self.gyroHandle)
-        
+
         hal.report(hal.UsageReporting.kResourceType_Gyro, self.analog.getChannel())
         self.setName("AnalogGyro", self.analog.getChannel())
-        
+
         if center is None or offset is None:
             self.calibrate()
         else:
-            hal.setAnalogGyroParameters(self.gyroHandle, self.kDefaultVoltsPerDegreePerSecond, offset, center)
+            hal.setAnalogGyroParameters(
+                self.gyroHandle, self.kDefaultVoltsPerDegreePerSecond, offset, center
+            )
             self.reset()
-        
+
     def calibrate(self):
         """:see: :meth:`.Gyro.calibrate`"""
         hal.calibrateAnalogGyro(self.gyroHandle)
-        
+
     def reset(self):
         """:see: :meth:`.Gyro.reset`"""
         hal.resetAnalogGyro(self.gyroHandle)
@@ -96,13 +99,13 @@ class AnalogGyro(GyroBase):
             self.analog = None
         hal.freeAnalogGyro(self.gyroHandle)
         self.gyroHandle = 0
-        
+
     def getAngle(self):
         """:see: :meth:`.Gyro.getAngle`"""
-    
+
         if self.analog is None:
             return 0.0
-        
+
         return hal.getAnalogGyroAngle(self.gyroHandle)
 
     def getRate(self):
@@ -119,7 +122,7 @@ class AnalogGyro(GyroBase):
         :returns: the current offset value
         """
         return hal.getAnalogGyroOffset(self.gyroHandle)
-    
+
     def getCenter(self):
         """Return the gyro center value set during calibration to
         use as a future preset
@@ -138,7 +141,9 @@ class AnalogGyro(GyroBase):
             The sensitivity in Volts/degree/second
         :type  voltsPerDegreePerSecond: float
         """
-        hal.setAnalogGyroVoltsPerDegreePerSecond(self.gyroHandle, voltsPerDegreePerSecond)
+        hal.setAnalogGyroVoltsPerDegreePerSecond(
+            self.gyroHandle, voltsPerDegreePerSecond
+        )
 
     def setDeadband(self, volts):
         """Set the size of the neutral zone.  Any voltage from the gyro less
@@ -151,6 +156,5 @@ class AnalogGyro(GyroBase):
         """
         if self.analog is None:
             return
-        
-        hal.setAnalogGyroDeadband(self.gyroHandle, volts)
 
+        hal.setAnalogGyroDeadband(self.gyroHandle, volts)

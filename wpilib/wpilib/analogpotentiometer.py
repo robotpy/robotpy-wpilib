@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/AnalogPotentiometer.java
-#----------------------------------------------------------------------------*/
+# ----------------------------------------------------------------------------*/
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 # Open Source Software - may be modified and shared by FRC teams. The code   */
 # must be accompanied by the FIRST BSD license file in the root directory of */
 # the project.                                                               */
-#----------------------------------------------------------------------------*/
+# ----------------------------------------------------------------------------*/
 
 import hal
 
@@ -13,6 +13,7 @@ from .interfaces import PIDSource
 from .sendablebase import SendableBase
 
 __all__ = ["AnalogPotentiometer"]
+
 
 class AnalogPotentiometer(SendableBase):
     """Reads a potentiometer via an :class:`.AnalogInput`
@@ -24,7 +25,7 @@ class AnalogPotentiometer(SendableBase):
 
     .. not_implemented: initPot
     """
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel, fullRange=1.0, offset=0.0):
@@ -65,8 +66,10 @@ class AnalogPotentiometer(SendableBase):
         """
         if self.analog_input is None:
             return self.offset
-        return (self.analog_input.getVoltage() / hal.getUserVoltage5V()) * self.fullRange + self.offset
-    
+        return (
+            self.analog_input.getVoltage() / hal.getUserVoltage5V()
+        ) * self.fullRange + self.offset
+
     def setPIDSourceType(self, pidSource):
         """Set which parameter you are using as a process
         control variable. 
@@ -77,7 +80,7 @@ class AnalogPotentiometer(SendableBase):
         if pidSource != self.PIDSourceType.kDisplacement:
             raise ValueError("Only displacement PID is allowed for potentiometers.")
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
 

@@ -2,14 +2,14 @@ import pytest
 from unittest.mock import MagicMock
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def builder(wpilib):
     return wpilib.SendableBuilder()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def builder_table(networktables):
-    return networktables.NetworkTables.getTable('sensor')
+    return networktables.NetworkTables.getTable("sensor")
 
 
 def test_sendablebuilder_addBooleanProperty1(builder, builder_table):
@@ -21,7 +21,7 @@ def test_sendablebuilder_addBooleanProperty1(builder, builder_table):
     assert builder.properties[0].listener is None
     builder.stopLiveWindowMode()
     assert builder.properties[0].listener is None
-    
+
 
 def test_sendablebuilder_addBooleanProperty2(builder, builder_table):
     builder.setTable(builder_table)
@@ -72,7 +72,7 @@ def test_sendablebuilder_addDoubleProperty1(builder, builder_table):
     assert builder.properties[0].listener is None
     builder.stopLiveWindowMode()
     assert builder.properties[0].listener is None
-    
+
 
 def test_sendablebuilder_addDoubleProperty2(builder, builder_table):
     builder.setTable(builder_table)
@@ -123,7 +123,7 @@ def test_sendablebuilder_addStringProperty1(builder, builder_table):
     assert builder.properties[0].listener is None
     builder.stopLiveWindowMode()
     assert builder.properties[0].listener is None
-    
+
 
 def test_sendablebuilder_addStringProperty2(builder, builder_table):
     builder.setTable(builder_table)
@@ -174,7 +174,7 @@ def test_sendablebuilder_addBooleanArrayProperty1(builder, builder_table):
     assert builder.properties[0].listener is None
     builder.stopLiveWindowMode()
     assert builder.properties[0].listener is None
-    
+
 
 def test_sendablebuilder_addBooleanArrayProperty2(builder, builder_table):
     builder.setTable(builder_table)
@@ -225,7 +225,7 @@ def test_sendablebuilder_addDoubleArrayProperty1(builder, builder_table):
     assert builder.properties[0].listener is None
     builder.stopLiveWindowMode()
     assert builder.properties[0].listener is None
-    
+
 
 def test_sendablebuilder_addDoubleArrayProperty2(builder, builder_table):
     builder.setTable(builder_table)
@@ -276,7 +276,7 @@ def test_sendablebuilder_addStringArrayProperty1(builder, builder_table):
     assert builder.properties[0].listener is None
     builder.stopLiveWindowMode()
     assert builder.properties[0].listener is None
-    
+
 
 def test_sendablebuilder_addStringArrayProperty2(builder, builder_table):
     builder.setTable(builder_table)

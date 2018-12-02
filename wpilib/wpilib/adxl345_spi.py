@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/ADXL345_SPI.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -14,13 +14,14 @@ from .sendablebase import SendableBase
 
 __all__ = ["ADXL345_SPI"]
 
+
 class ADXL345_SPI(SendableBase):
     """
         ADXL345 accelerometer device via spi
         
         .. not_implemented: init
     """
-    
+
     kPowerCtlRegister = 0x2D
     kDataFormatRegister = 0x31
     kDataRegister = 0x32
@@ -68,8 +69,9 @@ class ADXL345_SPI(SendableBase):
 
         self.setRange(range)
 
-        hal.report(hal.UsageReporting.kResourceType_ADXL345,
-                      hal.UsageReporting.kADXL345_SPI)
+        hal.report(
+            hal.UsageReporting.kResourceType_ADXL345, hal.UsageReporting.kADXL345_SPI
+        )
 
         self.setName("ADXL345_SPI", port)
 
@@ -97,8 +99,7 @@ class ADXL345_SPI(SendableBase):
         else:
             raise ValueError("Invalid range argument '%s'" % range)
 
-        self.spi.write([self.kDataFormatRegister,
-                        self.kDataFormat_FullRes | value])
+        self.spi.write([self.kDataFormatRegister, self.kDataFormat_FullRes | value])
 
     def getX(self):
         """Get the x axis acceleration
@@ -127,8 +128,11 @@ class ADXL345_SPI(SendableBase):
         :param axis: The axis to read from.
         :returns: An object containing the acceleration measured on each axis of the ADXL345 in Gs.
         """
-        data = [(self.kAddress_Read | self.kAddress_MultiByte |
-                 self.kDataRegister) + axis, 0, 0]
+        data = [
+            (self.kAddress_Read | self.kAddress_MultiByte | self.kDataRegister) + axis,
+            0,
+            0,
+        ]
         data = self.spi.transaction(data)
         # Sensor is little endian... swap bytes
         rawAccel = (data[2] << 8) | data[1]
@@ -142,18 +146,19 @@ class ADXL345_SPI(SendableBase):
         """
         # Select the data address.
         data = [0] * 7
-        data[0] = (self.kAddress_Read | self.kAddress_MultiByte |
-                   self.kDataRegister)
+        data[0] = self.kAddress_Read | self.kAddress_MultiByte | self.kDataRegister
         data = self.spi.transaction(data)
 
         # Sensor is little endian... swap bytes
         rawData = []
         for i in range(3):
-            rawData.append((data[i*2+2] << 8) | data[i*2+1])
+            rawData.append((data[i * 2 + 2] << 8) | data[i * 2 + 1])
 
-        return (rawData[0] * self.kGsPerLSB,
-                rawData[1] * self.kGsPerLSB,
-                rawData[2] * self.kGsPerLSB)
+        return (
+            rawData[0] * self.kGsPerLSB,
+            rawData[1] * self.kGsPerLSB,
+            rawData[2] * self.kGsPerLSB,
+        )
 
     # Live Window code, only does anything if live window is activated.
     def _updateValues(self):

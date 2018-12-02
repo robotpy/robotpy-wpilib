@@ -5,7 +5,7 @@ from .tab import ShuffleboardTab
 from .instance import ShuffleboardInstance
 
 
-__all__ = ['Shuffleboard']
+__all__ = ["Shuffleboard"]
 
 
 class Shuffleboard:

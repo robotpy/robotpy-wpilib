@@ -1,16 +1,17 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/command/PIDSubsystem.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 from .subsystem import Subsystem
 
 from ..pidcontroller import PIDController
 
 __all__ = ["PIDSubsystem"]
+
 
 class PIDSubsystem(Subsystem):
     """This class is designed to handle the case where there is a Subsystem
@@ -39,8 +40,9 @@ class PIDSubsystem(Subsystem):
         super().__init__(name)
         if period is None:
             period = PIDController.kDefaultPeriod
-        self.controller = PIDController(p, i, d, f, self.returnPIDInput,
-                                        self.usePIDOutput, period)
+        self.controller = PIDController(
+            p, i, d, f, self.returnPIDInput, self.usePIDOutput, period
+        )
         self.addChild(self.controller)
 
     def getPIDController(self):

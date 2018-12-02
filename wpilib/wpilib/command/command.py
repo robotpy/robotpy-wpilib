@@ -1,10 +1,10 @@
 # validated: 2018-10-30 EN 0b113ad9ce93 edu/wpi/first/wpilibj/command/Command.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 from .scheduler import Scheduler
 from ..robotstate import RobotState
@@ -15,6 +15,7 @@ from networktables import NetworkTables
 import threading
 
 __all__ = ["Command"]
+
 
 class Command(SendableBase):
     """The Command class is at the very core of the entire command framework.
@@ -155,7 +156,11 @@ class Command(SendableBase):
         :returns: whether or not the command should stay within the Scheduler.
         """
         with self.mutex:
-            if not self.runWhenDisabled and self.parent is None and RobotState.isDisabled():
+            if (
+                not self.runWhenDisabled
+                and self.parent is None
+                and RobotState.isDisabled()
+            ):
                 self.cancel()
             if self.isCanceled():
                 return False
@@ -249,8 +254,7 @@ class Command(SendableBase):
         :returns: whether the time has expired
         """
         with self.mutex:
-            return (self.timeout != -1 and
-                    self.timeSinceInitialized() >= self.timeout)
+            return self.timeout != -1 and self.timeSinceInitialized() >= self.timeout
 
     def getRequirements(self):
         """Returns the requirements (as a set of Subsystems) of this command
@@ -272,10 +276,12 @@ class Command(SendableBase):
         """
         with self.mutex:
             if self.parent is not None:
-                raise ValueError("Can not give command to a command group after already being put in a command group")
+                raise ValueError(
+                    "Can not give command to a command group after already being put in a command group"
+                )
             self.lockChanges()
             self.parent = parent
-            
+
     def isParented(self):
         """
         Returns whether the command has a parent.
@@ -301,7 +307,9 @@ class Command(SendableBase):
         with self.mutex:
             self.lockChanges()
             if self.parent is not None:
-                raise ValueError("Can not start a command that is a part of a command group")
+                raise ValueError(
+                    "Can not start a command that is a part of a command group"
+                )
             Scheduler.getInstance().add(self)
             self.completed = False
 
@@ -362,7 +370,7 @@ class Command(SendableBase):
         """
         with self.mutex:
             return self.canceled
-    
+
     def isCompleted(self) -> bool:
         """Whether or not this command has completed running.
         

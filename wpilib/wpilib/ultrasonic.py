@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/Ultrasonic.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import threading
@@ -18,6 +18,7 @@ from .sendablebase import SendableBase
 from .timer import Timer
 
 __all__ = ["Ultrasonic"]
+
 
 class Ultrasonic(SendableBase):
     """Ultrasonic rangefinder control
@@ -37,26 +38,27 @@ class Ultrasonic(SendableBase):
 
     class Unit:
         """The units to return when PIDGet is called"""
+
         kInches = 0
         kMillimeters = 1
 
     #: Time (sec) for the ping trigger pulse.
     kPingTime = 10 * 1e-6
-    
+
     #: Priority that the ultrasonic round robin task runs.
     kPriority = 90
-    
+
     #: Max time (ms) between readings.
     kMaxUltrasonicTime = 0.1
     kSpeedOfSoundInchesPerSec = 1130.0 * 12.0
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     _static_mutex = threading.RLock()
-    
+
     #: ultrasonic sensor list
     sensors = weakref.WeakSet()
-    
+
     #: Automatic round robin mode
     automaticEnabled = False
     instances = 0
@@ -90,7 +92,7 @@ class Ultrasonic(SendableBase):
                 if u.isEnabled():
                     # do the ping
                     u.pingChannel.pulse(Ultrasonic.kPingTime)
-                Timer.delay(.1) # wait for ping to return
+                Timer.delay(0.1)  # wait for ping to return
             if not count:
                 return
 
@@ -110,69 +112,70 @@ class Ultrasonic(SendableBase):
         # Convert to DigitalInput and DigitalOutput if necessary
         self.pingAllocated = False
         self.echoAllocated = False
-        
-        if not hasattr(pingChannel, 'channel'):
+
+        if not hasattr(pingChannel, "channel"):
             from .digitaloutput import DigitalOutput
+
             pingChannel = DigitalOutput(pingChannel)
             self.pingAllocated = True
-            
-        if not hasattr(echoChannel, 'channel'):
+
+        if not hasattr(echoChannel, "channel"):
             from .digitalinput import DigitalInput
+
             echoChannel = DigitalInput(echoChannel)
             self.echoAllocated = True
-            
+
         self.pingChannel = pingChannel
         self.echoChannel = echoChannel
         self.units = units
         self.pidSource = self.PIDSourceType.kDisplacement
-        self.enabled = True # make it available for round robin scheduling
+        self.enabled = True  # make it available for round robin scheduling
 
         self.valueEntry = None
-        
+
         # set up counter for this sensor
         self.counter = Counter(self.echoChannel)
         self.counter.setMaxPeriod(1.0)
         self.counter.setSemiPeriodMode(True)
         self.counter.reset()
-        
+
         isAutomatic = Ultrasonic.isAutomaticMode()
         self.setAutomaticMode(False)
-        
+
         Ultrasonic.sensors.add(self)
         if isAutomatic:
             self.setAutomaticMode(True)
-        
+
         Resource._add_global_resource(self)
 
         Ultrasonic.instances += 1
-        hal.report(hal.UsageReporting.kResourceType_Ultrasonic,
-                      Ultrasonic.instances)
+        hal.report(hal.UsageReporting.kResourceType_Ultrasonic, Ultrasonic.instances)
         LiveWindow.addSensor("Ultrasonic", self.echoChannel.getChannel(), self)
 
     def close(self):
         isAutomatic = Ultrasonic.isAutomaticMode()
         self.setAutomaticMode(False)
-            
+
         try:
             Ultrasonic.sensors.remove(self)
         except (KeyError, ValueError):
             pass
-        
+
         if isAutomatic and len(Ultrasonic.sensors):
             self.setAutomaticMode(True)
-        
+
         if self.pingAllocated and self.pingChannel:
             self.pingChannel.close()
             self.pingChannel = None
-            
+
         if self.echoAllocated and self.echoChannel:
             self.echoChannel.close()
             self.echoChannel = None
-        
+
         if self.counter != None:
             self.counter.close()
             self.counter = None
-        
+
         super().close()
 
     def setAutomaticMode(self, enabling):
@@ -190,8 +193,8 @@ class Ultrasonic(SendableBase):
         """
         enabling = bool(enabling)
         if enabling == Ultrasonic.isAutomaticMode():
-            return # ignore the case of no change
-        
+            return  # ignore the case of no change
+
         with Ultrasonic._static_mutex:
             Ultrasonic.automaticEnabled = enabling
 
@@ -201,18 +204,18 @@ class Ultrasonic(SendableBase):
             for u in Ultrasonic.sensors:
                 if u is not None:
                     u.counter.reset()
-            
+
             # Start round robin task
             Ultrasonic._thread = threading.Thread(
-                    target=Ultrasonic.ultrasonicChecker,
-                    name="ultrasonicChecker")
+                target=Ultrasonic.ultrasonicChecker, name="ultrasonicChecker"
+            )
             Ultrasonic.daemon = True
             Ultrasonic._thread.start()
         else:
             # Wait for background task to stop running
             Ultrasonic._thread.join()
             Ultrasonic._thread = None
-            
+
             # Clear all the counters (data now invalid) since automatic mode is
             # disabled. No synchronization is needed because the background task is
             # stopped.
@@ -254,8 +257,7 @@ class Ultrasonic(SendableBase):
         :rtype: float
         """
         if self.isRangeValid():
-            return self.counter.getPeriod() * \
-                    Ultrasonic.kSpeedOfSoundInchesPerSec / 2.0
+            return self.counter.getPeriod() * Ultrasonic.kSpeedOfSoundInchesPerSec / 2.0
         else:
             return 0
 
@@ -268,7 +270,7 @@ class Ultrasonic(SendableBase):
         :rtype: float
         """
         return self.getRangeInches() * 25.4
-    
+
     def setPIDSourceType(self, pidSource):
         """Set which parameter you are using as a process
         control variable. 
@@ -279,7 +281,7 @@ class Ultrasonic(SendableBase):
         if pidSource != self.PIDSourceType.kDisplacement:
             raise ValueError("Only displacement PID is allowed for ultrasonics.")
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
 
@@ -302,10 +304,10 @@ class Ultrasonic(SendableBase):
 
         :param units: The DistanceUnit that should be used.
         """
-        
+
         if units not in [self.Unit.kInches, self.Unit.kMillimeters]:
             raise ValueError("Invalid units argument '%s'" % units)
-        
+
         self.units = units
 
     def getDistanceUnits(self):

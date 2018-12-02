@@ -1,10 +1,10 @@
 # validated: 2017-12-12 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Servo.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -12,6 +12,7 @@ from .livewindow import LiveWindow
 from .pwm import PWM
 
 __all__ = ["Servo"]
+
 
 class Servo(PWM):
     """Standard hobby style servo
@@ -24,7 +25,7 @@ class Servo(PWM):
     kMinServoAngle = 0.0
 
     kDefaultMaxServoPWM = 2.4
-    kDefaultMinServoPWM = .6
+    kDefaultMinServoPWM = 0.6
 
     def __init__(self, channel):
         """Constructor.
@@ -36,15 +37,13 @@ class Servo(PWM):
         :type  channel: int
         """
         super().__init__(channel)
-        self.setBounds(self.kDefaultMaxServoPWM, 0, 0, 0,
-                       self.kDefaultMinServoPWM)
+        self.setBounds(self.kDefaultMaxServoPWM, 0, 0, 0, self.kDefaultMinServoPWM)
         self.setPeriodMultiplier(self.PeriodMultiplier.k4X)
 
         self.valueEntry = None
         self.valueListener = None
 
-        hal.report(hal.UsageReporting.kResourceType_Servo,
-                   self.getChannel())
+        hal.report(hal.UsageReporting.kResourceType_Servo, self.getChannel())
         self.setName("Servo", self.getChannel())
 
     def set(self, value):
@@ -89,8 +88,7 @@ class Servo(PWM):
         elif degrees > self.kMaxServoAngle:
             degrees = self.kMaxServoAngle
 
-        self.setPosition(((degrees - self.kMinServoAngle)) /
-                         self.getServoAngleRange())
+        self.setPosition(((degrees - self.kMinServoAngle)) / self.getServoAngleRange())
 
     def getAngle(self):
         """Get the servo angle.

@@ -17,10 +17,12 @@ from .sendablebase import SendableBase
 
 __all__ = ["DigitalOutput"]
 
+
 def _freePWMGenerator(pwmGenerator):
     # Disable the output by routing to a dead bit.
     hal.setDigitalPWMOutputChannel(pwmGenerator, SensorUtil.kDigitalChannels)
     hal.freeDigitalPWM(pwmGenerator)
+
 
 class DigitalOutput(SendableBase):
     """Writes to a digital output
@@ -46,8 +48,7 @@ class DigitalOutput(SendableBase):
 
         self.handle = hal.initializeDIOPort(hal.getPort(channel), False)
 
-        hal.report(hal.UsageReporting.kResourceType_DigitalOutput,
-                      channel)
+        hal.report(hal.UsageReporting.kResourceType_DigitalOutput, channel)
         self.setName("DigitalOutput", channel)
 
     @property
@@ -140,8 +141,9 @@ class DigitalOutput(SendableBase):
         self._pwmGenerator = hal.allocateDigitalPWM()
         hal.setDigitalPWMDutyCycle(self._pwmGenerator, initialDutyCycle)
         hal.setDigitalPWMOutputChannel(self._pwmGenerator, self.channel)
-        self._pwmGenerator_finalizer = \
-                weakref.finalize(self, _freePWMGenerator, self._pwmGenerator)
+        self._pwmGenerator_finalizer = weakref.finalize(
+            self, _freePWMGenerator, self._pwmGenerator
+        )
 
     def disablePWM(self):
         """Change this line from a PWM output back to a static Digital Output

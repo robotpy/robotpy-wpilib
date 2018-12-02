@@ -3,51 +3,51 @@ from networktables import NetworkTables
 from unittest.mock import MagicMock
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def compressor_data(hal_data):
-    return hal_data['compressor']
+    return hal_data["compressor"]
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def compressor(wpilib):
     return wpilib.Compressor()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def compressor_table(networktables):
     return networktables.NetworkTables.getTable("dacompressor")
 
 
 def test_compressor_operation(compressor):
-    
+
     compressor.start()
     assert compressor.getClosedLoopControl() == True
-    
+
     compressor.stop()
     assert compressor.getClosedLoopControl() == False
 
 
 @pytest.mark.parametrize("on_state,", [True, False])
 def test_compressor_enabled(compressor, compressor_data, on_state):
-    compressor_data['on'] = on_state
+    compressor_data["on"] = on_state
     assert compressor.enabled() == on_state
 
 
 @pytest.mark.parametrize("switch_state,", [True, False])
 def test_compressor_switch(compressor, compressor_data, switch_state):
-    compressor_data['pressure_switch'] = switch_state
+    compressor_data["pressure_switch"] = switch_state
     assert compressor.getPressureSwitchValue() == switch_state
-    
+
 
 def test_compressor_current(compressor, compressor_data):
-    compressor_data['current'] = 42
+    compressor_data["current"] = 42
     assert compressor.getCompressorCurrent() == 42
-    
+
 
 @pytest.mark.parametrize("input,", [True, False])
 def test_compressor_closedloopcontrol(compressor, compressor_data, input):
     compressor.setClosedLoopControl(input)
-    assert compressor_data['closed_loop_enabled'] == input
+    assert compressor_data["closed_loop_enabled"] == input
     assert compressor.getClosedLoopControl() == input
 
 
@@ -82,20 +82,20 @@ def test_compressor_clearallpcmstickyfaults(compressor, compressor_data):
 
 
 def test_compressor_initSendable_update(compressor, sendablebuilder, compressor_data):
-    compressor_data['pressure_switch'] = True
-    compressor_data['on'] = True
+    compressor_data["pressure_switch"] = True
+    compressor_data["on"] = True
     compressor.initSendable(sendablebuilder)
 
     sendablebuilder.updateTable()
 
-    assert sendablebuilder.getTable().getString(".type", "") == 'Compressor'
-    assert sendablebuilder.getTable().getBoolean("Enabled", False) == True 
+    assert sendablebuilder.getTable().getString(".type", "") == "Compressor"
+    assert sendablebuilder.getTable().getBoolean("Enabled", False) == True
     assert compressor.getPressureSwitchValue() == True
-    assert sendablebuilder.getTable().getBoolean("Pressure switch", False) == True 
+    assert sendablebuilder.getTable().getBoolean("Pressure switch", False) == True
 
 
 def test_compressor_initSendable_setter(compressor, sendablebuilder, compressor_data):
-    compressor_data['pressure_switch'] = True
+    compressor_data["pressure_switch"] = True
     compressor.initSendable(sendablebuilder)
 
     sendablebuilder.updateTable()

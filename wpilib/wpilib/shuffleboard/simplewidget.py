@@ -4,8 +4,10 @@ from .widget import ShuffleboardWidget
 from .container import ShuffleboardContainer
 from .layout import ShuffleboardLayout
 
+
 class SimpleWidget(ShuffleboardWidget):
     """A Shuffleboard widget that handles a single data point such as a number or string."""
+
     def __init__(self, parent: ShuffleboardContainer, title: str):
         super().__init__(parent, title)
         self.entry = None
@@ -16,7 +18,7 @@ class SimpleWidget(ShuffleboardWidget):
             self._forceGenerate()
 
         return self.entry
-    
+
     def buildInto(self, parentTable, metaTable) -> None:
         self.buildMetadata(metaTable)
         if self.entry is None:

@@ -38,8 +38,7 @@ class DigitalInput(DigitalSource):
 
         self.handle = hal.initializeDIOPort(hal.getPort(channel), True)
 
-        hal.report(hal.UsageReporting.kResourceType_DigitalInput,
-                   channel)
+        hal.report(hal.UsageReporting.kResourceType_DigitalInput, channel)
         self.setName("DigitalInput", channel)
 
     def close(self):

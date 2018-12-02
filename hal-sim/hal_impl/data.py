@@ -7,7 +7,8 @@ import sys
 import copy
 
 import logging
-logger = logging.getLogger('hal.data')
+
+logger = logging.getLogger("hal.data")
 
 #: Dictionary of all robot data (input and output data)
 hal_data = {
@@ -26,21 +27,23 @@ hooks = None
 
 
 class NotifyDict(dict):
-    '''
+    """
         Allows us to listen to changes in the dictionary --
         note that we don't wrap everything, because for our
         purposes we don't care about the rest
 
         We only use these for some keys in the hal_data dict,
         as not all keys are useful to listen to
-    '''
-    __slots__ = ['cbs']
+    """
+
+    __slots__ = ["cbs"]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cbs = {}
 
     def register(self, k, cb, notify=False):
-        '''
+        """
             register a function to be called when an item is set
             with in this dictionary. We raise a key error if the
             key passed is not a key that the dictionary contains.
@@ -50,7 +53,7 @@ class NotifyDict(dict):
             :param cb:       Function to be called if k is set. This function needs
                              to take at least 2 parameters
             :param notify:   Calls the function cb after registering k
-        '''
+        """
         if k not in self:
             raise KeyError("Cannot register for non-existant key '%s'" % k)
         self.cbs.setdefault(k, []).append(cb)
@@ -58,13 +61,13 @@ class NotifyDict(dict):
             cb(k, self[k])
 
     def __setitem__(self, k, v):
-        '''
+        """
            Overrides __setitem__. If k has any callback functions defined they are
            called from here
 
            :param k: key to be set
            :param v: value to be set
-        '''
+        """
         super().__setitem__(k, v)
 
         # Call the callbacks
@@ -76,17 +79,21 @@ class NotifyDict(dict):
 
 
 class IN:
-    '''Marks a variable in the dict as something the simulator can set'''
+    """Marks a variable in the dict as something the simulator can set"""
+
     def __init__(self, value):
         self.value = value
+
 
 class OUT:
-    '''Marks a variable in the dict as something the robot will set'''
+    """Marks a variable in the dict as something the robot will set"""
+
     def __init__(self, value):
         self.value = value
 
+
 def _reset_hal_data(current_hooks):
-    '''
+    """
         Intended to be used by the test runner or simulator. Don't call this
         directly, instead call hal_impl.reset_hal()
 
@@ -105,7 +112,7 @@ def _reset_hal_data(current_hooks):
 
         .. warning:: Don't put invalid floats in here, or this structure
                      is no longer JSON serializable!
-    '''
+    """
     global hal_data, hooks
     hooks = current_hooks
     hooks.reset()
@@ -113,6 +120,7 @@ def _reset_hal_data(current_hooks):
     hal_data.clear()
     hal_in_data.clear()
 
+    # fmt: off
     hal_data.update({
 
         'alliance_station': IN(constants.AllianceStationID.kRed1),
@@ -408,12 +416,13 @@ def _reset_hal_data(current_hooks):
         # that is specific to each CAN device
         'CAN': NotifyDict(),
     })
+    # fmt: on
 
     # Ok, filter out the data into a 'both' and 'in' dictionary, removing
     # the OUT and IN objects
     _filter_hal_data(hal_data, hal_in_data)
 
-    hal_data['pcm'][0] = hal_data['solenoid']
+    hal_data["pcm"][0] = hal_data["solenoid"]
 
 
 def _filter_hal_data(both_dict, in_dict):
@@ -445,13 +454,16 @@ def _filter_hal_data(both_dict, in_dict):
         else:
             raise ValueError("Must be dict, list, IN or OUT; %s: %s" % (k, v))
 
+
 def _filter_hal_list(both_list):
 
     in_list = []
 
     for v in both_list:
         if not isinstance(v, dict):
-            raise ValueError("lists can only contain dicts, otherwise must be contained in IN or OUT")
+            raise ValueError(
+                "lists can only contain dicts, otherwise must be contained in IN or OUT"
+            )
 
         v_in = {}
         _filter_hal_data(v, v_in)
@@ -462,8 +474,9 @@ def _filter_hal_list(both_list):
     assert len(in_list) == 0 or len(in_list) == len(both_list)
     return in_list
 
+
 def update_hal_data(in_dict, out_dict=hal_data):
-    '''Given a dictionary of inputs, update the hal_data'''
+    """Given a dictionary of inputs, update the hal_data"""
     for k, v in in_dict.items():
         if isinstance(v, dict):
             update_hal_data(v, out_dict[k])

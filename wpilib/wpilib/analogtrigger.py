@@ -55,14 +55,12 @@ class AnalogTrigger(SendableBase):
             self.analogInput = channel
 
         self._port, self.index = hal.initializeAnalogTrigger(self.analogInput.port)
-        self.__finalizer = \
-            weakref.finalize(self, _freeAnalogTrigger, self._port)
+        self.__finalizer = weakref.finalize(self, _freeAnalogTrigger, self._port)
 
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
-        hal.report(hal.UsageReporting.kResourceType_AnalogTrigger,
-                   channel)
+        hal.report(hal.UsageReporting.kResourceType_AnalogTrigger, channel)
 
         self.setName("AnalogTrigger", self.analogInput.getChannel())
 

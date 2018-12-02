@@ -1,16 +1,17 @@
 # validated: 2018-10-30 EN 0b113ad9ce93 edu/wpi/first/wpilibj/command/PIDCommand.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 from .command import Command
 
 from ..pidcontroller import PIDController
 
 __all__ = ["PIDCommand"]
+
 
 class PIDCommand(Command):
     """This class defines a Command which interacts heavily with a PID loop.
@@ -20,7 +21,16 @@ class PIDCommand(Command):
     first initialized and ended/interrupted.
     """
 
-    def __init__(self, p, i, d, period=PIDController.kDefaultPeriod, f=0.0, name=None, subsystem=None):
+    def __init__(
+        self,
+        p,
+        i,
+        d,
+        period=PIDController.kDefaultPeriod,
+        f=0.0,
+        name=None,
+        subsystem=None,
+    ):
         """Instantiates a PIDCommand that will use the given p, i and d values.
         It will use the class name as its name unless otherwise specified.
         It will also space the time between PID loop calculations to be equal
@@ -35,8 +45,9 @@ class PIDCommand(Command):
         :param subsystem: the subsystem that this command requires
         """
         super().__init__(name, subsystem=subsystem)
-        self.controller = PIDController(p, i, d, f, self.returnPIDInput,
-                                        self.usePIDOutput, period)
+        self.controller = PIDController(
+            p, i, d, f, self.returnPIDInput, self.usePIDOutput, period
+        )
 
     def getPIDController(self):
         """Returns the PIDController used by this PIDCommand.

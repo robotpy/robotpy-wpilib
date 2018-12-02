@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/ADXL345_I2C.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -13,6 +13,7 @@ from .i2c import I2C
 from .sendablebase import SendableBase
 
 __all__ = ["ADXL345_I2C"]
+
 
 class ADXL345_I2C(SendableBase):
     """
@@ -54,7 +55,7 @@ class ADXL345_I2C(SendableBase):
         """
         if address is None:
             address = self.kAddress
-        
+
         self.i2c = I2C(port, address)
 
         # Turn on the measurements
@@ -62,8 +63,9 @@ class ADXL345_I2C(SendableBase):
 
         self.setRange(range)
 
-        hal.report(hal.UsageReporting.kResourceType_ADXL345,
-                      hal.UsageReporting.kADXL345_I2C)
+        hal.report(
+            hal.UsageReporting.kResourceType_ADXL345, hal.UsageReporting.kADXL345_I2C
+        )
 
         self.setName("ADXL345_I2C", port)
 
@@ -137,12 +139,13 @@ class ADXL345_I2C(SendableBase):
         # Sensor is little endian... swap bytes
         rawData = []
         for i in range(3):
-            rawData.append((data[i*2+1] << 8) | data[i*2])
+            rawData.append((data[i * 2 + 1] << 8) | data[i * 2])
 
-        return (rawData[0] * self.kGsPerLSB,
-                rawData[1] * self.kGsPerLSB,
-                rawData[2] * self.kGsPerLSB)
-
+        return (
+            rawData[0] * self.kGsPerLSB,
+            rawData[1] * self.kGsPerLSB,
+            rawData[2] * self.kGsPerLSB,
+        )
 
     def _updateValues(self):
         data = self.getAccelerations()

@@ -1,9 +1,12 @@
 import pytest
 from unittest.mock import MagicMock
 
+
 def test_init_speedgroupcontroller(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = (
+        wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
+    )
 
     m1 = MagicMock()
     m2 = MagicMock()
@@ -39,10 +42,12 @@ def speed_group(wpimock, halmock):
     group = wpimock.SpeedControllerGroup(m1, m2, m3)
     return group
 
+
 def test_set(speed_group):
     speed_group.set(1)
     for controller in speed_group.speedControllers:
         controller.set.assert_called_once_with(1)
+
 
 def test_inverted(speed_group):
     speed_group.setInverted(True)
@@ -56,19 +61,20 @@ def test_inverted(speed_group):
     for controller in speed_group.speedControllers:
         controller.set.assert_called_once_with(-1)
 
+
 def test_disable(speed_group):
     speed_group.disable()
     for controller in speed_group.speedControllers:
         controller.disable.assert_called_once_with()
+
 
 def test_stopmotor(speed_group):
     speed_group.stopMotor()
     for controller in speed_group.speedControllers:
         controller.stopMotor.assert_called_once_with()
 
+
 def test_pidwrite(speed_group):
     speed_group.pidWrite(1)
     for controller in speed_group.speedControllers:
         controller.pidWrite.asser_called_once_with()
-
-

@@ -2,6 +2,7 @@
 from .container import ShuffleboardContainer
 from .root import ShuffleboardRoot
 
+
 class ShuffleboardTab(ShuffleboardContainer):
     def __init__(self, root: ShuffleboardRoot, title: str):
         super().__init__()
@@ -19,4 +20,3 @@ class ShuffleboardTab(ShuffleboardContainer):
         tabTable.getEntry(".type").setString("ShuffleboardTab")
         for component in self.getComponents():
             component.buildInto(tabTable, metaTable.getSubTable(component.getTitle()))
-

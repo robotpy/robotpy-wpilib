@@ -1,10 +1,10 @@
 # novalidate
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import logging
 
@@ -61,7 +61,10 @@ class Preferences:
         thread is finished reading.
         """
         self.table = NetworkTables.getTable(self.TABLE_NAME)
-        self.table.addTableListenerEx(self.valueChangedEx, NetworkTables.NotifyFlags.NEW | NetworkTables.NotifyFlags.IMMEDIATE)
+        self.table.addTableListenerEx(
+            self.valueChangedEx,
+            NetworkTables.NotifyFlags.NEW | NetworkTables.NotifyFlags.IMMEDIATE,
+        )
 
         hal.report(hal.UsageReporting.kResourceType_Preferences, 0)
 
@@ -91,7 +94,9 @@ class Preferences:
         :param value: the value
         """
         if '"' in value:
-            raise ValueError("Can not put string: '%s' because it contains quotation marks" % value)
+            raise ValueError(
+                "Can not put string: '%s' because it contains quotation marks" % value
+            )
         self.table.putString(key, value)
         self.table.setPersistent(key)
 

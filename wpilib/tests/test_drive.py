@@ -5,7 +5,9 @@ import math
 
 def test_init_diffdrive(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = (
+        wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
+    )
 
     left = MagicMock()
     right = MagicMock()
@@ -23,7 +25,9 @@ def test_init_diffdrive(wpimock, halmock):
 
 def test_init_killough(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = (
+        wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
+    )
 
     left = MagicMock()
     right = MagicMock()
@@ -46,7 +50,9 @@ def test_init_killough(wpimock, halmock):
 
 def test_init_mecanum(wpimock, halmock):
     halmock.getFPGATime.return_value = 1000
-    halmock.getLoopTiming.return_value = wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
+    halmock.getLoopTiming.return_value = (
+        wpimock.SensorUtil.kSystemClockTicksPerMicrosecond
+    )
 
     fleft = MagicMock()
     fright = MagicMock()
@@ -205,6 +211,7 @@ def drive_mecanum(wpimock, halmock):
     m4.reset_mock()
     return drive
 
+
 def check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn):
     quickStopAccumulator = 0
     y = wpimock.drive.RobotDriveBase.limit(y)
@@ -215,8 +222,12 @@ def check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn):
 
     if isQuickTurn:
         if abs(y) < drive_diff.quickStopThreshold:
-            quickStopAccumulator = (1 - drive_diff.quickStopAlpha) * quickStopAccumulator + drive_diff.quickStopAlpha * wpimock.drive.RobotDriveBase.limit(
-                rotation) * 2
+            quickStopAccumulator = (
+                (1 - drive_diff.quickStopAlpha) * quickStopAccumulator
+                + drive_diff.quickStopAlpha
+                * wpimock.drive.RobotDriveBase.limit(rotation)
+                * 2
+            )
 
         overPower = True
         angularPower = rotation
@@ -248,16 +259,21 @@ def check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn):
         elif rightMotorSpeed < -1.0:
             leftMotorSpeed -= rightMotorSpeed + 1.0
             rightMotorSpeed = -1.0
-    
+
     maxMagnitude = max(abs(leftMotorSpeed), abs(rightMotorSpeed))
     if maxMagnitude > 1.0:
         leftMotorSpeed /= maxMagnitude
         rightMotorSpeed /= maxMagnitude
 
-    drive_diff.leftMotor.set.assert_called_once_with(leftMotorSpeed * drive_diff.maxOutput)
-    drive_diff.rightMotor.set.assert_called_once_with(-rightMotorSpeed * drive_diff.maxOutput)
+    drive_diff.leftMotor.set.assert_called_once_with(
+        leftMotorSpeed * drive_diff.maxOutput
+    )
+    drive_diff.rightMotor.set.assert_called_once_with(
+        -rightMotorSpeed * drive_diff.maxOutput
+    )
 
 
+# fmt: off
 @pytest.mark.parametrize("y,rotation,isQuickTurn",
                          [(0.0, 0.0, False),
                           (0.001, math.e ** 0.5, False), (0.001, -math.e ** 0.5, False),  # hit ratio==0 case
@@ -275,6 +291,7 @@ def test_drive(y, rotation, isQuickTurn, drive_diff, wpimock):
     # left, right calculation
     drive_diff.curvatureDrive(y, rotation, isQuickTurn)
     check_curvature(wpimock, drive_diff, y, rotation, isQuickTurn)
+# fmt: on
 
 
 def check_tank(wpimock, drive_diff, lv, rv, sq):
@@ -290,10 +307,17 @@ def check_tank(wpimock, drive_diff, lv, rv, sq):
     drive_diff.rightMotor.set.assert_called_once_with(-rv)
 
 
-@pytest.mark.parametrize("sq,lv,rv",
-                         [(False, 0.3, -0.3), (True, -0.3, 0.3),
-                          (None, 0.3, -0.3), (False, -0.3, 0.3),
-                          (True, 0.3, -0.3), (None, -0.3, 0.3)])
+@pytest.mark.parametrize(
+    "sq,lv,rv",
+    [
+        (False, 0.3, -0.3),
+        (True, -0.3, 0.3),
+        (None, 0.3, -0.3),
+        (False, -0.3, 0.3),
+        (True, 0.3, -0.3),
+        (None, -0.3, 0.3),
+    ],
+)
 def test_tankDrive_value(wpimock, sq, lv, rv, drive_diff):
     drive_diff.tankDrive(lv, rv, sq)
     check_tank(wpimock, drive_diff, lv, rv, sq)
@@ -335,14 +359,25 @@ def check_arcade(wpimock, drive_diff, y, rotation, sq):
         else:
             leftMotorSpeed = maxInput
             rightMotorSpeed = y - rotation
-    drive_diff.leftMotor.set.assert_called_once_with(leftMotorSpeed * drive_diff.maxOutput)
-    drive_diff.rightMotor.set.assert_called_once_with(-rightMotorSpeed * drive_diff.maxOutput)
+    drive_diff.leftMotor.set.assert_called_once_with(
+        leftMotorSpeed * drive_diff.maxOutput
+    )
+    drive_diff.rightMotor.set.assert_called_once_with(
+        -rightMotorSpeed * drive_diff.maxOutput
+    )
 
 
-@pytest.mark.parametrize("sq,y,rotation",
-                         [(False, 0.3, -0.3), (True, -0.3, 0.3),
-                          (None, 0.3, -0.3), (False, -0.3, 0.3),
-                          (True, 0.3, -0.3), (None, -0.3, 0.3)])
+@pytest.mark.parametrize(
+    "sq,y,rotation",
+    [
+        (False, 0.3, -0.3),
+        (True, -0.3, 0.3),
+        (None, 0.3, -0.3),
+        (False, -0.3, 0.3),
+        (True, 0.3, -0.3),
+        (None, -0.3, 0.3),
+    ],
+)
 def test_arcadeDrive_value(wpimock, sq, y, rotation, drive_diff):
     drive_diff.arcadeDrive(y, rotation, sq)
     check_arcade(wpimock, drive_diff, y, rotation, sq)
@@ -375,16 +410,21 @@ def test_mecanumDrive_Polar(drive_mecanum):
     assert drive_mecanum.rearRightMotor.set.called
 
 
-@pytest.mark.parametrize("val,result",
-                         [(1.1, 1.0), (-1.1, -1.0), (0.9, 0.9), (-0.9, -0.9)])
+@pytest.mark.parametrize(
+    "val,result", [(1.1, 1.0), (-1.1, -1.0), (0.9, 0.9), (-0.9, -0.9)]
+)
 def test_limit(val, result, wpimock):
     assert wpimock.drive.RobotDriveBase.limit(val) == result
 
 
-@pytest.mark.parametrize("val,result",
-                         [((0.6, -0.7, 0.8, 0.9), (0.6, -0.7, 0.8, 0.9)),
-                          ((2.0, 1.0, -1.0, 0.5), (1.0, 0.5, -0.5, 0.25)),
-                          ((-2.0, -0.5, 0.0, 1.0), (-1.0, -0.25, 0.0, 0.5))])
+@pytest.mark.parametrize(
+    "val,result",
+    [
+        ((0.6, -0.7, 0.8, 0.9), (0.6, -0.7, 0.8, 0.9)),
+        ((2.0, 1.0, -1.0, 0.5), (1.0, 0.5, -0.5, 0.25)),
+        ((-2.0, -0.5, 0.0, 1.0), (-1.0, -0.25, 0.0, 0.5)),
+    ],
+)
 def test_normalize(val, result, wpimock):
     speeds = list(val)
     wpimock.drive.RobotDriveBase.normalize(speeds)
@@ -400,8 +440,7 @@ def test_rotateVector(angle, wpimock):
 
     vector = wpimock.drive.Vector2d(x, y)
     vector.rotate(angle)
-    assert (vector.x, vector.y) == \
-                     ((x * cosA - y * sinA), (x * sinA + y * cosA))
+    assert (vector.x, vector.y) == ((x * cosA - y * sinA), (x * sinA + y * cosA))
 
 
 def test_setMaxOutput(drive_diff):
@@ -413,10 +452,8 @@ def test_setMaxOutput(drive_diff):
     drive_diff.leftMotor.set.assert_called_once_with(0.5)
     drive_diff.rightMotor.set.assert_called_once_with(-0.375)
 
-@pytest.mark.parametrize("r_inverted, expected_r_output", [
-    (True, -1.0),
-    (False, 1.0),
-])
+
+@pytest.mark.parametrize("r_inverted, expected_r_output", [(True, -1.0), (False, 1.0)])
 def test_setRightSideInverted_tank(drive_diff, r_inverted, expected_r_output):
     drive_diff.setDeadband(0)
     drive_diff.setRightSideInverted(r_inverted)
@@ -426,10 +463,7 @@ def test_setRightSideInverted_tank(drive_diff, r_inverted, expected_r_output):
     drive_diff.rightMotor.set.assert_called_once_with(expected_r_output)
 
 
-@pytest.mark.parametrize("r_inverted, expected_r_output", [
-    (True, -1.0),
-    (False, 1.0),
-])
+@pytest.mark.parametrize("r_inverted, expected_r_output", [(True, -1.0), (False, 1.0)])
 def test_setRightSideInverted_arcade(drive_diff, r_inverted, expected_r_output):
     drive_diff.setDeadband(0)
     drive_diff.setRightSideInverted(r_inverted)

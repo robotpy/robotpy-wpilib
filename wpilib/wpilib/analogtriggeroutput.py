@@ -1,16 +1,17 @@
 # validated: 2018-11-17 EN 0e9172f9a708 edu/wpi/first/wpilibj/AnalogTriggerOutput.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
 from .digitalsource import DigitalSource
 
 __all__ = ["AnalogTriggerOutput"]
+
 
 class AnalogTriggerOutput(DigitalSource):
     """Represents a specific output from an :class:`.AnalogTrigger`
@@ -48,6 +49,7 @@ class AnalogTriggerOutput(DigitalSource):
 
     class AnalogTriggerType:
         """Defines the state in which the :class:`.AnalogTrigger` triggers"""
+
         kInWindow = hal.AnalogTriggerType.kInWindow
         kState = hal.AnalogTriggerType.kState
         kRisingPulse = hal.AnalogTriggerType.kRisingPulse
@@ -67,8 +69,11 @@ class AnalogTriggerOutput(DigitalSource):
         self.trigger = trigger
         self.outputType = outputType
 
-        hal.report(hal.UsageReporting.kResourceType_AnalogTriggerOutput,
-                      trigger.index, outputType)
+        hal.report(
+            hal.UsageReporting.kResourceType_AnalogTriggerOutput,
+            trigger.index,
+            outputType,
+        )
 
     def get(self):
         """Get the state of the analog trigger output.

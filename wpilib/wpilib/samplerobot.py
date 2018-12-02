@@ -60,7 +60,9 @@ class SampleRobot(RobotBase):
                      waits for enable will cause the robot to never indicate that the code is
                      ready, causing the robot to be bypassed in a match.
         """
-        self.logger.info("Default robotInit() method running, consider providing your own")
+        self.logger.info(
+            "Default robotInit() method running, consider providing your own"
+        )
 
     def disabled(self):
         """Disabled should go here.
@@ -69,7 +71,9 @@ class SampleRobot(RobotBase):
 
         Called once each time the robot enters the disabled state.
         """
-        self.logger.info("Default disabled() method running, consider providing your own")
+        self.logger.info(
+            "Default disabled() method running, consider providing your own"
+        )
 
     def autonomous(self):
         """Autonomous should go here.
@@ -78,7 +82,9 @@ class SampleRobot(RobotBase):
 
         Called once each time the robot enters the autonomous state.
         """
-        self.logger.info("Default autonomous() method running, consider providing your own")
+        self.logger.info(
+            "Default autonomous() method running, consider providing your own"
+        )
 
     def operatorControl(self):
         """Operator control (tele-operated) code should go here.
@@ -87,7 +93,9 @@ class SampleRobot(RobotBase):
 
         Called once each time the robot enters the operator-controlled state.
         """
-        self.logger.warning("Default operatorControl() method running, consider providing your own")
+        self.logger.warning(
+            "Default operatorControl() method running, consider providing your own"
+        )
 
     def test(self):
         """Test code should go here.
@@ -128,8 +136,10 @@ class SampleRobot(RobotBase):
         change, either the other mode starts or the robot is disabled. Then
         go back and wait for the robot to be enabled again.
         """
-        hal.report(hal.UsageReporting.kResourceType_Framework,
-                   hal.UsageReporting.kFramework_Sample)
+        hal.report(
+            hal.UsageReporting.kResourceType_Framework,
+            hal.UsageReporting.kFramework_Sample,
+        )
 
         self.robotInit()
 
@@ -138,7 +148,7 @@ class SampleRobot(RobotBase):
 
         self.robotMain()
 
-        if hasattr(self, '_no_robot_main'):
+        if hasattr(self, "_no_robot_main"):
             while True:
                 if self.isDisabled():
                     self.ds.InDisabled(True)

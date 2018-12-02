@@ -3,7 +3,7 @@ import inspect
 
 def test_all_classes_documented(wpilib):
     expected_undocumented = {
-        wpilib: {'Notifier', 'SendableBuilder'},
+        wpilib: {"Notifier", "SendableBuilder"},
         wpilib.buttons: set(),
         wpilib.command: set(),
         wpilib.drive: set(),

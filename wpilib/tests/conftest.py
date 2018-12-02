@@ -8,15 +8,19 @@ from hal_impl.sim_hooks import SimHooks as BaseSimHooks
 
 @pytest.fixture(scope="function")
 def _module_patch(request):
-    '''This patch forces wpilib to reload each time we do this'''
-    
-    assert 'halmock' not in request.fixturenames, "Cannot use mock and real fixtures in same function!"
-    
-    assert 'wpilib' not in sys.modules, "Must use wpilib fixture, don't import wpilib directly"
-    
+    """This patch forces wpilib to reload each time we do this"""
+
+    assert (
+        "halmock" not in request.fixturenames
+    ), "Cannot use mock and real fixtures in same function!"
+
+    assert (
+        "wpilib" not in sys.modules
+    ), "Must use wpilib fixture, don't import wpilib directly"
+
     # .. this seems inefficient
-    
-    m = patch.dict('sys.modules', {})
+
+    m = patch.dict("sys.modules", {})
     m.start()
     request.addfinalizer(m.stop)
 
@@ -25,6 +29,7 @@ def _module_patch(request):
 def hal(_module_patch):
     """Simulated hal module"""
     import hal
+
     return hal
 
 
@@ -32,6 +37,7 @@ def hal(_module_patch):
 def hal_impl_mode_helpers(_module_patch):
     """Simulated hal module"""
     from hal_impl import mode_helpers
+
     return mode_helpers
 
 
@@ -40,6 +46,7 @@ def hal_data(_module_patch):
     """Simulation data for HAL"""
     import hal_impl.functions
     import hal_impl.data
+
     hal_impl.functions.reset_hal()
     return hal_impl.data.hal_data
 
@@ -53,9 +60,9 @@ def wpilib(_module_patch, hal, hal_data, networktables):
     import wpilib.drive
     import wpilib.interfaces
     import wpilib.shuffleboard
-    
+
     yield wpilib
-    
+
     # Note: even though the wpilib module is freshly loaded each time a new
     # test is ran, we still call _reset() to finish off any finalizers
     wpilib.Resource._reset()
@@ -65,12 +72,14 @@ def wpilib(_module_patch, hal, hal_data, networktables):
 def networktables():
     """Networktables instance"""
     import networktables
+
     networktables.NetworkTables.startTestMode()
     yield networktables
     networktables.NetworkTables.shutdown()
 
+
 #
-# Mock fixtures for testing things that don't have to interact with 
+# Mock fixtures for testing things that don't have to interact with
 # hardware, so it's better to use MagicMock to create those tests
 #
 
@@ -78,10 +87,12 @@ def networktables():
 @pytest.fixture(scope="function")
 def halmock(request):
     """Magic-mock for hal module."""
-    
-    assert '_module_patch' not in request.fixturenames, "Cannot use mock and real fixtures in same function!"
-    
-    hal = MagicMock(name='mock_hal')
+
+    assert (
+        "_module_patch" not in request.fixturenames
+    ), "Cannot use mock and real fixtures in same function!"
+
+    hal = MagicMock(name="mock_hal")
     hal.kHALAllianceStationID_red1 = 0
     hal.kHALAllianceStationID_red2 = 1
     hal.kHALAllianceStationID_red3 = 2
@@ -102,11 +113,13 @@ def halmock(request):
 @pytest.fixture(scope="function")
 def wpimock(request, halmock):
     """Monkeypatches sys.modules hal and loads wpilib."""
-    
-    assert '_module_patch' not in request.fixturenames, "Cannot use mock and real fixtures in same function!"
-    
+
+    assert (
+        "_module_patch" not in request.fixturenames
+    ), "Cannot use mock and real fixtures in same function!"
+
     # need to monkey patch sys.modules so wpilib can load these
-    m = patch.dict('sys.modules', {'hal': halmock})
+    m = patch.dict("sys.modules", {"hal": halmock})
     m.start()
     request.addfinalizer(m.stop)
     import wpilib
@@ -114,11 +127,11 @@ def wpimock(request, halmock):
     import wpilib.command
     import wpilib.drive
     import wpilib.interfaces
-    
+
     return wpilib
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def sendablebuilder(wpilib, networktables):
     builder = wpilib.SendableBuilder()
     table = networktables.NetworkTables.getTable("component")
@@ -141,14 +154,14 @@ class SimHooks(BaseSimHooks):
         self.time += s
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def sim_hooks():
-    with patch('hal_impl.functions.hooks', new=SimHooks()) as hooks:
+    with patch("hal_impl.functions.hooks", new=SimHooks()) as hooks:
         hal_impl.functions.reset_hal()
         yield hooks
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def robotstate_impl():
     impl_mock = MagicMock()
     impl_mock.isDisabled.return_value = False
@@ -156,7 +169,7 @@ def robotstate_impl():
         yield impl
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def SimTimerTask(wpilib):
-    with patch('wpilib.pidcontroller.TimerTask', new=MagicMock()) as timertask:
+    with patch("wpilib.pidcontroller.TimerTask", new=MagicMock()) as timertask:
         yield timertask

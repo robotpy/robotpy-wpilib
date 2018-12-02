@@ -1,10 +1,10 @@
 # validated: 2018-10-30 EN e2100730447d edu/wpi/first/wpilibj/command/Scheduler.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -14,6 +14,7 @@ import collections
 import warnings
 
 __all__ = ["Scheduler"]
+
 
 class Scheduler(SendableBase):
     """The Scheduler is a singleton which holds the top-level running commands.
@@ -27,7 +28,7 @@ class Scheduler(SendableBase):
 
     .. seealso:: :class:`.Command`
     """
-    
+
     @staticmethod
     def _reset():
         try:
@@ -49,8 +50,10 @@ class Scheduler(SendableBase):
         """Instantiates a Scheduler.
         """
         super().__init__()
-        hal.report(hal.UsageReporting.kResourceType_Command,
-                   hal.UsageReporting.kCommand_Scheduler)
+        hal.report(
+            hal.UsageReporting.kResourceType_Command,
+            hal.UsageReporting.kCommand_Scheduler,
+        )
         self.setName("Scheduler")
 
         # Active Commands
@@ -106,15 +109,20 @@ class Scheduler(SendableBase):
 
         # Check to make sure no adding during adding
         if self.adding:
-            warnings.warn("Can not start command from cancel method.  Ignoring: %s" % command, RuntimeWarning)
+            warnings.warn(
+                "Can not start command from cancel method.  Ignoring: %s" % command,
+                RuntimeWarning,
+            )
             return
 
         # Only add if not already in
         if command not in self.commandTable:
             # Check that the requirements can be had
             for lock in command.getRequirements():
-                if (lock.getCurrentCommand() is not None and
-                    not lock.getCurrentCommand().isInterruptible()):
+                if (
+                    lock.getCurrentCommand() is not None
+                    and not lock.getCurrentCommand().isInterruptible()
+                ):
                     return
 
             # Give it the requirements
@@ -148,7 +156,7 @@ class Scheduler(SendableBase):
         self.runningCommandsChanged = False
 
         if self.disabled:
-            return # Don't run when disabled
+            return  # Don't run when disabled
 
         # Get button input (going backwards preserves button priority)
         for button in reversed(self.buttons):
@@ -225,7 +233,11 @@ class Scheduler(SendableBase):
         builder.setUpdateTable(self._updateTable)
 
     def _updateTable(self):
-        if not (self.namesEntry is not None and self.idsEntry is not None and self.cancelEntry is not None):
+        if not (
+            self.namesEntry is not None
+            and self.idsEntry is not None
+            and self.cancelEntry is not None
+        ):
             return
 
         toCancel = self.cancelEntry.getDoubleArray([])

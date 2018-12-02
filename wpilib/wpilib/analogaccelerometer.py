@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/AnalogAccelerometer.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
@@ -13,6 +13,7 @@ from .interfaces import PIDSource
 from .sendablebase import SendableBase
 
 __all__ = ["AnalogAccelerometer"]
+
 
 class AnalogAccelerometer(SendableBase):
     """Analog Accelerometer
@@ -23,7 +24,7 @@ class AnalogAccelerometer(SendableBase):
     
     .. not_implemented: initAccelerometer
     """
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel):
@@ -34,7 +35,7 @@ class AnalogAccelerometer(SendableBase):
         :type channel: int or :class:`.AnalogInput`
         """
         super().__init__()
-        if not hasattr(channel, "getAverageVoltage"): # If 'channel' is an integer
+        if not hasattr(channel, "getAverageVoltage"):  # If 'channel' is an integer
             self.analogChannel = AnalogInput(channel)
             self.allocatedChannel = True
             self.addChild(self.analogChannel)
@@ -44,8 +45,10 @@ class AnalogAccelerometer(SendableBase):
         self.voltsPerG = 1.0
         self.zeroGVoltage = 2.5
         self.pidSource = self.PIDSourceType.kDisplacement
-        hal.report(hal.UsageReporting.kResourceType_Accelerometer,
-                      self.analogChannel.getChannel())
+        hal.report(
+            hal.UsageReporting.kResourceType_Accelerometer,
+            self.analogChannel.getChannel(),
+        )
         self.setName("Accelerometer", self.analogChannel.getChannel())
 
     def close(self):
@@ -53,7 +56,6 @@ class AnalogAccelerometer(SendableBase):
         if self.analogChannel and self.allocatedChannel:
             self.analogChannel.close()
         self.analogChannel = None
-
 
     def getAcceleration(self):
         """Return the acceleration in Gs.
@@ -65,7 +67,9 @@ class AnalogAccelerometer(SendableBase):
         """
         if not self.analogChannel:
             return 0.0
-        return (self.analogChannel.getAverageVoltage() - self.zeroGVoltage) / self.voltsPerG
+        return (
+            self.analogChannel.getAverageVoltage() - self.zeroGVoltage
+        ) / self.voltsPerG
 
     def setSensitivity(self, sensitivity):
         """Set the accelerometer sensitivity.
@@ -89,7 +93,7 @@ class AnalogAccelerometer(SendableBase):
         :type  zero: float
         """
         self.zeroGVoltage = zero
-        
+
     def setPIDSourceType(self, pidSource):
         """Set which parameter you are using as a process
         control variable. 
@@ -98,7 +102,7 @@ class AnalogAccelerometer(SendableBase):
         :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
 

@@ -1,14 +1,14 @@
 # validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/smartdashboard/SendableBuilderImpl.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) 2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 from networktables import NetworkTables
 
 
-__all__ = ['SendableBuilder']
+__all__ = ["SendableBuilder"]
 
 
 class Property:
@@ -20,11 +20,13 @@ class Property:
         self.listener = None
 
     def createListener(self, entry):
-        self.listener = entry.addListener(lambda entry, key, value, param: self.setter(value),
-            NetworkTables.NotifyFlags.IMMEDIATE |
-            NetworkTables.NotifyFlags.NEW |
-            NetworkTables.NotifyFlags.UPDATE)
-    
+        self.listener = entry.addListener(
+            lambda entry, key, value, param: self.setter(value),
+            NetworkTables.NotifyFlags.IMMEDIATE
+            | NetworkTables.NotifyFlags.NEW
+            | NetworkTables.NotifyFlags.UPDATE,
+        )
+
     def startListener(self):
         if self.listener is None and self.setter is not None:
             self.createListener(self.entry)
@@ -33,7 +35,7 @@ class Property:
         if self.listener is not None:
             self.entry.removeListener(self.listener)
             self.listener = None
-        
+
 
 class SendableBuilder:
     def __init__(self):
@@ -44,7 +46,7 @@ class SendableBuilder:
         self.controllableEntry = None
         self.actuator = False
 
-    def setTable(self, table): 
+    def setTable(self, table):
         """
         Set the network table.  Must be called prior to any Add* functions being called.
 
@@ -222,7 +224,9 @@ class SendableBuilder:
         :param setter:  setter function (sets new value)
         :type setter: (bool[]) -> Any
         """
-        updater = None if getter is None else lambda entry: entry.setBooleanArray(getter())
+        updater = (
+            None if getter is None else lambda entry: entry.setBooleanArray(getter())
+        )
         self._addProperty(key, updater, setter)
 
     def addDoubleArrayProperty(self, key, getter, setter):
@@ -236,7 +240,9 @@ class SendableBuilder:
         :param setter:  setter function (sets new value)
         :type setter: (float[]) -> Any
         """
-        updater = None if getter is None else lambda entry: entry.setDoubleArray(getter())
+        updater = (
+            None if getter is None else lambda entry: entry.setDoubleArray(getter())
+        )
         self._addProperty(key, updater, setter)
 
     def addStringArrayProperty(self, key, getter, setter):
@@ -250,7 +256,9 @@ class SendableBuilder:
         :param setter:  setter function (sets new value)
         :type setter: (str[]) -> Any
         """
-        updater = None if getter is None else lambda entry: entry.setStringArray(getter())
+        updater = (
+            None if getter is None else lambda entry: entry.setStringArray(getter())
+        )
         self._addProperty(key, updater, setter)
 
     def addRawProperty(self, key, getter, setter):

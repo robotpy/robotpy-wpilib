@@ -1,11 +1,12 @@
 # validated: 2017-09-27 AA e1195e8b9dab edu/wpi/first/wpilibj/interfaces/Accelerometer.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 __all__ = ["Accelerometer"]
+
 
 class Accelerometer:
     """Interface for 3-axis accelerometers"""

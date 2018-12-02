@@ -58,6 +58,7 @@ class Trigger(SendableBase):
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
+
         Scheduler.getInstance().addButton(execute)
 
     def whileActive(self, command):
@@ -81,6 +82,7 @@ class Trigger(SendableBase):
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
+
         Scheduler.getInstance().addButton(execute)
 
     def whenInactive(self, command: Command):
@@ -99,6 +101,7 @@ class Trigger(SendableBase):
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
+
         Scheduler.getInstance().addButton(execute)
 
     def toggleWhenActive(self, command: Command):
@@ -120,6 +123,7 @@ class Trigger(SendableBase):
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
+
         Scheduler.getInstance().addButton(execute)
 
     def cancelWhenActive(self, command: Command) -> None:
@@ -138,6 +142,7 @@ class Trigger(SendableBase):
 
         execute.pressedLast = self.grab()
         from ..command import Scheduler
+
         Scheduler.getInstance().addButton(execute)
 
     def _safeState(self) -> None:

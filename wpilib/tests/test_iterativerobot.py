@@ -9,6 +9,7 @@ def test_timedrobot(wpilib):
 
     assert robot.getPeriod() == 0.02
 
+
 def test_timedrobot2(wpilib):
     robot = wpilib.TimedRobot(0.013)
 

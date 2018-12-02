@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/PWM.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import weakref
@@ -15,9 +15,11 @@ from .sensorutil import SensorUtil
 
 __all__ = ["PWM"]
 
+
 def _freePWM(handle):
     hal.setPWMDisabled(handle)
     hal.freePWMPort(handle)
+
 
 class PWM(SendableBase):
     """Raw interface to PWM generation in the FPGA.
@@ -52,20 +54,21 @@ class PWM(SendableBase):
       controllers. Due to the shipping firmware on the Jaguar, we can't run the
       update period less than 5.05 ms.
     """
+
     class PeriodMultiplier:
         """Represents the amount to multiply the minimum servo-pulse pwm
         period by.
         """
-        
+
         #: Period Multiplier: don't skip pulses. PWM pulses occur every 5.005 ms
         k1X = 1
-        
+
         #: Period Multiplier: skip every other pulse. PWM pulses occur every 10.010 ms
         k2X = 2
-        
+
         #: Period Multiplier: skip three out of four pulses. PWM pulses occur every 20.020 ms
         k4X = 4
-    
+
     def __init__(self, channel):
         """Allocate a PWM given a channel.
 
@@ -75,21 +78,20 @@ class PWM(SendableBase):
         super().__init__()
         SensorUtil.checkPWMChannel(channel)
         self.channel = channel
-        
+
         self._handle = hal.initializePWMPort(hal.getPort(channel))
         self.__finalizer = weakref.finalize(self, _freePWM, self._handle)
 
         self.setDisabled()
-        
+
         hal.setPWMEliminateDeadband(self.handle, False)
-        
+
         hal.report(hal.UsageReporting.kResourceType_PWM, channel)
         self.setName("PWM", channel)
-                
+
         # Python-specific: Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
-        
-    
+
     @property
     def handle(self):
         if not self.__finalizer.alive:
@@ -137,7 +139,7 @@ class PWM(SendableBase):
         :type min: float
         """
         hal.setPWMConfig(self.handle, max, deadbandMax, center, deadbandMin, min)
-    
+
     def getRawBounds(self):
         """Gets the bounds on the PWM pulse widths. This Gets the bounds on the PWM values for a
         particular type of controller. The values determine the upper and lower speeds as well
@@ -231,7 +233,7 @@ class PWM(SendableBase):
         :rtype: int
         """
         return hal.getPWMRaw(self.handle)
-    
+
     def setDisabled(self):
         """Temporarily disables the PWM output. The next set call will reenable
         the output.
@@ -262,4 +264,6 @@ class PWM(SendableBase):
     def initSendable(self, builder):
         builder.setSmartDashboardType("PWM")
         builder.setSafeState(self.setDisabled)
-        builder.addDoubleProperty("Value", self.getRaw, lambda value: self.setRaw(int(value)))
+        builder.addDoubleProperty(
+            "Value", self.getRaw, lambda value: self.setRaw(int(value))
+        )

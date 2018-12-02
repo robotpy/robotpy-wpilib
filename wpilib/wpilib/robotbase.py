@@ -1,18 +1,20 @@
 # validated: 2017-12-06 DV dd7563376bf6 edu/wpi/first/wpilibj/RobotBase.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 from networktables import NetworkTables
 
 import logging
-logger = logging.getLogger('robotpy')
+
+logger = logging.getLogger("robotpy")
 
 __all__ = ["RobotBase"]
+
 
 class RobotBase:
     """Implement a Robot Program framework.
@@ -44,10 +46,14 @@ class RobotBase:
             NetworkTables.startServer()
 
         from .driverstation import DriverStation
+
         self.ds = DriverStation.getInstance()
 
-        NetworkTables.getTable("LiveWindow").getSubTable(".status").getEntry("LW Enabled").setBoolean(False)
+        NetworkTables.getTable("LiveWindow").getSubTable(".status").getEntry(
+            "LW Enabled"
+        ).setBoolean(False)
         from .livewindow import LiveWindow
+
         LiveWindow.setEnabled(False)
 
         self.__initialized = True
@@ -128,10 +134,11 @@ class RobotBase:
 
         # Python specific: do not call this, initialize() is already called when
         # hal is imported
-        #hal.initialize()
+        # hal.initialize()
 
         from .driverstation import DriverStation
         from .robotstate import RobotState
+
         RobotState.impl = DriverStation.getInstance()
 
     @staticmethod
@@ -139,46 +146,65 @@ class RobotBase:
         """Starting point for the applications."""
         RobotBase.initializeHardwareConfiguration()
 
-        hal.report(hal.UsageReporting.kResourceType_Language,
-                   hal.UsageReporting.kLanguage_Python)
+        hal.report(
+            hal.UsageReporting.kResourceType_Language,
+            hal.UsageReporting.kLanguage_Python,
+        )
 
         try:
             robot = robot_cls()
         except:
             from .driverstation import DriverStation
-            DriverStation.reportError("Unhandled exception instantiating robot " + robot_cls.__name__, True)
+
+            DriverStation.reportError(
+                "Unhandled exception instantiating robot " + robot_cls.__name__, True
+            )
             DriverStation.reportWarning("Robots should not quit, but yours did!", False)
-            DriverStation.reportError("Could not instantiate robot "+robot_cls.__name__+"!", False)
+            DriverStation.reportError(
+                "Could not instantiate robot " + robot_cls.__name__ + "!", False
+            )
             return False
 
         # Add a check to see if the user forgot to call super().__init__()
-        if not hasattr(robot, '_RobotBase__initialized'):
-            logger.error("If your robot class has an __init__ function, it must call super().__init__()!")
+        if not hasattr(robot, "_RobotBase__initialized"):
+            logger.error(
+                "If your robot class has an __init__ function, it must call super().__init__()!"
+            )
             return False
 
         if not hal.isSimulation():
             try:
                 import wpilib
-                with open('/tmp/frc_versions/FRC_Lib_Version.ini', 'w') as fp:
-                    fp.write('RobotPy %s' % wpilib.__version__)
+
+                with open("/tmp/frc_versions/FRC_Lib_Version.ini", "w") as fp:
+                    fp.write("RobotPy %s" % wpilib.__version__)
             except:
                 logger.warning("Could not write FRC version file to disk")
 
         try:
             robot.startCompetition()
         except KeyboardInterrupt:
-            logger.exception("THIS IS NOT AN ERROR: The user hit CTRL-C to kill the robot")
+            logger.exception(
+                "THIS IS NOT AN ERROR: The user hit CTRL-C to kill the robot"
+            )
             logger.info("Exiting because of keyboard interrupt")
             return True
         except:
             from .driverstation import DriverStation
+
             DriverStation.reportError("Unhandled exception", True)
             DriverStation.reportWarning("Robots should not quit, but yours did!", False)
-            DriverStation.reportError("The startCompetition() method (or methods called by it) should have handled the exception above.", False)
+            DriverStation.reportError(
+                "The startCompetition() method (or methods called by it) should have handled the exception above.",
+                False,
+            )
             return False
         else:
             # startCompetition never returns unless exception occurs....
             from .driverstation import DriverStation
+
             DriverStation.reportWarning("Robots should not quit, but yours did!", False)
-            DriverStation.reportError("Unexpected return from startCompetition() method.", False)
+            DriverStation.reportError(
+                "Unexpected return from startCompetition() method.", False
+            )
             return False

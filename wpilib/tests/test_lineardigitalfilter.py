@@ -16,7 +16,8 @@ kHighPassExpectedOutput = 10.074717
 kMovAvgTaps = 6
 kMovAvgExpectedOutput = -10.191644
 
-class FilterSource():
+
+class FilterSource:
     def __init__(self):
         self.t = [t * kFilterStep for t in range(int(kFilterTime / kFilterStep))]
         self.pid_idx = 0
@@ -29,24 +30,33 @@ class FilterSource():
 
     def pidGet(self):
         self.pid_idx += 1
-        return self.pid_data[self.pid_idx-1]
+        return self.pid_data[self.pid_idx - 1]
+
 
 class OutputSource(FilterSource):
     def __init__(self):
         super().__init__()
-        self.pid_data = [100.0 * math.sin(2.0 * math.pi * t) + 20.0 * math.cos(50.0 * math.pi * t) for t in self.t]
+        self.pid_data = [
+            100.0 * math.sin(2.0 * math.pi * t) + 20.0 * math.cos(50.0 * math.pi * t)
+            for t in self.t
+        ]
+
 
 class NoiseSource(FilterSource):
     def __init__(self):
         super().__init__()
         self.clean_data = [100.0 * math.sin(2.0 * math.pi * t) for t in self.t]
-        self.pid_data = [c + random.normalvariate(0.0, kStdDev) for c in self.clean_data] 
+        self.pid_data = [
+            c + random.normalvariate(0.0, kStdDev) for c in self.clean_data
+        ]
 
 
 def test_noise_reduce(wpilib):
     source = NoiseSource()
 
-    spiir = wpilib.LinearDigitalFilter.singlePoleIIR(source, kSinglePoleIIRTimeConstant, kFilterStep)
+    spiir = wpilib.LinearDigitalFilter.singlePoleIIR(
+        source, kSinglePoleIIRTimeConstant, kFilterStep
+    )
     movavg = wpilib.LinearDigitalFilter.movingAverage(source, kMovAvgTaps)
     filters = {"Single pole IIR": spiir, "Moving average": movavg}
 
@@ -57,18 +67,27 @@ def test_noise_reduce(wpilib):
         for idx in range(int(kFilterTime / kFilterStep)):
             filterError += abs(spiir.pidGet() - source.clean_data[idx])
             noiseGenError += abs(source.pid_data[idx] - source.clean_data[idx])
-        assert noiseGenError > filterError, "%s should have reduced noise accumulation from %f but failed. The filter error was %f" % (name, noiseGenError, filterError)
+        assert noiseGenError > filterError, (
+            "%s should have reduced noise accumulation from %f but failed. The filter error was %f"
+            % (name, noiseGenError, filterError)
+        )
 
 
 def test_output(wpilib):
     source = OutputSource()
 
-    spiir = wpilib.LinearDigitalFilter.singlePoleIIR(source, kSinglePoleIIRTimeConstant, kFilterStep)
-    highpass = wpilib.LinearDigitalFilter.highPass(source, kHighPassTimeConstant, kFilterStep)
+    spiir = wpilib.LinearDigitalFilter.singlePoleIIR(
+        source, kSinglePoleIIRTimeConstant, kFilterStep
+    )
+    highpass = wpilib.LinearDigitalFilter.highPass(
+        source, kHighPassTimeConstant, kFilterStep
+    )
     movavg = wpilib.LinearDigitalFilter.movingAverage(source, kMovAvgTaps)
-    filters = {"Single pole IIR": (spiir, kSinglePoleIIRExpectedOutput), 
-               "High pass": (highpass, kHighPassExpectedOutput),
-               "Moving average": (movavg, kMovAvgExpectedOutput)}
+    filters = {
+        "Single pole IIR": (spiir, kSinglePoleIIRExpectedOutput),
+        "High pass": (highpass, kHighPassExpectedOutput),
+        "Moving average": (movavg, kMovAvgExpectedOutput),
+    }
 
     for name, (flt, expected) in filters.items():
         output = 0.0
@@ -116,4 +135,3 @@ def test_reset(wpilib):
 
     assert len(movavg.inputs) == 0
     assert len(movavg.outputs) == 0
-

@@ -1,12 +1,13 @@
 # validated: 2017-11-21 EN b65447b6f5a8 edu/wpi/first/wpilibj/CounterBase.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 __all__ = ["CounterBase"]
+
 
 class CounterBase:
     """Interface for counting the number of ticks on a digital input channel.
@@ -19,13 +20,13 @@ class CounterBase:
 
     class EncodingType:
         """The number of edges for the counterbase to increment or decrement on"""
-        
+
         #: Count only the rising edge
         k1X = 0
-        
+
         #: Count both the rising and falling edge
         k2X = 1
-        
+
         #: Count rising and falling on both channels
         k4X = 2
 

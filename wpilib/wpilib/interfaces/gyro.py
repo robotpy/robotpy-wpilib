@@ -1,16 +1,16 @@
 # validated: 2018-11-17 EN 1ebb83e0f241 edu/wpi/first/wpilibj/interfaces/Gyro.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
-__all__ = ['Gyro']
+__all__ = ["Gyro"]
 
 
 class Gyro:
     """Interface for yaw rate gyros"""
-    
+
     def calibrate(self):
         """Calibrate the gyro by running for a number of samples and computing the
         center value. Then use the center value as the Accumulator center value for
@@ -33,7 +33,7 @@ class Gyro:
         after it has been running.
         """
         raise NotImplementedError
-    
+
     def getAngle(self):
         """
         Return the actual angle in degrees that the robot is currently facing.
@@ -66,7 +66,7 @@ class Gyro:
         :returns: the current rate in degrees per second
         """
         raise NotImplementedError
-    
+
     def free(self):
         """
         Free the resources used by the gyro

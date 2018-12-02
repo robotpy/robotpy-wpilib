@@ -10,7 +10,8 @@ from .notifier import Notifier
 from .timer import Timer
 
 import logging
-logger = logging.getLogger('robotpy')
+
+logger = logging.getLogger("robotpy")
 
 
 __all__ = ["Watchdog"]
@@ -25,7 +26,7 @@ class Watchdog:
     The watchdog is initialized disabled, so the user needs to call enable() before use.
     """
 
-    def __init__(self, timeout: float, callback=lambda:None) -> None:
+    def __init__(self, timeout: float, callback=lambda: None) -> None:
         """Watchdog constructor.
 
         :param timeout: The watchdog's timeout in seconds.
@@ -89,4 +90,3 @@ class Watchdog:
             self.callback()
             self._isExpired = True
             self.disable()
-
