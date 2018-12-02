@@ -151,7 +151,7 @@ class ADXRS450_Gyro_Sim(SPISimBase):
             offset = current - self.lastAngle
             self.lastAngle = current
             offset = int(offset / (self.kSamplePeriod * self.kDegreePerSecondPerLSB))
-            buffer[0:4] = offset.to_bytes(4, "big", signed=True)
+            buffer[0] = offset
 
         return 4
 

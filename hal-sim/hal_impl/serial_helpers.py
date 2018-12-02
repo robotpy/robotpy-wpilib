@@ -16,6 +16,10 @@ class SerialSimBase:
         self.port = port
         status.value = 0
 
+    def initializeSerialPortDirect(self, port, portName, status):
+        self.port = port
+        status.value = 0
+
     def setSerialBaudRate(self, port, baud, status):
         status.value = 0
 

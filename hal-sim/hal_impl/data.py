@@ -402,15 +402,8 @@ def _reset_hal_data(current_hooks):
 
         'pcm': NotifyDict(),
 
-        'pdp': {
-            'has_source':    IN(False),
-            'temperature':   IN(0),
-            'voltage':       IN(0),
-            'current':       IN([0]*16),
-            'total_current': IN(0),
-            'total_power':   IN(0),
-            'total_energy':  IN(0)
-        },
+        # The key is the device number as an integer.
+        'pdp': NotifyDict(),
 
         # The key is the device number as an integer. The value is a dictionary
         # that is specific to each CAN device

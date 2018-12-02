@@ -1246,15 +1246,14 @@ def getMatchTime(status):
         return (remaining - hooks.getFPGATime()) / 1000000.0
 
 
-def getMatchInfo():
+def getMatchInfo(info):
     evt = hal_data["event"]
-    info = types.MatchInfo()
     info.eventName = bytes(evt["name"], "utf-8")
     info.matchType = evt["match_type"]
     info.matchNumber = evt["match_number"]
     info.replayNumber = evt["replay_number"]
     info.gameSpecificMessage = bytes(evt["game_specific_message"], "utf-8")
-    return 0, info
+    return 0
 
 
 def freeMatchInfo(info):
@@ -1638,6 +1637,28 @@ def waitForNotifierAlarm(notifierHandle, status):
 
 def initializePDP(module, status):
     status.value = 0
+    if not checkPDPModule(module):
+        status.value = PARAMETER_OUT_OF_RANGE
+        return
+
+    if module not in hal_data["pdp"]:
+        hal_data["pdp"][module] = NotifyDict(
+            {
+                "has_source": False,
+                "temperature": 0,
+                "voltage": 0,
+                "current": [0] * 16,
+                "total_current": 0,
+                "total_power": 0,
+                "total_energy": 0,
+            }
+        )
+
+    return types.PDPHandle(module)
+
+
+def cleanPDP(handle):
+    pass
 
 
 def checkPDPChannel(channel):
@@ -1648,47 +1669,48 @@ def checkPDPModule(module):
     return module < kNumPDPModules and module >= 0
 
 
-def getPDPTemperature(module, status):
+def getPDPTemperature(handle, status):
     status.value = 0
-    return hal_data["pdp"]["temperature"]
+    return hal_data["pdp"][handle.module]["temperature"]
 
 
-def getPDPVoltage(module, status):
+def getPDPVoltage(handle, status):
     status.value = 0
-    return hal_data["pdp"]["voltage"]
+    return hal_data["pdp"][handle.module]["voltage"]
 
 
-def getPDPChannelCurrent(module, channel, status):
-    if channel < 0 or channel >= len(hal_data["pdp"]["current"]):
+def getPDPChannelCurrent(handle, channel, status):
+    status.value = 0
+    if channel < 0 or channel >= len(hal_data["pdp"][handle.module]["current"]):
         status.value = CTR_InvalidParamValue
         return 0
     status.value = 0
-    return hal_data["pdp"]["current"][channel]
+    return hal_data["pdp"][handle.module]["current"][channel]
 
 
-def getPDPTotalCurrent(module, status):
+def getPDPTotalCurrent(handle, status):
     status.value = 0
-    return hal_data["pdp"]["total_current"]
+    return hal_data["pdp"][handle.module]["total_current"]
 
 
-def getPDPTotalPower(module, status):
+def getPDPTotalPower(handle, status):
     status.value = 0
-    return hal_data["pdp"]["total_power"]
+    return hal_data["pdp"][handle.module]["total_power"]
 
 
-def getPDPTotalEnergy(module, status):
+def getPDPTotalEnergy(handle, status):
     status.value = 0
-    return hal_data["pdp"]["total_energy"]
+    return hal_data["pdp"][handle.module]["total_energy"]
 
 
-def resetPDPTotalEnergy(module, status):
+def resetPDPTotalEnergy(handle, status):
     status.value = 0
-    hal_data["pdp"]["total_energy"] = 0
+    hal_data["pdp"][handle.module]["total_energy"] = 0
 
 
-def clearPDPStickyFaults(module, status):
+def clearPDPStickyFaults(handle, status):
     status.value = 0
-    # not sure what to do here?
+    # not sure what to do here??
 
 
 #############################################################################
@@ -2163,6 +2185,11 @@ def getSPIAutoDroppedCount(port, status):
 
 
 def initializeSerialPort(port, status):
+    status.value = 0
+    raise NotImplementedError
+
+
+def initializeSerialPortDirect(port, portName, status):
     status.value = 0
     raise NotImplementedError
 

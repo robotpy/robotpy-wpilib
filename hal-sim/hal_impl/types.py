@@ -27,6 +27,7 @@ __all__ = [
     "GyroHandle",
     "InterruptHandle",
     "NotifierHandle",
+    "PDPHandle",
     "RelayHandle",
     "SolenoidHandle",
 ]
@@ -290,6 +291,20 @@ class NotifierHandle(Handle):
         self.active = True
         self.running = False
         self.lock = None
+
+
+class PDPHandle(Handle):
+    __slots__ = ["module"]
+
+    def __init__(self, module):
+        self.module = module
+
+    def __repr__(self):
+        return "<%s at 0x%x module=%s>" % (
+            type(self).__qualname__,
+            id(self),
+            self.module,
+        )
 
 
 class RelayHandle(Handle):

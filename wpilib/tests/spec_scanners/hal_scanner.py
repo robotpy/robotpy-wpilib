@@ -2,7 +2,8 @@ import argparse
 import collections
 import inspect
 import os
-from os.path import dirname, join
+from os.path import dirname, exists, join
+import subprocess
 import sys
 
 import CppHeaderParser
@@ -21,7 +22,7 @@ arrowtab = "--> "
 
 def get_hal_dirs(hal_dir):
     paths = list()
-    paths.append(join(hal_dir, "HAL"))
+    paths.append(join(hal_dir, "hal"))
     return paths
 
 
@@ -66,6 +67,33 @@ _normalize_type_aliases = [
    ["bool", "?", "HAL_Bool"]
     # fmt: on
 ]
+
+
+def _process_header(fname):
+    ppname = fname + ".pp"
+
+    # Cannot cache result as we would need to check all dependencies too
+    # fname_mtime = getmtime(fname)
+    # ppname_mtime = 0
+    # if exists(ppname):
+    #     ppname_mtime = getmtime(ppname)
+
+    print("Preprocessing " + fname, file=sys.stderr)
+
+    args = [
+        sys.executable,
+        "-c",
+        "import pcpp; pcpp.main()",
+        "--passthru-unfound-includes",
+        "-I",
+        dirname(dirname(fname)),
+        fname,
+        "-o",
+        ppname,
+    ]
+    subprocess.check_call(args)
+
+    return CppHeaderParser.CppHeader(ppname)
 
 
 def _normalize_type(obj):
@@ -432,12 +460,12 @@ def collect_headers(header_dirs, filter_h=None):
 
                 # Make sure it is a .hpp file
                 if os.path.splitext(fname)[1] not in [".hpp", ".h"]:
-                    return
+                    continue
 
                 fname = os.path.join(root, fname)
 
                 # Gather the headers first, so we can populate the type list
-                header = CppHeaderParser.CppHeader(fname)
+                header = _process_header(fname)
                 for enum in header.enums:
                     _special_c_types[enum["name"]] = enum["type"]
 

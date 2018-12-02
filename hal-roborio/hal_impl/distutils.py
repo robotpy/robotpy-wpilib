@@ -7,17 +7,17 @@
 #
 
 
-hal_version = "2018.3.3-20180303050231-6-g1e5ec36"
-wpiutil_version = "3.1.0"
+hal_version = "2019.1.1-beta-3"
+wpiutil_version = "2019.1.1-beta-3"
 
 frc_site = "http://first.wpi.edu/FRC/roborio/maven/release"
 frc_site_dev = "http://first.wpi.edu/FRC/roborio/maven/development"
 
-hal_site = "%s/edu/wpi/first/hal/hal" % frc_site_dev
+hal_site = "%s/edu/wpi/first/hal/hal-cpp" % frc_site
 wpiutil_site = "%s/edu/wpi/first/wpiutil/wpiutil-cpp" % frc_site
 
-hal_libs = "hal-%s-linuxathena.zip" % hal_version
-hal_headers = "hal-%s-headers.zip" % hal_version
+hal_libs = "hal-cpp-%s-linuxathena.zip" % hal_version
+hal_headers = "hal-cpp-%s-headers.zip" % hal_version
 wpiutil_libs = "wpiutil-cpp-%s-linuxathena.zip" % wpiutil_version
 
 

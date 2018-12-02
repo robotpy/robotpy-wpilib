@@ -29,6 +29,7 @@ from hal_impl.types import (
     GyroHandle,
     InterruptHandle,
     NotifierHandle,
+    PDPHandle,
     RelayHandle,
     SolenoidHandle,
 )
@@ -222,9 +223,28 @@ getAnalogTriggerOutput = _STATUSFUNC("getAnalogTriggerOutput", C.c_bool, ("analo
 # CAN.h
 #############################################################################
 
-# Mostly not implemented 
+CAN_SendMessage = NotImplemented
+CAN_ReceiveMessage = NotImplemented
+CAN_OpenStreamSession = NotImplemented
+CAN_CloseStreamSession = NotImplemented
+CAN_ReadStreamSession = NotImplemented
+
 CAN_GetCANStatus = _STATUSFUNC("CAN_GetCANStatus", None, ("percentBusUtilization", C.POINTER(C.c_float)), ("busOffCount", C.POINTER(C.c_uint32)), ("txFullCount", C.POINTER(C.c_uint32)), ("receiveErrorCount", C.POINTER(C.c_uint32)), ("transmitErrorCount", C.POINTER(C.c_uint32)), out=["percentBusUtilization", "busOffCount", "txFullCount", "receiveErrorCount", "transmitErrorCount"])
 
+
+#############################################################################
+# CANAPI.h
+#############################################################################
+
+initializeCAN = NotImplemented
+cleanCAN = NotImplemented
+writeCANPacket = NotImplemented
+writeCANPacketRepeating = NotImplemented
+stopCANPacketRepeating = NotImplemented
+readCANPacketNew = NotImplemented
+readCANPacketLatest = NotImplemented
+readCANPacketTimeout = NotImplemented
+readCANPeriodicPacket = NotImplemented
 
 #############################################################################
 # Compressor.h
@@ -357,25 +377,7 @@ def getMatchTime():
     except HALError:
         return -1
 
-_getMatchInfo = _RETFUNC("getMatchInfo", C.c_int32, ("info", MatchInfo_ptr), out=["info"])
-_freeMatchInfo = _RETFUNC("freeMatchInfo", None, ("info", MatchInfo_ptr))
-
-@hal_wrapper
-def getMatchInfo(cachedInfo):
-    ret, info = _getMatchInfo()
-    if ret == 0:
-        cachedInfo.eventName = info.eventName.decode('utf-8')
-        cachedInfo.matchType = info.matchType
-        cachedInfo.matchNumber = info.matchNumber
-        cachedInfo.replayNumber = info.replayNumber
-        cachedInfo.gameSpecificMessage = info.gameSpecificMessage.decode('utf-8')
-        _freeMatchInfo(info)
-    return ret
-    
-
-@hal_wrapper
-def freeMatchInfo(info):
-    raise ValueError("Do not call this function")
+getMatchInfo = _RETFUNC("getMatchInfo", C.c_int32, ("info", MatchInfo_ptr))
 
 releaseDSMutex = _RETFUNC("releaseDSMutex", None)
 isNewControlData = _RETFUNC("isNewControlData", C.c_bool)
@@ -486,7 +488,7 @@ _InterruptHandlerFunction._typedef_ = 'InterruptHandlerFunction'
 _interruptHandlers = {}
 
 initializeInterrupts = _STATUSFUNC("initializeInterrupts", InterruptHandle, ("watcher", C.c_bool))
-_cleanInterrupts = _STATUSFUNC("cleanInterrupts", None, ("interruptHandle", InterruptHandle))
+_cleanInterrupts = _STATUSFUNC("cleanInterrupts", C.c_void_p, ("interruptHandle", InterruptHandle))
 @hal_wrapper
 def cleanInterrupts(interrupt):
     _cleanInterrupts(interrupt)
@@ -497,8 +499,8 @@ def cleanInterrupts(interrupt):
 waitForInterrupt = _STATUSFUNC("waitForInterrupt", C.c_int64, ("interruptHandle", InterruptHandle), ("timeout", C.c_double), ("ignorePrevious", C.c_bool))
 enableInterrupts = _STATUSFUNC("enableInterrupts", None, ("interruptHandle", InterruptHandle))
 disableInterrupts = _STATUSFUNC("disableInterrupts", None, ("interruptHandle", InterruptHandle))
-readInterruptRisingTimestamp = _STATUSFUNC("readInterruptRisingTimestamp", C.c_double, ("interruptHandle", InterruptHandle))
-readInterruptFallingTimestamp = _STATUSFUNC("readInterruptFallingTimestamp", C.c_double, ("interruptHandle", InterruptHandle))
+readInterruptRisingTimestamp = _STATUSFUNC("readInterruptRisingTimestamp", C.c_uint64, ("interruptHandle", InterruptHandle))
+readInterruptFallingTimestamp = _STATUSFUNC("readInterruptFallingTimestamp", C.c_uint64, ("interruptHandle", InterruptHandle))
 requestInterrupts = _STATUSFUNC("requestInterrupts", None, ("interruptHandle", InterruptHandle), ("digitalSourceHandle", Handle), ("analogTriggerType", C.c_int32))
 attachInterruptHandlerThreaded = _STATUSFUNC("attachInterruptHandlerThreaded", None, ("interruptHandle", InterruptHandle), ("handler", _InterruptHandlerFunction), ("param", C.POINTER(None)))
 
@@ -537,17 +539,18 @@ waitForNotifierAlarm = _STATUSFUNC("waitForNotifierAlarm", C.c_uint64, ("notifie
 # PDP
 #############################################################################
 
-initializePDP = _STATUSFUNC("initializePDP", None, ("module", C.c_int32))
+initializePDP = _STATUSFUNC("initializePDP", PDPHandle, ("module", C.c_int32))
+cleanPDP = _RETFUNC("cleanPDP", None, ("handle", PDPHandle))
 checkPDPChannel = _RETFUNC("checkPDPChannel", C.c_bool, ("channel", C.c_int32))
 checkPDPModule = _RETFUNC("checkPDPModule", C.c_bool, ("module", C.c_int32))
-getPDPTemperature = _STATUSFUNC("getPDPTemperature", C.c_double, ("module", C.c_int32))
-getPDPVoltage = _STATUSFUNC("getPDPVoltage", C.c_double, ("module", C.c_int32))
-getPDPChannelCurrent = _STATUSFUNC("getPDPChannelCurrent", C.c_double, ("module", C.c_int32), ("channel", C.c_int32))
-getPDPTotalCurrent = _STATUSFUNC("getPDPTotalCurrent", C.c_double, ("module", C.c_int32))
-getPDPTotalPower = _STATUSFUNC("getPDPTotalPower", C.c_double, ("module", C.c_int32))
-getPDPTotalEnergy = _STATUSFUNC("getPDPTotalEnergy", C.c_double, ("module", C.c_int32))
-resetPDPTotalEnergy = _STATUSFUNC("resetPDPTotalEnergy", None, ("module", C.c_int32))
-clearPDPStickyFaults = _STATUSFUNC("clearPDPStickyFaults", None, ("module", C.c_int32))
+getPDPTemperature = _STATUSFUNC("getPDPTemperature", C.c_double, ("handle", PDPHandle))
+getPDPVoltage = _STATUSFUNC("getPDPVoltage", C.c_double, ("handle", PDPHandle))
+getPDPChannelCurrent = _STATUSFUNC("getPDPChannelCurrent", C.c_double, ("handle", PDPHandle), ("channel", C.c_int32))
+getPDPTotalCurrent = _STATUSFUNC("getPDPTotalCurrent", C.c_double, ("handle", PDPHandle))
+getPDPTotalPower = _STATUSFUNC("getPDPTotalPower", C.c_double, ("handle", PDPHandle))
+getPDPTotalEnergy = _STATUSFUNC("getPDPTotalEnergy", C.c_double, ("handle", PDPHandle))
+resetPDPTotalEnergy = _STATUSFUNC("resetPDPTotalEnergy", None, ("handle", PDPHandle))
+clearPDPStickyFaults = _STATUSFUNC("clearPDPStickyFaults", None, ("handle", PDPHandle))
 
 
 #############################################################################
@@ -694,7 +697,7 @@ def setSPIAutoTransmitData(port, dataToSend, zeroSize):
     _setSPIAutoTransmitData(port, buffer, sendSize, zeroSize)
 
 forceSPIAutoRead = _TSTATUSFUNC("forceSPIAutoRead", None, ("port", C.c_int32))
-readSPIAutoReceivedData = _TSTATUSFUNC("readSPIAutoReceivedData", C.c_int32, ("port", C.c_int32), ("buffer", C.POINTER(C.c_uint8)), ("numToRead", C.c_int32), ("timeout", C.c_double))
+readSPIAutoReceivedData = _STATUSFUNC("readSPIAutoReceivedData", C.c_int32, ("port", C.c_int32), ("buffer", C.POINTER(C.c_uint32)), ("numToRead", C.c_int32), ("timeout", C.c_double))
 
 getSPIAutoDroppedCount = _TSTATUSFUNC("getSPIAutoDroppedCount", C.c_int32, ("port", C.c_int32))
 
@@ -704,6 +707,7 @@ getSPIAutoDroppedCount = _TSTATUSFUNC("getSPIAutoDroppedCount", C.c_int32, ("por
 #############################################################################
 
 initializeSerialPort = _TSTATUSFUNC("initializeSerialPort", None, ("port", C.c_int32))
+initializeSerialPortDirect = _TSTATUSFUNC("initializeSerialPortDirect", None, ("port", C.c_int32), ("portName", C.c_char_p))
 setSerialBaudRate = _TSTATUSFUNC("setSerialBaudRate", None, ("port", C.c_int32), ("baud", C.c_int32))
 setSerialDataBits = _TSTATUSFUNC("setSerialDataBits", None, ("port", C.c_int32), ("bits", C.c_int32))
 setSerialParity = _TSTATUSFUNC("setSerialParity", None, ("port", C.c_int32), ("parity", C.c_int32))
@@ -759,4 +763,7 @@ fireOneShot = _STATUSFUNC("fireOneShot", None, ("solenoidPortHandle", SolenoidHa
 # Threads
 #############################################################################
 
-# Not implemented
+getThreadPriority = NotImplemented
+getCurrentThreadPriority = NotImplemented
+setThreadPriority = NotImplemented
+setCurrentThreadPriority = NotImplemented
