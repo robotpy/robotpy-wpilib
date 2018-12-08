@@ -75,7 +75,7 @@ autoclass_content = "both"
 
 intersphinx_mapping = {
     "networktables": (
-        "http://pynetworktables.readthedocs.io/en/%s/" % rtd_version,
+        "https://pynetworktables.readthedocs.io/en/%s/" % rtd_version,
         None,
     )
 }

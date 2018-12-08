@@ -129,12 +129,14 @@ def main():
     import wpilib.command
     import wpilib.drive
     import wpilib.interfaces
+    import wpilib.shuffleboard
 
     gen_package(wpilib)
     gen_package(wpilib.buttons)
     gen_package(wpilib.command)
     gen_package(wpilib.drive)
     gen_package(wpilib.interfaces)
+    gen_package(wpilib.shuffleboard)
 
 
 if __name__ == "__main__":
