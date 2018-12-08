@@ -25,6 +25,8 @@ MANIFEST
 /docs/wpilib.drive
 /docs/wpilib.interfaces
 /docs/wpilib.interfaces.rst
+/docs/wpilib.shuffleboard
+/docs/wpilib.shuffleboard.rst
 
 version.py
 
