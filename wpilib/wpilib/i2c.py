@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/I2C.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import warnings
@@ -12,8 +12,10 @@ import weakref
 
 __all__ = ["I2C"]
 
+
 def _freeI2C(port):
     hal.closeI2C(port)
+
 
 class I2C:
     """I2C bus interface class.
@@ -28,6 +30,7 @@ class I2C:
         # Write bytes 'text', and receive 4 bytes in data
         data = i2c.transaction(b'text', 4)
     """
+
     class Port:
         kOnboard = 0
         kMXP = 1
@@ -44,31 +47,32 @@ class I2C:
         """
         if port not in [self.Port.kOnboard, self.Port.kMXP]:
             raise ValueError("Invalid value '%s' for I2C port" % port)
-        
+
         if hal.HALIsSimulation():
             if simPort is None:
                 # If you want more functionality, implement your own mock
                 from hal_impl.i2c_helpers import I2CSimBase
+
                 simPort = I2CSimBase()
-                
+
                 msg = "Using stub simulator for I2C port %s" % port
                 warnings.warn(msg)
-            
+
             # Just check for basic functionality
-            assert hasattr(simPort, 'initializeI2C')
-            assert hasattr(simPort, 'closeI2C')
-            
+            assert hasattr(simPort, "initializeI2C")
+            assert hasattr(simPort, "closeI2C")
+
             self._port = (simPort, port)
         else:
             self._port = port
-            
+
         self.deviceAddress = deviceAddress
 
         hal.initializeI2C(self._port)
         self.__finalizer = weakref.finalize(self, _freeI2C, self._port)
 
         hal.report(hal.UsageReporting.kResourceType_I2C, deviceAddress)
-    
+
     @property
     def port(self):
         if not self.__finalizer.alive:
@@ -80,10 +84,9 @@ class I2C:
         .. deprecated:: 2019.0.0
             Use close instead
         """
-        warnings.warn("use close instead",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn("use close instead", DeprecationWarning, stacklevel=2)
         self.close()
-    
+
     def close(self):
         self.__finalizer()
 
@@ -103,8 +106,9 @@ class I2C:
         :returns: Data received from the device.
         :rtype: iterable of bytes
         """
-        return hal.transactionI2C(self.port, self.deviceAddress,
-                                  dataToSend, receiveSize)
+        return hal.transactionI2C(
+            self.port, self.deviceAddress, dataToSend, receiveSize
+        )
 
     def addressOnly(self):
         """Attempt to address a device on the I2C bus.

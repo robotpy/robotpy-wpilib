@@ -4,6 +4,7 @@ from networktables.networktable import NetworkTable
 from .component import ShuffleboardComponent
 from .container import ShuffleboardContainer
 
+
 class ShuffleboardLayout(ShuffleboardComponent, ShuffleboardContainer):
     def __init__(self, parent: ShuffleboardContainer, name: str, type: str):
         ShuffleboardComponent.__init__(self, parent, name, type)

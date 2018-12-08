@@ -93,8 +93,8 @@ class DifferentialDrive(RobotDriveBase):
         mode. However, it is not designed to give exactly the same response.
     """
 
-    kDefaultQuickStopThreshold = .2
-    kDefaultQuickStopAlpha = .1
+    kDefaultQuickStopThreshold = 0.2
+    kDefaultQuickStopAlpha = 0.1
 
     instances = 0
 
@@ -134,9 +134,11 @@ class DifferentialDrive(RobotDriveBase):
         """
 
         if not self.reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       2,
-                       hal.UsageReporting.kRobotDrive2_DifferentialArcade)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                2,
+                hal.UsageReporting.kRobotDrive2_DifferentialArcade,
+            )
             self.reported = True
 
         xSpeed = RobotDriveBase.limit(xSpeed)
@@ -191,9 +193,11 @@ class DifferentialDrive(RobotDriveBase):
                           turn-in-place maneuvers.
         """
         if not self.reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       2,
-                       hal.UsageReporting.kRobotDrive2_Curvature)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                2,
+                hal.UsageReporting.kRobotDrive2_Curvature,
+            )
             self.reported = True
 
         xSpeed = RobotDriveBase.limit(xSpeed)
@@ -204,8 +208,10 @@ class DifferentialDrive(RobotDriveBase):
 
         if isQuickTurn:
             if abs(xSpeed) < self.quickStopThreshold:
-                self.quickStopAccumulator = (1 - self.quickStopAlpha) * self.quickStopAccumulator + \
-                                            self.quickStopAlpha * RobotDriveBase.limit(zRotation) * 2
+                self.quickStopAccumulator = (
+                    (1 - self.quickStopAlpha) * self.quickStopAccumulator
+                    + self.quickStopAlpha * RobotDriveBase.limit(zRotation) * 2
+                )
 
             overPower = True
             angularPower = zRotation
@@ -237,7 +243,7 @@ class DifferentialDrive(RobotDriveBase):
             elif rightMotorSpeed < -1.0:
                 leftMotorSpeed -= rightMotorSpeed + 1.0
                 rightMotorSpeed = -1.0
-        
+
         # Normalize the wheel speeds
         maxMagnitude = max(abs(leftMotorSpeed), abs(rightMotorSpeed))
         if maxMagnitude > 1.0:
@@ -245,7 +251,9 @@ class DifferentialDrive(RobotDriveBase):
             rightMotorSpeed /= maxMagnitude
 
         self.leftMotor.set(leftMotorSpeed * self.maxOutput)
-        self.rightMotor.set(rightMotorSpeed * self.maxOutput * self.rightSideInvertMultiplier)
+        self.rightMotor.set(
+            rightMotorSpeed * self.maxOutput * self.rightSideInvertMultiplier
+        )
 
         self.feed()
 
@@ -258,9 +266,11 @@ class DifferentialDrive(RobotDriveBase):
         """
 
         if not self.reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       2,
-                       hal.UsageReporting.kRobotDrive2_DifferentialTank)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                2,
+                hal.UsageReporting.kRobotDrive2_DifferentialTank,
+            )
             self.reported = True
 
         leftSpeed = RobotDriveBase.limit(leftSpeed)
@@ -276,7 +286,9 @@ class DifferentialDrive(RobotDriveBase):
             rightSpeed = math.copysign(rightSpeed * rightSpeed, rightSpeed)
 
         self.leftMotor.set(leftSpeed * self.maxOutput)
-        self.rightMotor.set(rightSpeed * self.maxOutput * self.rightSideInvertMultiplier)
+        self.rightMotor.set(
+            rightSpeed * self.maxOutput * self.rightSideInvertMultiplier
+        )
 
         self.feed()
 
@@ -335,8 +347,11 @@ class DifferentialDrive(RobotDriveBase):
         builder.setSmartDashboardType("DifferentialDrive")
         builder.setActuator(True)
         builder.setSafeState(self.stopMotor)
-        builder.addDoubleProperty("Left Motor Speed", self.leftMotor.get, self.leftMotor.set)
+        builder.addDoubleProperty(
+            "Left Motor Speed", self.leftMotor.get, self.leftMotor.set
+        )
         builder.addDoubleProperty(
             "Right Motor Speed",
             lambda: self.rightMotor.get() * self.rightSideInvertMultiplier,
-            lambda x: self.rightMotor.set(x * self.rightSideInvertMultiplier))
+            lambda x: self.rightMotor.set(x * self.rightSideInvertMultiplier),
+        )

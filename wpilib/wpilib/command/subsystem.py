@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN b7807bf9d26e edu/wpi/first/wpilibj/command/Subsystem.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import logging
 
@@ -13,6 +13,7 @@ from ..livewindow import LiveWindow
 from ..sendablebase import SendableBase
 
 __all__ = ["Subsystem"]
+
 
 class Subsystem(SendableBase):
     """This class defines a major component of the robot.
@@ -163,7 +164,11 @@ class Subsystem(SendableBase):
 
     def initSendable(self, builder):
         builder.setSmartDashboardType("Subsystem")
-        builder.addBooleanProperty(".hasDefault", lambda: self.defaultCommand is not None, None)
+        builder.addBooleanProperty(
+            ".hasDefault", lambda: self.defaultCommand is not None, None
+        )
         builder.addStringProperty(".default", self.getDefaultCommandName, None)
-        builder.addBooleanProperty(".hasCommand", lambda: self.defaultCommand is not None, None)
+        builder.addBooleanProperty(
+            ".hasCommand", lambda: self.defaultCommand is not None, None
+        )
         builder.addStringProperty(".command", self.getCurrentCommandName, None)

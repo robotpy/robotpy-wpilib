@@ -2,20 +2,20 @@ import pytest
 import hal
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def digitalinput(wpilib):
     return wpilib.DigitalInput(2)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def di_data(hal_data):
-    return hal_data['dio'][2]
+    return hal_data["dio"][2]
 
 
 def test_digitalinput_init(wpilib, di_data):
     di = wpilib.DigitalInput(2)
-    assert di_data['initialized']
-    assert di_data['is_input']
+    assert di_data["initialized"]
+    assert di_data["is_input"]
 
 
 def test_digitalinput_close(digitalinput, wpilib):
@@ -28,7 +28,7 @@ def test_digitalinput_close(digitalinput, wpilib):
 
 
 def test_digitalinput_get(digitalinput, di_data):
-    di_data['value'] = True
+    di_data["value"] = True
     assert digitalinput.get()
 
 
@@ -45,7 +45,7 @@ def test_digitalinput_isAnalogTrigger(digitalinput):
 
 
 def test_digitalinput_initSendable(digitalinput, sendablebuilder, di_data):
-    di_data['value'] = True
+    di_data["value"] = True
 
     digitalinput.initSendable(sendablebuilder)
     sendablebuilder.updateTable()

@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/Relay.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import weakref
@@ -18,6 +18,7 @@ from .sendablebase import SendableBase
 
 __all__ = ["Relay"]
 
+
 def _freeRelay(*handles):
     for handle in handles:
         try:
@@ -26,6 +27,7 @@ def _freeRelay(*handles):
             pass
         if handle:
             hal.freeRelayPort(handle)
+
 
 class Relay(SendableBase, MotorSafety):
     """Controls VEX Robotics Spike style relay outputs.
@@ -46,16 +48,16 @@ class Relay(SendableBase, MotorSafety):
 
     class Value(IntEnum):
         """The state to drive a Relay to."""
-        
+
         #: Off
         kOff = 0
-        
+
         #: On for relays with defined direction
         kOn = 1
-        
+
         #: Forward
         kForward = 2
-        
+
         #: Reverse
         kReverse = 3
 
@@ -64,17 +66,17 @@ class Relay(SendableBase, MotorSafety):
 
         @classmethod
         def getValueOf(cls, name):
-            return getattr(cls, 'k' + name, cls.kOff)
+            return getattr(cls, "k" + name, cls.kOff)
 
     class Direction(IntEnum):
         """The Direction(s) that a relay is configured to operate in."""
-        
+
         #: Both directions are valid
         kBoth = 0
-        
+
         #: Only forward is valid
         kForward = 1
-        
+
         #: Only reverse is valid
         kReverse = 2
 
@@ -98,7 +100,7 @@ class Relay(SendableBase, MotorSafety):
         self._reverseHandle = None
 
         self._initRelay()
-        
+
         self.set(self.Value.kOff)
 
         MotorSafety.__init__(self)
@@ -108,24 +110,32 @@ class Relay(SendableBase, MotorSafety):
         portHandle = hal.getPort(self.channel)
 
         try:
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
+            if (
+                self.direction == self.Direction.kBoth
+                or self.direction == self.Direction.kForward
+            ):
                 Relay.relayChannels.allocate(self, self.channel * 2)
                 self._forwardHandle = hal.initializeRelayPort(portHandle, True)
                 hal.report(hal.UsageReporting.kResourceType_Relay, self.channel)
 
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
+            if (
+                self.direction == self.Direction.kBoth
+                or self.direction == self.Direction.kReverse
+            ):
                 Relay.relayChannels.allocate(self, self.channel * 2 + 1)
                 self._reverseHandle = hal.initializeRelayPort(portHandle, False)
                 hal.report(hal.UsageReporting.kResourceType_Relay, self.channel + 128)
         except IndexError as e:
-            raise IndexError("Relay channel %d is already allocated" % self.channel) from e
+            raise IndexError(
+                "Relay channel %d is already allocated" % self.channel
+            ) from e
 
-        self.__finalizer = weakref.finalize(self, _freeRelay, self._forwardHandle, self._reverseHandle)
+        self.__finalizer = weakref.finalize(
+            self, _freeRelay, self._forwardHandle, self._reverseHandle
+        )
 
         self.setSafetyEnabled(False)
-        
+
         self.setName("Relay", self.channel)
 
     @property
@@ -168,34 +178,50 @@ class Relay(SendableBase, MotorSafety):
         :type  value: :class:`Relay.Value`
         """
         if value == self.Value.kOff:
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
+            if (
+                self.direction == self.Direction.kBoth
+                or self.direction == self.Direction.kForward
+            ):
                 hal.setRelay(self.forwardHandle, False)
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
+            if (
+                self.direction == self.Direction.kBoth
+                or self.direction == self.Direction.kReverse
+            ):
                 hal.setRelay(self.reverseHandle, False)
         elif value == self.Value.kOn:
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
+            if (
+                self.direction == self.Direction.kBoth
+                or self.direction == self.Direction.kForward
+            ):
                 hal.setRelay(self.forwardHandle, True)
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
+            if (
+                self.direction == self.Direction.kBoth
+                or self.direction == self.Direction.kReverse
+            ):
                 hal.setRelay(self.reverseHandle, True)
         elif value == self.Value.kForward:
             if self.direction == self.Direction.kReverse:
-                raise ValueError("A relay configured for reverse cannot be set to forward")
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kForward):
+                raise ValueError(
+                    "A relay configured for reverse cannot be set to forward"
+                )
+            if (
+                self.direction == self.Direction.kBoth
+                or self.direction == self.Direction.kForward
+            ):
                 hal.setRelay(self.forwardHandle, True)
             if self.direction == self.Direction.kBoth:
                 hal.setRelay(self.reverseHandle, False)
         elif value == self.Value.kReverse:
             if self.direction == self.Direction.kForward:
-                raise ValueError("A relay configured for forward cannot be set to reverse")
+                raise ValueError(
+                    "A relay configured for forward cannot be set to reverse"
+                )
             if self.direction == self.Direction.kBoth:
                 hal.setRelay(self.forwardHandle, False)
-            if (self.direction == self.Direction.kBoth or
-                self.direction == self.Direction.kReverse):
+            if (
+                self.direction == self.Direction.kBoth
+                or self.direction == self.Direction.kReverse
+            ):
                 hal.setRelay(self.reverseHandle, True)
         else:
             raise ValueError("Invalid value argument '%s'" % value)
@@ -260,7 +286,7 @@ class Relay(SendableBase, MotorSafety):
         """
         if self.direction == direction:
             return
-        
+
         if direction not in list(self.Direction):
             raise ValueError("Invalid direction argument '%s'" % direction)
 
@@ -272,6 +298,8 @@ class Relay(SendableBase, MotorSafety):
         builder.setSmartDashboardType("Relay")
         builder.setActuator(True)
         builder.setSafeState(lambda: self.set(self.Value.kOff))
-        builder.addStringProperty("Value", 
-            lambda: self.get().getPrettyValue(), 
-            lambda value: self.set(self.Value.getValueOf(value)))
+        builder.addStringProperty(
+            "Value",
+            lambda: self.get().getPrettyValue(),
+            lambda value: self.set(self.Value.getValueOf(value)),
+        )

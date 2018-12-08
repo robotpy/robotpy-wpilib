@@ -1,10 +1,10 @@
 # validated: 2018-09-30 EN a11fcb605d15 edu/wpi/first/wpilibj/filters/LinearDigitalFilter.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import collections
@@ -13,7 +13,8 @@ from operator import mul
 
 from .filter import Filter
 
-__all__ = ['LinearDigitalFilter']
+__all__ = ["LinearDigitalFilter"]
+
 
 class LinearDigitalFilter(Filter):
     """This class implements a linear, digital filter. All types of FIR and IIR
@@ -78,7 +79,7 @@ class LinearDigitalFilter(Filter):
     """
 
     instances = 0
-    
+
     def __init__(self, source, ffGains, fbGains):
         """Constructor. Create a linear FIR or IIR filter
         
@@ -89,21 +90,22 @@ class LinearDigitalFilter(Filter):
         :param fbGains: The "feed back" or IIR gains
         :type fbGains: list, tuple
         """
-        
+
         super().__init__(source)
-    
+
         lf = len(ffGains)
         lb = len(fbGains)
-    
-        self.inputs = collections.deque([0.0]*lf, maxlen=lf)
-        self.outputs = collections.deque([0.0]*lb, maxlen=lb)
+
+        self.inputs = collections.deque([0.0] * lf, maxlen=lf)
+        self.outputs = collections.deque([0.0] * lb, maxlen=lb)
         self.inputGains = ffGains.copy()
         self.outputGains = fbGains.copy()
 
         LinearDigitalFilter.instances += 1
-        hal.report(hal.UsageReporting.kResourceType_LinearFilter, 
-            LinearDigitalFilter.instances)
-    
+        hal.report(
+            hal.UsageReporting.kResourceType_LinearFilter, LinearDigitalFilter.instances
+        )
+
     @staticmethod
     def singlePoleIIR(source, timeConstant, period):
         """Creates a one-pole IIR low-pass filter of the form::
@@ -123,11 +125,11 @@ class LinearDigitalFilter(Filter):
         
         :returns: :class:`LinearDigitalFilter`
         """
-        
-        gain = math.exp(-period/float(timeConstant))
+
+        gain = math.exp(-period / float(timeConstant))
         ffGains = [1.0 - gain]
         fbGains = [-gain]
-        
+
         return LinearDigitalFilter(source, ffGains, fbGains)
 
     @staticmethod
@@ -149,12 +151,12 @@ class LinearDigitalFilter(Filter):
         
         :returns: :class:`LinearDigitalFilter`
         """
-        gain = math.exp(-period/float(timeConstant))
+        gain = math.exp(-period / float(timeConstant))
         ffGains = [gain, -gain]
         fbGains = [-gain]
-            
+
         return LinearDigitalFilter(source, ffGains, fbGains)
-    
+
     @staticmethod
     def movingAverage(source, taps):
         """Creates a K-tap FIR moving average filter of the form::
@@ -174,12 +176,12 @@ class LinearDigitalFilter(Filter):
         """
         if taps <= 0:
             raise ValueError("Number of taps was not at least 1")
-        
-        ffGains = [1.0/taps]*taps
+
+        ffGains = [1.0 / taps] * taps
         fbGains = []
 
         return LinearDigitalFilter(source, ffGains, fbGains)
-    
+
     def get(self):
         """Returns the current filter estimate without also inserting new data as
         :meth:`pidGet` would do.
@@ -188,30 +190,32 @@ class LinearDigitalFilter(Filter):
         """
 
         # Calculate the new value
-        retVal = sum(map(mul, self.inputs, self.inputGains)) - \
-                 sum(map(mul, self.outputs, self.outputGains)) 
-        
+        retVal = sum(map(mul, self.inputs, self.inputGains)) - sum(
+            map(mul, self.outputs, self.outputGains)
+        )
+
         return retVal
 
     def reset(self):
         """Reset the filter state"""
         self.inputs.clear()
         self.outputs.clear()
-     
+
     def pidGet(self):
         """Calculates the next value of the filter
         
         :returns: The filtered value at this step
         """
-        
+
         # Rotate the inputs
         self.inputs.appendleft(self.pidGetSource())
-    
+
         # Calculate the new value
-        retVal = sum(map(mul, self.inputs, self.inputGains)) - \
-                 sum(map(mul, self.outputs, self.outputGains))
-    
+        retVal = sum(map(mul, self.inputs, self.inputGains)) - sum(
+            map(mul, self.outputs, self.outputGains)
+        )
+
         # Rotate the outputs
         self.outputs.appendleft(retVal)
-    
+
         return retVal

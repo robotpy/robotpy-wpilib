@@ -25,20 +25,23 @@ class TimedRobot(IterativeRobotBase):
 
     periodic() functions from the base class are called on an interval by a Notifier instance.
     """
-    kDefaultPeriod = .02
 
+    kDefaultPeriod = 0.02
 
-    def __init__(self, period: float=None):
+    def __init__(self, period: float = None):
         if period is None:
             period = TimedRobot.kDefaultPeriod
         super().__init__(period)
-        hal.report(hal.UsageReporting.kResourceType_Framework, hal.UsageReporting.kFramework_Timed)
+        hal.report(
+            hal.UsageReporting.kResourceType_Framework,
+            hal.UsageReporting.kFramework_Timed,
+        )
 
         self._expirationTime = 0
         self._notifier = hal.initializeNotifier()
-        
+
         Resource._add_global_resource(self)
-    
+
     # python-specific
     def free(self) -> None:
         hal.stopNotifier(self._notifier)
@@ -57,16 +60,16 @@ class TimedRobot(IterativeRobotBase):
         while True:
             if hal.waitForNotifierAlarm(self._notifier) == 0:
                 break
-            
+
             self._expirationTime += self.period
             self._updateAlarm()
-            
+
             self.loopFunc()
 
     def getPeriod(self):
         """Get time period between calls to Periodic() functions."""
         return self.period
-    
+
     def _updateAlarm(self) -> None:
         """Update the alarm hardware to reflect the next alarm."""
         hal.updateNotifierAlarm(self._notifier, int(self._expirationTime * 1e6))

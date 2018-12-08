@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/Solenoid.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import weakref
@@ -17,8 +17,10 @@ from .solenoidbase import SolenoidBase
 
 __all__ = ["Solenoid"]
 
+
 def _freeSolenoid(solenoidHandle):
     hal.freeSolenoidPort(solenoidHandle)
+
 
 class Solenoid(SolenoidBase):
     """Solenoid class for running high voltage Digital Output.
@@ -50,8 +52,9 @@ class Solenoid(SolenoidBase):
         moduleNumber = kwargs.pop("moduleNumber", None)
 
         if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
+            warnings.warn(
+                "unknown keyword arguments: %s" % kwargs.keys(), RuntimeWarning
+            )
 
         # positional arguments
         if len(args) == 1:
@@ -59,7 +62,9 @@ class Solenoid(SolenoidBase):
         elif len(args) == 2:
             moduleNumber, channel = args
         elif len(args) != 0:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
+            raise ValueError(
+                "don't know how to handle %d positional arguments" % len(args)
+            )
 
         if moduleNumber is None:
             moduleNumber = SensorUtil.getDefaultSolenoidModule()
@@ -71,19 +76,18 @@ class Solenoid(SolenoidBase):
 
         SensorUtil.checkSolenoidModule(moduleNumber)
         SensorUtil.checkSolenoidChannel(channel)
-        
+
         portHandle = hal.getPortWithModule(moduleNumber, channel)
         self._solenoidHandle = hal.initializeSolenoidPort(portHandle)
 
-        hal.report(hal.UsageReporting.kResourceType_Solenoid, channel,
-                   moduleNumber)
+        hal.report(hal.UsageReporting.kResourceType_Solenoid, channel, moduleNumber)
         self.setName("Solenoid", self.moduleNumber, self.channel)
-        
+
         self.__finalizer = weakref.finalize(self, _freeSolenoid, self._solenoidHandle)
-        
+
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
-        
+
     @property
     def solenoidHandle(self):
         if not self.__finalizer.alive:
@@ -96,7 +100,6 @@ class Solenoid(SolenoidBase):
 
         self.__finalizer()
         self._solenoidHandle = None
-        
 
     def set(self, on):
         """Set the value of a solenoid.

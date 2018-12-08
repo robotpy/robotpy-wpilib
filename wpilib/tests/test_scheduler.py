@@ -1,7 +1,8 @@
 import pytest
 from unittest.mock import MagicMock, call, patch
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def scheduler(wpilib):
     return wpilib.command.Scheduler()
 
@@ -40,7 +41,7 @@ def test_scheduler__add2(scheduler, wpilib):
     command1 = MagicMock()
     command2 = MagicMock()
     command2.isInterruptible.return_value = False
-    requirement = wpilib.command.Subsystem() 
+    requirement = wpilib.command.Subsystem()
     requirement.setCurrentCommand(command2)
     command1.getRequirements.return_value = [requirement]
     scheduler._add(command2)
@@ -56,7 +57,7 @@ def test_scheduler__add2(scheduler, wpilib):
     command1 = MagicMock()
     command2 = MagicMock()
     command2.isInterruptible.return_value = True
-    requirement = wpilib.command.Subsystem() 
+    requirement = wpilib.command.Subsystem()
     requirement.setCurrentCommand(command2)
     command1.getRequirements.return_value = [requirement]
     scheduler._add(command2)
@@ -77,10 +78,7 @@ def test_scheduler_run1(scheduler):
     scheduler.addButton(lambda: mock(2))
     scheduler.run()
 
-    mock.assert_has_calls([
-        call(2),
-        call(1),
-    ], any_order=False)
+    mock.assert_has_calls([call(2), call(1)], any_order=False)
 
 
 def test_scheduler_run2(scheduler, wpilib):
@@ -95,15 +93,13 @@ def test_scheduler_run2(scheduler, wpilib):
     scheduler.registerSubsystem(subsystem2)
     scheduler.run()
 
-    mock.assert_has_calls([
-        call(1),
-        call(2),
-    ], any_order=True)
+    mock.assert_has_calls([call(1), call(2)], any_order=True)
 
 
 def test_scheduler_run3(scheduler, wpilib):
     # calls commands, first in called first
     mock = MagicMock()
+
     def callmock(i):
         mock(i)
         return True
@@ -119,11 +115,7 @@ def test_scheduler_run3(scheduler, wpilib):
     scheduler._add(command3)
     scheduler.run()
 
-    mock.assert_has_calls([
-        call(1),
-        call(2),
-        call(3),
-    ], any_order=False)
+    mock.assert_has_calls([call(1), call(2), call(3)], any_order=False)
     assert not scheduler.runningCommandsChanged
 
 
@@ -145,7 +137,7 @@ def test_scheduler_run4(scheduler, wpilib):
 def test_scheduler_run4(scheduler, wpilib):
     # adds subsystem's default command
     command1 = wpilib.command.Command()
-    requirement = wpilib.command.Subsystem() 
+    requirement = wpilib.command.Subsystem()
     command1.requires(requirement)
     requirement.setDefaultCommand(command1)
     scheduler.registerSubsystem(requirement)
@@ -158,7 +150,7 @@ def test_scheduler_remove(scheduler, wpilib):
     # removes command from schedule and from requirement
     command1 = wpilib.command.Command()
     command1.removed = MagicMock()
-    requirement = wpilib.command.Subsystem() 
+    requirement = wpilib.command.Subsystem()
     command1.requires(requirement)
     requirement.setCurrentCommand(command1)
     scheduler.registerSubsystem(requirement)
@@ -177,7 +169,7 @@ def test_scheduler_removeAll(scheduler, wpilib):
     # removes command from schedule and from requirement
     command1 = wpilib.command.Command()
     command1.removed = MagicMock()
-    requirement = wpilib.command.Subsystem() 
+    requirement = wpilib.command.Subsystem()
     command1.requires(requirement)
     requirement.setCurrentCommand(command1)
     scheduler.registerSubsystem(requirement)
@@ -213,7 +205,7 @@ def test_scheduler_initSendable(scheduler, sendablebuilder):
     scheduler._updateTable = MagicMock()
     scheduler.initSendable(sendablebuilder)
 
-    assert sendablebuilder.getTable().getString(".type","") == "Scheduler"
+    assert sendablebuilder.getTable().getString(".type", "") == "Scheduler"
 
     sendablebuilder.updateTable()
 
@@ -228,15 +220,15 @@ def test_scheduler_updateTable1(scheduler, wpilib, sendablebuilder):
     scheduler.initSendable(sendablebuilder)
 
     sendablebuilder.updateTable()
-    assert sendablebuilder.getTable().getEntry("Ids").getDoubleArray([]) == (float(id(command)),)
-    assert sendablebuilder.getTable().getEntry("Names").getStringArray([]) == ("Command",)
+    assert sendablebuilder.getTable().getEntry("Ids").getDoubleArray([]) == (
+        float(id(command)),
+    )
+    assert sendablebuilder.getTable().getEntry("Names").getStringArray([]) == (
+        "Command",
+    )
 
 
-@pytest.mark.parametrize("_id", [
-    11,
-    -9223363293403863878,
-    None,
-    ])
+@pytest.mark.parametrize("_id", [11, -9223363293403863878, None])
 def test_scheduler_updateTable2(scheduler, wpilib, sendablebuilder, _id):
     # cancels command
     command = wpilib.command.Command()

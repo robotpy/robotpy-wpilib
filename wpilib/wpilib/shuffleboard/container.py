@@ -3,10 +3,12 @@ from networktables.entry import NetworkTableEntry
 from .._impl.utils import match_arglist
 from ..sendable import Sendable
 
-__all__ = ['ShuffleboardContainer']
+__all__ = ["ShuffleboardContainer"]
+
 
 class ShuffleboardContainer:
     """Common interface for objects that can contain shuffleboard components."""
+
     def __init__(self):
         self.usedTitles = set()
         self.components = []
@@ -26,6 +28,7 @@ class ShuffleboardContainer:
         :returns: the layout
         """
         from .layout import ShuffleboardLayout
+
         if title not in self.layouts:
             layout = ShuffleboardLayout(self, type, title)
             self.components.append(layout)
@@ -33,7 +36,7 @@ class ShuffleboardContainer:
 
         return self.layouts[title]
 
-    def add(self, *args, **kwargs) -> 'ShuffleboardWidget':
+    def add(self, *args, **kwargs) -> "ShuffleboardWidget":
         """
         Adds a widget to this container to display the given sendable.
 
@@ -48,17 +51,21 @@ class ShuffleboardContainer:
         title_arg = ("title", [str])
         sendable_arg = ("sendable", [Sendable])
         defaultValue_arg = ("defaultValue", [object])
-        templates = [[title_arg, sendable_arg],
-                     [sendable_arg],
-                     [title_arg, defaultValue_arg]]
-        index, results = match_arglist('ContainerHelper.add',
-                args, kwargs, templates)
+        templates = [
+            [title_arg, sendable_arg],
+            [sendable_arg],
+            [title_arg, defaultValue_arg],
+        ]
+        index, results = match_arglist("ContainerHelper.add", args, kwargs, templates)
 
         if index in [0, 1]:
             from .complexwidget import ComplexWidget
+
             sendable = results["sendable"]
             if index == 1:
-                assert not(sendable.getName() is None or sendable.getName() == ""), "Sendable must have a name"
+                assert not (
+                    sendable.getName() is None or sendable.getName() == ""
+                ), "Sendable must have a name"
                 title = sendable.getName()
             else:
                 title = results["title"]
@@ -68,6 +75,7 @@ class ShuffleboardContainer:
             return widget
         elif index == 2:
             from .simplewidget import SimpleWidget
+
             title = results["title"]
             defaultValue = results["defaultValue"]
             assert title is not None, "title cannot be None"
@@ -81,7 +89,9 @@ class ShuffleboardContainer:
             return widget
 
     def checkNtType(self, data):
-        assert NetworkTableEntry.isValidDataType(data), "Cannot add data of type%s to Shuffleboard" % (type(data),)
+        assert NetworkTableEntry.isValidDataType(
+            data
+        ), "Cannot add data of type%s to Shuffleboard" % (type(data),)
 
     def checkTitle(self, title: str) -> None:
         assert title not in self.usedTitles, "Title is already in use: %s" % (title,)

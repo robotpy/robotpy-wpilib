@@ -1,14 +1,15 @@
 # validated: 2018-01-01 EN f9bece2ffbf7 edu/wpi/first/wpilibj/SensorUtil.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
 __all__ = ["SensorUtil"]
+
 
 class SensorUtil:
     """
@@ -18,25 +19,25 @@ class SensorUtil:
 
     #: Ticks per microsecond
     kSystemClockTicksPerMicrosecond = hal.getSystemClockTicksPerMicrosecond()
-    
+
     #: Number of digital channels per roboRIO
     kDigitalChannels = hal.getNumDigitalChannels()
-    
+
     #: Number of analog input channels per roboRIO
     kAnalogInputChannels = hal.getNumAnalogInputs()
-    
+
     #: Number of analog output channels per roboRIO
     kAnalogOutputChannels = hal.getNumAnalogOutputs()
-    
+
     #: Number of solenoid channels per module
     kSolenoidChannels = hal.getNumSolenoidChannels()
-    
+
     #: Number of PWM channels per roboRIO
     kPwmChannels = hal.getNumPWMChannels()
-    
+
     #: Number of relay channels per roboRIO
     kRelayChannels = hal.getNumRelayHeaders()
-    
+
     #: Number of power distribution channels per PDP
     kPDPChannels = hal.getNumPDPChannels()
 
@@ -53,7 +54,10 @@ class SensorUtil:
         :param moduleNumber: The solenoid module module number to check.
         """
         if not hal.checkSolenoidModule(moduleNumber):
-            raise IndexError("Requested solenoid module number %d is out of range [0, %d)." % (moduleNumber, SensorUtil.kPCMModules))
+            raise IndexError(
+                "Requested solenoid module number %d is out of range [0, %d)."
+                % (moduleNumber, SensorUtil.kPCMModules)
+            )
 
     @staticmethod
     def checkDigitalChannel(channel):
@@ -64,7 +68,10 @@ class SensorUtil:
         :param channel: The channel number to check.
         """
         if not hal.checkDIOChannel(channel):
-            raise IndexError("Requested digital channel number %d is out of range [0, %d)." % (channel, SensorUtil.kDigitalChannels))
+            raise IndexError(
+                "Requested digital channel number %d is out of range [0, %d)."
+                % (channel, SensorUtil.kDigitalChannels)
+            )
 
     @staticmethod
     def checkRelayChannel(channel):
@@ -75,7 +82,10 @@ class SensorUtil:
         :param channel: The channel number to check.
         """
         if not hal.checkRelayChannel(channel):
-            raise IndexError("Requested relay channel number %d is out of range [0, %d)." % (channel, SensorUtil.kRelayChannels))
+            raise IndexError(
+                "Requested relay channel number %d is out of range [0, %d)."
+                % (channel, SensorUtil.kRelayChannels)
+            )
 
     @staticmethod
     def checkPWMChannel(channel):
@@ -86,7 +96,10 @@ class SensorUtil:
         :param channel: The channel number to check.
         """
         if not hal.checkPWMChannel(channel):
-            raise IndexError("Requested PWM channel number %d is out of range [0, %d)." % (channel, SensorUtil.kPwmChannels))
+            raise IndexError(
+                "Requested PWM channel number %d is out of range [0, %d)."
+                % (channel, SensorUtil.kPwmChannels)
+            )
 
     @staticmethod
     def checkAnalogInputChannel(channel):
@@ -97,7 +110,10 @@ class SensorUtil:
         :param channel: The channel number to check.
         """
         if not hal.checkAnalogInputChannel(channel):
-            raise IndexError("Requested analog input channel number %d is out of range [0, %d)." % (channel, SensorUtil.kAnalogInputChannels))
+            raise IndexError(
+                "Requested analog input channel number %d is out of range [0, %d)."
+                % (channel, SensorUtil.kAnalogInputChannels)
+            )
 
     @staticmethod
     def checkAnalogOutputChannel(channel):
@@ -108,7 +124,10 @@ class SensorUtil:
         :param channel: The channel number to check.
         """
         if not hal.checkAnalogOutputChannel(channel):
-            raise IndexError("Requested analog output channel number %d is out of range [0, %d)." % (channel, SensorUtil.kAnalogOutputChannels))
+            raise IndexError(
+                "Requested analog output channel number %d is out of range [0, %d)."
+                % (channel, SensorUtil.kAnalogOutputChannels)
+            )
 
     @staticmethod
     def checkSolenoidChannel(channel):
@@ -118,7 +137,10 @@ class SensorUtil:
         :param channel: The channel number to check.
         """
         if not hal.checkSolenoidChannel(channel):
-            raise IndexError("Requested solenoid channel number %d is out of range [0, %d)." % (channel, SensorUtil.kSolenoidChannels))
+            raise IndexError(
+                "Requested solenoid channel number %d is out of range [0, %d)."
+                % (channel, SensorUtil.kSolenoidChannels)
+            )
 
     @staticmethod
     def checkPDPChannel(channel):
@@ -128,7 +150,10 @@ class SensorUtil:
         :param channel: The channel number to check.
         """
         if not hal.checkPDPChannel(channel):
-            raise IndexError("Requested PDP channel number %d is out of range [0, %d)." % (channel, SensorUtil.kPDPChannels))
+            raise IndexError(
+                "Requested PDP channel number %d is out of range [0, %d)."
+                % (channel, SensorUtil.kPDPChannels)
+            )
 
     @staticmethod
     def checkPDPModule(module):
@@ -138,7 +163,10 @@ class SensorUtil:
         :param module: The module number to check.
         """
         if not hal.checkPDPModule(module):
-            raise IndexError("Requested PDP module number %d is out of range [0, %d)." % (module, SensorUtil.kPDPModules))
+            raise IndexError(
+                "Requested PDP module number %d is out of range [0, %d)."
+                % (module, SensorUtil.kPDPModules)
+            )
 
     @staticmethod
     def getDefaultSolenoidModule():

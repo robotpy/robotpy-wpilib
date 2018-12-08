@@ -4,6 +4,7 @@ from ..sendable import Sendable
 from .widget import ShuffleboardWidget
 from .container import ShuffleboardContainer
 
+
 class ComplexWidget(ShuffleboardWidget):
     def __init__(self, parent: ShuffleboardContainer, title: str, sendable: Sendable):
         super().__init__(parent, title)
@@ -19,7 +20,7 @@ class ComplexWidget(ShuffleboardWidget):
             self.builder.startListeners()
 
         self.builder.updateTable()
-        
+
     def enableIfActuator(self):
         """
         Enables user control of this widget in the Shuffleboard application. 

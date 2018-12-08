@@ -1,10 +1,12 @@
 # validated: 2017-10-23 TW 9dc1de1d09da edu/wpi/first/wpilibj/drive/Vector2d.java
 import math
 
-__all__ = ['Vector2d']
+__all__ = ["Vector2d"]
+
 
 class Vector2d:
     """This is a 2D vector struct that supports basic operations"""
+
     def __init__(self, x=0.0, y=0.0):
         """Construct a 2D vector
 

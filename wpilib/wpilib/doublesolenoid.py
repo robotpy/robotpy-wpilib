@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/DoubleSolenoid.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import enum
@@ -18,9 +18,11 @@ from .solenoidbase import SolenoidBase
 
 __all__ = ["DoubleSolenoid"]
 
+
 def _freeSolenoid(fwdHandle, revHandle):
     hal.freeSolenoidPort(fwdHandle)
     hal.freeSolenoidPort(revHandle)
+
 
 class DoubleSolenoid(SolenoidBase):
     """Controls 2 channels of high voltage Digital Output on the PCM.
@@ -31,6 +33,7 @@ class DoubleSolenoid(SolenoidBase):
 
     class Value(enum.IntEnum):
         """Possible values for a DoubleSolenoid."""
+
         kOff = 0
         kForward = 1
         kReverse = 2
@@ -56,8 +59,9 @@ class DoubleSolenoid(SolenoidBase):
         moduleNumber = kwargs.pop("moduleNumber", None)
 
         if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
+            warnings.warn(
+                "unknown keyword arguments: %s" % kwargs.keys(), RuntimeWarning
+            )
 
         # positional arguments
         if len(args) == 2:
@@ -65,7 +69,9 @@ class DoubleSolenoid(SolenoidBase):
         elif len(args) == 3:
             moduleNumber, forwardChannel, reverseChannel = args
         elif len(args) != 0:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
+            raise ValueError(
+                "don't know how to handle %d positional arguments" % len(args)
+            )
 
         if moduleNumber is None:
             moduleNumber = SensorUtil.getDefaultSolenoidModule()
@@ -75,7 +81,7 @@ class DoubleSolenoid(SolenoidBase):
             raise ValueError("must specify reverse channel")
 
         super().__init__(moduleNumber)
-        
+
         self.valueEntry = None
         SensorUtil.checkSolenoidModule(moduleNumber)
         SensorUtil.checkSolenoidChannel(forwardChannel)
@@ -83,7 +89,7 @@ class DoubleSolenoid(SolenoidBase):
 
         portHandle = hal.getPortWithModule(moduleNumber, forwardChannel)
         self.forwardHandle = hal.initializeSolenoidPort(portHandle)
-        
+
         try:
             portHandle = hal.getPortWithModule(moduleNumber, reverseChannel)
             self.reverseHandle = hal.initializeSolenoidPort(portHandle)
@@ -100,15 +106,18 @@ class DoubleSolenoid(SolenoidBase):
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
-        hal.report(hal.UsageReporting.kResourceType_Solenoid,
-                      forwardChannel, moduleNumber)
-        hal.report(hal.UsageReporting.kResourceType_Solenoid,
-                      reverseChannel, moduleNumber)
+        hal.report(
+            hal.UsageReporting.kResourceType_Solenoid, forwardChannel, moduleNumber
+        )
+        hal.report(
+            hal.UsageReporting.kResourceType_Solenoid, reverseChannel, moduleNumber
+        )
 
         self.setName("DoubleSolenoid", moduleNumber, forwardChannel)
-        
-        self.__finalizer = weakref.finalize(self, _freeSolenoid,
-                                            self.forwardHandle, self.reverseHandle)
+
+        self.__finalizer = weakref.finalize(
+            self, _freeSolenoid, self.forwardHandle, self.reverseHandle
+        )
 
     def close(self):
         """Mark the solenoid as freed."""
@@ -176,7 +185,9 @@ class DoubleSolenoid(SolenoidBase):
         builder.setSmartDashboardType("Double Solenoid")
         builder.setActuator(True)
         builder.setSafeState(lambda: self.set(self.Value.kOff))
-        builder.addStringProperty("Value", lambda: self.get().name[1:], self._valueChanged)
+        builder.addStringProperty(
+            "Value", lambda: self.get().name[1:], self._valueChanged
+        )
 
     def _valueChanged(self, value):
         if value == "Reverse":

@@ -10,7 +10,7 @@ import enum
 import hal
 from .interfaces.generichid import GenericHID
 
-__all__ = ['XboxController']
+__all__ = ["XboxController"]
 
 
 class XboxController(GenericHID):

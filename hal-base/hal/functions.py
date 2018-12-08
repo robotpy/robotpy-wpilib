@@ -1,3 +1,5 @@
+# fmt: off
+
 import ctypes as C
 import os as _os
 import warnings

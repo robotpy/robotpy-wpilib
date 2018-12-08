@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/AnalogInput.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import weakref
@@ -19,8 +19,10 @@ from .timer import Timer
 
 __all__ = ["AnalogInput"]
 
+
 def _freeAnalogInput(port):
     hal.freeAnalogInputPort(port)
+
 
 class AnalogInput(SendableBase):
     """Analog input
@@ -41,7 +43,7 @@ class AnalogInput(SendableBase):
     kAccumulatorSlot = 1
     kAccumulatorChannels = (0, 1)
     channels = Resource(SensorUtil.kAnalogInputChannels)
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(self, channel):
@@ -49,10 +51,10 @@ class AnalogInput(SendableBase):
 
         :param channel: The channel number to represent. 0-3 are on-board 4-7 are on the MXP port.
         """
-        
+
         super().__init__()
         hal.checkAnalogInputChannel(channel)
-        
+
         self.channel = channel
         self.accumulatorOffset = 0
         self.pidSource = self.PIDSourceType.kDisplacement
@@ -60,12 +62,11 @@ class AnalogInput(SendableBase):
         port = hal.getPort(channel)
         self._port = hal.initializeAnalogInputPort(port)
 
-        hal.report(hal.UsageReporting.kResourceType_AnalogChannel,
-                      channel)
+        hal.report(hal.UsageReporting.kResourceType_AnalogChannel, channel)
         self.setName("AnalogInput", self.channel)
-        
+
         self.__finalizer = weakref.finalize(self, _freeAnalogInput, self._port)
-        
+
     @property
     def port(self):
         if not self.__finalizer.alive:
@@ -199,9 +200,12 @@ class AnalogInput(SendableBase):
         """
         if not self.isAccumulatorChannel():
             raise IndexError(
-                    "Accumulators are only available on slot %d on channels %s"
-                    % (AnalogInput.kAccumulatorSlot,
-                       ",".join(str(c) for c in AnalogInput.kAccumulatorChannels)))
+                "Accumulators are only available on slot %d on channels %s"
+                % (
+                    AnalogInput.kAccumulatorSlot,
+                    ",".join(str(c) for c in AnalogInput.kAccumulatorChannels),
+                )
+            )
         self.accumulatorOffset = 0
         hal.initAccumulator(self.port)
 
@@ -310,11 +314,11 @@ class AnalogInput(SendableBase):
         :returns: Sample rate.
         """
         return hal.getAnalogSampleRate()
-    
+
     def setPIDSourceType(self, pidSource):
         """:see: :meth:`.PIDSource.setPIDSourceType`"""
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         """:see: :meth:`.PIDSource.getPIDSourceType`"""
         return self.pidSource

@@ -1,25 +1,26 @@
 # validated: 2018-11-18 EN 0614913f1abb edu/wpi/first/wpilibj/PWMSpeedController.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 from .livewindow import LiveWindow
 from .safepwm import SafePWM
 
 __all__ = ["PWMSpeedController"]
 
+
 class PWMSpeedController(SafePWM):
     """
         Common base class for all PWM Speed Controllers.
     """
-    
+
     def __init__(self, channel):
         super().__init__(channel)
         self.isInverted = False
-    
+
     def getDescription(self):
         return "PWM %" % (self.getChannel(),)
 

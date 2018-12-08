@@ -168,8 +168,12 @@ class GenericHID:
         :param outputNumber: The index of the output to set (1-32)
         :param value: The value to set the output to
         """
-        self.outputs = (self.outputs & ~(1 << (outputNumber - 1))) | ((1 if value else 0) << (outputNumber - 1))
-        hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
+        self.outputs = (self.outputs & ~(1 << (outputNumber - 1))) | (
+            (1 if value else 0) << (outputNumber - 1)
+        )
+        hal.setJoystickOutputs(
+            self.port, self.outputs, self.leftRumble, self.rightRumble
+        )
 
     def setOutputs(self, value: int) -> None:
         """Set all HID output values for the HID.
@@ -177,7 +181,9 @@ class GenericHID:
         :param value: The 32 bit output value (1 bit for each output)
         """
         self.outputs = value
-        hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
+        hal.setJoystickOutputs(
+            self.port, self.outputs, self.leftRumble, self.rightRumble
+        )
 
     def setRumble(self, type: RumbleType, value: float) -> None:
         """Set the rumble output for the HID. The DS currently supports 2 rumble values, left rumble and
@@ -196,4 +202,6 @@ class GenericHID:
         else:
             self.rightRumble = int(value * 65535)
 
-        hal.setJoystickOutputs(self.port, self.outputs, self.leftRumble, self.rightRumble)
+        hal.setJoystickOutputs(
+            self.port, self.outputs, self.leftRumble, self.rightRumble
+        )

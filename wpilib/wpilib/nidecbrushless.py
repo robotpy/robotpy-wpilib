@@ -1,9 +1,9 @@
 # validated: 2018-09-30 EN 0614913f1abb edu/wpi/first/wpilibj/NidecBrushless.java
 # ----------------------------------------------------------------------------
-#  Copyright (c) 2017 FIRST. All Rights Reserved.                             
-#  Open Source Software - may be modified and shared by FRC teams. The code   
-#  must be accompanied by the FIRST BSD license file in the root directory of 
-#  the project.                                                               
+#  Copyright (c) 2017 FIRST. All Rights Reserved.
+#  Open Source Software - may be modified and shared by FRC teams. The code
+#  must be accompanied by the FIRST BSD license file in the root directory of
+#  the project.
 # ----------------------------------------------------------------------------
 import hal
 from .digitaloutput import DigitalOutput
@@ -13,7 +13,7 @@ from .pwm import PWM
 from .interfaces.speedcontroller import SpeedController
 
 
-__all__ = ['NidecBrushless']
+__all__ = ["NidecBrushless"]
 
 
 class NidecBrushless(SendableBase, MotorSafety, SpeedController):
@@ -60,7 +60,7 @@ class NidecBrushless(SendableBase, MotorSafety, SpeedController):
         if not self.disabled:
             self.speed = speed
             self.dio.updateDutyCycle(0.5 + 0.5 * (-speed if self.isInverted else speed))
-            self.pwm.setRaw(0xffff)
+            self.pwm.setRaw(0xFFFF)
         self.feed()
 
     def get(self):

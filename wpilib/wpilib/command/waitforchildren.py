@@ -1,14 +1,15 @@
 # validated: 2017-10-03 EN e1195e8b9dab edu/wpi/first/wpilibj/command/WaitForChildren.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 from .command import Command
 
 __all__ = ["WaitForChildren"]
+
 
 class WaitForChildren(Command):
     """This command will only finish if whatever :class:`.CommandGroup` it

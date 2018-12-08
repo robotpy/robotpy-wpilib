@@ -22,8 +22,11 @@ class GamepadBase(GenericHID):
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        warnings.warn("GamepadBase is deprecated, inherit directly from GenericHID instead",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "GamepadBase is deprecated, inherit directly from GenericHID instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     def getRawAxis(self, axis):
         raise NotImplementedError

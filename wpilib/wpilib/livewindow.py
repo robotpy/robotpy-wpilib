@@ -1,9 +1,9 @@
 # validated: 2017-12-09 EN f9bece2ffbf7 edu/wpi/first/wpilibj/livewindow/LiveWindow.java
 # ----------------------------------------------------------------------------
-#  Copyright (c) 2008-2017 FIRST. All Rights Reserved.                        
-#  Open Source Software - may be modified and shared by FRC teams. The code   
-#  must be accompanied by the FIRST BSD license file in the root directory of 
-#  the project.                                                               
+#  Copyright (c) 2008-2017 FIRST. All Rights Reserved.
+#  Open Source Software - may be modified and shared by FRC teams. The code
+#  must be accompanied by the FIRST BSD license file in the root directory of
+#  the project.
 # ----------------------------------------------------------------------------
 import threading
 from networktables import NetworkTablesInstance
@@ -11,6 +11,7 @@ from .sendablebuilder import SendableBuilder
 
 import warnings
 import logging
+
 logger = logging.getLogger(__name__)
 
 __all__ = ["LiveWindow"]
@@ -30,10 +31,12 @@ class _LiveWindowComponent:
     added to the SmartDashboard in test mode. The components are cached until
     the first time the robot enters Test mode. This allows the components to
     be inserted, then renamed."""
+
     def __init__(self, subsystem, name, isSensor):
         self.subsystem = subsystem
         self.name = str(name)
         self.isSensor = isSensor
+
 
 class LiveWindow:
     """The public interface for putting sensors and
@@ -51,12 +54,14 @@ class LiveWindow:
     @classmethod
     def liveWindowTable(cls):
         if cls._liveWindowTable is None:
-            cls._liveWindowTable = NetworkTablesInstance.getDefault().getTable("LiveWindow")
+            cls._liveWindowTable = NetworkTablesInstance.getDefault().getTable(
+                "LiveWindow"
+            )
         return cls._liveWindowTable
 
     @classmethod
     def statusTable(cls):
-        if cls._statusTable is None: 
+        if cls._statusTable is None:
             cls._statusTable = cls.liveWindowTable().getSubTable(".status")
         return cls._statusTable
 
@@ -65,7 +70,7 @@ class LiveWindow:
         if cls._enabledEntry is None:
             cls._enabledEntry = cls.statusTable().getEntry("LW Enabled")
         return cls._enabledEntry
-    
+
     @classmethod
     def _reset(cls):
         cls.components = {}
@@ -94,6 +99,7 @@ class LiveWindow:
         after a period of adjusting them in LiveWindow mode.
         """
         from .command import Scheduler
+
         with cls.mutex:
             if cls.liveWindowEnabled != enabled:
                 scheduler = Scheduler.getInstance()
@@ -119,8 +125,11 @@ class LiveWindow:
         .. deprecated:: 2018.0.0
             No longer required
         """
-        warnings.warn("run is deprecated. It is no longer required.",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "run is deprecated. It is no longer required.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         cls.updateValues()
 
     @classmethod
@@ -136,9 +145,12 @@ class LiveWindow:
         .. deprecated:: 2018.0.0
             Use :meth:`.Sendable.setName` instead.
         """
-        warnings.warn("addSensor is deprecated. " + 
-                      "Use Sendable.setName(subsystem, name) instead.",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "addSensor is deprecated. "
+            + "Use Sendable.setName(subsystem, name) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         with cls.mutex:
             cls.add(component)
             component.setName(subsystem, name)
@@ -155,9 +167,12 @@ class LiveWindow:
         .. deprecated:: 2018.0.0
             Use :meth:`.Sendable.setName` instead.
         """
-        warnings.warn("addActuator is deprecated. " +
-                      "Use Sendable.setName(subsystem, name) instead.",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "addActuator is deprecated. "
+            + "Use Sendable.setName(subsystem, name) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         with cls.mutex:
             cls.add(component)
             component.setName(subsystem, name)
@@ -176,9 +191,12 @@ class LiveWindow:
         .. deprecated:: 2018.0.0
             Use :meth:`.SendableBase.setName` instead.
         """
-        warnings.warn("addSensorChannel is deprecated. "+ 
-                      "Use SendableBase.setName(moduleType, channel) instead.",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "addSensorChannel is deprecated. "
+            + "Use SendableBase.setName(moduleType, channel) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         cls.add(component)
         component.setName("Ungrouped", "%s[%s]" % (moduleType, channel))
 
@@ -197,9 +215,12 @@ class LiveWindow:
         .. deprecated:: 2018.0.0
             Use :meth:`.SendableBase.setName` instead.
         """
-        warnings.warn("addActuatorChannel is deprecated. " + 
-                      "Use SendableBase.setName(moduleType, channel) instead.",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "addActuatorChannel is deprecated. "
+            + "Use SendableBase.setName(moduleType, channel) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         cls.add(component)
         component.setName("Ungrouped", "%s[%s]" % (moduleType, channel))
 
@@ -219,11 +240,16 @@ class LiveWindow:
         .. deprecated:: 2018.0.0
             Use :meth:`.SendableBase.setName` instead.
         """
-        warnings.warn("addActuatorModuleChannel is deprecated. " + 
-                      "Use SendableBase.setName(moduleType, moduleNumber, channel) instead.",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "addActuatorModuleChannel is deprecated. "
+            + "Use SendableBase.setName(moduleType, moduleNumber, channel) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         cls.add(component)
-        component.setName("Ungrouped", "%s[%s,%s]" % (moduleType, moduleNumber, channel))
+        component.setName(
+            "Ungrouped", "%s[%s,%s]" % (moduleType, moduleNumber, channel)
+        )
 
     @classmethod
     def add(cls, sendable):
@@ -252,7 +278,7 @@ class LiveWindow:
             else:
                 component.parent = parent
             component.telemetryEnabled = False
-        
+
     @classmethod
     def remove(cls, sendable):
         """
@@ -309,7 +335,11 @@ class LiveWindow:
 
             components = list(cls.components.values())
             for component in components:
-                if component.sendable is not None and component.parent is None and (cls.liveWindowEnabled or component.telemetryEnabled):
+                if (
+                    component.sendable is not None
+                    and component.parent is None
+                    and (cls.liveWindowEnabled or component.telemetryEnabled)
+                ):
                     if component.firstTime:
                         # By holding off creating the NetworkTable entries, it allows the
                         # components to be redefined. This allows default sensor and actuator
@@ -336,4 +366,3 @@ class LiveWindow:
                     component.builder.updateTable()
 
             cls.startLiveWindow = False
-

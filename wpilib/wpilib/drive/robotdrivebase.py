@@ -39,7 +39,7 @@ class RobotDriveBase(SendableBase, MotorSafety):
         #: Back
         kBack = 2
 
-    kDefaultDeadband = .02
+    kDefaultDeadband = 0.02
     kDefaultMaxOutput = 1.0
 
     def __init__(self):

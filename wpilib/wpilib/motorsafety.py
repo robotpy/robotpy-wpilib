@@ -30,6 +30,7 @@ class MotorSafety:
     
     .. robotpy-specific: In the Java implementation this is MotorSafetyHelper
     """
+
     DEFAULT_SAFETY_EXPIRATION = 0.1
     helpers = weakref.WeakSet()
     helpers_lock = threading.Lock()
@@ -88,7 +89,9 @@ class MotorSafety:
         :rtype: float
         """
         with self.mutex:
-            return not self.safetyEnabled or self.safetyStopTime > Timer.getFPGATimestamp()
+            return (
+                not self.safetyEnabled or self.safetyStopTime > Timer.getFPGATimestamp()
+            )
 
     def check(self):
         """Check if this motor has exceeded its timeout.
@@ -103,8 +106,9 @@ class MotorSafety:
         if not enabled or RobotState.isDisabled() or RobotState.isTest():
             return
         if stopTime < Timer.getFPGATimestamp():
-            logger.warning("%s... Output not updated often enough." %
-                           self.getDescription())
+            logger.warning(
+                "%s... Output not updated often enough." % self.getDescription()
+            )
 
             self.stopMotor()
 

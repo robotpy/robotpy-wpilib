@@ -1,10 +1,10 @@
 # validated: 2017-12-21 DV de134a5c608d edu/wpi/first/wpilibj/livewindow/LiveWindowSendable.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import warnings
 
@@ -12,6 +12,7 @@ from networktables import NetworkTables
 from .sendable import Sendable
 
 __all__ = ["LiveWindowSendable"]
+
 
 class LiveWindowSendable(Sendable):
     """A special type of object that can be displayed on the live window.
@@ -22,8 +23,11 @@ class LiveWindowSendable(Sendable):
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        warnings.warn('LiveWindowSendable is deprecated, use Sendable directly instead',
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "LiveWindowSendable is deprecated, use Sendable directly instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     def updateTable(self):
         """Update the table for this sendable object with the latest
@@ -44,10 +48,11 @@ class LiveWindowSendable(Sendable):
             if valueEntry is None or valueListener is not None:
                 return
             self.valueListener = valueEntry.addListener(
-                self.valueChanged, 
-                NetworkTables.NotifyFlags.IMMEDIATE |
-                NetworkTables.NotifyFlags.NEW |
-                NetworkTables.NotifyFlags.UPDATE)
+                self.valueChanged,
+                NetworkTables.NotifyFlags.IMMEDIATE
+                | NetworkTables.NotifyFlags.NEW
+                | NetworkTables.NotifyFlags.UPDATE,
+            )
 
     def stopLiveWindowMode(self):
         """Stop having this sendable object automatically respond to value

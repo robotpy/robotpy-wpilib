@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def timer(wpilib):
     return wpilib.Timer()
 
@@ -92,7 +92,6 @@ def test_timer_hasPeriodPassed(timer, sim_hooks):
     assert timer.startTime == pytest.approx(8000.0, 0.01)
     assert timer.get() == pytest.approx(0.1, 0.01)
 
-
     sim_hooks.time = 14.1
     assert timer.get() == pytest.approx(6.1, 0.01)
 
@@ -100,4 +99,3 @@ def test_timer_hasPeriodPassed(timer, sim_hooks):
     assert timer.hasPeriodPassed(3.0) == True
     assert timer.startTime == pytest.approx(11000.0, 0.01)
     assert timer.get() == pytest.approx(3.1, 0.01)
-

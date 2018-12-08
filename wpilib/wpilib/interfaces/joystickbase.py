@@ -4,12 +4,13 @@
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 import warnings
 
 from .generichid import GenericHID
 
 __all__ = ["JoystickBase"]
+
 
 class JoystickBase(GenericHID):
     """
@@ -20,7 +21,11 @@ class JoystickBase(GenericHID):
     """
 
     def __init__(self, port):
-        warnings.warn("JoystickBase is deprecated. Inherit directly from GenericHID instead", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "JoystickBase is deprecated. Inherit directly from GenericHID instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(port)
 
     def getZ(self, hand=None):

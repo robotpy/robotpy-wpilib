@@ -4,7 +4,7 @@ from typing import Dict, Any
 
 
 class ShuffleboardComponent:
-    def __init__(self, parent: ShuffleboardContainer, title: str, type: str=None):
+    def __init__(self, parent: ShuffleboardContainer, title: str, type: str = None):
         assert parent is not None, "parent cannot be None"
         assert title is not None, "title cannot be None"
         self.parent = parent
@@ -33,7 +33,7 @@ class ShuffleboardComponent:
     def getProperties(self):
         return self.properties
 
-    def withProperties(self, properties: Dict[str, Any]) -> 'ShuffleboardComponent':
+    def withProperties(self, properties: Dict[str, Any]) -> "ShuffleboardComponent":
         """
         Sets custom properties for this component. Property names are case- 
         and whitespace-insensitive (capitalization and spaces do not matter).
@@ -47,7 +47,7 @@ class ShuffleboardComponent:
         self.metadataDirty = True
         return self
 
-    def withPosition(self, columnIndex: int, rowIndex: int) -> 'ShuffleboardComponent':
+    def withPosition(self, columnIndex: int, rowIndex: int) -> "ShuffleboardComponent":
         """
         Sets the position of this component in the tab. This has no effect if 
         this component is inside a layout.
@@ -66,7 +66,7 @@ class ShuffleboardComponent:
         self.metadataDirty = True
         return self
 
-    def withSize(self, width: int, height: int) -> 'ShuffleboardComponent':
+    def withSize(self, width: int, height: int) -> "ShuffleboardComponent":
         """
         Sets the size of this component in the tab. This has no effect if this 
         component is inside a layout.

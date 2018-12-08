@@ -1,14 +1,15 @@
 # validated: 2017-10-03 EN e1195e8b9dab edu/wpi/first/wpilibj/command/CommandGroup.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 from .command import Command
 
 __all__ = ["CommandGroup"]
+
 
 class CommandGroup(Command):
     """A CommandGroup is a list of commands which are executed in sequence.
@@ -88,7 +89,9 @@ class CommandGroup(Command):
 
             command.setParent(self)
 
-            self.commands.append(CommandGroup.Entry(command, CommandGroup.Entry.IN_SEQUENCE, timeout))
+            self.commands.append(
+                CommandGroup.Entry(command, CommandGroup.Entry.IN_SEQUENCE, timeout)
+            )
             for reqt in command.getRequirements():
                 self.requires(reqt)
 
@@ -127,7 +130,9 @@ class CommandGroup(Command):
 
             command.setParent(self)
 
-            self.commands.append(CommandGroup.Entry(command, CommandGroup.Entry.BRANCH_CHILD, timeout))
+            self.commands.append(
+                CommandGroup.Entry(command, CommandGroup.Entry.BRANCH_CHILD, timeout)
+            )
             for reqt in command.getRequirements():
                 self.requires(reqt)
 
@@ -188,7 +193,9 @@ class CommandGroup(Command):
     def _end(self):
         # Theoretically, we don't have to check this, but we do if teams
         # override the isFinished method
-        if self.currentCommandIndex is not None and self.currentCommandIndex < len(self.commands):
+        if self.currentCommandIndex is not None and self.currentCommandIndex < len(
+            self.commands
+        ):
             cmd = self.commands[self.currentCommandIndex].command
             cmd._cancel()
             cmd.removed()
@@ -213,20 +220,19 @@ class CommandGroup(Command):
         """
         if self.currentCommandIndex is None:
             return False
-        return (self.currentCommandIndex >= len(self.commands) and
-                not self.children)
+        return self.currentCommandIndex >= len(self.commands) and not self.children
 
     def initialize(self):
-        pass # Can be overwritten by teams
+        pass  # Can be overwritten by teams
 
     def execute(self):
-        pass # Can be overwritten by teams
+        pass  # Can be overwritten by teams
 
     def end(self):
-        pass # Can be overwritten by teams
+        pass  # Can be overwritten by teams
 
     def interrupted(self):
-        pass # Can be overwritten by teams
+        pass  # Can be overwritten by teams
 
     def isInterruptible(self):
         """Returns whether or not this group is interruptible.
@@ -240,8 +246,9 @@ class CommandGroup(Command):
             if not super().isInterruptible():
                 return False
 
-            if (self.currentCommandIndex is not None and
-                self.currentCommandIndex < len(self.commands)):
+            if self.currentCommandIndex is not None and self.currentCommandIndex < len(
+                self.commands
+            ):
                 cmd = self.commands[self.currentCommandIndex].command
                 if not cmd.isInterruptible():
                     return False

@@ -1,3 +1,5 @@
+# fmt: off
+
 import ctypes as C
 from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
 
@@ -103,4 +105,3 @@ InterruptHandle = Handle
 NotifierHandle = Handle
 RelayHandle = Handle
 SolenoidHandle = Handle
-

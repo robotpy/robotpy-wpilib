@@ -14,8 +14,10 @@ from .notifier import Notifier
 
 __all__ = ["SPI"]
 
+
 def _freeSPI(port):
     hal.closeSPI(port)
+
 
 class SPI:
     """Represents a SPI bus port
@@ -59,14 +61,15 @@ class SPI:
             if simPort is None:
                 # If you want more functionality, implement your own mock
                 from hal_impl.spi_helpers import SPISimBase
+
                 simPort = SPISimBase()
 
                 msg = "Using stub simulator for SPI port %s" % port
                 warnings.warn(msg)
 
             # Just check for basic functionality
-            assert hasattr(simPort, 'initializeSPI')
-            assert hasattr(simPort, 'closeSPI')
+            assert hasattr(simPort, "initializeSPI")
+            assert hasattr(simPort, "closeSPI")
 
             self._port = (simPort, port)
         else:
@@ -110,44 +113,50 @@ class SPI:
         first.
         """
         self.bitOrder = True
-        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
-                       self.clockPolarity)
+        hal.setSPIOpts(
+            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+        )
 
     def setLSBFirst(self) -> None:
         """Configure the order that bits are sent and received on the wire to be least significant bit
         first.
         """
         self.bitOrder = False
-        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
-                       self.clockPolarity)
+        hal.setSPIOpts(
+            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+        )
 
     def setClockActiveLow(self) -> None:
         """Configure the clock output line to be active low. This is sometimes called clock polarity high
         or clock idle high.
         """
         self.clockPolarity = True
-        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
-                       self.clockPolarity)
+        hal.setSPIOpts(
+            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+        )
 
     def setClockActiveHigh(self) -> None:
         """Configure the clock output line to be active high. This is sometimes called clock polarity low
         or clock idle low.
         """
         self.clockPolarity = False
-        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
-                       self.clockPolarity)
+        hal.setSPIOpts(
+            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+        )
 
     def setSampleDataOnLeadingEdge(self) -> None:
         """Configure that the data is stable on the leading edge and the data changes on the trailing edge."""
         self.dataOnTrailing = False
-        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
-                       self.clockPolarity)
+        hal.setSPIOpts(
+            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+        )
 
     def setSampleDataOnTrailingEdge(self) -> None:
         """Configure that the data is stable on the trailing edge and the data changes on the leading edge."""
         self.dataOnTrailing = True
-        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
-                       self.clockPolarity)
+        hal.setSPIOpts(
+            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+        )
 
     def setSampleDataOnFalling(self) -> None:
         """
@@ -158,8 +167,9 @@ class SPI:
             Use setSampleDataOnTrailingEdge in most cases
         """
         self.dataOnTrailing = True
-        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
-                       self.clockPolarity)
+        hal.setSPIOpts(
+            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+        )
 
     def setSampleDataOnRising(self) -> None:
         """
@@ -169,8 +179,9 @@ class SPI:
             Use setSampleDataOnLeadingEdge in most cases
         """
         self.dataOnTrailing = False
-        hal.setSPIOpts(self.port, self.bitOrder, self.dataOnTrailing,
-                       self.clockPolarity)
+        hal.setSPIOpts(
+            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+        )
 
     def setChipSelectActiveHigh(self) -> None:
         """Configure the chip select line to be active high."""
@@ -220,7 +231,7 @@ class SPI:
         :returns: received data bytes
         """
         if initiate:
-            return hal.transactionSPI(self.port, [0]*size)
+            return hal.transactionSPI(self.port, [0] * size)
         else:
             return hal.readSPI(self.port, size)
 
@@ -277,7 +288,9 @@ class SPI:
         """
         hal.startSPIAutoRate(self.port, period)
 
-    def startAutoTrigger(self, source: DigitalSource, rising: bool, falling: bool) -> None:
+    def startAutoTrigger(
+        self, source: DigitalSource, rising: bool, falling: bool
+    ) -> None:
         """Start running the automatic SPI transfer engine when a trigger occurs.
 
         :meth:`.initAuto` and :meth:`.setAutoTransmitData` must
@@ -287,9 +300,13 @@ class SPI:
         :param rising: trigger on the rising edge
         :param falling: trigger on the falling edge
         """
-        hal.startSPIAutoTrigger(self.port, source.getPortHandleForRouting(),
-                                source.getAnalogTriggerTypeForRouting(),
-                                rising, falling)
+        hal.startSPIAutoTrigger(
+            self.port,
+            source.getPortHandleForRouting(),
+            source.getAnalogTriggerTypeForRouting(),
+            rising,
+            falling,
+        )
 
     def stopAuto(self) -> None:
         """Stop running the automatic SPI transfer engine."""
@@ -299,7 +316,9 @@ class SPI:
         """Force the engine to make a single transfer."""
         hal.forceSPIAutoRead(self.port)
 
-    def readAutoReceivedData(self, buffer, numToRead: int, timeout: float) -> (int, bytes):
+    def readAutoReceivedData(
+        self, buffer, numToRead: int, timeout: float
+    ) -> (int, bytes):
         """Read data that has been transferred by the automatic SPI transfer engine.
 
         Transfers may be made a byte at a time, so it's necessary for the caller
@@ -329,21 +348,29 @@ class SPI:
 
         kAccumulateDepth = 2048
 
-        def __init__(self, port: int, xferSize: int, validMask: int,
-                           validValue: int, dataShift: int, dataSize: int,
-                           isSigned: bool, bigEndian: bool):
+        def __init__(
+            self,
+            port: int,
+            xferSize: int,
+            validMask: int,
+            validValue: int,
+            dataShift: int,
+            dataSize: int,
+            isSigned: bool,
+            bigEndian: bool,
+        ):
 
             # python-specific: for efficiency purposes, we only support xferSize of
             #                  2, 4, or 8... if you need to do a different size then
             #                  file a bug and we'll adjust it
-            efmt = '>' if bigEndian else '<'
-            self._xferSize = xferSize                   # SPI transfer size, in bytes
+            efmt = ">" if bigEndian else "<"
+            self._xferSize = xferSize  # SPI transfer size, in bytes
             if self._xferSize == 2:
-                self._struct = struct.Struct('%sH' % efmt)
+                self._struct = struct.Struct("%sH" % efmt)
             elif self._xferSize == 4:
-                self._struct = struct.Struct('%sI' % efmt)
+                self._struct = struct.Struct("%sI" % efmt)
             elif self._xferSize == 8:
-                self._struct = struct.Struct('%sQ' % efmt)
+                self._struct = struct.Struct("%sQ" % efmt)
             else:
                 raise ValueError("SPI Accumulator only supports xferSize of 2/4/8")
 
@@ -351,6 +378,7 @@ class SPI:
             self._notifier = Notifier(self._update)
             self._buf = (ctypes.c_uint8 * (xferSize * self.kAccumulateDepth))()
 
+            # fmt: off
             self._validMask = validMask
             self._validValue = validValue
             self._dataShift = dataShift                 # data field shift right amount, in bits
@@ -359,6 +387,7 @@ class SPI:
             self._isSigned = isSigned                   # is data field signed?
             self._bigEndian = bigEndian                 # is response big endian?
             self._port = port
+            # fmt: on
 
             self._value = 0
             self._count = 0
@@ -372,8 +401,7 @@ class SPI:
             .. deprecated:: 2019.0.0
                 Use close instead
             """
-            warnings.warn("use close instead",
-                          DeprecationWarning, stacklevel=2)
+            warnings.warn("use close instead", DeprecationWarning, stacklevel=2)
             self.close()
 
         def close(self):
@@ -417,14 +445,14 @@ class SPI:
                             data &= self._dataMax - 1
 
                             # 2s complement conversion if signed MSB is set
-                            if (self._isSigned and (data & self._dataMsbMask) != 0):
+                            if self._isSigned and (data & self._dataMsbMask) != 0:
                                 data -= self._dataMax
 
                             # center offset
                             data -= self._center
 
                             # only accumulate if outside deadband
-                            if (data < -self._deadband or data > self._deadband):
+                            if data < -self._deadband or data > self._deadband:
                                 self._value += data
 
                             self._count += 1
@@ -435,11 +463,18 @@ class SPI:
 
                         off += self._xferSize
 
-
-    def initAccumulator(self, period: float, cmd: int, xferSize: int,
-                              validMask: int, validValue: int,
-                              dataShift: int, dataSize: int,
-                              isSigned: bool, bigEndian: bool) -> None:
+    def initAccumulator(
+        self,
+        period: float,
+        cmd: int,
+        xferSize: int,
+        validMask: int,
+        validValue: int,
+        dataShift: int,
+        dataSize: int,
+        isSigned: bool,
+        bigEndian: bool,
+    ) -> None:
         """Initialize the accumulator.
 
         :param period: Time between reads
@@ -455,15 +490,23 @@ class SPI:
         self.initAuto(xferSize * 2048)
 
         if bigEndian:
-            cmdBytes = cmd.to_bytes(4, 'big')
+            cmdBytes = cmd.to_bytes(4, "big")
         else:
-            cmdBytes = cmd.to_bytes(4, 'little')
+            cmdBytes = cmd.to_bytes(4, "little")
 
         self.setAutoTransmitData(cmdBytes, xferSize - 4)
         self.startAutoRate(period)
 
-        self.accum = self._Accumulator(self.port, xferSize, validMask, validValue,
-                                      dataShift, dataSize, isSigned, bigEndian)
+        self.accum = self._Accumulator(
+            self.port,
+            xferSize,
+            validMask,
+            validValue,
+            dataShift,
+            dataSize,
+            isSigned,
+            bigEndian,
+        )
         self.accum._notifier.startPeriodic(period * 1024)
 
     def freeAccumulator(self) -> None:

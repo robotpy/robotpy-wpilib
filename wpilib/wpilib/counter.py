@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/Counter.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import weakref
@@ -19,9 +19,10 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Counter"]
 
+
 def _freeCounter(counterObj):
     hal.setCounterUpdateWhenEmpty(counterObj._counter, True)
-    
+
     counterObj.clearUpSource()
     counterObj.clearDownSource()
 
@@ -47,16 +48,16 @@ class Counter(SendableBase):
 
     class Mode(IntEnum):
         """Mode determines how and what the counter counts"""
-        
+
         #: two pulse mode
         kTwoPulse = 0
-        
+
         #: semi period mode
         kSemiperiod = 1
-        
+
         #: pulse length mode
         kPulseLength = 2
-        
+
         #: external direction mode
         kExternalDirection = 3
 
@@ -107,17 +108,31 @@ class Counter(SendableBase):
         """
 
         super().__init__()
-        source_identifier = [int, HasAttribute("getPortHandleForRouting"), HasAttribute("createOutput")]
+        source_identifier = [
+            int,
+            HasAttribute("getPortHandleForRouting"),
+            HasAttribute("createOutput"),
+        ]
 
-        argument_templates = [[],
-                              [("upSource", source_identifier), ],
-                              [("upSource", source_identifier), ("downSource", source_identifier)],
-                              [("encodingType", None), ("upSource", source_identifier),
-                               ("downSource", source_identifier), ("inverted", bool)], ]
+        argument_templates = [
+            [],
+            [("upSource", source_identifier)],
+            [("upSource", source_identifier), ("downSource", source_identifier)],
+            [
+                ("encodingType", None),
+                ("upSource", source_identifier),
+                ("downSource", source_identifier),
+                ("inverted", bool),
+            ],
+        ]
 
-
-        _, results = match_arglist('Counter.__init__',
-                                   args, kwargs, argument_templates, allow_extra_kwargs=True)
+        _, results = match_arglist(
+            "Counter.__init__",
+            args,
+            kwargs,
+            argument_templates,
+            allow_extra_kwargs=True,
+        )
 
         # extract arguments
         upSource = results.pop("upSource", None)
@@ -128,22 +143,21 @@ class Counter(SendableBase):
         mode = results.pop("mode", None)
 
         if mode is None:
-            #Get the mode
+            # Get the mode
             if upSource is not None and downSource is not None:
                 mode = self.Mode.kExternalDirection
             else:
                 mode = self.Mode.kTwoPulse
 
         # save some variables
-        self.distancePerPulse = 1.0 # distance of travel for each tick
+        self.distancePerPulse = 1.0  # distance of travel for each tick
         self.pidSource = self.PIDSourceType.kDisplacement
 
         # create counter
         self._counter, self.index = hal.initializeCounter(mode)
-        self.__finalizer = \
-            weakref.finalize(self, _freeCounter, self)
+        self.__finalizer = weakref.finalize(self, _freeCounter, self)
 
-        self.setMaxPeriod(.5)
+        self.setMaxPeriod(0.5)
 
         hal.report(hal.UsageReporting.kResourceType_Counter, self.index, mode)
         self.setName("Counter", self.index)
@@ -219,21 +233,26 @@ class Counter(SendableBase):
         :type triggerType: AnalogTrigger.AnalogTriggerType
         """
 
-        #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
+        # TODO Both this and the java implementation should probably not allow setting a source if one is already set.
 
-        argument_templates = [[("channel", int)],
-                              [("source", HasAttribute("getPortHandleForRouting")), ],
-                              [("analogTrigger", HasAttribute("createOutput"))],
-                              [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
+        argument_templates = [
+            [("channel", int)],
+            [("source", HasAttribute("getPortHandleForRouting"))],
+            [("analogTrigger", HasAttribute("createOutput"))],
+            [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)],
+        ]
 
-        _, results = match_arglist('Counter.setUpSource',
-                                   args, kwargs, argument_templates)
+        _, results = match_arglist(
+            "Counter.setUpSource", args, kwargs, argument_templates
+        )
 
         # extract arguments
         source = results.pop("source", None)
         channel = results.pop("channel", None)
         analogTrigger = results.pop("analogTrigger", None)
-        triggerType = results.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.kState)
+        triggerType = results.pop(
+            "triggerType", AnalogTriggerOutput.AnalogTriggerType.kState
+        )
 
         # If we don't have source, generate it from other arguments.
         if source is None:
@@ -248,9 +267,11 @@ class Counter(SendableBase):
 
         # save and set
         self.upSource = source
-        hal.setCounterUpSource(self.counter,
-                               self.upSource.getPortHandleForRouting(),
-                               self.upSource.getAnalogTriggerTypeForRouting())
+        hal.setCounterUpSource(
+            self.counter,
+            self.upSource.getPortHandleForRouting(),
+            self.upSource.getAnalogTriggerTypeForRouting(),
+        )
 
     def setUpSourceEdge(self, risingEdge, fallingEdge):
         """Set the edge sensitivity on an up counting source. Set the up
@@ -307,21 +328,26 @@ class Counter(SendableBase):
         :type triggerType: AnalogTrigger.AnalogTriggerType
         """
 
-        #TODO Both this and the java implementation should probably not allow setting a source if one is already set.
+        # TODO Both this and the java implementation should probably not allow setting a source if one is already set.
 
-        argument_templates = [[("channel", int)],
-                              [("source", HasAttribute("getPortHandleForRouting")), ],
-                              [("analogTrigger", HasAttribute("createOutput")), ],
-                              [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)]]
+        argument_templates = [
+            [("channel", int)],
+            [("source", HasAttribute("getPortHandleForRouting"))],
+            [("analogTrigger", HasAttribute("createOutput"))],
+            [("analogTrigger", HasAttribute("createOutput")), ("triggerType", None)],
+        ]
 
-        _, results = match_arglist('Counter.setDownSource',
-                                   args, kwargs, argument_templates)
+        _, results = match_arglist(
+            "Counter.setDownSource", args, kwargs, argument_templates
+        )
 
         # extract arguments
         source = results.pop("source", None)
         channel = results.pop("channel", None)
         analogTrigger = results.pop("analogTrigger", None)
-        triggerType = results.pop("triggerType", AnalogTriggerOutput.AnalogTriggerType.kState)
+        triggerType = results.pop(
+            "triggerType", AnalogTriggerOutput.AnalogTriggerType.kState
+        )
 
         # If we don't have source, generate it from other arguments.
         if source is None:
@@ -336,9 +362,11 @@ class Counter(SendableBase):
 
         # save and set
         self.downSource = source
-        hal.setCounterDownSource(self.counter,
-                                 self.downSource.getPortHandleForRouting(),
-                                 self.downSource.getAnalogTriggerTypeForRouting())
+        hal.setCounterDownSource(
+            self.counter,
+            self.downSource.getPortHandleForRouting(),
+            self.downSource.getAnalogTriggerTypeForRouting(),
+        )
 
     def setDownSourceEdge(self, risingEdge, fallingEdge):
         """Set the edge sensitivity on an down counting source. Set the down
@@ -548,8 +576,10 @@ class Counter(SendableBase):
         :param pidSource: An enum to select the parameter.
         :type  pidSource: :class:`Counter.PIDSourceType`
         """
-        if pidSource not in (self.PIDSourceType.kDisplacement,
-                             self.PIDSourceType.kRate):
+        if pidSource not in (
+            self.PIDSourceType.kDisplacement,
+            self.PIDSourceType.kRate,
+        ):
             raise ValueError("Invalid pidSource argument '%s'" % pidSource)
         self.pidSource = pidSource
 

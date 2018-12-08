@@ -1,7 +1,7 @@
 def test_JoystickButton_whenPressed(wpilib, hal_data, robotstate_impl):
     ds = wpilib.DriverStation.getInstance()
     joystick = wpilib.Joystick(1)
-    data = hal_data['joysticks'][1]
+    data = hal_data["joysticks"][1]
     button = wpilib.buttons.JoystickButton(joystick, 1)
 
     command = wpilib.command.Command()
@@ -17,7 +17,7 @@ def test_JoystickButton_whenPressed(wpilib, hal_data, robotstate_impl):
     assert joystick.getRawButton(1) == False
     assert not command.isRunning()
 
-    data['buttons'][1] = True
+    data["buttons"][1] = True
     ds._getData()
     assert joystick.getRawButton(1) == True
     scheduler.run()
@@ -25,7 +25,7 @@ def test_JoystickButton_whenPressed(wpilib, hal_data, robotstate_impl):
     scheduler.run()
     assert command.isRunning()
 
-    data['buttons'][1] = False
+    data["buttons"][1] = False
     ds._getData()
     assert joystick.getRawButton(1) == False
     scheduler.run()
@@ -37,7 +37,7 @@ def test_JoystickButton_whenPressed(wpilib, hal_data, robotstate_impl):
 def test_JoystickButton_whileHeld(wpilib, hal_data, robotstate_impl):
     ds = wpilib.DriverStation.getInstance()
     joystick = wpilib.Joystick(1)
-    data = hal_data['joysticks'][1]
+    data = hal_data["joysticks"][1]
     button = wpilib.buttons.JoystickButton(joystick, 1)
 
     command = wpilib.command.Command()
@@ -53,7 +53,7 @@ def test_JoystickButton_whileHeld(wpilib, hal_data, robotstate_impl):
     assert joystick.getRawButton(1) == False
     assert not command.isRunning()
 
-    data['buttons'][1] = True
+    data["buttons"][1] = True
     ds._getData()
     assert joystick.getRawButton(1) == True
     scheduler.run()
@@ -61,7 +61,7 @@ def test_JoystickButton_whileHeld(wpilib, hal_data, robotstate_impl):
     scheduler.run()
     assert command.isRunning()
 
-    data['buttons'][1] = False
+    data["buttons"][1] = False
     ds._getData()
     assert joystick.getRawButton(1) == False
     scheduler.run()
@@ -73,7 +73,7 @@ def test_JoystickButton_whileHeld(wpilib, hal_data, robotstate_impl):
 def test_JoystickButton_whenReleased(wpilib, hal_data, robotstate_impl):
     ds = wpilib.DriverStation.getInstance()
     joystick = wpilib.Joystick(1)
-    data = hal_data['joysticks'][1]
+    data = hal_data["joysticks"][1]
     button = wpilib.buttons.JoystickButton(joystick, 1)
 
     command = wpilib.command.Command()
@@ -89,7 +89,7 @@ def test_JoystickButton_whenReleased(wpilib, hal_data, robotstate_impl):
     assert joystick.getRawButton(1) == False
     assert not command.isRunning()
 
-    data['buttons'][1] = True
+    data["buttons"][1] = True
     ds._getData()
     assert joystick.getRawButton(1) == True
     scheduler.run()
@@ -97,7 +97,7 @@ def test_JoystickButton_whenReleased(wpilib, hal_data, robotstate_impl):
     scheduler.run()
     assert not command.isRunning()
 
-    data['buttons'][1] = False
+    data["buttons"][1] = False
     ds._getData()
     assert joystick.getRawButton(1) == False
     scheduler.run()
@@ -105,7 +105,7 @@ def test_JoystickButton_whenReleased(wpilib, hal_data, robotstate_impl):
     # command starts
     assert command.isRunning()
 
-    data['buttons'][1] = True
+    data["buttons"][1] = True
     ds._getData()
     assert joystick.getRawButton(1) == True
     scheduler.run()
@@ -117,7 +117,7 @@ def test_JoystickButton_whenReleased(wpilib, hal_data, robotstate_impl):
 def test_JoystickButton_toggleWhenPressed(wpilib, hal_data, robotstate_impl):
     ds = wpilib.DriverStation.getInstance()
     joystick = wpilib.Joystick(1)
-    data = hal_data['joysticks'][1]
+    data = hal_data["joysticks"][1]
     button = wpilib.buttons.JoystickButton(joystick, 1)
 
     command = wpilib.command.Command()
@@ -133,7 +133,7 @@ def test_JoystickButton_toggleWhenPressed(wpilib, hal_data, robotstate_impl):
     assert joystick.getRawButton(1) == False
     assert not command.isRunning()
 
-    data['buttons'][1] = True
+    data["buttons"][1] = True
     ds._getData()
     assert joystick.getRawButton(1) == True
     scheduler.run()
@@ -143,14 +143,14 @@ def test_JoystickButton_toggleWhenPressed(wpilib, hal_data, robotstate_impl):
     scheduler.run()
     assert command.isRunning()
 
-    data['buttons'][1] = False
+    data["buttons"][1] = False
     ds._getData()
     assert joystick.getRawButton(1) == False
     scheduler.run()
 
     assert command.isRunning()
 
-    data['buttons'][1] = True
+    data["buttons"][1] = True
     ds._getData()
     assert joystick.getRawButton(1) == True
     scheduler.run()
@@ -162,7 +162,7 @@ def test_JoystickButton_toggleWhenPressed(wpilib, hal_data, robotstate_impl):
 def test_JoystickButton_cancelWhenPressed(wpilib, hal_data, robotstate_impl):
     ds = wpilib.DriverStation.getInstance()
     joystick = wpilib.Joystick(1)
-    data = hal_data['joysticks'][1]
+    data = hal_data["joysticks"][1]
     button = wpilib.buttons.JoystickButton(joystick, 1)
 
     command = wpilib.command.Command()
@@ -178,7 +178,7 @@ def test_JoystickButton_cancelWhenPressed(wpilib, hal_data, robotstate_impl):
     assert joystick.getRawButton(1) == False
     assert not command.isRunning()
 
-    data['buttons'][1] = True
+    data["buttons"][1] = True
     ds._getData()
     assert joystick.getRawButton(1) == True
     scheduler.run()
@@ -188,7 +188,7 @@ def test_JoystickButton_cancelWhenPressed(wpilib, hal_data, robotstate_impl):
     scheduler.run()
     assert not command.isRunning()
 
-    data['buttons'][1] = False
+    data["buttons"][1] = False
     ds._getData()
     assert joystick.getRawButton(1) == False
     scheduler.run()
@@ -198,7 +198,7 @@ def test_JoystickButton_cancelWhenPressed(wpilib, hal_data, robotstate_impl):
     scheduler.run()
     assert command.isRunning()
 
-    data['buttons'][1] = True
+    data["buttons"][1] = True
     ds._getData()
     assert joystick.getRawButton(1) == True
     scheduler.run()

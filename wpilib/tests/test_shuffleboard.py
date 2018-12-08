@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def getTable(networktables):
     return networktables.NetworkTables.getTable
 
@@ -23,7 +23,7 @@ def test_addPersistent(wpilib, getTable):
     tab = wpilib.shuffleboard.Shuffleboard.getTab("tacos")
     widget = tab.addPersistent("simplevalue", 1)
     # k, how to kick networktables?
-    #assert widget.getEntry().isPersistent()
+    # assert widget.getEntry().isPersistent()
 
 
 def test_getTab(wpilib, getTable):

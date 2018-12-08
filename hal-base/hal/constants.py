@@ -6,9 +6,11 @@
 # HAL
 #############################################################################
 
+
 class RuntimeType:
     Athena = 0
     Mock = 1
+
 
 class UsageReporting:
     # enum tResourceType
@@ -112,7 +114,6 @@ class UsageReporting:
     kFramework_ROS = 5
     kFramework_RobotBuilder = 6
 
-
     kRobotDrive_ArcadeStandard = 1
     kRobotDrive_ArcadeButtonSpin = 2
     kRobotDrive_ArcadeRatioCurve = 3
@@ -126,7 +127,6 @@ class UsageReporting:
     kRobotDrive2_MecanumPolar = 11
     kRobotDrive2_KilloughCartesian = 12
     kRobotDrive2_KilloughPolar = 13
-
 
     kDriverStationCIO_Analog = 1
     kDriverStationCIO_DigitalIn = 2
@@ -151,20 +151,24 @@ class UsageReporting:
 
     kSmartDashboard_Instance = 1
 
+
 HALUsageReporting = UsageReporting
 
 #############################################################################
 # Accelerometer.h
 #############################################################################
 
+
 class AccelerometerRange:
     kRange_2G = 0
     kRange_4G = 1
     kRange_8G = 2
 
+
 #############################################################################
 # AnalogTrigger.h
 #############################################################################
+
 
 class AnalogTriggerType:
     kInWindow = 0
@@ -172,9 +176,11 @@ class AnalogTriggerType:
     kRisingPulse = 2
     kFallingPulse = 3
 
+
 #############################################################################
 # Counter.h
 #############################################################################
+
 
 class CounterMode:
     kTwoPulse = 0
@@ -182,9 +188,11 @@ class CounterMode:
     kPulseLength = 2
     kExternalDirection = 3
 
+
 #############################################################################
 # DriverStation.h
 #############################################################################
+
 
 class AllianceStationID:
     kRed1 = 0
@@ -194,11 +202,13 @@ class AllianceStationID:
     kBlue2 = 4
     kBlue3 = 5
 
+
 class MatchType:
     kMatchType_none = 0
     kMatchType_practice = 1
     kMatchType_qualification = 2
     kMatchType_elimination = 3
+
 
 kMaxJoystickAxes = 12
 kMaxJoystickPOVs = 12
@@ -207,14 +217,15 @@ kMaxJoystickPOVs = 12
 # Encoder.h
 #############################################################################
 
+
 class EncoderIndexingType:
     kResetWhileHigh = 0
     kResetWhileLow = 1
     kResetOnFallingEdge = 2
     kResetOnRisingEdge = 3
-    
+
+
 class EncoderEncodingType:
     k1X = 0
     k2X = 1
     k4X = 2
-

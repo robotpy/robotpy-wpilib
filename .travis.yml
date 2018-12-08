@@ -1,6 +1,15 @@
 language: python
 sudo: required
 dist: xenial
+
+python:
+  - "3.7"
+  - "3.6"
+  - "3.5"
+
+matrix:
+  fast_finish: true
+
 stages:
 - test
 - deploy-pypi
@@ -8,15 +17,6 @@ stages:
 
 env:
 - RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
-
-# reverse order because travis already has latest python installed
-python:
-- "3.7"
-- "3.6"
-- "3.5"
-
-matrix:
-  fast_finish: true
 
 # command to install dependencies
 install:
@@ -30,6 +30,13 @@ script:
 
 jobs:
   include:
+  - stage: format-check
+    python:
+    - "3.6"
+    install:
+    - pip install black
+    script:
+    - black --check --diff .
   - stage: deploy-pypi
     if: tag IS present
     install: true

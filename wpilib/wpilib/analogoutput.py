@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/AnalogOutput.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2014-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 import weakref
@@ -15,8 +15,10 @@ from .sensorutil import SensorUtil
 
 __all__ = ["AnalogOutput"]
 
+
 def _freeAnalogOutput(port):
     hal.freeAnalogOutputPort(port)
+
 
 class AnalogOutput(SendableBase):
     """Analog output"""
@@ -30,16 +32,15 @@ class AnalogOutput(SendableBase):
         """
         super().__init__()
         SensorUtil.checkAnalogOutputChannel(channel)
-        
+
         self.channel = channel
 
         port = hal.getPort(channel)
         self._port = hal.initializeAnalogOutputPort(port)
 
         self.setName("AnalogOutput", channel)
-        hal.report(hal.UsageReporting.kResourceType_AnalogChannel,
-                      channel, 1)
-        
+        hal.report(hal.UsageReporting.kResourceType_AnalogChannel, channel, 1)
+
         self.__finalizer = weakref.finalize(self, _freeAnalogOutput, self._port)
 
     @property
@@ -47,7 +48,7 @@ class AnalogOutput(SendableBase):
         if not self.__finalizer.alive:
             return None
         return self._port
-    
+
     def close(self):
         """Channel destructor.
         """

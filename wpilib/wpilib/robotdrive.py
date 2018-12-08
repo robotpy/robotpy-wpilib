@@ -92,7 +92,9 @@ class RobotDrive(MotorSafety):
         """
         warnings.warn(
             "RobotDrive was deprecated in 2018.0.0. Use DifferentialDrive, KilloughDrive, or MecanumDrive instead.",
-            DeprecationWarning, stacklevel=2)
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__()
 
         # keyword arguments
@@ -111,8 +113,9 @@ class RobotDrive(MotorSafety):
             controllerClass = Talon
 
         if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
+            warnings.warn(
+                "unknown keyword arguments: %s" % kwargs.keys(), RuntimeWarning
+            )
 
         # positional arguments
         if len(args) == 2:
@@ -124,25 +127,25 @@ class RobotDrive(MotorSafety):
             self.frontRightMotor = args[2]
             self.rearRightMotor = args[3]
         elif len(args) != 0:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
+            raise ValueError(
+                "don't know how to handle %d positional arguments" % len(args)
+            )
 
         self.allocatedSpeedControllers = list()
 
         # convert channel number into motor controller if needed
-        if (self.frontLeftMotor is not None and
-                not hasattr(self.frontLeftMotor, "set")):
+        if self.frontLeftMotor is not None and not hasattr(self.frontLeftMotor, "set"):
             self.frontLeftMotor = controllerClass(self.frontLeftMotor)
             self.allocatedSpeedControllers.append(self.frontLeftMotor)
-        if (self.rearLeftMotor is not None and
-                not hasattr(self.rearLeftMotor, "set")):
+        if self.rearLeftMotor is not None and not hasattr(self.rearLeftMotor, "set"):
             self.rearLeftMotor = controllerClass(self.rearLeftMotor)
             self.allocatedSpeedControllers.append(self.rearLeftMotor)
-        if (self.frontRightMotor is not None and
-                not hasattr(self.frontRightMotor, "set")):
+        if self.frontRightMotor is not None and not hasattr(
+            self.frontRightMotor, "set"
+        ):
             self.frontRightMotor = controllerClass(self.frontRightMotor)
             self.allocatedSpeedControllers.append(self.frontRightMotor)
-        if (self.rearRightMotor is not None and
-                not hasattr(self.rearRightMotor, "set")):
+        if self.rearRightMotor is not None and not hasattr(self.rearRightMotor, "set"):
             self.rearRightMotor = controllerClass(self.rearRightMotor)
             self.allocatedSpeedControllers.append(self.rearRightMotor)
 
@@ -155,7 +158,9 @@ class RobotDrive(MotorSafety):
         self.setSafetyEnabled(True)
 
         # Setup Finalizer
-        self.__finalizer = weakref.finalize(self, _freeRobotDrive, self.allocatedSpeedControllers)
+        self.__finalizer = weakref.finalize(
+            self, _freeRobotDrive, self.allocatedSpeedControllers
+        )
 
         # start off not moving
         self.drive(0, 0)
@@ -183,23 +188,25 @@ class RobotDrive(MotorSafety):
         wheelbase w.
         """
         if not RobotDrive.kArcadeRatioCurve_Reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       self.getNumMotors(),
-                       hal.UsageReporting.kRobotDrive_ArcadeRatioCurve)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                self.getNumMotors(),
+                hal.UsageReporting.kRobotDrive_ArcadeRatioCurve,
+            )
             RobotDrive.kArcadeRatioCurve_Reported = True
 
         if curve < 0:
             value = math.log(-curve)
             ratio = (value - self.sensitivity) / (value + self.sensitivity)
             if ratio == 0:
-                ratio = .0000000001
+                ratio = 0.0000000001
             leftOutput = outputMagnitude / ratio
             rightOutput = outputMagnitude
         elif curve > 0:
             value = math.log(curve)
             ratio = (value - self.sensitivity) / (value + self.sensitivity)
             if ratio == 0:
-                ratio = .0000000001
+                ratio = 0.0000000001
             leftOutput = outputMagnitude
             rightOutput = outputMagnitude / ratio
         else:
@@ -241,9 +248,11 @@ class RobotDrive(MotorSafety):
             sensitivity at lower speeds.  Defaults to True if unspecified.
         """
         if not RobotDrive.kTank_Reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       self.getNumMotors(),
-                       hal.UsageReporting.kRobotDrive_Tank)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                self.getNumMotors(),
+                hal.UsageReporting.kRobotDrive_Tank,
+            )
             RobotDrive.kTank_Reported = True
 
         # keyword arguments
@@ -256,8 +265,9 @@ class RobotDrive(MotorSafety):
         squaredInputs = kwargs.pop("squaredInputs", None)
 
         if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
+            warnings.warn(
+                "unknown keyword arguments: %s" % kwargs.keys(), RuntimeWarning
+            )
 
         # positional arguments
         if len(args) == 2 or len(args) == 3:
@@ -278,7 +288,9 @@ class RobotDrive(MotorSafety):
         elif len(args) == 5:
             leftStick, leftAxis, rightStick, rightAxis, squaredInputs = args
         elif len(args) != 0:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
+            raise ValueError(
+                "don't know how to handle %d positional arguments" % len(args)
+            )
 
         # get value from stick if only stick provided
         if leftValue is None:
@@ -345,9 +357,11 @@ class RobotDrive(MotorSafety):
         """
 
         if not RobotDrive.kArcadeStandard_Reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       self.getNumMotors(),
-                       hal.UsageReporting.kRobotDrive_ArcadeStandard)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                self.getNumMotors(),
+                hal.UsageReporting.kRobotDrive_ArcadeStandard,
+            )
             RobotDrive.kArcadeStandard_Reported = True
 
         # keyword arguments
@@ -361,8 +375,9 @@ class RobotDrive(MotorSafety):
         squaredInputs = kwargs.pop("squaredInputs", None)
 
         if kwargs:
-            warnings.warn("unknown keyword arguments: %s" % kwargs.keys(),
-                          RuntimeWarning)
+            warnings.warn(
+                "unknown keyword arguments: %s" % kwargs.keys(), RuntimeWarning
+            )
 
         # positional arguments
         if len(args) == 1:
@@ -380,7 +395,9 @@ class RobotDrive(MotorSafety):
         elif len(args) == 5:
             moveStick, moveAxis, rotateStick, rotateAxis, squaredInputs = args
         elif len(args) != 0:
-            raise ValueError("don't know how to handle %d positional arguments" % len(args))
+            raise ValueError(
+                "don't know how to handle %d positional arguments" % len(args)
+            )
 
         # get value from stick if only stick provided
         if moveValue is None:
@@ -446,9 +463,11 @@ class RobotDrive(MotorSafety):
             to implement field-oriented controls.
         """
         if not RobotDrive.kMecanumCartesian_Reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       self.getNumMotors(),
-                       hal.UsageReporting.kRobotDrive_MecanumCartesian)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                self.getNumMotors(),
+                hal.UsageReporting.kRobotDrive_MecanumCartesian,
+            )
             RobotDrive.kMecanumCartesian_Reported = True
 
         xIn = x
@@ -467,7 +486,9 @@ class RobotDrive(MotorSafety):
         RobotDrive.normalize(wheelSpeeds)
 
         self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.maxOutput)
-        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.maxOutput)
+        self.frontRightMotor.set(
+            wheelSpeeds[self.MotorType.kFrontRight] * self.maxOutput
+        )
         self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.maxOutput)
         self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.maxOutput)
 
@@ -489,9 +510,11 @@ class RobotDrive(MotorSafety):
             independent of the magnitute or direction. [-1.0..1.0]
         """
         if not RobotDrive.kMecanumPolar_Reported:
-            hal.report(hal.UsageReporting.kResourceType_RobotDrive,
-                       self.getNumMotors(),
-                       hal.UsageReporting.kRobotDrive_MecanumPolar)
+            hal.report(
+                hal.UsageReporting.kResourceType_RobotDrive,
+                self.getNumMotors(),
+                hal.UsageReporting.kRobotDrive_MecanumPolar,
+            )
             RobotDrive.kMecanumPolar_Reported = True
 
         # Normalized for full power along the Cartesian axes.
@@ -510,7 +533,9 @@ class RobotDrive(MotorSafety):
         RobotDrive.normalize(wheelSpeeds)
 
         self.frontLeftMotor.set(wheelSpeeds[self.MotorType.kFrontLeft] * self.maxOutput)
-        self.frontRightMotor.set(wheelSpeeds[self.MotorType.kFrontRight] * self.maxOutput)
+        self.frontRightMotor.set(
+            wheelSpeeds[self.MotorType.kFrontRight] * self.maxOutput
+        )
         self.rearLeftMotor.set(wheelSpeeds[self.MotorType.kRearLeft] * self.maxOutput)
         self.rearRightMotor.set(wheelSpeeds[self.MotorType.kRearRight] * self.maxOutput)
 
@@ -650,8 +675,12 @@ class RobotDrive(MotorSafety):
 
     def getNumMotors(self):
         motors = 0
-        if self.frontLeftMotor is not None: motors += 1
-        if self.frontRightMotor is not None: motors += 1
-        if self.rearLeftMotor is not None: motors += 1
-        if self.rearRightMotor is not None: motors += 1
+        if self.frontLeftMotor is not None:
+            motors += 1
+        if self.frontRightMotor is not None:
+            motors += 1
+        if self.rearLeftMotor is not None:
+            motors += 1
+        if self.rearRightMotor is not None:
+            motors += 1
         return motors

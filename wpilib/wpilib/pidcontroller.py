@@ -1,10 +1,10 @@
 # validated: 2018-01-27 DS 738a1c015cfb edu/wpi/first/wpilibj/PIDController.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2016. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 from collections import deque
 from itertools import islice
@@ -24,6 +24,7 @@ from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["PIDController"]
 
+
 class PIDController(SendableBase):
     """Can be used to control devices via a PID Control Loop.
 
@@ -35,9 +36,10 @@ class PIDController(SendableBase):
     in the integral and derivative calculations. Therefore, the sample rate affects
     the controller's behavior for a given set of PID constants.
     """
-    kDefaultPeriod = .05
+
+    kDefaultPeriod = 0.05
     instances = 0
-    
+
     PIDSourceType = PIDSource.PIDSourceType
 
     # Tolerance is the type of tolerance used to specify if the PID controller
@@ -45,7 +47,7 @@ class PIDController(SendableBase):
     # PercentageTolerance and AbsoluteTolerance specify types of tolerance
     # specifications to use.
     def PercentageTolerance_onTarget(self, percentage):
-        return abs(self.getError()) < percentage / 100.0 * self.inputRange 
+        return abs(self.getError()) < percentage / 100.0 * self.inputRange
 
     def AbsoluteTolerance_onTarget(self, value):
         return abs(self.getError()) < value
@@ -84,13 +86,14 @@ class PIDController(SendableBase):
         output_arg = ("output", [HasAttribute("pidWrite"), HasAttribute("__call__")])
         period_arg = ("period", [float, int])
 
-        templates = [[f_arg, source_arg, output_arg, period_arg],
-                     [source_arg, output_arg, period_arg],
-                     [source_arg, output_arg],
-                     [f_arg, source_arg, output_arg]]
+        templates = [
+            [f_arg, source_arg, output_arg, period_arg],
+            [source_arg, output_arg, period_arg],
+            [source_arg, output_arg],
+            [f_arg, source_arg, output_arg],
+        ]
 
-        _, results = match_arglist('PIDController.__init__',
-                                   args, kwargs, templates)
+        _, results = match_arglist("PIDController.__init__", args, kwargs, templates)
 
         self.P = Kp  # factor for "proportional" control
         self.I = Ki  # factor for "integral" control
@@ -101,12 +104,13 @@ class PIDController(SendableBase):
         self.period = results.pop("period", self.kDefaultPeriod)
         self.filter = LinearDigitalFilter.movingAverage(self.origSource, 1)
         self.pidInput = self.filter
-        
+
         self.pidInput = PIDSource.from_obj_or_callable(self.pidInput)
-        
-        if hasattr(self.pidOutput, 'pidWrite'):
+
+        if hasattr(self.pidOutput, "pidWrite"):
             self.pidOutput = self.pidOutput.pidWrite
 
+        # fmt: off
         self.maximumOutput = 1.0    # |maximum output|
         self.minimumOutput = -1.0   # |minimum output|
         self.maximumInput = 0.0     # maximum input - limit setpoint to this
@@ -120,22 +124,26 @@ class PIDController(SendableBase):
         self.prevSetpoint = 0.0
         self.error = 0.0
         self.result = 0.0
+        # fmt: on
 
         self.mutex = threading.RLock()
         self.pidWriteMutex = threading.RLock()
 
-        self.pid_task = TimerTask('PIDTask%d' % PIDController.instances, self.period, self._calculate)
+        self.pid_task = TimerTask(
+            "PIDTask%d" % PIDController.instances, self.period, self._calculate
+        )
         self.pid_task.start()
-        
+
         self.setpointTimer = Timer()
         self.setpointTimer.start()
-        
+
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
         PIDController.instances += 1
-        hal.report(hal.UsageReporting.kResourceType_PIDController,
-                   PIDController.instances)
+        hal.report(
+            hal.UsageReporting.kResourceType_PIDController, PIDController.instances
+        )
         self.setName("PIDController", PIDController.instances)
 
     def close(self):
@@ -155,7 +163,7 @@ class PIDController(SendableBase):
             return
 
         with self.mutex:
-            enabled = self.enabled # take snapshot of these values...
+            enabled = self.enabled  # take snapshot of these values...
 
         if enabled:
             feedForward = self.calculateFeedForward()
@@ -177,22 +185,21 @@ class PIDController(SendableBase):
             if pidSourceType == self.PIDSourceType.kRate:
                 if P != 0:
                     totalError = self.clamp(
-                        totalError + error, 
-                        minimumOutput / P,
-                        maximumOutput / P)
-                        
+                        totalError + error, minimumOutput / P, maximumOutput / P
+                    )
+
                 result = P * totalError + D * error + feedForward
 
             else:
                 if I != 0:
                     totalError = self.clamp(
-                        totalError + error,
-                        minimumOutput / I,
-                        maximumOutput / I)
+                        totalError + error, minimumOutput / I, maximumOutput / I
+                    )
 
-                result = P * error + I * totalError + D * (error - prevError) + \
-                    feedForward
-                            
+                result = (
+                    P * error + I * totalError + D * (error - prevError) + feedForward
+                )
+
             result = self.clamp(result, minimumOutput, maximumOutput)
 
             with self.pidWriteMutex:
@@ -206,7 +213,7 @@ class PIDController(SendableBase):
                 self.error = error
                 self.totalError = totalError
                 self.result = result
-            
+
     def calculateFeedForward(self):
         """Calculate the feed forward term
         
@@ -343,7 +350,7 @@ class PIDController(SendableBase):
             else:
                 newsetpoint = setpoint
             self.setpoint = newsetpoint
-            
+
     def getSetpoint(self):
         """Returns the current setpoint of the PIDController.
 
@@ -351,7 +358,7 @@ class PIDController(SendableBase):
         """
         with self.mutex:
             return self.setpoint
-        
+
     def getDeltaSetpoint(self):
         """Returns the change in setpoint over time of the PIDController
         
@@ -373,7 +380,7 @@ class PIDController(SendableBase):
         """
         with self.mutex:
             return self.getContinuousError(self.getSetpoint() - self.pidInput.pidGet())
-        
+
     def getAvgError(self):
         """
         Returns the current difference of the error over the past few iterations. You can specify the
@@ -395,14 +402,14 @@ class PIDController(SendableBase):
         :param pidSourceType: the type of input
         """
         self.pidInput.setPIDSourceType(pidSourceType)
-        
+
     def getPIDSourceType(self):
         """Returns the type of input the PID controller is using
         
         :returns: the PID controller input type
         """
         return self.pidInput.getPIDSourceType()
-    
+
     def setAbsoluteTolerance(self, absvalue):
         """Set the absolute error which is considered tolerable for use with
         :func:`onTarget`.
@@ -411,8 +418,7 @@ class PIDController(SendableBase):
             input object
         """
         with self.mutex:
-            self.onTarget = lambda: \
-                    self.AbsoluteTolerance_onTarget(absvalue)
+            self.onTarget = lambda: self.AbsoluteTolerance_onTarget(absvalue)
 
     def setPercentTolerance(self, percentage):
         """Set the percentage error which is considered tolerable for use with
@@ -421,9 +427,8 @@ class PIDController(SendableBase):
         :param percentage: percent error which is tolerable
         """
         with self.mutex:
-            self.onTarget = lambda: \
-                    self.PercentageTolerance_onTarget(percentage)
-                    
+            self.onTarget = lambda: self.PercentageTolerance_onTarget(percentage)
+
     def setToleranceBuffer(self, bufLength):
         """Set the number of previous error samples to average for tolerancing. When
         determining whether a mechanism is on target, the user may want to use a
@@ -441,7 +446,7 @@ class PIDController(SendableBase):
         with self.mutex:
             self.filter = LinearDigitalFilter.movingAverage(self.origSource, bufLength)
             self.pidInput = self.filter
-        
+
     def onTarget(self):
         """Return True if the error is within the percentage of the total input
         range, determined by setTolerance. This assumes that the maximum and
@@ -470,7 +475,7 @@ class PIDController(SendableBase):
         """Return True if PIDController is enabled."""
         with self.mutex:
             return self.enabled
-            
+
     def reset(self):
         """Reset the previous error, the integral term, and disable the
         controller."""
@@ -546,9 +551,9 @@ class PIDController(SendableBase):
             error %= self.inputRange
             if abs(error) > self.inputRange / 2:
                 if error > 0:
-                    return error - self.inputRange 
+                    return error - self.inputRange
                 else:
-                    return error + self.inputRange 
+                    return error + self.inputRange
         return error
 
     def clamp(self, value, low, high):

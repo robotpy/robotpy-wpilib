@@ -1,16 +1,17 @@
 # validated: 2018-11-17 EN 89d15f061b33 edu/wpi/first/wpilibj/Timer.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import threading
 
 import hal
 
 __all__ = ["Timer"]
+
 
 class Timer:
     """
@@ -20,7 +21,7 @@ class Timer:
                   the :mod:`time` module in the standard library. This will
                   make it easier for your code to work properly in simulation. 
     """
-    
+
     @staticmethod
     def getFPGATimestamp():
         """Return the system clock time in seconds. Return the time from the
@@ -49,6 +50,7 @@ class Timer:
         :rtype: float
         """
         from .driverstation import DriverStation
+
         return DriverStation.getInstance().getMatchTime()
 
     @staticmethod
@@ -96,7 +98,9 @@ class Timer:
         """
         with self.mutex:
             if self.running:
-                return ((self.getMsClock() - self.startTime) + self.accumulatedTime) / 1000.0
+                return (
+                    (self.getMsClock() - self.startTime) + self.accumulatedTime
+                ) / 1000.0
             else:
                 return self.accumulatedTime
 
@@ -128,7 +132,7 @@ class Timer:
             temp = self.get()
             self.accumulatedTime = temp
             self.running = False
-            
+
     def hasPeriodPassed(self, period):
         """Check if the period specified has passed and if it has, advance the start
         time by that period. This is useful to decide if it's time to do periodic
@@ -138,12 +142,12 @@ class Timer:
         :returns: If the period has passed.
         :rtype: bool
         """
-        
+
         with self.mutex:
             if self.get() > period:
                 # Advance the start time by the period
                 # Don't set it to the current time... we want to avoid drift
-                self.startTime += (period * 1000)
+                self.startTime += period * 1000
                 return True
-            
+
             return False

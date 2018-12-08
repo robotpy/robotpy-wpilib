@@ -41,6 +41,7 @@ class Joystick(GenericHID):
 
     class AxisType(enum.IntEnum):
         """Represents an analog axis on a joystick."""
+
         kX = 0
         kY = 1
         kZ = 2
@@ -51,6 +52,7 @@ class Joystick(GenericHID):
     # This copy is here because of the extra kNumAxes.
     class Axis(enum.IntEnum):
         """Represents an analog axis on a joystick"""
+
         kX = 0
         kY = 1
         kZ = 2
@@ -60,6 +62,7 @@ class Joystick(GenericHID):
 
     class ButtonType(enum.IntEnum):
         """Represents a digital button on the Joystick"""
+
         kTrigger = 1
         kTop = 2
 
@@ -134,8 +137,11 @@ class Joystick(GenericHID):
         .. deprecated:: 2018.0.0
             Use the more specific axis channel setter functions
         """
-        warnings.warn("setAxisChannel is deprecated. Use the more specific axis channel setter functions",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "setAxisChannel is deprecated. Use the more specific axis channel setter functions",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.axes[axis] = channel
 
     def getXChannel(self) -> int:
@@ -182,8 +188,11 @@ class Joystick(GenericHID):
         ..deprecated:: 2018.0.0
             Use the more specific axis channel getter functions
         """
-        warnings.warn("getAxisChannel is deprecated. Use the more specific axis channel getter functions",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "getAxisChannel is deprecated. Use the more specific axis channel getter functions",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.axes[axis]
 
     def getX(self, hand=None) -> float:
@@ -251,8 +260,11 @@ class Joystick(GenericHID):
         ..deprecated: 2018.0.0
             Use the more specific axis getter functions.
         """
-        warnings.warn("getAxis is deprecated. Use the more specific axis setter functions",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "getAxis is deprecated. Use the more specific axis setter functions",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
         if axis == self.AxisType.kX:
             return self.getX()
@@ -266,7 +278,8 @@ class Joystick(GenericHID):
             return self.getThrottle()
         else:
             raise ValueError(
-                "Invalid axis specified! Must be one of wpilib.Joystick.AxisType, or use getRawAxis instead")
+                "Invalid axis specified! Must be one of wpilib.Joystick.AxisType, or use getRawAxis instead"
+            )
 
     def getTrigger(self) -> bool:
         """Read the state of the trigger on the joystick.
@@ -326,15 +339,19 @@ class Joystick(GenericHID):
         ..deprecated: 2018.0.0
             Use Button enum values instead of ButtonType
         """
-        warnings.warn("getButton is deprecated. Use Button enum values instead of ButtonType",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "getButton is deprecated. Use Button enum values instead of ButtonType",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if button == self.ButtonType.kTrigger:
             return self.getTrigger()
         elif button == self.ButtonType.kTop:
             return self.getTop()
         else:
             raise ValueError(
-                "Invalid button specified! Must be one of wpilib.Joystick.ButtonType, or use getRawButton instead")
+                "Invalid button specified! Must be one of wpilib.Joystick.ButtonType, or use getRawButton instead"
+            )
 
     def getMagnitude(self) -> float:
         """Get the magnitude of the direction vector formed by the joystick's

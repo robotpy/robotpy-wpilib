@@ -1,42 +1,43 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/GyroBase.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 
 from .interfaces import PIDSource
 from .sendablebase import SendableBase
 
-__all__ = ['GyroBase']
+__all__ = ["GyroBase"]
+
 
 class GyroBase(SendableBase):
-    '''
+    """
         GyroBase is the common base class for Gyro implementations such as
         :class:`.AnalogGyro`.
-    '''
-    
+    """
+
     PIDSourceType = PIDSource.PIDSourceType
-    
+
     def __init__(self):
         super().__init__()
         self.pidSource = self.PIDSourceType.kDisplacement
         self.valueEntry = None
-    
+
     def calibrate(self):
         raise NotImplementedError()
-    
+
     def reset(self):
         raise NotImplementedError()
-    
+
     def getAngle(self):
         raise NotImplementedError()
-    
+
     def getRate(self):
         raise NotImplementedError()
-    
+
     def setPIDSourceType(self, pidSource):
         """Set which parameter of the gyro you are using as a process
         control variable. The Gyro class supports the rate and angle
@@ -45,14 +46,16 @@ class GyroBase(SendableBase):
         :param pidSource: An enum to select the parameter.
         :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
-        if pidSource not in (self.PIDSourceType.kDisplacement,
-                             self.PIDSourceType.kRate):
+        if pidSource not in (
+            self.PIDSourceType.kDisplacement,
+            self.PIDSourceType.kRate,
+        ):
             raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
-        
+
     def getPIDSourceType(self):
         return self.pidSource
-    
+
     def pidGet(self):
         """Get the output of the gyro for use with PIDControllers. May be
         the angle or rate depending on the set :class:`.PIDSourceType`
@@ -66,9 +69,7 @@ class GyroBase(SendableBase):
             return self.getAngle()
         else:
             return 0.0
-    
+
     def initSendable(self, builder):
         builder.setSmartDashboardType("Gyro")
         builder.addDoubleProperty("Value", self.getAngle, None)
-
-

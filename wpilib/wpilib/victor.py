@@ -1,16 +1,17 @@
 # validated: 2017-12-15 EN f9bece2ffbf7 edu/wpi/first/wpilibj/Victor.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import hal
 
 from .pwmspeedcontroller import PWMSpeedController
 
 __all__ = ["Victor"]
+
 
 class Victor(PWMSpeedController):
     """
@@ -39,7 +40,7 @@ class Victor(PWMSpeedController):
         
         .. not_implemented: initVictor
     """
-    
+
     def __init__(self, channel):
         """Constructor.
 
@@ -52,6 +53,5 @@ class Victor(PWMSpeedController):
         self.setSpeed(0)
         self.setZeroLatch()
 
-        hal.report(hal.UsageReporting.kResourceType_Victor,
-                   self.getChannel())
-        self.setName('Victor', self.getChannel())
+        hal.report(hal.UsageReporting.kResourceType_Victor, self.getChannel())
+        self.setName("Victor", self.getChannel())

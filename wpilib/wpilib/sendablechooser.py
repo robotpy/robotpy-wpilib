@@ -1,14 +1,15 @@
 # validated: 2018-03-04 DV 9d7293734a65 edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 from .sendablebase import SendableBase
 
 __all__ = ["SendableChooser"]
+
 
 class SendableChooser(SendableBase):
     """A useful tool for presenting a selection of options to be displayed on

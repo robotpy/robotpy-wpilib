@@ -1,11 +1,10 @@
-
 import pytest
 
 
 def test_preferences(wpilib, hal_data):
-    '''
+    """
         Just some basic tests for the joystick
-    '''
+    """
     nt = wpilib.Preferences.getInstance()
 
     nt.putString("test1", "Hello")
@@ -20,4 +19,4 @@ def test_preferences(wpilib, hal_data):
     assert nt.getString("test1") == "Hello"
     assert nt.getBoolean("test2") == False
     assert nt.getInt("test3") == 5
-    assert nt.getFloat("test4") == .5
+    assert nt.getFloat("test4") == 0.5

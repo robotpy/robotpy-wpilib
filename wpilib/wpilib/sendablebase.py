@@ -1,10 +1,10 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/SendableBase.java
-#----------------------------------------------------------------------------
-# Copyright (c) 2017 FIRST. All Rights Reserved.                             
-# Open Source Software - may be modified and shared by FRC teams. The code   
-# must be accompanied by the FIRST BSD license file in the root directory of 
-# the project.                                                               
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Copyright (c) 2017 FIRST. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+# ----------------------------------------------------------------------------
 import threading
 import warnings
 from .sendable import Sendable
@@ -12,7 +12,7 @@ from .livewindow import LiveWindow
 from ._impl.utils import match_arglist
 
 
-__all__ = ['SendableBase']
+__all__ = ["SendableBase"]
 
 
 class SendableBase(Sendable):
@@ -41,8 +41,7 @@ class SendableBase(Sendable):
         .. deprecated:: 2019.0.0
             Use close instead 
         """
-        warnings.warn("use close instead",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn("use close instead", DeprecationWarning, stacklevel=2)
         self.close()
 
     def close(self):
@@ -87,14 +86,14 @@ class SendableBase(Sendable):
         channel_arg = ("channel", [int])
         moduleNumber_arg = ("moduleNumber", [int])
 
-        templates = [[name_arg],
-                     [subsystem_arg, name_arg],
-                     [moduleType_arg, channel_arg],
-                     [moduleType_arg, moduleNumber_arg, channel_arg]]
+        templates = [
+            [name_arg],
+            [subsystem_arg, name_arg],
+            [moduleType_arg, channel_arg],
+            [moduleType_arg, moduleNumber_arg, channel_arg],
+        ]
 
-        index, results = match_arglist(
-            'SendableBase.setName',
-            args, kwargs, templates)
+        index, results = match_arglist("SendableBase.setName", args, kwargs, templates)
 
         if index == 0:
             self._setName(results["name"])
@@ -120,4 +119,3 @@ class SendableBase(Sendable):
         :param child: child component
         """
         LiveWindow.addChild(self, child)
-
