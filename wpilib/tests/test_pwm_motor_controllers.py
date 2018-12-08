@@ -24,12 +24,7 @@ def test_controller(wpilib, hal_data, clsname):
     # create object/helper function
     obj = getattr(wpilib, clsname)(2)
 
-    # validate reporting is correct
-    # TODO: remove the VictorSPX and DMC60 check once there is usage reporting
-    assert (
-        clsname in ("PWMVictorSPX", "DMC60")
-        or hal_data["pwm"][2]["type"] == clsname.lower()
-    )
+    assert hal_data["pwm"][2]["type"] == clsname.lower()
 
     # Assert starts with zero
     assert obj.get() == 0
