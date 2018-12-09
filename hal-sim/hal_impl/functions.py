@@ -297,6 +297,10 @@ def report(resource, instanceNumber, context=0, feature=None):
         hal_data["pwm"][instanceNumber]["type"] = "victor"
     elif resource == hur.kResourceType_VictorSP:
         hal_data["pwm"][instanceNumber]["type"] = "victorsp"
+    elif resource == hur.kResourceType_PWMVictorSPX:
+        hal_data["pwm"][instanceNumber]["type"] = "pwmvictorspx"
+    elif resource == hur.kResourceType_DigilentDMC60:
+        hal_data["pwm"][instanceNumber]["type"] = "dmc60"
 
     hal_data["reports"].setdefault(resource, []).append(instanceNumber)
     return 0
