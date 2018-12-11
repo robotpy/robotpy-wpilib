@@ -8,6 +8,7 @@
   Out: python docstring, optionally with a function definition<br/>
   <input type="radio" name="mtype" value="normal" onclick="xfer()" checked/> normal
   <input type="radio" name="mtype" value="yamlgen" onclick="xfer()"/> yamlgen
+  <input type="radio" name="mtype" value="cstring" onclick="xfer()"/> C string
   <br/>
   <textarea id="outbox" rows="10" cols="100"></textarea><p>
   Out: sphinx variable doc<br/>
@@ -208,6 +209,8 @@
       if (getOutputMethodType() == "yamlgen") {
         t = '  doc: |\r\n    ' + t.replace(/\r\n/g, '\r\n    ');
         return t;
+      } else if (getOutputMethodType() == "cstring") {
+        t = '"' + t.split(/\r\n/g).join('\\n"\r\n"') + '"';
       } else {
         t = formatDocstring(t);
       }
