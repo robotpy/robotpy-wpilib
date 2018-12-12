@@ -368,6 +368,9 @@ class Class:
                 elif hasattr(o, "fndata"):
                     self.add_function(Function.from_py(name, o))
 
+                elif o is NotImplemented:
+                    self.add_not_implemented_function(name)
+
         return self
 
     def __init__(self, name):
@@ -384,6 +387,13 @@ class Class:
         existing = self.functions.setdefault(fn.name, fn)
         if existing is not fn:
             raise ValueError("Duplicate function definitions found for %s" % fn)
+
+    def add_not_implemented_function(self, name):
+        existing = self.functions.setdefault(
+            "HAL_" + name[0].upper() + name[1:], NotImplemented
+        )
+        if existing is not NotImplemented:
+            raise ValueError("Duplicate function definitions found for %s" % name)
 
 
 class CHeader:
@@ -486,7 +496,7 @@ def compare(headers, py_obj, match_py):
 
             if py_fn is None:
                 output.add_warning("py function does not exist")
-            else:
+            elif py_fn is not NotImplemented:
                 py_fn.processed = True
                 compare_fn(c_fn, py_fn, output)
 
@@ -495,7 +505,7 @@ def compare(headers, py_obj, match_py):
     if match_py:
         # for each py thing, ensure that it is in C
         for py_fn in py_obj.functions.values():
-            if py_fn.processed:
+            if py_fn is NotImplemented or py_fn.processed:
                 continue
 
             output = OutputItem("Unmatched python functions", None, py_fn)
