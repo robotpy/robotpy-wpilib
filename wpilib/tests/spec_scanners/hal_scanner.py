@@ -150,16 +150,13 @@ class Type:
 
     @classmethod
     def from_c(cls, typename, is_ptr):
-
         if typename.startswith("::"):
             typename = typename[2:]
 
         special_type = _special_c_types.get(typename)
         if special_type:
-            typename = special_type
-
+            typename = special_type.__name__
         typename = _normalize_type(typename)
-
         return cls(typename, is_ptr)
 
     @classmethod
