@@ -19,6 +19,10 @@ def sim_print():
 
 @pytest.fixture(scope="function")
 def pid(wpilib, SimTimerTask):
+    return _get_pid(wpilib)
+
+
+def _get_pid(wpilib):
     _pid = wpilib.PIDController(
         Kp=1.0, Ki=0.25, Kd=0.75, source=MagicMock(), output=MagicMock()
     )
@@ -666,7 +670,7 @@ def test_pidcontroller_calculateFeedForward_displacement(
     sim_hooks, wpilib, SimTimerTask
 ):
     sim_hooks.time = 1.0
-    pid0 = pid(wpilib, SimTimerTask)
+    pid0 = _get_pid(wpilib)
     assert pid0.setpointTimer.get() == pytest.approx(0.0, 0.01)
     sim_hooks.time = 2.0
     assert pid0.setpointTimer.get() == pytest.approx(1.0, 0.01)
