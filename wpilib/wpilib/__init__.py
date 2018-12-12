@@ -55,7 +55,6 @@ from .robotbase import *
 from .robotcontroller import *
 from .robotdrive import *
 from .robotstate import *
-from .safepwm import *
 from .samplerobot import *
 from .sd540 import *
 from .sendable import *

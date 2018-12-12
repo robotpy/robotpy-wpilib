@@ -6,13 +6,12 @@
 # the project.
 # ----------------------------------------------------------------------------
 
-from .livewindow import LiveWindow
-from .safepwm import SafePWM
+from .pwm import PWM
 
 __all__ = ["PWMSpeedController"]
 
 
-class PWMSpeedController(SafePWM):
+class PWMSpeedController(PWM):
     """
         Common base class for all PWM Speed Controllers.
     """
@@ -59,6 +58,9 @@ class PWMSpeedController(SafePWM):
         :rtype: float
         """
         return self.getSpeed()
+
+    def disable(self):
+        self.setDisabled()
 
     def pidWrite(self, output):
         """Write out the PID value as seen in the PIDOutput base object.
