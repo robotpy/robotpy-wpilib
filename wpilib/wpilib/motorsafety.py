@@ -1,4 +1,4 @@
-# validated: 2017-12-25 TW d36d72bd4fe9 edu/wpi/first/wpilibj/MotorSafety.java edu/wpi/first/wpilibj/MotorSafetyHelper.java
+# validated: 2017-12-25 TW d36d72bd4fe9 edu/wpi/first/wpilibj/MotorSafety.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -27,8 +27,6 @@ class MotorSafety:
     actually do the timing and call the motors stop() method when the timeout
     expires. The motor object is expected to call the feed() method whenever
     the motors value is updated.
-    
-    .. robotpy-specific: In the Java implementation this is MotorSafetyHelper
     """
 
     DEFAULT_SAFETY_EXPIRATION = 0.1

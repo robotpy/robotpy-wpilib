@@ -9,6 +9,7 @@
 import hal
 import weakref
 
+from .motorsafety import MotorSafety
 from .sendablebase import SendableBase
 from .resource import Resource
 from .sensorutil import SensorUtil
@@ -21,7 +22,7 @@ def _freePWM(handle):
     hal.freePWMPort(handle)
 
 
-class PWM(SendableBase):
+class PWM(MotorSafety, SendableBase):
     """Raw interface to PWM generation in the FPGA.
     
     The values supplied as arguments for PWM outputs range from -1.0 to 1.0. They
@@ -89,6 +90,8 @@ class PWM(SendableBase):
         hal.report(hal.UsageReporting.kResourceType_PWM, channel)
         self.setName("PWM", channel)
 
+        self.setSafetyEnabled(False)
+
         # Python-specific: Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
@@ -109,6 +112,12 @@ class PWM(SendableBase):
             return
         self.__finalizer()
         self._handle = None
+
+    def stopMotor(self):
+        self.setDisabled()
+
+    def getDescription(self):
+        return "PWM %d" % self.getChannel()
 
     def enableDeadbandElimination(self, eliminateDeadband):
         """Optionally eliminate the deadband from a speed controller.

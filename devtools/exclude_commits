@@ -18,3 +18,4 @@ e548a5f7054ccc221ede1917bb62f512d1fb0fe3 # PMD 6.3.0
 337e89cf6e791d67f6e80fbba8c613cc98d2a36a # Java simulation API
 e2100730447d83b20267f7fff87fc1ca6bf47fb0 # Move HAL classes to their own base package  
 0e9172f9a70820f1a3ac8f5c8c55f63092e832d3 # Fix many errorprone warnings (#1247)
+acb786a7916621478166be85c32c20d9241c6c1c # Move MotorSafetyHelper into MotorSafety base class
