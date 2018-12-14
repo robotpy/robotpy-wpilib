@@ -131,8 +131,9 @@ class ADXRS450_Gyro_Sim(SPISimBase):
 
     def __init__(self, gyro):
         self.kDegreePerSecondPerLSB = gyro.kDegreePerSecondPerLSB
-        self.kSamplePeriod = gyro.kSamplePeriod
+        self.kSamplePeriodUs = 1000000 * gyro.kSamplePeriod
         self.lastAngle = 0
+        self.lastTimestamp = 0
 
     def initializeSPI(self, port, status):
         self.angle_key = "adxrs450_spi_%d_angle" % port
@@ -148,12 +149,26 @@ class ADXRS450_Gyro_Sim(SPISimBase):
         current = hal_data["robot"].get(self.angle_key, 0)
 
         if numToRead != 0:
+            # buffer is 5 integers:
+            # - first integer is timestamp
+            # - last 4 integers is the offset value byte by byte (big endian)
+
             offset = current - self.lastAngle
             self.lastAngle = current
-            offset = int(offset / (self.kSamplePeriod * self.kDegreePerSecondPerLSB))
-            buffer[0] = offset
+            offset /= self.kSamplePeriodUs * self.kDegreePerSecondPerLSB
+            offset = int(offset / 1e-6)
 
-        return 4
+            buffer[0] = self.lastTimestamp
+            self.lastTimestamp += 1
+            if self.lastTimestamp > 0xFFFFFFFF:
+                self.lastTimestamp = 0
+
+            buffer[1] = (offset >> 24) & 0xFF
+            buffer[2] = (offset >> 16) & 0xFF
+            buffer[3] = (offset >> 8) & 0xFF
+            buffer[4] = offset & 0xFF
+
+        return 5
 
     def readSPI(self, port, buffer, count):
         buffer[:] = (0xFF000000 | (0x5200 << 5)).to_bytes(4, "big")

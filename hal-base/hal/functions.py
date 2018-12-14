@@ -697,7 +697,7 @@ def setSPIAutoTransmitData(port, dataToSend, zeroSize):
     _setSPIAutoTransmitData(port, buffer, sendSize, zeroSize)
 
 forceSPIAutoRead = _TSTATUSFUNC("forceSPIAutoRead", None, ("port", C.c_int32))
-readSPIAutoReceivedData = _STATUSFUNC("readSPIAutoReceivedData", C.c_int32, ("port", C.c_int32), ("buffer", C.POINTER(C.c_uint32)), ("numToRead", C.c_int32), ("timeout", C.c_double))
+readSPIAutoReceivedData = _TSTATUSFUNC("readSPIAutoReceivedData", C.c_int32, ("port", C.c_int32), ("buffer", C.POINTER(C.c_uint32)), ("numToRead", C.c_int32), ("timeout", C.c_double))
 
 getSPIAutoDroppedCount = _TSTATUSFUNC("getSPIAutoDroppedCount", C.c_int32, ("port", C.c_int32))
 

@@ -1,4 +1,4 @@
-# validated: 2018-09-30 EN cbaff528500c edu/wpi/first/wpilibj/ADXRS450_Gyro.java
+# validated: 2018-12-14 DS dcbf02a1ecfc edu/wpi/first/wpilibj/ADXRS450_Gyro.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2015-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -124,13 +124,15 @@ class ADXRS450_Gyro(GyroBase):
         if not hal.HALIsSimulation():
             Timer.delay(0.1)
 
-        self.spi.setAccumulatorCenter(0)
+        self.spi.setAccumulatorIntegratedCenter(0)
         self.spi.resetAccumulator()
 
         if not hal.HALIsSimulation():
             Timer.delay(self.kCalibrationSampleTime)
 
-        self.spi.setAccumulatorCenter(int(self.spi.getAccumulatorAverage()))
+        self.spi.setAccumulatorIntegratedCenter(
+            int(self.spi.getAccumulatorIntegratedAverage())
+        )
         self.spi.resetAccumulator()
 
     def _calcParity(self, v):
@@ -204,4 +206,6 @@ class ADXRS450_Gyro(GyroBase):
         if self.spi is None:
             return 0.0
         else:
-            return self.spi.getAccumulatorLastValue() * self.kDegreePerSecondPerLSB
+            return (
+                self.spi.getAccumulatorIntegratedValue() * self.kDegreePerSecondPerLSB
+            )
