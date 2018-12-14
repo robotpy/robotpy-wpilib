@@ -154,7 +154,7 @@ class DriverStation:
         self.joystickButtonsCache = [
             hal.JoystickButtons() for _ in range(self.kJoystickPorts)
         ]
-        self.matchInfoCache = MatchInfoData()
+        self.matchInfoCache = hal.MatchInfo()
 
         self.controlWordMutex = threading.RLock()
         self.controlWordCache = hal.ControlWord()
@@ -847,7 +847,13 @@ class DriverStation:
                 self.joystickPOVs,
             )
 
-            self.matchInfo, self.matchInfoCache = self.matchInfoCache, self.matchInfo
+            self.matchInfo.eventName = self.matchInfoCache.eventName.decode("utf-8")
+            self.matchInfo.gameSpecificMessage = self.matchInfoCache.gameSpecificMessage.decode(
+                "utf-8"
+            )
+            self.matchInfo.matchNumber = self.matchInfoCache.matchNumber
+            self.matchInfo.replayNumber = self.matchInfoCache.replayNumber
+            self.matchInfo.matchType = self.matchInfoCache.matchType
 
         with self.waitForDataCond:
             self.waitForDataCount += 1
