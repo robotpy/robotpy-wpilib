@@ -25,6 +25,7 @@ __all__ = [
     "GyroHandle",
     "InterruptHandle",
     "NotifierHandle",
+    "PDPHandle",
     "RelayHandle",
     "SolenoidHandle",
 ]
@@ -103,5 +104,6 @@ FPGAEncoderHandle = Handle
 GyroHandle = Handle
 InterruptHandle = Handle
 NotifierHandle = Handle
+PDPHandle = Handle
 RelayHandle = Handle
 SolenoidHandle = Handle

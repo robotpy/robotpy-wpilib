@@ -76,9 +76,9 @@ class SPI:
             self._port = port
 
         # python-specific: these are bools instead of integers
-        self.bitOrder = False
-        self.clockPolarity = False
-        self.dataOnTrailing = False
+        self.msbFirst = False
+        self.clockIdleHigh = False
+        self.sampleOnTrailing = False
 
         self.accum = None
 
@@ -112,50 +112,50 @@ class SPI:
         """Configure the order that bits are sent and received on the wire to be most significant bit
         first.
         """
-        self.bitOrder = True
+        self.msbFirst = True
         hal.setSPIOpts(
-            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+            self.port, self.msbFirst, self.sampleOnTrailing, self.clockIdleHigh
         )
 
     def setLSBFirst(self) -> None:
         """Configure the order that bits are sent and received on the wire to be least significant bit
         first.
         """
-        self.bitOrder = False
+        self.msbFirst = False
         hal.setSPIOpts(
-            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+            self.port, self.msbFirst, self.sampleOnTrailing, self.clockIdleHigh
         )
 
     def setClockActiveLow(self) -> None:
         """Configure the clock output line to be active low. This is sometimes called clock polarity high
         or clock idle high.
         """
-        self.clockPolarity = True
+        self.clockIdleHigh = True
         hal.setSPIOpts(
-            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+            self.port, self.msbFirst, self.sampleOnTrailing, self.clockIdleHigh
         )
 
     def setClockActiveHigh(self) -> None:
         """Configure the clock output line to be active high. This is sometimes called clock polarity low
         or clock idle low.
         """
-        self.clockPolarity = False
+        self.clockIdleHigh = False
         hal.setSPIOpts(
-            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+            self.port, self.msbFirst, self.sampleOnTrailing, self.clockIdleHigh
         )
 
     def setSampleDataOnLeadingEdge(self) -> None:
         """Configure that the data is stable on the leading edge and the data changes on the trailing edge."""
-        self.dataOnTrailing = False
+        self.sampleOnTrailing = False
         hal.setSPIOpts(
-            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+            self.port, self.msbFirst, self.sampleOnTrailing, self.clockIdleHigh
         )
 
     def setSampleDataOnTrailingEdge(self) -> None:
         """Configure that the data is stable on the trailing edge and the data changes on the leading edge."""
-        self.dataOnTrailing = True
+        self.sampleOnTrailing = True
         hal.setSPIOpts(
-            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+            self.port, self.msbFirst, self.sampleOnTrailing, self.clockIdleHigh
         )
 
     def setSampleDataOnFalling(self) -> None:
@@ -166,9 +166,9 @@ class SPI:
         .. deprecated:: 2019.0.0
             Use setSampleDataOnTrailingEdge in most cases
         """
-        self.dataOnTrailing = True
+        self.sampleOnTrailing = True
         hal.setSPIOpts(
-            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+            self.port, self.msbFirst, self.sampleOnTrailing, self.clockIdleHigh
         )
 
     def setSampleDataOnRising(self) -> None:
@@ -178,9 +178,9 @@ class SPI:
         .. deprecated:: 2019.0.0
             Use setSampleDataOnLeadingEdge in most cases
         """
-        self.dataOnTrailing = False
+        self.sampleOnTrailing = False
         hal.setSPIOpts(
-            self.port, self.bitOrder, self.dataOnTrailing, self.clockPolarity
+            self.port, self.msbFirst, self.sampleOnTrailing, self.clockIdleHigh
         )
 
     def setChipSelectActiveHigh(self) -> None:
@@ -324,13 +324,19 @@ class SPI:
         Transfers may be made a byte at a time, so it's necessary for the caller
         to handle cases where an entire transfer has not been completed.
 
-        Blocks until numToRead bytes have been read or timeout expires.
-        May be called with numToRead=0 to retrieve how many bytes are available.
+        Each received data sequence consists of a timestamp followed by the
+        received data bytes, one byte per word (in the least significant byte).
+        The length of each received data sequence is the same as the combined
+        size of the data and zeroSize set in setAutoTransmitData().
 
-        :param buffer: A ctypes c_uint8 buffer to read the data into
-        :param numToRead: number of bytes to read
-        :param timeout: timeout in seconds (ms resolution)
-        :returns: Number of bytes remaining to be read
+        Blocks until numToRead words have been read or timeout expires.
+        May be called with numToRead=0 to retrieve how many words are available.
+
+        :param buffer:    A ctypes c_uint32 buffer to read the data into
+        :param numToRead: number of words to read
+        :param timeout:   timeout in seconds (ms resolution)
+        
+        :returns: Number of words remaining to be read
         """
         if len(buffer) < numToRead:
             raise ValueError("buffer is too small, must be at least %s" % numToRead)
@@ -359,26 +365,12 @@ class SPI:
             isSigned: bool,
             bigEndian: bool,
         ):
-
-            # python-specific: for efficiency purposes, we only support xferSize of
-            #                  2, 4, or 8... if you need to do a different size then
-            #                  file a bug and we'll adjust it
-            efmt = ">" if bigEndian else "<"
-            self._xferSize = xferSize  # SPI transfer size, in bytes
-            if self._xferSize == 2:
-                self._struct = struct.Struct("%sH" % efmt)
-            elif self._xferSize == 4:
-                self._struct = struct.Struct("%sI" % efmt)
-            elif self._xferSize == 8:
-                self._struct = struct.Struct("%sQ" % efmt)
-            else:
-                raise ValueError("SPI Accumulator only supports xferSize of 2/4/8")
-
             self._mutex = threading.RLock()
             self._notifier = Notifier(self._update)
-            self._buf = (ctypes.c_uint8 * (xferSize * self.kAccumulateDepth))()
+            self._buf = (ctypes.c_uint32 * (xferSize * self.kAccumulateDepth))()
 
             # fmt: off
+            self._xferSize = xferSize + 1               # +1 for timestamp
             self._validMask = validMask
             self._validValue = validValue
             self._dataShift = dataShift                 # data field shift right amount, in bits
@@ -392,9 +384,12 @@ class SPI:
             self._value = 0
             self._count = 0
             self._lastValue = 0
+            self._lastTimestamp = 0
+            self._integratedValue = 0.0
 
             self._center = 0
             self._deadband = 0
+            self._integratedCenter = 0.0
 
         def free(self):
             """
@@ -429,13 +424,20 @@ class SPI:
                     hal.readSPIAutoReceivedData(self._port, self._buf, numToRead, 0)
 
                     # loop over all responses
-                    off = 0
-                    while True:
-                        if off > numToRead:
-                            break
+                    for off in range(0, numToRead, self._xferSize):
+                        # get timestamp from first word
+                        timestamp = self._buf[off] & 0xFFFFFFFF
 
                         # convert from bytes
-                        resp = self._struct.unpack_from(self._buf, off)[0]
+                        resp = 0
+                        if self._bigEndian:
+                            for i in range(1, self._xferSize):
+                                resp <<= 8
+                                resp |= self._buf[off + i] & 0xFF
+                        else:
+                            for i in range(self._xferSize - 1, 0):
+                                resp <<= 8
+                                resp |= self._buf[off + i] & 0xFF
 
                         # process response
                         if (resp & self._validMask) == self._validValue:
@@ -449,11 +451,32 @@ class SPI:
                                 data -= self._dataMax
 
                             # center offset
+                            dataNoCenter = data
                             data -= self._center
 
                             # only accumulate if outside deadband
                             if data < -self._deadband or data > self._deadband:
                                 self._value += data
+                                if self._count != 0:
+                                    # timestamps use the 1us FPGA clock; also handle rollover
+                                    if timestamp >= self._lastTimestamp:
+                                        self._integratedValue = (
+                                            dataNoCenter
+                                            * (timestamp - self._lastTimestamp)
+                                            * 1e-6
+                                            - self._integratedCenter
+                                        )
+                                    else:
+                                        self._integratedValue += (
+                                            dataNoCenter
+                                            * (
+                                                (1 << 32)
+                                                - self._lastTimestamp
+                                                + timestamp
+                                            )
+                                            * 1e-6
+                                            - self._integratedCenter
+                                        )
 
                             self._count += 1
                             self._lastValue = data
@@ -461,7 +484,7 @@ class SPI:
                             # no data from the sensor just clear the last value
                             self._lastValue = 0
 
-                        off += self._xferSize
+                        self._lastTimestamp = timestamp
 
     def initAccumulator(
         self,
@@ -524,6 +547,8 @@ class SPI:
             self.accum._value = 0
             self.accum._count = 0
             self.accum._lastValue = 0
+            self.accum._lastTimestamp = 0
+            self.accum._integratedValue = 0.0
 
     def setAccumulatorCenter(self, center: int) -> None:
         """Set the center value of the accumulator.
@@ -604,3 +629,47 @@ class SPI:
         with self.accum._mutex:
             self.accum._update()
             return AccumulatorResult(self.accum._value, self.accum._count)
+
+    def setAccumulatorIntegratedCenter(self, center: float) -> None:
+        """Set the center value of the accumulator integrator.
+
+        The center value is subtracted from each value*dt before it is added to the
+        integrated value. This is used for the center value of devices like gyros
+        and accelerometers to take the device offset into account when integrating.
+
+        """
+        if self.accum is None:
+            return
+
+        with self.accum._mutex:
+            self.accum._integratedCenter = center
+
+    def getAccumulatorIntegratedValue(self) -> float:
+        """Read the integrated value.  This is the sum of (each value * time between
+        values).
+
+        :returns: The integrated value accumulated since the last Reset().
+        """
+        if self.accum is None:
+            return
+
+        with self.accum._mutex:
+            self.accum._update()
+            return self.accum._integratedValue
+
+    def getAccumulatorIntegratedAverage(self) -> float:
+        """Read the average of the integrated value.  This is the sum of (each value
+        times the time between values), divided by the count.
+
+        :returns: The average of the integrated value accumulated since the last Reset().
+        """
+        if self.accum is None:
+            return 0.0
+
+        with self.accum._mutex:
+            self.accum._update()
+            if self.accum._count <= 1:
+                return 0.0
+
+            # count-1 due to not integrating the first value received
+            return self.accum._integratedValue / (self.accum._count - 1)

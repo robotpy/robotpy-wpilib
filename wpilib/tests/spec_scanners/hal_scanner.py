@@ -2,7 +2,8 @@ import argparse
 import collections
 import inspect
 import os
-from os.path import dirname, join
+from os.path import dirname, exists, join
+import subprocess
 import sys
 
 import CppHeaderParser
@@ -21,7 +22,7 @@ arrowtab = "--> "
 
 def get_hal_dirs(hal_dir):
     paths = list()
-    paths.append(join(hal_dir, "HAL"))
+    paths.append(join(hal_dir, "hal"))
     return paths
 
 
@@ -66,6 +67,33 @@ _normalize_type_aliases = [
    ["bool", "?", "HAL_Bool"]
     # fmt: on
 ]
+
+
+def _process_header(fname):
+    ppname = fname + ".pp"
+
+    # Cannot cache result as we would need to check all dependencies too
+    # fname_mtime = getmtime(fname)
+    # ppname_mtime = 0
+    # if exists(ppname):
+    #     ppname_mtime = getmtime(ppname)
+
+    print("Preprocessing " + fname, file=sys.stderr)
+
+    args = [
+        sys.executable,
+        "-c",
+        "import pcpp; pcpp.main()",
+        "--passthru-unfound-includes",
+        "-I",
+        dirname(dirname(fname)),
+        fname,
+        "-o",
+        ppname,
+    ]
+    subprocess.check_call(args)
+
+    return CppHeaderParser.CppHeader(ppname)
 
 
 def _normalize_type(obj):
@@ -150,16 +178,13 @@ class Type:
 
     @classmethod
     def from_c(cls, typename, is_ptr):
-
         if typename.startswith("::"):
             typename = typename[2:]
 
         special_type = _special_c_types.get(typename)
         if special_type:
-            typename = special_type
-
+            typename = special_type.__name__
         typename = _normalize_type(typename)
-
         return cls(typename, is_ptr)
 
     @classmethod
@@ -371,6 +396,9 @@ class Class:
                 elif hasattr(o, "fndata"):
                     self.add_function(Function.from_py(name, o))
 
+                elif o is NotImplemented:
+                    self.add_not_implemented_function(name)
+
         return self
 
     def __init__(self, name):
@@ -387,6 +415,13 @@ class Class:
         existing = self.functions.setdefault(fn.name, fn)
         if existing is not fn:
             raise ValueError("Duplicate function definitions found for %s" % fn)
+
+    def add_not_implemented_function(self, name):
+        existing = self.functions.setdefault(
+            "HAL_" + name[0].upper() + name[1:], NotImplemented
+        )
+        if existing is not NotImplemented:
+            raise ValueError("Duplicate function definitions found for %s" % name)
 
 
 class CHeader:
@@ -425,12 +460,12 @@ def collect_headers(header_dirs, filter_h=None):
 
                 # Make sure it is a .hpp file
                 if os.path.splitext(fname)[1] not in [".hpp", ".h"]:
-                    return
+                    continue
 
                 fname = os.path.join(root, fname)
 
                 # Gather the headers first, so we can populate the type list
-                header = CppHeaderParser.CppHeader(fname)
+                header = _process_header(fname)
                 for enum in header.enums:
                     _special_c_types[enum["name"]] = enum["type"]
 
@@ -489,7 +524,7 @@ def compare(headers, py_obj, match_py):
 
             if py_fn is None:
                 output.add_warning("py function does not exist")
-            else:
+            elif py_fn is not NotImplemented:
                 py_fn.processed = True
                 compare_fn(c_fn, py_fn, output)
 
@@ -498,7 +533,7 @@ def compare(headers, py_obj, match_py):
     if match_py:
         # for each py thing, ensure that it is in C
         for py_fn in py_obj.functions.values():
-            if py_fn.processed:
+            if py_fn is NotImplemented or py_fn.processed:
                 continue
 
             output = OutputItem("Unmatched python functions", None, py_fn)

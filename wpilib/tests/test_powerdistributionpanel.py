@@ -13,7 +13,7 @@ def pdp_table(networktables):
 
 @pytest.fixture(scope="function")
 def pdp_data(hal_data):
-    return hal_data["pdp"]
+    return hal_data["pdp"][0]
 
 
 def test_pdp_getVoltage(pdp, pdp_data):
