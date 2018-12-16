@@ -1,4 +1,10 @@
 # validated: 2018-11-18 EN 175c6c1f0130 edu/wpi/first/wpilibj/shuffleboard/ComplexWidget.java
+# ----------------------------------------------------------------------------
+# Copyright (c) 2018 FIRST. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+# ----------------------------------------------------------------------------
 from ..sendablebuilder import SendableBuilder
 from ..sendable import Sendable
 from .widget import ShuffleboardWidget

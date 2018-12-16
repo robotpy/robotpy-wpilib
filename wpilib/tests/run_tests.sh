@@ -12,6 +12,9 @@ export PYTHONPATH=$(abspath ./..):$(abspath ../../hal-sim):$(abspath ../../hal-b
 if [ "$RUNCOVERAGE" == "1" ]; then
     python3 -m coverage run --source wpilib -m pytest "$@"
     python3 -m coverage report -m
+    if [ "$HTML" == "1" ]; then
+        python3 -m coverage html
+    fi
 else
     python3 -m pytest "$@"
 fi
