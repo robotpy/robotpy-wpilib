@@ -1,8 +1,16 @@
-# validated: 2018-11-18 EN 175c6c1f0130 edu/wpi/first/wpilibj/shuffleboard/Shuffleboard.java
+# validated: 2018-12-15 EN 6f0c185a05c9 edu/wpi/first/wpilibj/shuffleboard/Shuffleboard.java
+# ----------------------------------------------------------------------------
+# Copyright (c) 2018 FIRST. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+# ----------------------------------------------------------------------------
 
 from networktables import NetworkTablesInstance
 from .tab import ShuffleboardTab
 from .instance import ShuffleboardInstance
+from .recordingcontroller import RecordingController
+from .eventimportance import EventImportance
 
 
 __all__ = ["Shuffleboard"]
@@ -55,6 +63,7 @@ class Shuffleboard:
     kBaseTableName = "/Shuffleboard"
 
     _root = None
+    _recordingController = None
 
     @classmethod
     def root(cls):
@@ -64,8 +73,18 @@ class Shuffleboard:
         return cls._root
 
     @classmethod
+    def recordingController(cls):
+        if cls._recordingController is None:
+            cls._recordingController = RecordingController(
+                NetworkTablesInstance.getDefault()
+            )
+
+        return cls._recordingController
+
+    @classmethod
     def _reset(cls):
         cls._root = None
+        cls._recordingController = None
 
     @classmethod
     def update(cls) -> None:
@@ -90,6 +109,22 @@ class Shuffleboard:
         return cls.root().getTab(title)
 
     @classmethod
+    def selectTab(cls, index_or_title):
+        """
+        Selects the tab in the dashboard with the given index in the 
+        range [0..n-1], where n is the number of tabs in the dashboard at the 
+        time this method is called.
+        
+        Or
+
+        Selects the tab in the dashboard with the given title.
+
+        :param index_or_title: when an integer, the index of the tab to select. 
+                               when a string, the title of the tab to select.
+        """
+        cls.root().selectTab(index_or_title)
+
+    @classmethod
     def enableActuatorWidgets(cls) -> None:
         """
         Enables user control of widgets containing actuators: speed
@@ -111,3 +146,74 @@ class Shuffleboard:
         """
         cls.update()
         cls.root().disableActuatorWidgets()
+
+    @classmethod
+    def startRecording(cls):
+        """
+        Starts data recording on the dashboard. Has no effect if recording 
+        is already in progress.
+
+        see :meth:`.stopRecording`
+        """
+        cls.recordingController().startRecording()
+
+    @classmethod
+    def stopRecording(cls):
+        """
+        Stops data recording on the dashboard. Has no effect if no recording 
+        is in progress.
+
+        see :meth:`.startRecording`
+        """
+        cls.recordingController().stopRecording()
+
+    @classmethod
+    def setRecordingFileNameFormat(cls, format: str):
+        """
+        Sets the file name format for new recording files to use. If recording 
+        is in progress when this method is called, it will continue to use the 
+        same file. New recordings will use the format.
+
+        To avoid recording files overwriting each other, make sure to use 
+        unique recording file names. File name formats accept templates for 
+        inserting the date and time when the recording started with the 
+        `${date}` and `${time}` templates, respectively. For example,
+        the default format is `"recording-${time}"` and recording files 
+        created with it will have names like `"recording-2018.01.15.sbr"`. 
+        Users are strongly recommended to use the `${time}` template to ensure 
+        unique file names.
+
+        :param format: the format for the
+                       see :meth:`.clearRecordingFileNameFormat`
+        """
+        cls.recordingController().setRecordingFileNameFormat(format)
+
+    @classmethod
+    def clearRecordingFileNameFormat(cls):
+        """
+        Clears the custom name format for recording files. 
+        New recordings will use the default format.
+
+        see :meth:`.setRecordingFileNameFormat`
+        """
+        cls.recordingController().clearRecordingFileNameFormat()
+
+    @classmethod
+    def addEventMarker(
+        cls, name: str, importance: EventImportance, description: str = ""
+    ):
+        """
+        Notifies Shuffleboard of an event. Events can range from as trivial as 
+        a change in a command state to as critical as a total power loss or 
+        component failure. If Shuffleboard is recording, the event will also 
+        be recorded.
+
+        If `name` is `None` or empty, or `importance` is `None`, then
+        no event will be sent and an error will be printed to the driver 
+        station.
+
+        :param name:        the name of the event
+        :param description: a description of the event
+        :param importance:  the importance of the event
+        """
+        cls.recordingController().addEventMarker(name, description, importance)

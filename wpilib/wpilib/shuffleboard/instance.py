@@ -1,4 +1,10 @@
-# validated: 2018-11-18 EN 175c6c1f0130 edu/wpi/first/wpilibj/shuffleboard/ShuffleboardInstance.java
+# validated: 2018-12-15 EN 6f0c185a05c9 edu/wpi/first/wpilibj/shuffleboard/ShuffleboardInstance.java
+# ----------------------------------------------------------------------------
+# Copyright (c) 2018 FIRST. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+# ----------------------------------------------------------------------------
 from .tab import ShuffleboardTab
 from .root import ShuffleboardRoot
 from .complexwidget import ComplexWidget
@@ -12,6 +18,7 @@ class ShuffleboardInstance(ShuffleboardRoot):
         assert ntInstance is not None, "NetworkTable instance cannot be None"
         self.rootTable = ntInstance.getTable(Shuffleboard.kBaseTableName)
         self.rootMetaTable = self.rootTable.getSubTable(".metadata")
+        self.selectedTabEntry = self.rootMetaTable.getEntry("Selected")
         self.tabsChanged = False
         self.tabs = {}
 
@@ -37,6 +44,12 @@ class ShuffleboardInstance(ShuffleboardRoot):
 
     def disableActuatorWidgets(self):
         self._applyToAllComplexWidgets(lambda c: c.disableIfActuator())
+
+    def selectTab(self, index_or_title):
+        if isinstance(index_or_title, int):
+            self.selectedTabEntry.forceSetDouble(index_or_title)
+        else:
+            self.selectedTabEntry.forceSetString(index_or_title)
 
     def _applyToAllComplexWidgets(self, func):
         """
