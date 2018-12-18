@@ -151,7 +151,7 @@ class PWM(MotorSafety, SendableBase):
         """
         hal.setPWMConfig(self.handle, max, deadbandMax, center, deadbandMin, min)
 
-    def getRawBounds(self) -> Tuple[(int, int, int, int, int)]:
+    def getRawBounds(self) -> Tuple[int, int, int, int, int]:
         """Gets the bounds on the PWM pulse widths. This Gets the bounds on the PWM values for a
         particular type of controller. The values determine the upper and lower speeds as well
         as the deadband bracket.
