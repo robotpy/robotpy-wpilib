@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Optional
 
 import hal
 import warnings
@@ -74,7 +75,7 @@ class SerialPort:
         dataBits: int = 8,
         parity: Parity = Parity.kNone,
         stopBits: StopBits = StopBits.kOne,
-        simPort: object = None,
+        simPort: Optional[object] = None,
     ) -> None:
         """Create an instance of a Serial Port class.
         
@@ -176,7 +177,7 @@ class SerialPort:
         """
         return hal.getSerialBytesReceived(self.port)
 
-    def readString(self, count: int = None) -> str:
+    def readString(self, count: Optional[int] = None) -> str:
         """Read a string out of the buffer. Reads the entire contents of the buffer
         
         :param count: the number of characters to read into the string

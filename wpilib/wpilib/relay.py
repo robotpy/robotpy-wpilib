@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import List
+from typing import List, Optional
 
 import hal
 import weakref
@@ -82,7 +82,7 @@ class Relay(SendableBase, MotorSafety):
         #: Only reverse is valid
         kReverse = 2
 
-    def __init__(self, channel: int, direction: Direction = None) -> None:
+    def __init__(self, channel: int, direction: Optional[Direction] = None) -> None:
         """Relay constructor given a channel.
 
         Initially the relay is set to both lines at 0v.

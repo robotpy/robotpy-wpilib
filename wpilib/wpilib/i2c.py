@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Optional
 
 import hal
 import warnings
@@ -35,7 +36,9 @@ class I2C:
         kOnboard = 0
         kMXP = 1
 
-    def __init__(self, port: Port, deviceAddress: int, simPort: object = None) -> None:
+    def __init__(
+        self, port: Port, deviceAddress: int, simPort: Optional[object] = None
+    ) -> None:
         """Constructor.
 
         :param port: The I2C port the device is connected to.

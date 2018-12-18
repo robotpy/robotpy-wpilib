@@ -6,6 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 import warnings
+from typing import Optional
 
 from .generichid import GenericHID
 
@@ -39,7 +40,7 @@ class GamepadBase(GenericHID):
         """
         raise NotImplementedError
 
-    def getStickButton(self, hand: GenericHID.Hand = None) -> bool:
+    def getStickButton(self, hand: Optional[GenericHID.Hand] = None) -> bool:
         raise NotImplementedError
 
     def getRawButton(self, button: int) -> bool:

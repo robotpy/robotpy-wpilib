@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Optional
 
 import hal
 
@@ -28,7 +29,7 @@ class TimedRobot(IterativeRobotBase):
 
     kDefaultPeriod = 0.02
 
-    def __init__(self, period: float = None) -> None:
+    def __init__(self, period: Optional[float] = None) -> None:
         if period is None:
             period = TimedRobot.kDefaultPeriod
         super().__init__(period)

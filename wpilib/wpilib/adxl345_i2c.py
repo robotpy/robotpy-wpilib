@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Tuple
+from typing import Tuple, Optional
 
 import hal
 from .i2c import I2C
@@ -45,7 +45,9 @@ class ADXL345_I2C(SendableBase):
         kY = 0x02
         kZ = 0x04
 
-    def __init__(self, port: I2C.Port, range: Range, address: int = None) -> None:
+    def __init__(
+        self, port: I2C.Port, range: Range, address: Optional[int] = None
+    ) -> None:
         """Constructor.
 
         :param port: The I2C port the accelerometer is attached to.

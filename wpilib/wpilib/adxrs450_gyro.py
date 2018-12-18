@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Optional
 
 import hal
 
@@ -43,7 +44,7 @@ class ADXRS450_Gyro(GyroBase):
     kSNHighRegister = 0x0E
     kSNLowRegister = 0x10
 
-    def __init__(self, port: SPI.Port = None) -> None:
+    def __init__(self, port: Optional[SPI.Port] = None) -> None:
         """
             Constructor.
 

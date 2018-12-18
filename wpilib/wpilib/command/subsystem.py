@@ -37,7 +37,7 @@ class Subsystem(SendableBase):
     .. seealso:: :class:`.Command`
     """
 
-    def __init__(self, name: str = None) -> None:
+    def __init__(self, name: Optional[str] = None) -> None:
         """Creates a subsystem.
 
         :param name: the name of the subsystem; if None, it will be set to the
@@ -150,7 +150,7 @@ class Subsystem(SendableBase):
             return currentCommand.getName()
         return ""
 
-    def addChild(self, child: "sendable.Sendable", name: str = None) -> None:
+    def addChild(self, child: "sendable.Sendable", name: Optional[str] = None) -> None:
         """
         Associate a :class:`.Sendable` with this Subsystem.
         Update the child's name if provided

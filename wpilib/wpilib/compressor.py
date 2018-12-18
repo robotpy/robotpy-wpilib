@@ -1,4 +1,6 @@
 # validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/Compressor.java
+from typing import Optional
+
 import hal
 from networktables import NetworkTables
 
@@ -23,7 +25,7 @@ class Compressor(SendableBase):
     You can only turn off closed loop control, thereby stopping the compressor from operating.
     """
 
-    def __init__(self, module: int = None) -> None:
+    def __init__(self, module: Optional[int] = None) -> None:
         """Makes a new instance of the compressor using the provided CAN device ID.
         
         :param module: The PCM CAN device ID. (0 - 62 inclusive)

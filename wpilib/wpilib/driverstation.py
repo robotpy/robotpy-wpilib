@@ -7,6 +7,8 @@
 import threading
 
 import enum
+from typing import Optional
+
 import hal
 import sys
 import traceback
@@ -698,7 +700,7 @@ class DriverStation:
         allianceStationID = hal.getAllianceStation()
         return self._station_numbers.get(allianceStationID, 0)
 
-    def waitForData(self, timeout: float = None) -> bool:
+    def waitForData(self, timeout: Optional[float] = None) -> bool:
         """Wait for new data or for timeout, which ever comes first.
 
         If timeout is None, wait for new data only.

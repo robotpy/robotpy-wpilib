@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Union
+from typing import Union, Optional
 
 import hal
 
@@ -39,7 +39,10 @@ class AnalogGyro(GyroBase):
     PIDSourceType = PIDSource.PIDSourceType
 
     def __init__(
-        self, channel: Union[AnalogInput, int], center: int = None, offset: float = None
+        self,
+        channel: Union[AnalogInput, int],
+        center: Optional[int] = None,
+        offset: Optional[float] = None,
     ) -> None:
         """Gyro constructor.
 

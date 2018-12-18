@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 import logging
-from typing import List
+from typing import List, Optional
 
 from networktables import NetworkTables
 
@@ -174,7 +174,7 @@ class Preferences:
         """
         self.table.delete(key)
 
-    def getString(self, key: str, backup: str = None) -> str:
+    def getString(self, key: str, backup: Optional[str] = None) -> str:
         """Returns the string at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -184,7 +184,7 @@ class Preferences:
         """
         return self.table.getString(key, backup)
 
-    def getInt(self, key: str, backup: int = None) -> int:
+    def getInt(self, key: str, backup: Optional[int] = None) -> int:
         """Returns the int at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -195,7 +195,7 @@ class Preferences:
         """
         return self.table.getNumber(key, backup)
 
-    def getFloat(self, key: str, backup: float = None) -> float:
+    def getFloat(self, key: str, backup: Optional[float] = None) -> float:
         """Returns the float at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 
@@ -206,7 +206,7 @@ class Preferences:
         """
         return self.table.getNumber(key, backup)
 
-    def getBoolean(self, key: str, backup: bool = None) -> bool:
+    def getBoolean(self, key: str, backup: Optional[bool] = None) -> bool:
         """Returns the boolean at the given key. If this table does not have a
         value for that position, then the given backup value will be returned.
 

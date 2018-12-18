@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 import weakref
+from typing import Optional
 
 __all__ = ["Resource"]
 
@@ -72,7 +73,7 @@ class Resource:
         Resource._resource_objects.append(self)
         self.numAllocated = [None] * size
 
-    def allocate(self, obj: object, index: int = None) -> int:
+    def allocate(self, obj: object, index: Optional[int] = None) -> int:
         """Allocate a resource.
 
         When index is None or unspecified, a free resource value within the

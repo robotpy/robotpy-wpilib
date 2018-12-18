@@ -52,7 +52,7 @@ class InterruptableSensorBase(SendableBase):
     def getPortHandleForRouting(self) -> int:
         raise NotImplementedError
 
-    def requestInterrupts(self, handler: Callable = None) -> None:
+    def requestInterrupts(self, handler: Optional[Callable] = None) -> None:
         """Request one of the 8 interrupts asynchronously on this digital
         input.
 

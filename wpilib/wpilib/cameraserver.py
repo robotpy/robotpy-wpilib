@@ -1,4 +1,5 @@
 # notrack
+from typing import Optional
 
 import hal
 import subprocess
@@ -32,7 +33,7 @@ class CameraServer:
         return cls._alive
 
     @classmethod
-    def launch(cls, vision_py: str = None) -> None:
+    def launch(cls, vision_py: Optional[str] = None) -> None:
         """
             Launches the CameraServer process in autocapture mode or
             using a user-specified python script

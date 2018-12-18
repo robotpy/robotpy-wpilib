@@ -6,6 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 import warnings
+from typing import Optional
 
 from .generichid import GenericHID
 
@@ -28,7 +29,7 @@ class JoystickBase(GenericHID):
         )
         super().__init__(port)
 
-    def getZ(self, hand: GenericHID.Hand = None) -> float:
+    def getZ(self, hand: Optional[GenericHID.Hand] = None) -> float:
         """Get the z position of the HID.
 
         :param hand: which hand, left or right

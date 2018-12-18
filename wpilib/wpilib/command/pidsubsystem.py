@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Optional
 
 from .subsystem import Subsystem
 
@@ -28,9 +29,9 @@ class PIDSubsystem(Subsystem):
         p: float,
         i: float,
         d: float,
-        period: float = None,
+        period: Optional[float] = None,
         f: float = 0.0,
-        name: str = None,
+        name: Optional[str] = None,
     ) -> None:
         """Instantiates a PIDSubsystem that will use the given p, i and d
         values.

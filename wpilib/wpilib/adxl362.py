@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Tuple
+from typing import Tuple, Optional
 
 import hal
 
@@ -51,7 +51,7 @@ class ADXL362(SendableBase):
         kY = 0x02
         kZ = 0x04
 
-    def __init__(self, range: Range, port: SPI.Port = None) -> None:
+    def __init__(self, range: Range, port: Optional[SPI.Port] = None) -> None:
         """Constructor.
         
         :param range: The range (+ or -) that the accelerometer will measure.

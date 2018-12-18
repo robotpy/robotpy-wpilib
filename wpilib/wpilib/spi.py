@@ -3,7 +3,7 @@
 import ctypes
 import enum
 
-from typing import Tuple
+from typing import Tuple, Optional
 
 import hal
 import struct
@@ -47,7 +47,7 @@ class SPI:
     def _reset() -> None:
         SPI.devices = 0
 
-    def __init__(self, port: Port, simPort: object = None) -> None:
+    def __init__(self, port: Port, simPort: Optional[object] = None) -> None:
         """Constructor
 
         :param port: the physical SPI port
