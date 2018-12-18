@@ -1,4 +1,4 @@
-# validated: 2018-09-09 EN 0e9172f9a708 edu/wpi/first/wpilibj/Ultrasonic.java
+# validated: 2018-12-18 TW 761933a16428 edu/wpi/first/wpilibj/Ultrasonic.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -58,6 +58,7 @@ class Ultrasonic(SendableBase):
 
     #: ultrasonic sensor list
     sensors = weakref.WeakSet()
+    _sensors_mutex = threading.Lock()
 
     #: Automatic round robin mode
     automaticEnabled = False
@@ -81,20 +82,18 @@ class Ultrasonic(SendableBase):
             break. Make sure to disable automatic mode before changing
             anything with the sensors!!
         """
+
         while Ultrasonic.isAutomaticMode():
-            count = 0
-            for u in Ultrasonic.sensors:
-                if not Ultrasonic.isAutomaticMode():
+            with Ultrasonic._sensors_mutex:
+                count = 0
+                for u in Ultrasonic.sensors:
+                    count += 1
+                    if u.isEnabled():
+                        # do the ping
+                        u.pingChannel.pulse(Ultrasonic.kPingTime)
+                    Timer.delay(0.1)  # wait for ping to return
+                if not count:
                     return
-                if u is None:
-                    continue
-                count += 1
-                if u.isEnabled():
-                    # do the ping
-                    u.pingChannel.pulse(Ultrasonic.kPingTime)
-                Timer.delay(0.1)  # wait for ping to return
-            if not count:
-                return
 
     def __init__(self, pingChannel, echoChannel, units=Unit.kInches):
         """Create an instance of the Ultrasonic Sensor.
@@ -150,16 +149,17 @@ class Ultrasonic(SendableBase):
 
         Ultrasonic.instances += 1
         hal.report(hal.UsageReporting.kResourceType_Ultrasonic, Ultrasonic.instances)
-        LiveWindow.addSensor("Ultrasonic", self.echoChannel.getChannel(), self)
+        self.setName("Ultrasonic", self.echoChannel.getChannel())
 
     def close(self):
         isAutomatic = Ultrasonic.isAutomaticMode()
         self.setAutomaticMode(False)
 
-        try:
-            Ultrasonic.sensors.remove(self)
-        except (KeyError, ValueError):
-            pass
+        with Ultrasonic._sensors_mutex:
+            try:
+                Ultrasonic.sensors.remove(self)
+            except (KeyError, ValueError):
+                pass
 
         if isAutomatic and len(Ultrasonic.sensors):
             self.setAutomaticMode(True)
