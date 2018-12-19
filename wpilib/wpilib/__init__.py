@@ -61,7 +61,6 @@ from .sendable import *
 from .sendablebase import *
 from .sendablebuilder import *
 from .sendablechooser import *
-from .sensorbase import *
 from .sensorutil import *
 from .serialport import *
 from .servo import *
