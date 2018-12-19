@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 import enum
 import weakref
 
@@ -52,7 +52,9 @@ class InterruptableSensorBase(SendableBase):
     def getPortHandleForRouting(self) -> int:
         raise NotImplementedError
 
-    def requestInterrupts(self, handler: Optional[Callable] = None) -> None:
+    def requestInterrupts(
+        self, handler: Optional[Callable[[int], None]] = None
+    ) -> None:
         """Request one of the 8 interrupts asynchronously on this digital
         input.
 
