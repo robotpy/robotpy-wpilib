@@ -15,7 +15,6 @@ from .motorsafety import MotorSafety
 from .resource import Resource
 from .sensorutil import SensorUtil
 from .sendablebuilder import SendableBuilder
-from .sensorbase import SensorBase
 from .sendablebase import SendableBase
 
 __all__ = ["Relay"]

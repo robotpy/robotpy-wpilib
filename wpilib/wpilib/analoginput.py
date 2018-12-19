@@ -16,7 +16,6 @@ from .resource import Resource
 from .sendablebase import SendableBase
 from .sensorutil import SensorUtil
 from .sendablebuilder import SendableBuilder
-from .sensorbase import SensorBase
 from .timer import Timer
 
 __all__ = ["AnalogInput"]

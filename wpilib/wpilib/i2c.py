@@ -36,9 +36,7 @@ class I2C:
         kOnboard = 0
         kMXP = 1
 
-    def __init__(
-        self, port: Port, deviceAddress: int, simPort=None
-    ) -> None:
+    def __init__(self, port: Port, deviceAddress: int, simPort=None) -> None:
         """Constructor.
 
         :param port: The I2C port the device is connected to.
