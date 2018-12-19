@@ -163,8 +163,8 @@ class LiveWindow:
             component.setName(subsystem, name)
 
     @classmethod
-    def addActuator(cls, subsystem, name: str, component: Sendable) -> None:
-        """Add an Actuator associated with the subsystsubsystem.Subsystemem and with call it by
+    def addActuator(cls, subsystem: str, name: str, component: Sendable) -> None:
+        """Add an Actuator associated with the subsystem and with call it by
         the given name.
 
         :param subsystem: The subsystem this component is part of.

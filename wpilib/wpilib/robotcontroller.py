@@ -193,7 +193,7 @@ class RobotController:
         return hal.getUserCurrentFaults6V()
 
     @staticmethod
-    def getCANStatus() -> Tuple[(float, int, int, int, int)]:
+    def getCANStatus() -> Tuple[float, int, int, int, int]:
         """Get the current status of the CAN bus.
 
         :returns: The status of the CAN bus as a tuple: "percentBusUtilization", "busOffCount", "txFullCount", "receiveErrorCount", "transmitErrorCount"

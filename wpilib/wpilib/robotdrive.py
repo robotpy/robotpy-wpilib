@@ -612,7 +612,7 @@ class RobotDrive(MotorSafety):
                 wheelSpeeds[i] = wheelSpeeds[i] / maxMagnitude
 
     @staticmethod
-    def rotateVector(x: float, y: float, angle: float) -> Tuple[(float, float)]:
+    def rotateVector(x: float, y: float, angle: float) -> Tuple[float, float]:
         """Rotate a vector in Cartesian space."""
         angle = math.radians(angle)
         cosA = math.cos(angle)

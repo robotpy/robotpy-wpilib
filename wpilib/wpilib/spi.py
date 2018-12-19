@@ -318,7 +318,7 @@ class SPI:
 
     def readAutoReceivedData(
         self, buffer: bytes, numToRead: int, timeout: float
-    ) -> Tuple[(int, bytes)]:
+    ) -> Tuple[int, bytes]:
         """Read data that has been transferred by the automatic SPI transfer engine.
 
         Transfers may be made a byte at a time, so it's necessary for the caller

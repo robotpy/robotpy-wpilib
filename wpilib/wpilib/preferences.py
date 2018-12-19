@@ -69,7 +69,7 @@ class Preferences:
 
         hal.report(hal.UsageReporting.kResourceType_Preferences, 0)
 
-    def getKeys(self) -> [str]:
+    def getKeys(self) -> List[str]:
         """:returns: a list of the keys
         """
         with self.lock:
