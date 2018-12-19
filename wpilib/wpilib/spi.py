@@ -3,7 +3,7 @@
 import ctypes
 import enum
 
-from typing import Tuple, Optional
+from typing import Tuple, Sequence, Union
 
 import hal
 import struct
@@ -193,7 +193,7 @@ class SPI:
         """Configure the chip select line to be active low."""
         hal.setSPIChipSelectActiveLow(self.port)
 
-    def write(self, dataToSend: bytes) -> int:
+    def write(self, dataToSend: Union[bytes, Sequence[int]]) -> int:
         """Write data to the slave device.  Blocks until there is space in the
         output FIFO.
 
@@ -236,7 +236,7 @@ class SPI:
         else:
             return hal.readSPI(self.port, size)
 
-    def transaction(self, dataToSend: bytes) -> bytes:
+    def transaction(self, dataToSend: Union[bytes, Sequence[int]]) -> bytes:
         """Perform a simultaneous read/write transaction with the device
 
         :param dataToSend: The data to be written out to the device

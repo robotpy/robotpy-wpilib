@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Optional
+from typing import Optional, List, Union
 
 import hal
 import warnings
@@ -90,7 +90,9 @@ class I2C:
     def close(self) -> None:
         self.__finalizer()
 
-    def transaction(self, dataToSend: bytes, receiveSize: int) -> bytes:
+    def transaction(
+        self, dataToSend: Union[bytes, List[int]], receiveSize: int
+    ) -> bytes:
         """Generic transaction.
 
         This is a lower-level interface to the I2C hardware giving you more

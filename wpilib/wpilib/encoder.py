@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Union
 
 import hal
 import warnings
@@ -430,7 +431,9 @@ class Encoder(SendableBase):
             return 0.0
 
     def setIndexSource(
-        self, source: int, indexing_type: IndexingType = IndexingType.kResetOnRisingEdge
+        self,
+        source: Union[int, DigitalInput],
+        indexing_type: IndexingType = IndexingType.kResetOnRisingEdge,
     ) -> None:
         """
         Set the index source for the encoder. When this source rises, the encoder count automatically resets.

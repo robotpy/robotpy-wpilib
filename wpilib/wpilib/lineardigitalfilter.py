@@ -83,7 +83,7 @@ class LinearDigitalFilter(Filter):
     instances = 0
 
     def __init__(
-        self, source: Callable, ffGains: Sequence[float], fbGains: Sequence[float]
+        self, source: PIDSource, ffGains: Sequence[float], fbGains: Sequence[float]
     ) -> None:
         """Constructor. Create a linear FIR or IIR filter
         

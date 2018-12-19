@@ -8,6 +8,7 @@
 import logging
 import threading
 import warnings
+from typing import Optional, Union
 
 from networktables import NetworkTablesInstance
 from networktables.entry import NetworkTableEntry
@@ -22,7 +23,7 @@ __all__ = ["LiveWindow"]
 
 
 class Component:
-    def __init__(self, sendable: Sendable, parent: Sendable) -> None:
+    def __init__(self, sendable: Sendable, parent: Optional[Sendable]) -> None:
         self.sendable = sendable
         self.parent = parent
         self.builder = SendableBuilder()
@@ -137,7 +138,9 @@ class LiveWindow:
         cls.updateValues()
 
     @classmethod
-    def addSensor(cls, subsystem: str, name: str, component: Sendable) -> None:
+    def addSensor(
+        cls, subsystem: str, name: Union[str, int], component: Sendable
+    ) -> None:
         """Add a Sensor associated with the subsystem and with call it by the
         given name.
 

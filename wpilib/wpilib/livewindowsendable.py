@@ -73,7 +73,7 @@ class LiveWindowSendable(Sendable):
     def _setName(self, name: str) -> None:
         pass
 
-    def getSubsystem(self) -> Subsystem:
+    def getSubsystem(self) -> str:
         return ""
 
     def setSubsystem(self, subsystem: Subsystem) -> None:
