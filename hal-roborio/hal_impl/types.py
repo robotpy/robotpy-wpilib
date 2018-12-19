@@ -47,9 +47,6 @@ class ControlWord(C.Union):
     _anonymous_ = ("_",)
     _fields_ = [("_", _ControlWord), ("bits", C.c_uint32)]
 
-    def to_bits(self) -> int:
-        return self.bits
-
 ControlWord_ptr = C.POINTER(ControlWord)
 
 class JoystickAxes(C.Structure):

@@ -72,7 +72,8 @@ class ControlWord:
         self.fmsAttached = 0
         self.dsAttached = 0
 
-    def to_bits(self) -> int:
+    @property
+    def bits(self) -> int:
         return (
             self.enabled << self.ENABLED_FIELD
             | self.autonomous << self.AUTO_FIELD
