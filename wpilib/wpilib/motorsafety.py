@@ -1,4 +1,4 @@
-# validated: 2017-12-25 TW d36d72bd4fe9 edu/wpi/first/wpilibj/MotorSafety.java
+# validated: 2018-12-18 n 26e8e587f926 edu/wpi/first/wpilibj/MotorSafety.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -12,6 +12,8 @@ import weakref
 
 from .robotstate import RobotState
 from .timer import Timer
+from .watchdog import Watchdog
+from .driverstation import DriverStation
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +49,7 @@ class MotorSafety:
         method whenever the motors value is updated.
         """
         self.safetyEnabled = False
-        self.safetyExpiration = MotorSafety.DEFAULT_SAFETY_EXPIRATION
-        self.safetyStopTime = Timer.getFPGATimestamp()
+        self.watchdog = Watchdog(MotorSafety.DEFAULT_SAFETY_EXPIRATION, ) # todo timeout function
         self.mutex = threading.Lock()
         with MotorSafety.helpers_lock:
             MotorSafety.helpers.add(self)
@@ -58,7 +59,7 @@ class MotorSafety:
         Resets the timer on this object that is used to do the timeouts.
         """
         with self.mutex:
-            self.safetyStopTime = Timer.getFPGATimestamp() + self.safetyExpiration
+            self.watchdog.reset()
 
     def setExpiration(self, expirationTime):
         """Set the expiration time for the corresponding motor safety object.
@@ -67,7 +68,7 @@ class MotorSafety:
         :type expirationTime: float
         """
         with self.mutex:
-            self.safetyExpiration = expirationTime
+            self.watchdog.timeout = expirationTime
 
     def getExpiration(self):
         """Retrieve the timeout value for the corresponding motor safety
@@ -77,7 +78,7 @@ class MotorSafety:
         :rtype: float
         """
         with self.mutex:
-            return self.safetyExpiration
+            return self.watchdog.timeout
 
     def isAlive(self):
         """Determine of the motor is still operating or has timed out.
@@ -88,27 +89,8 @@ class MotorSafety:
         """
         with self.mutex:
             return (
-                not self.safetyEnabled or self.safetyStopTime > Timer.getFPGATimestamp()
+                not self.safetyEnabled or self.watchdog.isExpired()
             )
-
-    def check(self):
-        """Check if this motor has exceeded its timeout.
-        This method is called periodically to determine if this motor has
-        exceeded its timeout value. If it has, the stop method is called,
-        and the motor is shut down until its value is updated again.
-        """
-        with self.mutex:
-            enabled = self.safetyEnabled
-            stopTime = self.safetyStopTime
-
-        if not enabled or RobotState.isDisabled() or RobotState.isTest():
-            return
-        if stopTime < Timer.getFPGATimestamp():
-            logger.warning(
-                "%s... Output not updated often enough." % self.getDescription()
-            )
-
-            self.stopMotor()
 
     def setSafetyEnabled(self, enabled):
         """Enable/disable motor safety for this device.
@@ -119,6 +101,10 @@ class MotorSafety:
         """
         with self.mutex:
             self.safetyEnabled = bool(enabled)
+            if self.safetyEnabled:
+                self.watchdog.enable()
+            else:
+                self.watchdog.disable()
 
     def isSafetyEnabled(self):
         """Return the state of the motor safety enabled flag.
@@ -130,12 +116,11 @@ class MotorSafety:
         with self.mutex:
             return self.safetyEnabled
 
-    @staticmethod
-    def checkMotors():
-        """Check the motors to see if any have timed out.
-        This static method is called periodically to poll all the motors and
-        stop any that have timed out.
-        """
-        with MotorSafety.helpers_lock:
-            for msh in MotorSafety.helpers:
-                msh.check()
+    def timeoutFunc(self):
+        ds = DriverStation.getInstance()
+
+        if ds.isDisabled() or ds.isTest():
+            return None
+
+        DriverStation.reportError(self.getDescription() + "... Output not updated often enough.", False)
+        self.stopMotor()
