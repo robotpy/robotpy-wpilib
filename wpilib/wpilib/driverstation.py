@@ -13,7 +13,6 @@ import traceback
 
 from networktables import NetworkTables
 
-from .motorsafety import MotorSafety
 from .timer import Timer
 
 __all__ = ["DriverStation"]

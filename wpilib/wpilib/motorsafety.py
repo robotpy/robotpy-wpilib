@@ -49,7 +49,7 @@ class MotorSafety:
         method whenever the motors value is updated.
         """
         self.safetyEnabled = False
-        self.watchdog = Watchdog(MotorSafety.DEFAULT_SAFETY_EXPIRATION, ) # todo timeout function
+        self.watchdog = Watchdog(MotorSafety.DEFAULT_SAFETY_EXPIRATION, lambda: self.timeoutFunc())
         self.mutex = threading.Lock()
         with MotorSafety.helpers_lock:
             MotorSafety.helpers.add(self)
