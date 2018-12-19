@@ -10,23 +10,15 @@ python:
 matrix:
   fast_finish: true
 
-stages:
-- test
-- deploy-pypi
-- deploy-github
-
-env:
-- RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
-
 # command to install dependencies
 install:
   - pip install -U pip
-  - "pushd wpilib; pip install -r travis-requirements.txt; popd"
+  - ROBOTPY_NO_DEPS=1 pip install -r travis-requirements.txt
   - pip install -r docs/requirements.txt
 # command to run tests
 script:
-  - wpilib/tests/run_tests.sh
-  - "pushd docs && make html && popd"
+  - RUNCOVERAGE=1 wpilib/tests/run_tests.sh
+  - make -C docs html
 
 jobs:
   include:
@@ -37,6 +29,7 @@ jobs:
     - pip install black
     script:
     - black --check --diff .
+
   - stage: deploy-pypi
     if: tag IS present
     install: true
@@ -77,6 +70,7 @@ jobs:
       password: $PYPI_PASSWORD
       on:
         tags: true
+
   - stage: deploy-github
     if: tag IS present
     install: true
