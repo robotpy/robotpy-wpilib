@@ -47,7 +47,7 @@ class SPI:
     def _reset() -> None:
         SPI.devices = 0
 
-    def __init__(self, port: Port, simPort: Optional[object] = None) -> None:
+    def __init__(self, port: Port, simPort = None) -> None:
         """Constructor
 
         :param port: the physical SPI port

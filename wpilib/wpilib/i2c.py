@@ -37,7 +37,7 @@ class I2C:
         kMXP = 1
 
     def __init__(
-        self, port: Port, deviceAddress: int, simPort: Optional[object] = None
+        self, port: Port, deviceAddress: int, simPort=None
     ) -> None:
         """Constructor.
 
