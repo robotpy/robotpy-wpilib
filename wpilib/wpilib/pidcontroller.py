@@ -9,7 +9,6 @@
 from collections import deque
 from itertools import islice
 import threading
-from typing import Optional, NoReturn, Union
 import warnings
 
 from networktables import NetworkTables

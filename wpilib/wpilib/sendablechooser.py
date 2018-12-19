@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import TypeVar, Generic
+from typing import TypeVar
 
 V = TypeVar("V")
 

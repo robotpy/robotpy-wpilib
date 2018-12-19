@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Optional, List, Union
+from typing import List, Union
 
 import hal
 import warnings

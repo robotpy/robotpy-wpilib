@@ -8,7 +8,7 @@
 import collections
 import math
 from operator import mul
-from typing import Sequence, Callable
+from typing import Sequence
 
 import hal
 
