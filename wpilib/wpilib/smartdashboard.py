@@ -10,7 +10,9 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import List
+from typing import List, Sequence, TypeVar, Union, Tuple, Iterable
+
+T = TypeVar("T")
 
 import hal
 import threading
@@ -85,6 +87,8 @@ class SmartDashboard:
         :param key: the key (cannot be None)
         :param data: the value
         :param value: the value
+
+        :type value: :class:`.Sendable`
         """
         with cls.mutex:
             key_arg = ("key", [str])
@@ -264,7 +268,7 @@ class SmartDashboard:
         return table.setDefaultBoolean(key, defaultValue)
 
     @classmethod
-    def getBoolean(cls, key: str, defaultValue: bool) -> bool:
+    def getBoolean(cls, key: str, defaultValue: T) -> Union[T, bool]:
         """Returns the boolean the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
@@ -302,7 +306,7 @@ class SmartDashboard:
         return table.setDefaultNumber(key, defaultValue)
 
     @classmethod
-    def getNumber(cls, key: str, defaultValue: float) -> float:
+    def getNumber(cls, key: str, defaultValue: T) -> Union[T, float]:
         """Returns the number the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
@@ -340,7 +344,7 @@ class SmartDashboard:
         return table.setDefaultString(key, defaultValue)
 
     @classmethod
-    def getString(cls, key: str, defaultValue: str) -> str:
+    def getString(cls, key: str, defaultValue: T) -> Union[T, str]:
         """Returns the string the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
@@ -366,7 +370,7 @@ class SmartDashboard:
         return table.putBooleanArray(key, value)
 
     @classmethod
-    def setDefaultBooleanArray(cls, key: str, defaultValue: List[bool]) -> bool:
+    def setDefaultBooleanArray(cls, key: str, defaultValue: Iterable[bool]) -> bool:
         """Gets the current value in the table, setting it if it does not exist.
         
         :param key: the key
@@ -378,7 +382,7 @@ class SmartDashboard:
         return table.setDefaultBooleanArray(key, defaultValue)
 
     @classmethod
-    def getBooleanArray(cls, key: str, defaultValue: List[bool]) -> List[bool]:
+    def getBooleanArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[bool]]:
         """Returns the boolean array the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
@@ -404,7 +408,7 @@ class SmartDashboard:
         return table.putNumberArray(key, value)
 
     @classmethod
-    def setDefaultNumberArray(cls, key: str, defaultValue: List[float]) -> bool:
+    def setDefaultNumberArray(cls, key: str, defaultValue: Iterable[float]) -> bool:
         """Gets the current value in the table, setting it if it does not exist.
         
         :param key: the key
@@ -416,7 +420,7 @@ class SmartDashboard:
         return table.setDefaultNumberArray(key, defaultValue)
 
     @classmethod
-    def getNumberArray(cls, key: str, defaultValue: List[float]) -> List[float]:
+    def getNumberArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[float]]:
         """Returns the number array the key maps to. If the key does not exist or is of
         different type, it will return the default value.
 
@@ -430,7 +434,7 @@ class SmartDashboard:
         return table.getNumberArray(key, defaultValue)
 
     @classmethod
-    def putStringArray(cls, key: str, value: List[str]) -> bool:
+    def putStringArray(cls, key: str, value: Sequence[str]) -> bool:
         """Put a string array in the table
         
         :param key: the key to be assigned to
@@ -442,7 +446,7 @@ class SmartDashboard:
         return table.putStringArray(key, value)
 
     @classmethod
-    def setDefaultStringArray(cls, key: str, defaultValue: List[str]) -> bool:
+    def setDefaultStringArray(cls, key: str, defaultValue: Iterable[str]) -> bool:
         """If the key doesn't currently exist, then the specified value will
         be assigned to the key.
         
@@ -455,7 +459,7 @@ class SmartDashboard:
         return table.setDefaultStringArray(key, defaultValue)
 
     @classmethod
-    def getStringArray(cls, key: str, defaultValue: List[str]) -> List[str]:
+    def getStringArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[str]]:
         """Returns the string array the key maps to. If the key does not exist or is
         of different type, it will return the default value.
         
@@ -493,7 +497,7 @@ class SmartDashboard:
         return table.setDefaultRaw(key, defaultValue)
 
     @classmethod
-    def getRaw(cls, key: str, defaultValue: bytes) -> bytes:
+    def getRaw(cls, key: str, defaultValue: T) -> Union[T, bytes]:
         """Returns the raw value (byte array) the key maps to. If the key does not exist or is of
         different type, it will return the default value.
 
