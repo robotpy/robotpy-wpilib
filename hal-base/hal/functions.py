@@ -8,6 +8,7 @@ from .exceptions import HALError
 from .constants import *
 
 from hal_impl.types import (
+    CANStreamMessage, CANStreamMessage_ptr,
     ControlWord, ControlWord_ptr,
     JoystickAxes, JoystickAxes_ptr,
     JoystickPOVs, JoystickPOVs_ptr,
@@ -21,6 +22,7 @@ from hal_impl.types import (
     AnalogInputHandle,
     AnalogOutputHandle,
     AnalogTriggerHandle,
+    CANHandle,
     CompressorHandle,
     CounterHandle,
     DigitalHandle,
@@ -223,11 +225,32 @@ getAnalogTriggerOutput = _STATUSFUNC("getAnalogTriggerOutput", C.c_bool, ("analo
 # CAN.h
 #############################################################################
 
-CAN_SendMessage = NotImplemented
-CAN_ReceiveMessage = NotImplemented
-CAN_OpenStreamSession = NotImplemented
-CAN_CloseStreamSession = NotImplemented
-CAN_ReadStreamSession = NotImplemented
+_CAN_SendMessage = _STATUSFUNC("CAN_SendMessage", None, ("messageID", C.c_uint32), ("data", C.POINTER(C.c_uint8)), ("dataSize", C.c_uint8), ("periodMs", C.c_int32))
+
+@hal_wrapper
+def CAN_SendMessage(messageID: int, data: bytes, periodMs: int) -> None:
+    dataSize = len(data)
+    data = (C.c_uint8 * dataSize)(*data)
+    _CAN_SendMessage(messageID, data, dataSize, periodMs)
+
+_CAN_ReceiveMessage = _STATUSFUNC("CAN_ReceiveMessage", None, ("messageID", C.POINTER(C.c_uint32)), ("messageIDMask", C.c_uint32), ("data", C.POINTER(C.c_uint8)), ("dataSize", C.POINTER(C.c_uint8)), ("timeStamp", C.POINTER(C.c_uint32)), out=["messageID", "dataSize", "timeStamp"])
+
+@hal_wrapper
+def CAN_ReceiveMessage(messageIDMask: int):
+    data = (C.c_uint8 * 8)()
+    messageID, dataSize, timeStamp = _CAN_ReceiveMessage(messageIDMask, data)
+    return messageID, data[:dataSize], timeStamp
+
+CAN_OpenStreamSession = _STATUSFUNC("CAN_OpenStreamSession", None, ("sessionHandle", C.POINTER(C.c_uint32)), ("messageID", C.c_uint32), ("messageIDMask", C.c_uint32), ("maxMessages", C.c_uint32), out=["sessionHandle"])
+CAN_CloseStreamSession = _RETFUNC("CAN_CloseStreamSession", None, ("sessionHandle", C.c_uint32))
+#_CAN_ReadStreamSession = _STATUSFUNC("CAN_ReadStreamSession", None, ("sessionHandle", C.c_uint32), ("messages", CANStreamMessage_ptr), ("messagesToRead", C.c_uint32), ("messagesRead", C.POINTER(C.c_uint32)), out=["messagesRead"])
+_CAN_ReadStreamSession = NotImplemented
+
+@hal_wrapper
+def CAN_ReadStreamSession(sessionHandle: int, messagesToRead: int):
+    messages = (CANStreamMessage * messagesToRead)()
+    messagesRead = _CAN_ReadStreamSession(sessionHandle, messages, messagesToRead)
+    return messages[:messagesRead]
 
 CAN_GetCANStatus = _STATUSFUNC("CAN_GetCANStatus", None, ("percentBusUtilization", C.POINTER(C.c_float)), ("busOffCount", C.POINTER(C.c_uint32)), ("txFullCount", C.POINTER(C.c_uint32)), ("receiveErrorCount", C.POINTER(C.c_uint32)), ("transmitErrorCount", C.POINTER(C.c_uint32)), out=["percentBusUtilization", "busOffCount", "txFullCount", "receiveErrorCount", "transmitErrorCount"])
 
@@ -236,15 +259,59 @@ CAN_GetCANStatus = _STATUSFUNC("CAN_GetCANStatus", None, ("percentBusUtilization
 # CANAPI.h
 #############################################################################
 
-initializeCAN = NotImplemented
-cleanCAN = NotImplemented
-writeCANPacket = NotImplemented
-writeCANPacketRepeating = NotImplemented
-stopCANPacketRepeating = NotImplemented
-readCANPacketNew = NotImplemented
-readCANPacketLatest = NotImplemented
-readCANPacketTimeout = NotImplemented
-readCANPeriodicPacket = NotImplemented
+initializeCAN = _STATUSFUNC("initializeCAN", CANHandle, ("manufacturer", C.c_int32), ("deviceId", C.c_int32), ("deviceType", C.c_int32))
+cleanCAN = _RETFUNC("cleanCAN", None, ("handle", CANHandle))
+
+_writeCANPacket = _STATUSFUNC("writeCANPacket", None, ("handle", CANHandle), ("data", C.POINTER(C.c_uint8)), ("length", C.c_int32), ("apiId", C.c_int32))
+
+@hal_wrapper
+def writeCANPacket(handle: CANHandle, data: bytes, apiId: int) -> None:
+    length = len(data)
+    data = (C.c_uint8 * length)(*data)
+    _writeCANPacket(handle, data, length, apiId)
+
+_writeCANPacketRepeating = _STATUSFUNC("writeCANPacketRepeating", None, ("handle", CANHandle), ("data", C.POINTER(C.c_uint8)), ("length", C.c_int32), ("apiId", C.c_int32), ("repeatMs", C.c_int32))
+
+@hal_wrapper
+def writeCANPacketRepeating(handle: CANHandle, data: bytes, apiId: int, repeatMs: int) -> None:
+    length = len(data)
+    data = (C.c_uint8 * length)(*data)
+    _writeCANPacketRepeating(handle, data, length, apiId, repeatMs)
+
+stopCANPacketRepeating = _STATUSFUNC("stopCANPacketRepeating", None, ("handle", CANHandle), ("apiId", C.c_int32))
+
+_readCANPacketNew = _STATUSFUNC("readCANPacketNew", None, ("handle", CANHandle), ("apiId", C.c_int32), ("data", C.POINTER(C.c_uint8)), ("length", C.POINTER(C.c_int32)), ("receivedTimestamp", C.POINTER(C.c_uint64)), out=["length", "receivedTimestamp"])
+
+@hal_wrapper
+def readCANPacketNew(handle: CANHandle, apiId: int):
+    data = (C.c_uint8 * 8)()
+    length, receivedTimestamp = _readCANPacketNew(handle, apiId, data)
+    return data[:length], receivedTimestamp
+
+_readCANPacketLatest = _STATUSFUNC("readCANPacketLatest", None, ("handle", CANHandle), ("apiId", C.c_int32), ("data", C.POINTER(C.c_uint8)), ("length", C.POINTER(C.c_int32)), ("receivedTimestamp", C.POINTER(C.c_uint64)), out=["length", "receivedTimestamp"])
+
+@hal_wrapper
+def readCANPacketLatest(handle: CANHandle, apiId: int):
+    data = (C.c_uint8 * 8)()
+    length, receivedTimestamp = _readCANPacketLatest(handle, apiId, data)
+    return data[:length], receivedTimestamp
+
+_readCANPacketTimeout = _STATUSFUNC("readCANPacketTimeout", None, ("handle", CANHandle), ("apiId", C.c_int32), ("data", C.POINTER(C.c_uint8)), ("length", C.POINTER(C.c_int32)), ("receivedTimestamp", C.POINTER(C.c_uint64)), ("timeoutMs", C.c_int32), out=["length", "receivedTimestamp"])
+
+@hal_wrapper
+def readCANPacketTimeout(handle: CANHandle, apiId: int, timeoutMs: int):
+    data = (C.c_uint8 * 8)()
+    length, receivedTimestamp = _readCANPacketTimeout(handle, apiId, data, timeoutMs)
+    return data[:length], receivedTimestamp
+
+_readCANPeriodicPacket = _STATUSFUNC("readCANPeriodicPacket", None, ("handle", CANHandle), ("apiId", C.c_int32), ("data", C.POINTER(C.c_uint8)), ("length", C.POINTER(C.c_int32)), ("receivedTimestamp", C.POINTER(C.c_uint64)), ("timeoutMs", C.c_int32), ("periodMs", C.c_int32), out=["length", "receivedTimestamp"])
+
+@hal_wrapper
+def readCANPeriodicPacket(handle: CANHandle, apiId: int, timeoutMs: int, periodMs: int):
+    data = (C.c_uint8 * 8)()
+    length, receivedTimestamp = _readCANPeriodicPacket(handle, apiId, data, timeoutMs, periodMs)
+    return data[:length], receivedTimestamp
+
 
 #############################################################################
 # Compressor.h

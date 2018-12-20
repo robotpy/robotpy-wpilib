@@ -96,6 +96,8 @@ class UsageReporting:
     kResourceType_CAN = 79
     kResourceType_DigilentDMC60 = 80
     kResourceType_PWMVictorSPX = 81
+    kResourceType_RevSparkMaxPWM = 82
+    kResourceType_RevSparkMaxCAN = 83
 
     # enum tInstances
     kLanguage_LabVIEW = 1
@@ -175,6 +177,36 @@ class AnalogTriggerType:
     kState = 1
     kRisingPulse = 2
     kFallingPulse = 3
+
+
+#############################################################################
+# CANAPI.h
+#############################################################################
+
+
+class CANDeviceType:
+    kBroadcast = 0
+    kRobotController = 1
+    kMotorController = 2
+    kRelayController = 3
+    kGyroSensor = 4
+    kAccelerometer = 5
+    kUltrasonicSensor = 6
+    kGearToothSensor = 7
+    kPowerDistribution = 8
+    kPneumatics = 9
+    kMiscellaneous = 10
+    kFirmwareUpdate = 31
+
+
+class CANManufacturer:
+    kBroadcast = 0
+    kNI = 1
+    kLM = 2
+    kDEKA = 3
+    kCTRE = 4
+    kMS = 7
+    kTeamUse = 8
 
 
 #############################################################################

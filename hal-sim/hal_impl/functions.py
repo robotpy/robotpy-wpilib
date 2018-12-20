@@ -706,9 +706,86 @@ def getAnalogTriggerOutput(analogTriggerHandle, type, status):
 #############################################################################
 
 
+def CAN_SendMessage(
+    messageID: int, data: bytes, dataSize: int, periodMs: int, status
+) -> None:
+    status.value = 0
+    raise NotImplementedError
+
+
+def CAN_ReceiveMessage(messageIDMask: int, data: bytearray, status):
+    status.value = 0
+    raise NotImplementedError
+
+
+def CAN_OpenStreamSession(
+    messageID: int, messageIDMask: int, maxMessages: int, status
+) -> int:
+    status.value = 0
+    raise NotImplementedError
+
+
+def CAN_CloseStreamSession(sessionHandle: int) -> None:
+    pass
+
+
+def CAN_ReadStreamSession(sessionHandle, messages, messagesToRead, status):
+    status.value = 0
+    return 0
+
+
 def CAN_GetCANStatus(status):
     status.value = 0
     return 0.0, 0, 0, 0, 0
+
+
+#############################################################################
+# CANAPI.h
+#############################################################################
+
+
+def initializeCAN(manufacturer, deviceId, deviceType, status) -> types.CANHandle:
+    status.value = 0
+    raise NotImplementedError
+
+
+def cleanCAN(handle: types.CANHandle) -> None:
+    pass
+
+
+def writeCANPacket(handle, data, length, apiId, status) -> None:
+    status.value = 0
+    raise NotImplementedError
+
+
+def writeCANPacketRepeating(handle, data, length, apiId, repeatMs, status):
+    status.value = 0
+    raise NotImplementedError
+
+
+def stopCANPacketRepeating(handle: types.CANHandle, apiId: int, status) -> None:
+    status.value = 0
+    ...
+
+
+def readCANPacketNew(handle, apiId, data, status):
+    status.value = 0
+    raise NotImplementedError
+
+
+def readCANPacketLatest(handle, apiId, data, status):
+    status.value = 0
+    raise NotImplementedError
+
+
+def readCANPacketTimeout(handle, apiId, data, timeoutMs, status):
+    status.value = 0
+    raise NotImplementedError
+
+
+def readCANPeriodicPacket(handle, apiId, data, timeoutMs, periodMs, status):
+    status.value = 0
+    raise NotImplementedError
 
 
 #############################################################################
