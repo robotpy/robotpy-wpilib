@@ -801,7 +801,7 @@ class DriverStation:
         self.matchDataSender.matchType.setDouble(matchType)
 
         with self.controlWordMutex:
-            self.matchDataSender.controlWord.setDouble(self.controlWordCache.to_bits())
+            self.matchDataSender.controlWord.setDouble(self.controlWordCache.bits)
 
     def _getData(self):
         """Copy data from the DS task for the user.

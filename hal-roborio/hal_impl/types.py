@@ -34,7 +34,7 @@ __all__ = [
 # HAL
 #############################################################################
 
-class ControlWord(C.Structure):
+class _ControlWord(C.Structure):
     _fields_ = [("enabled", C.c_uint32, 1),
                 ("autonomous", C.c_uint32, 1),
                 ("test", C.c_uint32, 1),
@@ -43,10 +43,9 @@ class ControlWord(C.Structure):
                 ("dsAttached", C.c_uint32, 1),
                 ("control_reserved", C.c_uint32, 26)]
 
-    _c_int32_p = C.POINTER(C.c_int32)
-
-    def to_bits(self) -> int:
-        return C.cast(C.pointer(self), self._c_int32_p).contents.value
+class ControlWord(C.Union):
+    _anonymous_ = ("_",)
+    _fields_ = [("_", _ControlWord), ("bits", C.c_uint32)]
 
 ControlWord_ptr = C.POINTER(ControlWord)
 
