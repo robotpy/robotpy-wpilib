@@ -457,6 +457,9 @@ def collect_headers(header_dirs, filter_h=None):
     for header_dir in header_dirs:
         for root, _, files in os.walk(header_dir):
             for fname in files:
+                # Skip HAL.h - it simply includes all the other headers
+                if fname == "HAL.h":
+                    continue
 
                 # Make sure it is a .hpp file
                 if os.path.splitext(fname)[1] not in [".hpp", ".h"]:
