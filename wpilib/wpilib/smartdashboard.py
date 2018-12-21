@@ -85,9 +85,10 @@ class SmartDashboard:
         - value
         
         :param key: the key (cannot be None)
+        :type key: str
         :param data: the value
+        :type data: :class:`.Sendable`
         :param value: the value
-
         :type value: :class:`.Sendable`
         """
         with cls.mutex:
