@@ -1,4 +1,4 @@
-# validated: 2018-12-18 n b64dfacff3e6 edu/wpi/first/wpilibj/DriverStation.java
+# validated: 2018-12-07 EN fe5d7dd6ba60 edu/wpi/first/wpilibj/DriverStation.java
 # Copyright (c) 2008-2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
@@ -880,10 +880,19 @@ class DriverStation:
 
     def _run(self):
         """Provides the service routine for the DS polling thread."""
+        safetyCounter = 0
 
         while self.threadKeepAlive:
             hal.waitForDSData()
             self._getData()
+
+            if self.isDisabled():
+                safetyCounter = 0
+
+            safetyCounter += 1
+            if safetyCounter >= 4:
+                MotorSafety.checkMotors()
+                safetyCounter = 0
 
             if self.userInDisabled:
                 hal.observeUserProgramDisabled()
