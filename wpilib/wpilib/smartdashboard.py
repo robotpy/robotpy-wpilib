@@ -10,7 +10,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import List, Sequence, TypeVar, Union, Tuple, Iterable
+from typing import List, TypeVar, Union, Tuple, Iterable
 
 T = TypeVar("T")
 
@@ -359,7 +359,7 @@ class SmartDashboard:
         return table.getString(key, defaultValue)
 
     @classmethod
-    def putBooleanArray(cls, key: str, value: List[bool]) -> bool:
+    def putBooleanArray(cls, key: str, value: Iterable[bool]) -> bool:
         """Put a boolean array in the table.
         
         :param key: the key to be assigned to
@@ -397,7 +397,7 @@ class SmartDashboard:
         return table.getBooleanArray(key, defaultValue)
 
     @classmethod
-    def putNumberArray(cls, key: str, value: List[float]) -> bool:
+    def putNumberArray(cls, key: str, value: Iterable[float]) -> bool:
         """Put a number array in the table.
         
         :param key: the key to be assigned to
@@ -435,7 +435,7 @@ class SmartDashboard:
         return table.getNumberArray(key, defaultValue)
 
     @classmethod
-    def putStringArray(cls, key: str, value: Sequence[str]) -> bool:
+    def putStringArray(cls, key: str, value: Iterable[str]) -> bool:
         """Put a string array in the table
         
         :param key: the key to be assigned to
