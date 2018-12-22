@@ -11,6 +11,7 @@ __all__ = [
     "JoystickPOVs", "JoystickPOVs_ptr",
     "JoystickButtons", "JoystickButtons_ptr",
     "JoystickDescriptor", "JoystickDescriptor_ptr",
+    "CANStreamMessage", "CANStreamMessage_ptr",
     
     "Handle",
     "PortHandle",
@@ -18,6 +19,7 @@ __all__ = [
     "AnalogInputHandle",
     "AnalogOutputHandle",
     "AnalogTriggerHandle",
+    "CANHandle",
     "CompressorHandle",
     "CounterHandle",
     "DigitalHandle",
@@ -152,6 +154,19 @@ class MatchInfo:
 
 MatchInfo_ptr = fake_pointer(MatchInfo)
 
+
+class CANStreamMessage:
+    __slots__ = ["messageID", "timeStamp", "data", "dataSize"]
+
+    def __init__(self):
+        self.messageID = 0
+        self.timeStamp = 0
+        self.data = bytearray(8)
+        self.dataSize = 0
+
+
+CANStreamMessage_ptr = fake_pointer(CANStreamMessage)
+
 #############################################################################
 # Opaque handles
 #############################################################################
@@ -210,6 +225,23 @@ class AnalogTriggerHandle(Handle):
             id(self),
             self.pin,
             self.index,
+        )
+
+
+class CANHandle(Handle):
+    __slots__ = ["manufacturer", "deviceId", "deviceType"]
+
+    def __init__(self, manufacturer: int, deviceId: int, deviceType: int) -> None:
+        self.manufacturer = manufacturer
+        self.deviceId = deviceId
+        self.deviceType = deviceType
+
+    def __repr__(self):
+        return "%s(manufacturer=%r, deviceId=%r, deviceType=%r)" % (
+            type(self).__qualname__,
+            self.manufacturer,
+            self.deviceId,
+            self.deviceType,
         )
 
 

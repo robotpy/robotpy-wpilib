@@ -9,6 +9,7 @@ __all__ = [
     "JoystickPOVs", "JoystickPOVs_ptr",
     "JoystickButtons", "JoystickButtons_ptr",
     "JoystickDescriptor", "JoystickDescriptor_ptr",
+    "CANStreamMessage", "CANStreamMessage_ptr",
     
     "Handle",
     "PortHandle",
@@ -16,6 +17,7 @@ __all__ = [
     "AnalogInputHandle",
     "AnalogOutputHandle",
     "AnalogTriggerHandle",
+    "CANHandle",
     "CompressorHandle",
     "CounterHandle",
     "DigitalHandle",
@@ -82,6 +84,17 @@ class MatchInfo(C.Structure):
                 ("gameSpecificMessage", C.c_char_p)]
 MatchInfo_ptr = C.POINTER(MatchInfo)
 
+
+class CANStreamMessage(C.Structure):
+    _fields_ = [
+        ("messageID", C.c_uint32),
+        ("timeStamp", C.c_uint32),
+        ("data", C.c_uint8 * 8),
+        ("dataSize", C.c_uint8),
+    ]
+
+CANStreamMessage_ptr = C.POINTER(CANStreamMessage)
+
 #############################################################################
 # Handles
 #############################################################################
@@ -94,6 +107,7 @@ PortHandle = Handle
 AnalogInputHandle = Handle
 AnalogOutputHandle = Handle
 AnalogTriggerHandle = Handle
+CANHandle = Handle
 CompressorHandle = Handle
 CounterHandle = Handle
 DigitalHandle = Handle
