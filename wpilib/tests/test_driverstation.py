@@ -65,6 +65,25 @@ def test_task(dsmock, halmock):
     assert dsmock._getData.called
 
 
+def test_task_safetyCounter(dsmock, halmock):
+    # exit function after 5 iterations
+    class unalive:
+        def __init__(self):
+            self.count = 0
+
+        def __call__(self):
+            self.count += 1
+            if self.count >= 5:
+                dsmock.threadKeepAlive = False
+
+    halmock.getFPGATime.return_value = 1000
+    halmock.waitForDSData = unalive()
+    dsmock._getData = MagicMock()
+    with patch("wpilib.driverstation.MotorSafety") as mocksafety:
+        dsmock._run()
+        assert mocksafety.checkMotors.called
+
+
 @pytest.mark.parametrize("mode", ["Disabled", "Autonomous", "Teleop", "Test"])
 def test_task_usermode(mode, dsmock, halmock):
     # exit function after one iteration
