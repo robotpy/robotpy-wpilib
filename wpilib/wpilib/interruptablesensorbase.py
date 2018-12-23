@@ -1,4 +1,4 @@
-# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/InterruptableSensorBase.java
+# validated: 2018-12-18 n 9207d788ab50 edu/wpi/first/wpilibj/InterruptableSensorBase.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -150,7 +150,7 @@ class InterruptableSensorBase(SendableBase):
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
-        return hal.readInterruptRisingTimestamp(self.interrupt)
+        return hal.readInterruptRisingTimestamp(self.interrupt) * 1e-6
 
     def readFallingTimestamp(self):
         """Return the timestamp for the falling interrupt that occurred most
@@ -161,7 +161,7 @@ class InterruptableSensorBase(SendableBase):
         """
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
-        return hal.readInterruptFallingTimestamp(self.interrupt)
+        return hal.readInterruptFallingTimestamp(self.interrupt) * 1e-6
 
     def setUpSourceEdge(self, risingEdge, fallingEdge):
         """Set which edge to trigger interrupts on
