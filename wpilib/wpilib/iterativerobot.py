@@ -24,7 +24,7 @@ class IterativeRobot(IterativeRobotBase):
     the driver station.
 
     .. deprecated:: 2019.0.0
-        Use TimedRobot instead. It's a drop-in replacement that provides more 
+        Use TimedRobot instead. It's a drop-in replacement that provides more
         regular execution periods.
     """
 
@@ -46,16 +46,18 @@ class IterativeRobot(IterativeRobotBase):
                      the communications code starts.
         """
         super().__init__(IterativeRobot.kPacketPeriod)
-        warnings.warn(
-            "IterativeRobot is deprecated. Use TimedRobot instead. It's a "
-            + "drop-in replacement that provides more regular execution periods.",
-            DeprecationWarning,
-        )
-
         hal.report(
             hal.UsageReporting.kResourceType_Framework,
             hal.UsageReporting.kFramework_Iterative,
         )
+
+    def __init_subclass__(cls, **kwargs) -> None:
+        warnings.warn(
+            "IterativeRobot is deprecated, use TimedRobot instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init_subclass__(**kwargs)
 
     def startCompetition(self) -> None:
         """Provide an alternate "main loop" via startCompetition()."""
