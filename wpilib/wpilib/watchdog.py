@@ -41,11 +41,11 @@ class Watchdog:
 
     @classmethod
     def _reset(cls) -> None:
-        cls._watchdogs = []
         thread = cls._thread
         if thread is not None:
             cls._keepAlive = False
             with cls._queueMutex:
+                cls._watchdogs.clear()
                 cls._schedulerWaiter.notify_all()
             thread.join()
         cls._thread = None
@@ -205,37 +205,43 @@ class Watchdog:
 
     @classmethod
     def _schedulerFunc(cls) -> None:
+        # Grab a bunch of things before the loop to avoid some lookups.
         getFPGATime = hal.getFPGATime
+        heappop = heapq.heappop
+        log = logger.info
+        lock = cls._queueMutex
+        watchdogs = cls._watchdogs
+        cond = cls._schedulerWaiter
 
-        with cls._queueMutex:
+        with lock:
             # Python-specific: need a way to terminate the thread.
             while cls._keepAlive:
-                if cls._watchdogs:
-                    delta = cls._watchdogs[0]._expirationTime - getFPGATime()
-                    timedOut = not cls._schedulerWaiter.wait(delta / 1e6)
+                if watchdogs:
+                    delta = watchdogs[0]._expirationTime - getFPGATime()
+                    timedOut = not cond.wait(delta / 1e6)
 
                     if timedOut:
                         if (
-                            not cls._watchdogs
-                            or cls._watchdogs[0]._expirationTime > getFPGATime()
+                            not watchdogs
+                            or watchdogs[0]._expirationTime > getFPGATime()
                         ):
                             continue
 
                         # If the condition variable timed out, that means a Watchdog
                         # timeout has occurred, so call its timeout function.
-                        watchdog = cls._watchdogs[0]
+                        watchdog = heappop(watchdogs)
 
                         now = getFPGATime()
                         if now - watchdog._lastTimeoutPrintTime > cls.kMinPrintPeriod:
                             watchdog._lastTimeoutPrintTime = now
                             if not watchdog.suppressTimeoutMessage:
-                                logger.info(
+                                log(
                                     "Watchdog not fed after %.6fs",
                                     watchdog._timeout / 1e6,
                                 )
-                        cls._queueMutex.release()
+                        lock.release()
                         watchdog._callback()
-                        cls._queueMutex.acquire()
+                        lock.acquire()
                         watchdog._isExpired = True
 
                     # Otherwise, a Watchdog removed itself from the queue (it
@@ -243,5 +249,5 @@ class Watchdog:
                     # the test harness) or a spurious wakeup occurred, so rewait
                     # with the soonest watchdog timeout.
                 else:
-                    while cls._keepAlive and not cls._watchdogs:
-                        cls._schedulerWaiter.wait()
+                    while cls._keepAlive and not watchdogs:
+                        cond.wait()
