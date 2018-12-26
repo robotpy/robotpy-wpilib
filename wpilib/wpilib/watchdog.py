@@ -225,10 +225,14 @@ class Watchdog:
                         # timeout has occurred, so call its timeout function.
                         watchdog = cls._watchdogs[0]
 
-                        if not watchdog.suppressTimeoutMessage:
-                            logger.info(
-                                "Watchdog not fed after %.6fs", watchdog._timeout / 1e6
-                            )
+                        now = getFPGATime()
+                        if now - watchdog._lastTimeoutPrintTime > cls.kMinPrintPeriod:
+                            watchdog._lastTimeoutPrintTime = now
+                            if not watchdog.suppressTimeoutMessage:
+                                logger.info(
+                                    "Watchdog not fed after %.6fs",
+                                    watchdog._timeout / 1e6,
+                                )
                         cls._queueMutex.release()
                         watchdog._callback()
                         cls._queueMutex.acquire()
