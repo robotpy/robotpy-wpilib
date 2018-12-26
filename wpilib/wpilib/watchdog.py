@@ -240,7 +240,10 @@ class Watchdog:
                                     watchdog._timeout / 1e6,
                                 )
                         lock.release()
-                        watchdog._callback()
+                        try:
+                            watchdog._callback()
+                        except Exception:
+                            logger.exception("Uncaught exception in Watchdog callback")
                         lock.acquire()
                         watchdog._isExpired = True
 
