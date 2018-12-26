@@ -20,15 +20,15 @@ class Counter:
         return "<Counter value=%r>" % self.value
 
     def get(self) -> int:
-        # with self.lock:
+        with self.lock:
             return self.value
 
     def reset(self) -> None:
-        # with self.lock:
+        with self.lock:
             self.value = 0
 
     def increment(self) -> None:
-        # with self.lock:
+        with self.lock:
             self.value += 1
 
 
@@ -47,29 +47,24 @@ def test_enable_disable(wpilib):
 
     watchdog = wpilib.Watchdog(0.4, watchdog_counter.increment)
 
-    print("Run 1")
+    # Run 1
     watchdog.enable()
-    # sim_hooks.delayMillis(200)
     time.sleep(0.2)
     watchdog.disable()
 
     assert watchdog_counter.get() == 0, "Watchdog triggered early"
 
-    print("Run 2")
+    # Run 2
     watchdog_counter.reset()
-    then = time.monotonic()
     watchdog.enable()
-    # sim_hooks.delayMillis(600)
     time.sleep(0.6)
     watchdog.disable()
-    print(time.monotonic() - then)
 
     assert watchdog_counter.get() == 1
 
     # Run 3
     watchdog_counter.reset()
     watchdog.enable()
-    # sim_hooks.delaySeconds(1)
     time.sleep(1)
     watchdog.disable()
 
@@ -122,7 +117,7 @@ def test_epochs(wpilib):
 
     watchdog = wpilib.Watchdog(1, watchdog_counter.increment)
 
-    print("Run 1")
+    # Run 1
     watchdog.enable()
     watchdog.addEpoch("Epoch 1")
     time.sleep(0.1)
@@ -133,7 +128,7 @@ def test_epochs(wpilib):
 
     assert watchdog_counter.get() == 0, "Watchdog triggered early"
 
-    print("Run 2")
+    # Run 2
     watchdog.enable()
     watchdog.addEpoch("Epoch 1")
     time.sleep(0.2)
