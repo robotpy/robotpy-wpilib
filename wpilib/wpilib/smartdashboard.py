@@ -383,7 +383,7 @@ class SmartDashboard:
         return table.setDefaultBooleanArray(key, defaultValue)
 
     @classmethod
-    def getBooleanArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[bool]]:
+    def getBooleanArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[bool, ...]]:
         """Returns the boolean array the key maps to. If the key does not exist or is of
         different type, it will return the default value.
         
@@ -421,7 +421,7 @@ class SmartDashboard:
         return table.setDefaultNumberArray(key, defaultValue)
 
     @classmethod
-    def getNumberArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[float]]:
+    def getNumberArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[float, ...]]:
         """Returns the number array the key maps to. If the key does not exist or is of
         different type, it will return the default value.
 
@@ -460,7 +460,7 @@ class SmartDashboard:
         return table.setDefaultStringArray(key, defaultValue)
 
     @classmethod
-    def getStringArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[str]]:
+    def getStringArray(cls, key: str, defaultValue: T) -> Union[T, Tuple[str, ...]]:
         """Returns the string array the key maps to. If the key does not exist or is
         of different type, it will return the default value.
         
