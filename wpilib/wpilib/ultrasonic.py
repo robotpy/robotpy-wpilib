@@ -12,7 +12,6 @@ import weakref
 
 from .counter import Counter
 from .interfaces import PIDSource
-from .livewindow import LiveWindow
 from .resource import Resource
 from .sendablebase import SendableBase
 from .timer import Timer
@@ -150,7 +149,7 @@ class Ultrasonic(SendableBase):
 
         Ultrasonic.instances += 1
         hal.report(hal.UsageReporting.kResourceType_Ultrasonic, Ultrasonic.instances)
-        LiveWindow.addSensor("Ultrasonic", self.echoChannel.getChannel(), self)
+        self.setName("Ultrasonic", echoChannel.getChannel())
 
     def close(self):
         isAutomatic = Ultrasonic.isAutomaticMode()

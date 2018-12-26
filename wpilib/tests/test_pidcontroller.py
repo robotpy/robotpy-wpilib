@@ -342,7 +342,7 @@ def test_pidcontroller_free(pid, SimTimerTask):
     assert pid.pidInput is not None
     assert pid.pidOutput is not None
 
-    pid.free()
+    pid.close()
 
     assert pid.pid_task.cancel.called
     assert pid.pidInput is None
