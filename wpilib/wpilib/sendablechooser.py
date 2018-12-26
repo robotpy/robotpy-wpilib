@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 from typing import TypeVar
 
-V = TypeVar("V")
+V = TypeVar("V", covariant=True)
 
 from .sendablebase import SendableBase
 from .sendablebuilder import SendableBuilder
