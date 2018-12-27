@@ -5,8 +5,8 @@ def test_livewindow_enabled(wpilib):
 def test_livewindow_after_free(wpilib, networktables):
     m = wpilib.Talon(0)
     wpilib.LiveWindow.setEnabled(True)
-    wpilib.LiveWindow.run()
+    wpilib.LiveWindow.updateValues()
     wpilib.LiveWindow.setEnabled(False)
     m.close()
     wpilib.LiveWindow.setEnabled(True)
-    wpilib.LiveWindow.run()
+    wpilib.LiveWindow.updateValues()

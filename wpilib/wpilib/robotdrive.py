@@ -22,7 +22,10 @@ def _freeRobotDrive(allocatedSpeedControllers):
     Free the speed controllers if they were allocated locally
     """
     for sc in allocatedSpeedControllers:
-        if hasattr(sc, "free"):
+        sc_close = getattr(sc, "close", None)
+        if sc_close is not None:
+            sc_close()
+        elif hasattr(sc, "free"):
             sc.free()
 
 
@@ -32,7 +35,7 @@ class RobotDrive(MotorSafety):
         Use :class:`.DifferentialDrive` or :class:`.MecanumDrive` instead.
 
     Operations on a robot drivetrain based on a definition of the motor
-    configuration. 
+    configuration.
 
     The robot drive class handles basic driving for a robot. Currently, 2
     and 4 motor tank and mecanum drive trains are supported. In the future
