@@ -2,6 +2,8 @@ import pytest
 from unittest.mock import MagicMock
 import math
 
+pytestmark = pytest.mark.filterwarnings("ignore:RobotDrive :DeprecationWarning")
+
 
 @pytest.mark.parametrize(
     "kw,mc",
