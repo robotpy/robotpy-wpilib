@@ -11,7 +11,6 @@ import threading
 from typing import Callable
 
 import hal
-from .resource import Resource
 
 import logging
 
@@ -33,7 +32,7 @@ class Watchdog:
     # Used for timeout print rate-limiting
     kMinPrintPeriod = 1000000  # us
 
-    _watchdogs = []
+    _watchdogs = []  # type: List[Watchdog]
     _queueMutex = threading.Lock()
     _schedulerWaiter = threading.Condition(_queueMutex)
     _keepAlive = True
@@ -41,14 +40,15 @@ class Watchdog:
 
     @classmethod
     def _reset(cls) -> None:
-        thread = cls._thread
+        with cls._queueMutex:
+            thread = cls._thread
         if thread is not None:
             cls._keepAlive = False
             with cls._queueMutex:
                 cls._watchdogs.clear()
                 cls._schedulerWaiter.notify_all()
+                cls._thread = None
             thread.join()
-        cls._thread = None
         cls._keepAlive = True
 
     def __init__(self, timeout: float, callback: Callable[[], None]) -> None:
@@ -72,11 +72,12 @@ class Watchdog:
         #: prints a more specific message.
         self.suppressTimeoutMessage = False
 
-        Resource._add_global_resource(self)
-
-        if Watchdog._thread is None:
-            Watchdog._thread = threading.Thread(target=self._schedulerFunc, daemon=True)
-            Watchdog._thread.start()
+        with self._queueMutex:
+            if Watchdog._thread is None:
+                Watchdog._thread = threading.Thread(
+                    target=Watchdog._schedulerFunc, daemon=True
+                )
+                Watchdog._thread.start()
 
     # Elements with sooner expiration times are sorted as lesser.
     # Python's heap queue is a min-heap.
@@ -96,9 +97,6 @@ class Watchdog:
         if self.__class__ is not other.__class__:
             return NotImplemented
         return self._expirationTime > other._expirationTime
-
-    def close(self) -> None:
-        self.disable()
 
     def getTime(self) -> float:
         """Returns the time in seconds since the watchdog was last fed."""
