@@ -5,9 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import TypeVar
-
-V = TypeVar("V", covariant=True)
+from typing import Any
 
 from .sendablebase import SendableBase
 from .sendablebuilder import SendableBuilder
@@ -56,7 +54,7 @@ class SendableChooser(SendableBase):
         self.tableSelected = None
         self.defaultChoice = ""
 
-    def addObject(self, name: str, object: V) -> None:
+    def addObject(self, name: str, object: Any) -> None:
         """Adds the given object to the list of options. On the
         :class:`.SmartDashboard` on the desktop, the object will appear as the
         given name.
@@ -66,7 +64,7 @@ class SendableChooser(SendableBase):
         """
         self.map[name] = object
 
-    def addDefault(self, name: str, object: V) -> None:
+    def addDefault(self, name: str, object: Any) -> None:
         """Add the given object to the list of options and marks it as the
         default.  Functionally, this is very close to :meth:`.addObject` except
         that it will use this as the default option if none other is
@@ -80,7 +78,7 @@ class SendableChooser(SendableBase):
         self.defaultChoice = name
         self.addObject(name, object)
 
-    def getSelected(self) -> V:
+    def getSelected(self) -> Any:
         """Returns the object associated with the selected option. If there
         is none selected, it will return the default. If there is none
         selected and no default, then it will return None.
