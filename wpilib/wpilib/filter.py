@@ -14,24 +14,23 @@ __all__ = ["Filter"]
 class Filter:
     """Superclass for filters"""
 
-    def __init__(self, source):
+    def __init__(self, source: PIDSource) -> None:
         """Constructor.
         
         :param source:
-        :type source: :class:`.PIDSource`, callable
         """
         self.source = PIDSource.from_obj_or_callable(source)
 
-    def setPIDSourceType(self, pidSourceType):
+    def setPIDSourceType(self, pidSourceType: PIDSource.PIDSourceType) -> None:
         self.source.setPIDSourceType(pidSourceType)
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSource.PIDSourceType:
         return self.source.getPIDSourceType()
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         raise NotImplementedError
 
-    def get(self):
+    def get(self) -> float:
         """Returns the current filter estimate without also inserting new data as
         :meth:`pidGet` would do.
         
@@ -39,11 +38,11 @@ class Filter:
         """
         raise NotImplementedError
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the filter state"""
         raise NotImplementedError
 
-    def pidGetSource(self):
+    def pidGetSource(self) -> float:
         """Calls PIDGet() of source
         
         :returns: Current value of source

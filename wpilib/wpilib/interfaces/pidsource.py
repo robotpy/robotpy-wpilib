@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Callable
 
 __all__ = ["PIDSource"]
 
@@ -15,7 +16,7 @@ class PIDSource:
     """
 
     @staticmethod
-    def from_obj_or_callable(objc):
+    def from_obj_or_callable(objc: "PIDSource") -> "PIDSource":
         """
             Utility method that gets a PIDSource object
         
@@ -43,16 +44,15 @@ class PIDSource:
         kDisplacement = 0
         kRate = 1
 
-    def setPIDSourceType(self, pidSource):
+    def setPIDSourceType(self, pidSource: PIDSourceType) -> None:
         """Set which parameter of the device you are using as a process control
         variable.
         
         :param pidSource: An enum to select the parameter.
-        :type pidSource: :class:`.PIDSourceType`
         """
         raise NotImplementedError
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         """Get which parameter of the device you are using as a process control
            variable.
            
@@ -60,7 +60,7 @@ class PIDSource:
         """
         raise NotImplementedError
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         """Get the result to use in :class:`.PIDController`
         
         :returns: the result to use in PIDController
@@ -69,8 +69,8 @@ class PIDSource:
 
 
 class _PIDSourceWrapper(PIDSource):
-    def __init__(self, fn):
+    def __init__(self, fn: Callable) -> None:
         self.pidGet = fn
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSource.PIDSourceType:
         return self.PIDSourceType.kDisplacement

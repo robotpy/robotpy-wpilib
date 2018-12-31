@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Tuple
 
 import hal
 import weakref
@@ -13,11 +14,12 @@ from .motorsafety import MotorSafety
 from .sendablebase import SendableBase
 from .resource import Resource
 from .sensorutil import SensorUtil
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["PWM"]
 
 
-def _freePWM(handle):
+def _freePWM(handle: hal.DigitalHandle) -> None:
     hal.setPWMDisabled(handle)
     hal.freePWMPort(handle)
 
@@ -70,11 +72,10 @@ class PWM(MotorSafety, SendableBase):
         #: Period Multiplier: skip three out of four pulses. PWM pulses occur every 20.020 ms
         k4X = 4
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Allocate a PWM given a channel.
 
         :param channel: The PWM channel number. 0-9 are on-board, 10-19 are on the MXP port
-        :type channel: int
         """
         super().__init__()
         SensorUtil.checkPWMChannel(channel)
@@ -96,12 +97,12 @@ class PWM(MotorSafety, SendableBase):
         Resource._add_global_resource(self)
 
     @property
-    def handle(self):
+    def handle(self) -> hal.DigitalHandle:
         if not self.__finalizer.alive:
             raise ValueError("Cannot use channel after free() has been called")
         return self._handle
 
-    def close(self):
+    def close(self) -> None:
         """Free the PWM channel.
 
         Free the resource associated with the PWM channel and set the value
@@ -119,17 +120,23 @@ class PWM(MotorSafety, SendableBase):
     def getDescription(self):
         return "PWM %d" % self.getChannel()
 
-    def enableDeadbandElimination(self, eliminateDeadband):
+    def enableDeadbandElimination(self, eliminateDeadband: bool) -> None:
         """Optionally eliminate the deadband from a speed controller.
 
         :param eliminateDeadband: If True, set the motor curve on the Jaguar
             to eliminate the deadband in the middle of the range. Otherwise, keep
             the full range without modifying any values.
-        :type eliminateDeadband: bool
         """
         hal.setPWMEliminateDeadband(self.handle, eliminateDeadband)
 
-    def setBounds(self, max, deadbandMax, center, deadbandMin, min):
+    def setBounds(
+        self,
+        max: float,
+        deadbandMax: float,
+        center: float,
+        deadbandMin: float,
+        min: float,
+    ) -> None:
         """Set the bounds on the PWM pulse widths.
 
         This sets the bounds on the PWM values for a particular type of
@@ -137,19 +144,14 @@ class PWM(MotorSafety, SendableBase):
         as the deadband bracket.
 
         :param max: The max PWM pulse width in ms
-        :type max: float
         :param deadbandMax: The high end of the deadband range pulse width in ms
-        :type deadbandMax: float
         :param center: The center (off) pulse width in ms
-        :type center: float
         :param deadbandMin: The low end of the deadband pulse width in ms
-        :type deadbandMin: float
         :param min: The minimum pulse width in ms
-        :type min: float
         """
         hal.setPWMConfig(self.handle, max, deadbandMax, center, deadbandMin, min)
 
-    def getRawBounds(self):
+    def getRawBounds(self) -> Tuple[int, int, int, int, int]:
         """Gets the bounds on the PWM pulse widths. This Gets the bounds on the PWM values for a
         particular type of controller. The values determine the upper and lower speeds as well
         as the deadband bracket.
@@ -158,15 +160,14 @@ class PWM(MotorSafety, SendableBase):
         """
         return hal.getPWMConfigRaw(self.handle)
 
-    def getChannel(self):
+    def getChannel(self) -> int:
         """Gets the channel number associated with the PWM Object.
 
         :returns: The channel number.
-        :rtype: int
         """
         return self.channel
 
-    def setPosition(self, pos):
+    def setPosition(self, pos: float) -> None:
         """Set the PWM value based on a position.
 
         This is intended to be used by servos.
@@ -176,11 +177,10 @@ class PWM(MotorSafety, SendableBase):
             :func:`setBounds` must be called first.
 
         :param pos: The position to set the servo between 0.0 and 1.0.
-        :type pos: float
         """
         hal.setPWMPosition(self.handle, pos)
 
-    def getPosition(self):
+    def getPosition(self) -> float:
         """Get the PWM value in terms of a position.
 
         This is intended to be used by servos.
@@ -190,11 +190,10 @@ class PWM(MotorSafety, SendableBase):
             :func:`setBounds` must be called first.
 
         :returns: The position the servo is set to between 0.0 and 1.0.
-        :rtype: float
         """
         return hal.getPWMPosition(self.handle)
 
-    def setSpeed(self, speed):
+    def setSpeed(self, speed: float) -> None:
         """Set the PWM value based on a speed.
 
         This is intended to be used by speed controllers.
@@ -205,11 +204,10 @@ class PWM(MotorSafety, SendableBase):
 
         :param speed: The speed to set the speed controller between -1.0 and
             1.0.
-        :type speed: float
         """
         hal.setPWMSpeed(self.handle, speed)
 
-    def getSpeed(self):
+    def getSpeed(self) -> float:
         """Get the PWM value in terms of speed.
 
         This is intended to be used by speed controllers.
@@ -219,41 +217,37 @@ class PWM(MotorSafety, SendableBase):
             :func:`setBounds` must be called first.
 
         :returns: The most recently set speed between -1.0 and 1.0.
-        :rtype: float
         """
         return hal.getPWMSpeed(self.handle)
 
-    def setRaw(self, value):
+    def setRaw(self, value: int) -> None:
         """Set the PWM value directly to the hardware.
 
         Write a raw value to a PWM channel.
 
         :param value: Raw PWM value.  Range 0 - 255.
-        :type value: int
         """
         hal.setPWMRaw(self.handle, value)
 
-    def getRaw(self):
+    def getRaw(self) -> int:
         """Get the PWM value directly from the hardware.
 
         Read a raw value from a PWM channel.
 
         :returns: Raw PWM control value.  Range: 0 - 255.
-        :rtype: int
         """
         return hal.getPWMRaw(self.handle)
 
-    def setDisabled(self):
+    def setDisabled(self) -> None:
         """Temporarily disables the PWM output. The next set call will reenable
         the output.
         """
         hal.setPWMDisabled(self.handle)
 
-    def setPeriodMultiplier(self, mult):
+    def setPeriodMultiplier(self, mult: PeriodMultiplier) -> None:
         """Slow down the PWM signal for old devices.
 
         :param mult: The period multiplier to apply to this channel
-        :type mult: PWM.PeriodMultiplier
         """
         if mult == PWM.PeriodMultiplier.k4X:
             # Squelch 3 out of 4 outputs
@@ -267,10 +261,10 @@ class PWM(MotorSafety, SendableBase):
         else:
             raise ValueError("Invalid mult argument '%s'" % mult)
 
-    def setZeroLatch(self):
+    def setZeroLatch(self) -> None:
         hal.latchPWMZero(self.handle)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("PWM")
         builder.setSafeState(self.setDisabled)
         builder.addDoubleProperty(

@@ -18,7 +18,7 @@ class PWMVictorSPX(PWMSpeedController):
     Cross the Road Electronics (CTRE) Victor SPX Speed Controller with PWM control.
     """
 
-    def __init__(self, channel: int):
+    def __init__(self, channel: int) -> None:
         """Constructor for a VictorSPX connected via PWM.
 
         :param channel: The PWM channel that the PWMTalonSRX is attached to.

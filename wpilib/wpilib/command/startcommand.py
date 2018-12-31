@@ -6,6 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 
+from .command import Command
 from .instantcommand import InstantCommand
 
 __all__ = ["StartCommand"]
@@ -16,7 +17,7 @@ class StartCommand(InstantCommand):
     is initialized and will finish immediately.
     """
 
-    def __init__(self, commandToStart):
+    def __init__(self, commandToStart: Command) -> None:
         """Instantiates a StartCommand which will start the
         given command whenever its initialize() is called.
 
@@ -25,5 +26,5 @@ class StartCommand(InstantCommand):
         super().__init__("Start(%s)" % commandToStart)
         self.commandToFork = commandToStart
 
-    def initialize(self):
+    def initialize(self) -> None:
         self.commandToFork.start()

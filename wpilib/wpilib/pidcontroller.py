@@ -10,11 +10,13 @@ from collections import deque
 from itertools import islice
 import threading
 import warnings
+
 from networktables import NetworkTables
+from .sendablebuilder import SendableBuilder
 
 import hal
 
-from .interfaces import PIDSource
+from .interfaces.pidsource import PIDSource
 from .sendablebase import SendableBase
 from .resource import Resource
 from .timer import Timer
@@ -46,13 +48,13 @@ class PIDController(SendableBase):
     # is on target.  The various implementations of this such as
     # PercentageTolerance and AbsoluteTolerance specify types of tolerance
     # specifications to use.
-    def PercentageTolerance_onTarget(self, percentage):
+    def PercentageTolerance_onTarget(self, percentage: float) -> bool:
         return abs(self.getError()) < percentage / 100.0 * self.inputRange
 
-    def AbsoluteTolerance_onTarget(self, value):
+    def AbsoluteTolerance_onTarget(self, value: float) -> bool:
         return abs(self.getError()) < value
 
-    def __init__(self, Kp, Ki, Kd, *args, **kwargs):
+    def __init__(self, Kp: float, Ki: float, Kd: float, *args, **kwargs) -> None:
         """Allocate a PID object with the given constants for P, I, D, and F
 
         Arguments can be structured as follows:
@@ -63,21 +65,14 @@ class PIDController(SendableBase):
         - Kp, Ki, Kd, Kf, source, output
 
         :param Kp: the proportional coefficient
-        :type  Kp: float or int
         :param Ki: the integral coefficient
-        :type  Ki: float or int
         :param Kd: the derivative coefficient
-        :type  Kd: float or int
         :param Kf: the feed forward term
-        :type  Kf: float or int
         :param source: Called to get values
-        :type  source: A function, or an object that implements :class:`.PIDSource`
         :param output: Receives the output percentage
-        :type  output: A function, or an object that implements :class:`.PIDOutput`
         :param period: the loop time for doing calculations. This particularly
             effects calculations of the integral and differential terms.
             The default is 50ms.
-        :type  period: float or int
         """
 
         super().__init__(False)
@@ -146,7 +141,7 @@ class PIDController(SendableBase):
         )
         self.setName("PIDController", PIDController.instances)
 
-    def close(self):
+    def close(self) -> None:
         """Free the PID object"""
         super().close()
         # TODO: is this useful in Python?  Should make TableListener weakref.
@@ -155,7 +150,7 @@ class PIDController(SendableBase):
             self.pidInput = None
             self.pidOutput = None
 
-    def _calculate(self):
+    def _calculate(self) -> None:
         """Read the input, calculate the output accordingly, and write to the
         output.  This should only be called by the PIDTask and is created
         during initialization."""
@@ -214,7 +209,7 @@ class PIDController(SendableBase):
                 self.totalError = totalError
                 self.result = result
 
-    def calculateFeedForward(self):
+    def calculateFeedForward(self) -> float:
         """Calculate the feed forward term
         
         Both of the provided feed forward calculations are velocity feed forwards.
@@ -237,7 +232,7 @@ class PIDController(SendableBase):
             self.setpointTimer.reset()
             return temp
 
-    def setPID(self, p, i, d, f=0.0):
+    def setPID(self, p: float, i: float, d: float, f: float = 0.0) -> None:
         """Set the PID Controller gain parameters.
         Set the proportional, integral, and differential coefficients.
 
@@ -252,7 +247,7 @@ class PIDController(SendableBase):
             self.D = d
             self.F = f
 
-    def getP(self):
+    def getP(self) -> float:
         """Get the Proportional coefficient.
 
         :returns: proportional coefficient
@@ -260,7 +255,7 @@ class PIDController(SendableBase):
         with self.mutex:
             return self.P
 
-    def getI(self):
+    def getI(self) -> float:
         """Get the Integral coefficient
 
         :returns: integral coefficient
@@ -268,7 +263,7 @@ class PIDController(SendableBase):
         with self.mutex:
             return self.I
 
-    def getD(self):
+    def getD(self) -> float:
         """Get the Differential coefficient.
 
         :returns: differential coefficient
@@ -276,7 +271,7 @@ class PIDController(SendableBase):
         with self.mutex:
             return self.D
 
-    def getF(self):
+    def getF(self) -> float:
         """Get the Feed forward coefficient.
 
         :returns: feed forward coefficient
@@ -284,7 +279,7 @@ class PIDController(SendableBase):
         with self.mutex:
             return self.F
 
-    def get(self):
+    def get(self) -> float:
         """Return the current PID result.
         This is always centered on zero and constrained the the max and min
         outs.
@@ -294,7 +289,7 @@ class PIDController(SendableBase):
         with self.mutex:
             return self.result
 
-    def setContinuous(self, continuous=True):
+    def setContinuous(self, continuous: bool = True) -> None:
         """Set the PID controller to consider the input to be continuous.
         Rather then using the max and min input range as constraints, it considers them
         to be the same point and automatically calculates the shortest route
@@ -308,7 +303,7 @@ class PIDController(SendableBase):
         with self.mutex:
             self.continuous = continuous
 
-    def setInputRange(self, minimumInput, maximumInput):
+    def setInputRange(self, minimumInput: float, maximumInput: float) -> None:
         """Sets the maximum and minimum values expected from the input.
         
         :param minimumInput: the minimum percentage expected from the input
@@ -322,7 +317,7 @@ class PIDController(SendableBase):
             self.inputRange = self.maximumInput - self.minimumInput
             self.setSetpoint(self.setpoint)
 
-    def setOutputRange(self, minimumOutput, maximumOutput):
+    def setOutputRange(self, minimumOutput: float, maximumOutput: float) -> None:
         """Sets the minimum and maximum values to write.
 
         :param minimumOutput: the minimum percentage to write to the output
@@ -334,7 +329,7 @@ class PIDController(SendableBase):
             self.minimumOutput = minimumOutput
             self.maximumOutput = maximumOutput
 
-    def setSetpoint(self, setpoint):
+    def setSetpoint(self, setpoint: float) -> None:
         """Set the setpoint for the PIDController.
 
         :param setpoint: the desired setpoint
@@ -351,7 +346,7 @@ class PIDController(SendableBase):
                 newsetpoint = setpoint
             self.setpoint = newsetpoint
 
-    def getSetpoint(self):
+    def getSetpoint(self) -> float:
         """Returns the current setpoint of the PIDController.
 
         :returns: the current setpoint
@@ -359,7 +354,7 @@ class PIDController(SendableBase):
         with self.mutex:
             return self.setpoint
 
-    def getDeltaSetpoint(self):
+    def getDeltaSetpoint(self) -> float:
         """Returns the change in setpoint over time of the PIDController
         
         :returns: the change in setpoint over time
@@ -373,7 +368,7 @@ class PIDController(SendableBase):
             else:
                 return 0.0
 
-    def getError(self):
+    def getError(self) -> float:
         """Returns the current difference of the input from the setpoint.
 
         :return: the current error
@@ -381,7 +376,7 @@ class PIDController(SendableBase):
         with self.mutex:
             return self.getContinuousError(self.getSetpoint() - self.pidInput.pidGet())
 
-    def getAvgError(self):
+    def getAvgError(self) -> float:
         """
         Returns the current difference of the error over the past few iterations. You can specify the
         number of iterations to average with setToleranceBuffer() (defaults to 1). getAvgError() is
@@ -396,21 +391,21 @@ class PIDController(SendableBase):
         with self.mutex:
             return self.getError()
 
-    def setPIDSourceType(self, pidSourceType):
+    def setPIDSourceType(self, pidSourceType: PIDSourceType) -> None:
         """Sets what type of input the PID controller will use
         
         :param pidSourceType: the type of input
         """
         self.pidInput.setPIDSourceType(pidSourceType)
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         """Returns the type of input the PID controller is using
         
         :returns: the PID controller input type
         """
         return self.pidInput.getPIDSourceType()
 
-    def setAbsoluteTolerance(self, absvalue):
+    def setAbsoluteTolerance(self, absvalue: float) -> None:
         """Set the absolute error which is considered tolerable for use with
         :func:`onTarget`.
 
@@ -420,7 +415,7 @@ class PIDController(SendableBase):
         with self.mutex:
             self.onTarget = lambda: self.AbsoluteTolerance_onTarget(absvalue)
 
-    def setPercentTolerance(self, percentage):
+    def setPercentTolerance(self, percentage: float) -> None:
         """Set the percentage error which is considered tolerable for use with
         :func:`onTarget`. (Input of 15.0 = 15 percent)
 
@@ -429,7 +424,7 @@ class PIDController(SendableBase):
         with self.mutex:
             self.onTarget = lambda: self.PercentageTolerance_onTarget(percentage)
 
-    def setToleranceBuffer(self, bufLength):
+    def setToleranceBuffer(self, bufLength: int) -> None:
         """Set the number of previous error samples to average for tolerancing. When
         determining whether a mechanism is on target, the user may want to use a
         rolling average of previous measurements instead of a precise position or
@@ -438,7 +433,6 @@ class PIDController(SendableBase):
         not register as on target for at least the specified bufLength cycles.
         
         :param bufLength: Number of previous cycles to average.
-        :type bufLength: int
 
         .. deprecated:: 2018.0.0
             Use a LinearDigitalFilter as the input
@@ -447,23 +441,24 @@ class PIDController(SendableBase):
             self.filter = LinearDigitalFilter.movingAverage(self.origSource, bufLength)
             self.pidInput = self.filter
 
-    def onTarget(self):
+    def onTarget(self) -> bool:
         """Return True if the error is within the percentage of the total input
         range, determined by setTolerance. This assumes that the maximum and
         minimum input were set using :func:`setInput`.
 
         :returns: True if the error is less than the tolerance
+        :raises ValueError: when called before tolerance value is set
         """
         with self.mutex:
             # python-specific: this is equivalent to the NullTolerance object in Java
             raise ValueError("No tolerance value set when calling onTarget().")
 
-    def enable(self):
+    def enable(self) -> None:
         """Begin running the PIDController."""
         with self.mutex:
             self.enabled = True
 
-    def disable(self):
+    def disable(self) -> None:
         """Stop running the PIDController, this sets the output to zero before
         stopping."""
         with self.pidWriteMutex:
@@ -471,12 +466,12 @@ class PIDController(SendableBase):
                 self.enabled = False
             self.pidOutput(0)
 
-    def isEnabled(self):
+    def isEnabled(self) -> bool:
         """Return True if PIDController is enabled."""
         with self.mutex:
             return self.enabled
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the previous error, the integral term, and disable the
         controller."""
         with self.mutex:
@@ -485,7 +480,7 @@ class PIDController(SendableBase):
             self.totalError = 0
             self.result = 0
 
-    def setP(self, p):
+    def setP(self, p: float) -> None:
         """
         Set the Proportional coefficient of the PID controller gain.
 
@@ -494,7 +489,7 @@ class PIDController(SendableBase):
         with self.mutex:
             self.P = p
 
-    def setI(self, i):
+    def setI(self, i: float) -> None:
         """
         Set the Integral coefficient of the PID controller gain.
 
@@ -503,7 +498,7 @@ class PIDController(SendableBase):
         with self.mutex:
             self.I = i
 
-    def setD(self, d):
+    def setD(self, d: float) -> None:
         """
         Set the Differential coefficient of the PID controller gain.
 
@@ -512,7 +507,7 @@ class PIDController(SendableBase):
         with self.mutex:
             self.D = d
 
-    def setF(self, f):
+    def setF(self, f: float) -> None:
         """
         Set the Feed forward coefficient of the PID controller gain.
 
@@ -521,14 +516,14 @@ class PIDController(SendableBase):
         with self.mutex:
             self.F = f
 
-    def setEnabled(self, enable):
+    def setEnabled(self, enable: bool) -> None:
         """Set the enabled state of the PIDController."""
         if enable:
             self.enable()
         else:
             self.disable()
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("PIDController")
         builder.setSafeState(self.reset)
         builder.addDoubleProperty("p", self.getP, self.setP)
@@ -538,7 +533,7 @@ class PIDController(SendableBase):
         builder.addDoubleProperty("setpoint", self.getSetpoint, self.setSetpoint)
         builder.addBooleanProperty("enabled", self.isEnabled, self.setEnabled)
 
-    def getContinuousError(self, error):
+    def getContinuousError(self, error: float) -> float:
         """
         Wraps error around for continuous inputs. The original error is
         returned if continuous mode is disabled. This is an unsynchronized
@@ -556,5 +551,5 @@ class PIDController(SendableBase):
                     return error + self.inputRange
         return error
 
-    def clamp(self, value, low, high):
+    def clamp(self, value: float, low: float, high: float) -> float:
         return max(low, min(value, high))

@@ -8,7 +8,9 @@
 
 import warnings
 
+from ..command.subsystem import Subsystem
 from ..sendable import Sendable
+from ..sendablebuilder import SendableBuilder
 
 __all__ = ["NamedSendable"]
 
@@ -21,7 +23,7 @@ class NamedSendable(Sendable):
         Use :class:`.Sendable` directly instead.
     """
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
         warnings.warn(
             "NamedSendable is deprecated, use Sendable directly instead",
@@ -37,14 +39,14 @@ class NamedSendable(Sendable):
         """
         raise NotImplementedError
 
-    def setName(self, name):
+    def setName(self, name: str) -> None:
         pass
 
-    def getSubsystem(self):
+    def getSubsystem(self) -> str:
         return ""
 
-    def setSubsystem(self, subsystem):
+    def setSubsystem(self, subsystem: Subsystem) -> None:
         pass
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         pass

@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Optional
 
 from .timedcommand import TimedCommand
 
@@ -18,7 +19,7 @@ class WaitCommand(TimedCommand):
     .. seealso:: :class:`.CommandGroup`
     """
 
-    def __init__(self, timeout, name=None):
+    def __init__(self, timeout: float, name: Optional[str] = None) -> None:
         """Instantiates a WaitCommand with the given timeout.
         
         :param timeout: the time the command takes to run (seconds)

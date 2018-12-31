@@ -8,6 +8,7 @@
 import hal
 
 from .interfaces import Accelerometer
+from .sendablebuilder import SendableBuilder
 from .sendablebase import SendableBase
 
 __all__ = ["BuiltInAccelerometer"]
@@ -21,12 +22,11 @@ class BuiltInAccelerometer(SendableBase):
 
     Range = Accelerometer.Range
 
-    def __init__(self, range=Accelerometer.Range.k8G):
+    def __init__(self, range: Range = Accelerometer.Range.k8G) -> None:
         """Constructor.
         
         :param range: The range the accelerometer will measure.  Defaults to
             +/-8g if unspecified.
-        :type  range: :class:`.Accelerometer.Range`
         """
         super().__init__()
         self.setRange(range)
@@ -41,12 +41,11 @@ class BuiltInAccelerometer(SendableBase):
         )
         self.setName("BuiltInAccel", 0)
 
-    def setRange(self, range):
+    def setRange(self, range: Range) -> None:
         """Set the measuring range of the accelerometer.
 
         :param range: The maximum acceleration, positive or negative, that
                       the accelerometer will measure.
-        :type  range: :class:`BuiltInAccelerometer.Range`
         """
 
         hal.setAccelerometerActive(False)
@@ -64,31 +63,28 @@ class BuiltInAccelerometer(SendableBase):
 
         hal.setAccelerometerActive(True)
 
-    def getX(self):
+    def getX(self) -> float:
         """
            :returns: The acceleration of the roboRIO along the X axis in
                      g-forces
-           :rtype: float
         """
         return hal.getAccelerometerX()
 
-    def getY(self):
+    def getY(self) -> float:
         """
            :returns: The acceleration of the roboRIO along the Y axis in
                      g-forces
-           :rtype: float
         """
         return hal.getAccelerometerY()
 
-    def getZ(self):
+    def getZ(self) -> float:
         """
            :returns: The acceleration of the roboRIO along the Z axis in
                      g-forces
-           :rtype: float
         """
         return hal.getAccelerometerZ()
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("3AxisAccelerometer")
         builder.addDoubleProperty("X", self.getX, None)
         builder.addDoubleProperty("Y", self.getY, None)

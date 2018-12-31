@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 from .button import Button
+from ..interfaces.generichid import GenericHID
 
 __all__ = ["JoystickButton"]
 
@@ -14,7 +15,7 @@ __all__ = ["JoystickButton"]
 class JoystickButton(Button):
     """A :class:`.button.Button` that gets its state from a :class:`.GenericHID`."""
 
-    def __init__(self, joystick, buttonNumber: int) -> None:
+    def __init__(self, joystick: GenericHID, buttonNumber: int) -> None:
         """Create a joystick button for triggering commands.
 
         :param joystick: The GenericHID object that has the button (e.g.

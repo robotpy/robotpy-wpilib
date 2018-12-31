@@ -6,6 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 import warnings
+from typing import Optional
 
 from .generichid import GenericHID
 
@@ -20,7 +21,7 @@ class GamepadBase(GenericHID):
        Inherit directly from :class:`.GenericHID` instead.
     """
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
         warnings.warn(
             "GamepadBase is deprecated, inherit directly from GenericHID instead",
@@ -28,10 +29,10 @@ class GamepadBase(GenericHID):
             stacklevel=2,
         )
 
-    def getRawAxis(self, axis):
+    def getRawAxis(self, axis: int) -> float:
         raise NotImplementedError
 
-    def getBumper(self, hand):
+    def getBumper(self, hand: GenericHID.Hand) -> bool:
         """Is the bumper pressed.
 
         :param hand: which hand
@@ -39,29 +40,29 @@ class GamepadBase(GenericHID):
         """
         raise NotImplementedError
 
-    def getStickButton(self, hand=None):
+    def getStickButton(self, hand: Optional[GenericHID.Hand] = None) -> bool:
         raise NotImplementedError
 
-    def getRawButton(self, button):
+    def getRawButton(self, button: int) -> bool:
         raise NotImplementedError
 
-    def getPOV(self, pov=0):
+    def getPOV(self, pov: int = 0) -> int:
         raise NotImplementedError
 
-    def getPOVCount(self):
+    def getPOVCount(self) -> int:
         raise NotImplementedError
 
-    def getType(self):
+    def getType(self) -> GenericHID.HIDType:
         raise NotImplementedError
 
-    def getName(self):
+    def getName(self) -> str:
         raise NotImplementedError
 
-    def setOutput(self, outputNumber, value):
+    def setOutput(self, outputNumber: int, value: bool) -> None:
         raise NotImplementedError
 
-    def setOutputs(self, value):
+    def setOutputs(self, value: bool) -> bool:
         raise NotImplementedError
 
-    def setRumble(self, type, value):
+    def setRumble(self, type: GenericHID.RumbleType, value: float) -> bool:
         raise NotImplementedError

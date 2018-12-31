@@ -7,17 +7,19 @@
 # ----------------------------------------------------------------------------
 
 import weakref
+from typing import Union
 
 import hal
 from .analoginput import AnalogInput
 from .analogtriggeroutput import AnalogTriggerOutput
 from .resource import Resource
 from .sendablebase import SendableBase
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["AnalogTrigger"]
 
 
-def _freeAnalogTrigger(port):
+def _freeAnalogTrigger(port: hal.AnalogTriggerHandle) -> None:
     hal.cleanAnalogTrigger(port)
 
 
@@ -38,7 +40,7 @@ class AnalogTrigger(SendableBase):
 
     AnalogTriggerType = AnalogTriggerOutput.AnalogTriggerType
 
-    def __init__(self, channel):
+    def __init__(self, channel: Union[AnalogInput, int]) -> None:
         """Constructor for an analog trigger given a channel number or analog
         input.
 
@@ -70,14 +72,14 @@ class AnalogTrigger(SendableBase):
             raise ValueError("Cannot use AnalogTrigger after close() has been called")
         return self._port
 
-    def close(self):
+    def close(self) -> None:
         """Release the resources used by this object"""
         super().close()
         self.__finalizer()
         if self.analogInput:
             self.analogInput.close()
 
-    def setLimitsRaw(self, lower, upper):
+    def setLimitsRaw(self, lower: int, upper: int) -> None:
         """Set the upper and lower limits of the analog trigger. The limits are
         given in ADC codes. If oversampling is used, the units must be scaled
         appropriately.
@@ -90,7 +92,7 @@ class AnalogTrigger(SendableBase):
 
         hal.setAnalogTriggerLimitsRaw(self.port, lower, upper)
 
-    def setLimitsVoltage(self, lower, upper):
+    def setLimitsVoltage(self, lower: float, upper: float) -> None:
         """Set the upper and lower limits of the analog trigger. The limits are
         given as floating point voltage values.
 
@@ -102,7 +104,7 @@ class AnalogTrigger(SendableBase):
 
         hal.setAnalogTriggerLimitsVoltage(self.port, float(lower), float(upper))
 
-    def setAveraged(self, useAveragedValue):
+    def setAveraged(self, useAveragedValue: bool) -> None:
         """Configure the analog trigger to use the averaged vs. raw values. If
         the value is true, then the averaged value is selected for the analog
         trigger, otherwise the immediate value is used.
@@ -111,7 +113,7 @@ class AnalogTrigger(SendableBase):
         """
         hal.setAnalogTriggerAveraged(self.port, useAveragedValue)
 
-    def setFiltered(self, useFilteredValue):
+    def setFiltered(self, useFilteredValue: bool) -> None:
         """Configure the analog trigger to use a filtered value. The analog
         trigger will operate with a 3 point average rejection filter. This is
         designed to help with 360 degree pot applications for the period where
@@ -121,7 +123,7 @@ class AnalogTrigger(SendableBase):
         """
         hal.setAnalogTriggerFiltered(self.port, useFilteredValue)
 
-    def getIndex(self):
+    def getIndex(self) -> int:
         """Return the index of the analog trigger. This is the FPGA index of
         this analog trigger instance.
 
@@ -129,7 +131,7 @@ class AnalogTrigger(SendableBase):
         """
         return self.index
 
-    def getInWindow(self):
+    def getInWindow(self) -> bool:
         """Return the InWindow output of the analog trigger. True if the
         analog input is between the upper and lower limits.
 
@@ -137,7 +139,7 @@ class AnalogTrigger(SendableBase):
         """
         return hal.getAnalogTriggerInWindow(self.port)
 
-    def getTriggerState(self):
+    def getTriggerState(self) -> bool:
         """Return the TriggerState output of the analog trigger. True if above
         upper limit. False if below lower limit. If in Hysteresis, maintain
         previous state.
@@ -146,7 +148,7 @@ class AnalogTrigger(SendableBase):
         """
         return hal.getAnalogTriggerTriggerState(self.port)
 
-    def createOutput(self, type):
+    def createOutput(self, type: AnalogTriggerType) -> AnalogTriggerOutput:
         """Creates an :class:`.AnalogTriggerOutput` object. Gets an output object that
         can be used for routing. Caller is responsible for deleting the
         AnalogTriggerOutput object.
@@ -156,6 +158,6 @@ class AnalogTrigger(SendableBase):
         """
         return AnalogTriggerOutput(self, type)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         if self.ownsAnalog:
             self.analogInput.initSendable(builder)

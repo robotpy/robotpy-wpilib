@@ -10,6 +10,7 @@ import hal
 
 from .counter import Counter
 from .livewindow import LiveWindow
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["GearTooth"]
 
@@ -24,19 +25,17 @@ class GearTooth(Counter):
 
     kGearToothThreshold = 55e-6
 
-    def enableDirectionSensing(self, directionSensitive):
+    def enableDirectionSensing(self, directionSensitive: bool) -> None:
         if directionSensitive:
             self.setPulseLengthMode(GearTooth.kGearToothThreshold)
 
-    def __init__(self, channel, directionSensitive=False):
+    def __init__(self, channel: int, directionSensitive: bool = False) -> None:
         """Construct a GearTooth sensor.
 
         :param channel: The DIO channel index or DigitalSource that the sensor
             is connected to.
-        :type channel: int or :class:`.DigitalSource`
         :param directionSensitive: True to enable the pulse length decoding in
             hardware to specify count direction.  Defaults to False.
-        :type directionSensitive: bool
         """
         super().__init__(channel)
         self.enableDirectionSensing(directionSensitive)
@@ -56,6 +55,6 @@ class GearTooth(Counter):
                 )
         self.setName("GearTooth", self.upSource.getChannel())
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         super().initSendable(builder)
         builder.setSmartDashboardType("Gear Tooth")

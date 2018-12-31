@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 from .pwm import PWM
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["PWMSpeedController"]
 
@@ -16,26 +17,25 @@ class PWMSpeedController(PWM):
         Common base class for all PWM Speed Controllers.
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         super().__init__(channel)
         self.isInverted = False
 
     def getDescription(self):
         return "PWM %" % (self.getChannel(),)
 
-    def set(self, speed):
+    def set(self, speed: float) -> None:
         """Set the PWM value.
 
         The PWM value is set using a range of -1.0 to 1.0, appropriately
         scaling the value for the FPGA.
 
         :param speed: The speed to set.  Value should be between -1.0 and 1.0.
-        :type  speed: float
         """
         self.setSpeed(-speed if self.isInverted else speed)
         self.feed()
 
-    def setInverted(self, isInverted):
+    def setInverted(self, isInverted: bool) -> None:
         """
         Common interface for inverting the direction of a speed controller.
 
@@ -43,7 +43,7 @@ class PWMSpeedController(PWM):
         """
         self.isInverted = isInverted
 
-    def getInverted(self):
+    def getInverted(self) -> bool:
         """
         Common interface for inverting the direction of a speed controller.
 
@@ -51,27 +51,25 @@ class PWMSpeedController(PWM):
         """
         return self.isInverted
 
-    def get(self):
+    def get(self) -> float:
         """Get the recently set value of the PWM.
 
         :returns: The most recently set value for the PWM between -1.0 and 1.0.
-        :rtype: float
         """
         return self.getSpeed()
 
     def disable(self):
         self.setDisabled()
 
-    def pidWrite(self, output):
+    def pidWrite(self, output: float) -> None:
         """Write out the PID value as seen in the PIDOutput base object.
 
         :param output: Write out the PWM value as was found in the
             :class:`PIDController`.
-        :type  output: float
         """
         self.set(output)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Speed Controller")
         builder.setActuator(True)
         builder.setSafeState(self.setDisabled)

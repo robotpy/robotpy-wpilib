@@ -19,10 +19,10 @@ class WaitUntilCommand(Command):
     the next command.
     """
 
-    def __init__(self, time):
+    def __init__(self, time: float) -> None:
         super().__init__("WaitUntil(%s)" % time)
         self.time = time
 
-    def isFinished(self):
+    def isFinished(self) -> bool:
         # Check if we've reached the actual finish time.
         return Timer.getMatchTime() >= self.time

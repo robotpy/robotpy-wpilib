@@ -1,4 +1,5 @@
 # validated: 2018-01-06 TW f9bece2ffbf7 edu/wpi/first/wpilibj/Sendable.java
+from typing import Optional
 
 from .sendablebuilder import SendableBuilder
 
@@ -17,7 +18,7 @@ class Sendable:
         """
         raise NotImplementedError
 
-    def setName(self, subsystem: str, name: str = None) -> None:
+    def setName(self, subsystem: str, name: Optional[str] = None) -> None:
         """
         Sets the name (and optionally the subsystem name) of this Sendable object.
 

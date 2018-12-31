@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Union
 
 import hal
 import warnings
@@ -18,13 +19,14 @@ from .digitalinput import DigitalInput
 from .livewindow import LiveWindow
 from .resource import Resource
 from .sendablebase import SendableBase
+from .sendablebuilder import SendableBuilder
 
 from ._impl.utils import match_arglist, HasAttribute
 
 __all__ = ["Encoder"]
 
 
-def _freeEncoder(encoder):
+def _freeEncoder(encoder: "Encoder") -> None:
     hal.freeEncoder(encoder)
 
 
@@ -59,7 +61,7 @@ class Encoder(SendableBase):
     EncodingType = CounterBase.EncodingType
     PIDSourceType = PIDSource.PIDSourceType
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """Encoder constructor. Construct a Encoder given a and b channels
         and optionally an index channel.
 
@@ -217,24 +219,22 @@ class Encoder(SendableBase):
             raise ValueError("Cannot use encoder after free() has been called")
         return self._encoder
 
-    def getFPGAIndex(self):
+    def getFPGAIndex(self) -> int:
         """
         Get the FPGA Index of the encoder
 
         :returns: The Encoder's FPGA index
-        :rtype: int
         """
         return hal.getEncoderFPGAIndex(self.encoder)
 
-    def getEncodingScale(self):
+    def getEncodingScale(self) -> int:
         """
         :returns: The encoding scale factor 1x, 2x, or 4x, per the requested
             encodingType. Used to divide raw edge counts down to spec'd counts.
-        :rtype: int
         """
         return hal.getEncoderEncodingScale(self.encoder)
 
-    def close(self):
+    def close(self) -> None:
         """Free the resources used by this object."""
         super().close()
         if self.aSource is not None and self.allocatedA:
@@ -252,32 +252,30 @@ class Encoder(SendableBase):
         self.__finalizer()
         self._encoder = None
 
-    def getRaw(self):
+    def getRaw(self) -> int:
         """Gets the raw value from the encoder. The raw value is the actual
         count unscaled by the 1x, 2x, or 4x scale factor.
 
         :returns: Current raw count from the encoder
-        :rtype: int
         """
         return hal.getEncoderRaw(self.encoder)
 
-    def get(self):
+    def get(self) -> int:
         """Gets the current count. Returns the current count on the Encoder.
         This method compensates for the decoding type.
 
         :returns: Current count from the Encoder adjusted for the 1x, 2x, or
             4x scale factor.
-        :rtype: int
         """
         return hal.getEncoder(self.encoder)
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the Encoder distance to zero. Resets the current count to
         zero on the encoder.
         """
         hal.resetEncoder(self.encoder)
 
-    def getPeriod(self):
+    def getPeriod(self) -> float:
         """Returns the period of the most recent pulse. Returns the period of
         the most recent Encoder pulse in seconds. This method compensates for
         the decoding type.
@@ -288,12 +286,11 @@ class Encoder(SendableBase):
             :func:`getDistancePerPulse`.
 
         :returns: Period in seconds of the most recent pulse.
-        :rtype: float
         """
         warnings.warn("use getRate instead", DeprecationWarning)
         return hal.getEncoderPeriod(self.encoder)
 
-    def setMaxPeriod(self, maxPeriod):
+    def setMaxPeriod(self, maxPeriod: float) -> None:
         """Sets the maximum period for stopped detection. Sets the value that
         represents the maximum period of the Encoder before it will assume
         that the attached device is stopped. This timeout allows users to
@@ -303,11 +300,10 @@ class Encoder(SendableBase):
         :param maxPeriod: The maximum time between rising and falling edges
             before the FPGA will report the device stopped. This is expressed
             in seconds.
-        :type maxPeriod: float
         """
         hal.setEncoderMaxPeriod(self.encoder, maxPeriod)
 
-    def getStopped(self):
+    def getStopped(self) -> bool:
         """Determine if the encoder is stopped. Using the MaxPeriod value, a
         boolean is returned that is True if the encoder is considered stopped
         and False if it is still moving. A stopped encoder is one where the
@@ -317,43 +313,39 @@ class Encoder(SendableBase):
         """
         return hal.getEncoderStopped(self.encoder)
 
-    def getDirection(self):
+    def getDirection(self) -> bool:
         """The last direction the encoder value changed.
 
         :returns: The last direction the encoder value changed.
-        :rtype: bool
         """
         return hal.getEncoderDirection(self.encoder)
 
-    def getDistance(self):
+    def getDistance(self) -> float:
         """Get the distance the robot has driven since the last reset.
 
         :returns: The distance driven since the last reset as scaled by the
             value from :func:`setDistancePerPulse`.
-        :rtype: float
         """
         return hal.getEncoderDistance(self.encoder)
 
-    def getRate(self):
+    def getRate(self) -> float:
         """Get the current rate of the encoder. Units are distance per second
         as scaled by the value from :func:`setDistancePerPulse`.
 
         :returns: The current rate of the encoder.
-        :rtype: float
         """
         return hal.getEncoderRate(self.encoder)
 
-    def setMinRate(self, minRate):
+    def setMinRate(self, minRate: float) -> None:
         """Set the minimum rate of the device before the hardware reports it
         stopped.
 
         :param minRate: The minimum rate. The units are in distance per
             second as scaled by the value from :func:`setDistancePerPulse`.
-        :type minRate: float
         """
         hal.setEncoderMinRate(self.encoder, minRate)
 
-    def setDistancePerPulse(self, distancePerPulse):
+    def setDistancePerPulse(self, distancePerPulse: float) -> None:
         """Set the distance per pulse for this encoder. This sets the
         multiplier used to determine the distance driven based on the count
         value from the encoder. Do not include the decoding type in this
@@ -364,31 +356,28 @@ class Encoder(SendableBase):
 
         :param distancePerPulse: The scale factor that will be used to convert
             pulses to useful units.
-        :type distancePerPulse: float
         """
         hal.setEncoderDistancePerPulse(self.encoder, distancePerPulse)
 
-    def getDistancePerPulse(self):
+    def getDistancePerPulse(self) -> float:
         """ 
         Get the distance per pulse for this encoder.
 
         :returns: The scale factor that will be used to convert pulses to useful units.
-        :rtype: float
         """
         return hal.getEncoderDistancePerPulse(self.encoder)
 
-    def setReverseDirection(self, reverseDirection):
+    def setReverseDirection(self, reverseDirection: bool) -> None:
         """Set the direction sensing for this encoder. This sets the direction
         sensing on the encoder so that it could count in the correct software
         direction regardless of the mounting.
 
         :param reverseDirection: True if the encoder direction should be
             reversed
-        :type reverseDirection: bool
         """
         hal.setEncoderReverseDirection(self.encoder, reverseDirection)
 
-    def setSamplesToAverage(self, samplesToAverage):
+    def setSamplesToAverage(self, samplesToAverage: int) -> None:
         """Set the Samples to Average which specifies the number of samples
         of the timer to average when calculating the period. Perform averaging
         to account for mechanical imperfections or as oversampling to increase
@@ -399,22 +388,20 @@ class Encoder(SendableBase):
 
         :param samplesToAverage: The number of samples to average from 1 to
             127.
-        :type samplesToAverage: int
         """
         hal.setEncoderSamplesToAverage(self.encoder, samplesToAverage)
 
-    def getSamplesToAverage(self):
+    def getSamplesToAverage(self) -> int:
         """Get the Samples to Average which specifies the number of samples
         of the timer to average when calculating the period. Perform averaging
         to account for mechanical imperfections or as oversampling to increase
         resolution.
 
         :returns: The number of samples being averaged (from 1 to 127)
-        :rtype: int
         """
         return hal.getEncoderSamplesToAverage(self.encoder)
 
-    def setPIDSourceType(self, pidSource):
+    def setPIDSourceType(self, pidSource: PIDSourceType) -> None:
         """Set which parameter of the encoder you are using as a process
         control variable. The encoder class supports the rate and distance
         parameters.
@@ -428,10 +415,10 @@ class Encoder(SendableBase):
             raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         return self.pidSource
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         """Implement the PIDSource interface.
 
          :returns: The current value of the selected source parameter.
@@ -443,14 +430,16 @@ class Encoder(SendableBase):
         else:
             return 0.0
 
-    def setIndexSource(self, source, indexing_type=IndexingType.kResetOnRisingEdge):
+    def setIndexSource(
+        self,
+        source: Union[int, DigitalInput],
+        indexing_type: IndexingType = IndexingType.kResetOnRisingEdge,
+    ) -> None:
         """
         Set the index source for the encoder. When this source rises, the encoder count automatically resets.
 
         :param source: Either an initialized DigitalSource or a DIO channel number
-        :type source: :class:`.DigitalInput` or int
         :param indexing_type: The state that will cause the encoder to reset
-        :type indexing_type: :class:`.IndexingType`
         """
         if hasattr(source, "getPortHandleForRouting"):
             self.indexSource = source
@@ -464,7 +453,7 @@ class Encoder(SendableBase):
             indexing_type,
         )
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         if self.encodingType == self.EncodingType.k4X:
             builder.setSmartDashboardType("Quadrature Encoder")
         else:

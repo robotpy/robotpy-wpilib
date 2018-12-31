@@ -17,20 +17,19 @@ __all__ = ["NetworkButton"]
 class NetworkButton(Button):
     """A :class:`.button.Button` that uses a :class:`.NetworkTable` boolean field."""
 
-    def __init__(self, table, field):
+    def __init__(self, table: NetworkTable, field: str) -> None:
         """Initialize the NetworkButton.
 
         :param table: the :class:`.NetworkTable` instance to use, or the name of the
                       table to use.
         :param field: field to use.
         """
-
         if isinstance(table, NetworkTable):
             self.entry = table.getEntry(field)
         else:
             table = NetworkTablesInstance.getDefault().getTable(table)
             self.entry = table.getEntry(field)
 
-    def get(self):
+    def get(self) -> bool:
         """Get the value of the button."""
         return self.entry.getInstance().isConnected() and self.entry.getBoolean(False)

@@ -11,21 +11,21 @@ class RobotState:
     impl = None
 
     @staticmethod
-    def isDisabled():
+    def isDisabled() -> bool:
         return RobotState.impl.isDisabled()
 
     @staticmethod
-    def isEnabled():
+    def isEnabled() -> bool:
         return RobotState.impl.isEnabled()
 
     @staticmethod
-    def isOperatorControl():
+    def isOperatorControl() -> bool:
         return RobotState.impl.isOperatorControl()
 
     @staticmethod
-    def isAutonomous():
+    def isAutonomous() -> bool:
         return RobotState.impl.isAutonomous()
 
     @staticmethod
-    def isTest():
+    def isTest() -> bool:
         return RobotState.impl.isTest()

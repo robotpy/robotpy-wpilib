@@ -18,11 +18,10 @@ class Talon(PWMSpeedController):
         Cross the Road Electronics (CTRE) Talon and Talon SR Speed Controller via PWM
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Constructor for a Talon (original or Talon SR)
 
         :param channel: The PWM channel that the Talon is attached to. 0-9 are on-board, 10-19 are on the MXP port
-        :type  channel: int
 
         .. note ::
 

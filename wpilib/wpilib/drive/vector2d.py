@@ -7,7 +7,7 @@ __all__ = ["Vector2d"]
 class Vector2d:
     """This is a 2D vector struct that supports basic operations"""
 
-    def __init__(self, x=0.0, y=0.0):
+    def __init__(self, x: float = 0.0, y: float = 0.0) -> None:
         """Construct a 2D vector
 
         :param x: x component of the vector
@@ -16,7 +16,7 @@ class Vector2d:
         self.x = x
         self.y = y
 
-    def rotate(self, angle):
+    def rotate(self, angle: float) -> None:
         """Rotate a vector in Cartesian space.
 
         :param angle: Angle in degrees by which to rotate vector counter-clockwise
@@ -30,23 +30,21 @@ class Vector2d:
         self.x = x
         self.y = y
 
-    def dot(self, vec):
+    def dot(self, vec: "Vector2d") -> float:
         """Returns dot product of this vector and argument
 
         :param vec: Vector with which to perform dot product
-        :type vec: Vector2d
         """
         return self.x * vec.x + self.y * vec.y
 
-    def magnitude(self):
+    def magnitude(self) -> float:
         """ Returns magnitude of vector"""
         return math.hypot(self.x, self.y)
 
-    def scalarProject(self, vec):
+    def scalarProject(self, vec: "Vector2d") -> float:
         """Returns scalar projection of this vector onto argument
 
         :param vec: Vector onto which to project this vector
-        :type vec: Vector2d
         :return: scalar projection of this vector onto argument
         """
         return self.dot(vec) / vec.magnitude()

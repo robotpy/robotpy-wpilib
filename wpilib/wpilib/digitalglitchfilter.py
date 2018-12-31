@@ -4,6 +4,7 @@
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.
 # ----------------------------------------------------------------------------
+from typing import Union
 
 import hal
 import threading
@@ -11,6 +12,7 @@ import threading
 from .digitalsource import DigitalSource
 from .encoder import Encoder
 from .counter import Counter
+from .sendablebuilder import SendableBuilder
 from .sensorutil import SensorUtil
 from .sendablebase import SendableBase
 
@@ -28,7 +30,7 @@ class DigitalGlitchFilter(SendableBase):
     mutex = threading.Lock()
     filterAllocated = [False] * 3
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.channelIndex = -1
         with self.mutex:
@@ -46,7 +48,7 @@ class DigitalGlitchFilter(SendableBase):
             else:
                 raise ValueError("No more filters available")
 
-    def close(self):
+    def close(self) -> None:
         super().close()
         if self.channelIndex >= 0:
             with self.mutex:
@@ -55,7 +57,7 @@ class DigitalGlitchFilter(SendableBase):
             self.channelIndex = -1
 
     @staticmethod
-    def _setFilter(input, channelIndex):
+    def _setFilter(input: DigitalSource, channelIndex: int) -> None:
         if input is not None:  # Counter might have just one input
             # analog triggers are not supported for DigitalGlitchFilter
             if input.isAnalogTrigger():
@@ -70,10 +72,10 @@ class DigitalGlitchFilter(SendableBase):
                     "setFilterSelect(%s) failed -> %s" % (channelIndex, selected)
                 )
 
-    def add(self, input):
+    def add(self, input: Union[DigitalSource, Encoder, Counter]) -> None:
         """
         Assigns the :class:`.DigitalSource`, :class:`.Encoder`, or
-        :class:`.Counter` to this glitch filter.
+        :class:`counter.Counter` to this glitch filter.
 
         :param input: The object to add
         """
@@ -88,7 +90,7 @@ class DigitalGlitchFilter(SendableBase):
         else:
             raise ValueError("Cannot add %s to glitch filter" % input)
 
-    def remove(self, input):
+    def remove(self, input: Union[DigitalSource, Encoder, Counter]) -> None:
         """
         Removes this filter from the given input object
         """
@@ -104,7 +106,7 @@ class DigitalGlitchFilter(SendableBase):
         else:
             raise ValueError("Cannot remove %s from glitch filter" % input)
 
-    def setPeriodCycles(self, fpga_cycles):
+    def setPeriodCycles(self, fpga_cycles: int) -> None:
         """
         Sets the number of FPGA cycles that the input must hold steady to pass
         through this glitch filter.
@@ -113,7 +115,7 @@ class DigitalGlitchFilter(SendableBase):
         """
         hal.setFilterPeriod(self.channelIndex, fpga_cycles)
 
-    def setPeriodNanoSeconds(self, nanoseconds):
+    def setPeriodNanoSeconds(self, nanoseconds: float) -> None:
         """
         Sets the number of nanoseconds that the input must hold steady to pass
         through this glitch filter.
@@ -125,7 +127,7 @@ class DigitalGlitchFilter(SendableBase):
         )
         self.setPeriodCycles(fpga_cycles)
 
-    def getPeriodCycles(self):
+    def getPeriodCycles(self) -> int:
         """
         Gets the number of FPGA cycles that the input must hold steady to pass
         through this glitch filter.
@@ -134,7 +136,7 @@ class DigitalGlitchFilter(SendableBase):
         """
         return hal.getFilterPeriod(self.channelIndex)
 
-    def getPeriodNanoSeconds(self):
+    def getPeriodNanoSeconds(self) -> float:
         """
         Gets the number of nanoseconds that the input must hold steady to pass
         through this glitch filter.
@@ -144,5 +146,5 @@ class DigitalGlitchFilter(SendableBase):
         fpga_cycles = self.getPeriodCycles()
         return fpga_cycles * 1000 / (SensorUtil.kSystemClockTicksPerMicrosecond / 4)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         pass

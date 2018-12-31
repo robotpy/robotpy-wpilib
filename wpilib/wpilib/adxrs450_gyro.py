@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Optional
 
 import hal
 
@@ -43,12 +44,11 @@ class ADXRS450_Gyro(GyroBase):
     kSNHighRegister = 0x0E
     kSNLowRegister = 0x10
 
-    def __init__(self, port=None):
+    def __init__(self, port: Optional[SPI.Port] = None) -> None:
         """
             Constructor.
 
             :param port: The SPI port that the gyro is connected to
-            :type port: :class:`.SPI.Port`
         """
         super().__init__()
 
@@ -104,7 +104,7 @@ class ADXRS450_Gyro(GyroBase):
     def isConnected(self) -> bool:
         return self.spi is not None
 
-    def calibrate(self):
+    def calibrate(self) -> None:
         """Calibrate the gyro by running for a number of samples and computing the
         center value. Then use the center value as the Accumulator center value for
         subsequent measurements.
@@ -135,14 +135,14 @@ class ADXRS450_Gyro(GyroBase):
         )
         self.spi.resetAccumulator()
 
-    def _calcParity(self, v):
+    def _calcParity(self, v: int) -> bool:
         parity = False
         while v != 0:
             parity = not parity
             v = v & (v - 1)
         return parity
 
-    def _readRegister(self, reg):
+    def _readRegister(self, reg: int) -> int:
         cmdhi = 0x8000 | (reg << 1)
         parity = self._calcParity(cmdhi)
 
@@ -157,7 +157,7 @@ class ADXRS450_Gyro(GyroBase):
         val = int.from_bytes(data[:4], byteorder="big")
         return (val >> 5) & 0xFFFF
 
-    def reset(self):
+    def reset(self) -> None:
         """
         Reset the gyro.
         
@@ -168,14 +168,14 @@ class ADXRS450_Gyro(GyroBase):
         if self.spi is not None:
             self.spi.resetAccumulator()
 
-    def close(self):
+    def close(self) -> None:
         """Delete (free) the spi port used for the gyro and stop accumulating."""
         super().close()
         if self.spi is not None:
             self.spi.close()
             self.spi = None
 
-    def getAngle(self):
+    def getAngle(self) -> float:
         """
         Return the actual angle in degrees that the robot is currently facing.
 
@@ -196,7 +196,7 @@ class ADXRS450_Gyro(GyroBase):
             * self.kSamplePeriod
         )
 
-    def getRate(self):
+    def getRate(self) -> float:
         """Return the rate of rotation of the gyro
 
         The rate is based on the most recent reading of the gyro value

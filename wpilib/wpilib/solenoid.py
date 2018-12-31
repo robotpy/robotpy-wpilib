@@ -10,6 +10,8 @@ import hal
 import weakref
 import warnings
 
+from .sendablebuilder import SendableBuilder
+
 from .livewindow import LiveWindow
 from .resource import Resource
 from .sensorutil import SensorUtil
@@ -18,7 +20,7 @@ from .solenoidbase import SolenoidBase
 __all__ = ["Solenoid"]
 
 
-def _freeSolenoid(solenoidHandle):
+def _freeSolenoid(solenoidHandle: hal.SolenoidHandle) -> None:
     hal.freeSolenoidPort(solenoidHandle)
 
 
@@ -31,7 +33,7 @@ class Solenoid(SolenoidBase):
     .. not_implemented: initSolenoid
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """Constructor.
 
         Arguments can be supplied as positional or keyword.  Acceptable
@@ -89,35 +91,33 @@ class Solenoid(SolenoidBase):
         Resource._add_global_resource(self)
 
     @property
-    def solenoidHandle(self):
+    def solenoidHandle(self) -> None:
         if not self.__finalizer.alive:
             raise ValueError("Cannot use channel after close() has been called")
         return self._solenoidHandle
 
-    def close(self):
+    def close(self) -> None:
         """Mark the solenoid as close."""
         super().close()
 
         self.__finalizer()
         self._solenoidHandle = None
 
-    def set(self, on):
+    def set(self, on: bool) -> None:
         """Set the value of a solenoid.
 
         :param on: True will turn the solenoid output on. False will turn the solenoid output off.
-        :type on: bool
         """
         hal.setSolenoid(self.solenoidHandle, on)
 
-    def get(self):
+    def get(self) -> bool:
         """Read the current value of the solenoid.
 
         :returns: True if the solenoid output is on or false if the solenoid output is off.
-        :rtype: bool
         """
         return hal.getSolenoid(self.solenoidHandle)
 
-    def isBlackListed(self):
+    def isBlackListed(self) -> bool:
         """
         Check if the solenoid is blacklisted.
             If a solenoid is shorted, it is added to the blacklist and disabled until power cycle, or until faults are
@@ -128,7 +128,7 @@ class Solenoid(SolenoidBase):
         value = self.getPCMSolenoidBlackList() & (1 << self.channel)
         return value != 0
 
-    def setPulseDuration(self, durationSeconds):
+    def setPulseDuration(self, durationSeconds: float) -> None:
         """
         Set the pulse duration in the PCM. This is used in conjunction with
         the startPulse method to allow the PCM to control the timing of a pulse.
@@ -141,7 +141,7 @@ class Solenoid(SolenoidBase):
         duration_ms = int(durationSeconds * 1000)
         hal.setOneShotDuration(self.solenoidHandle, duration_ms)
 
-    def startPulse(self):
+    def startPulse(self) -> None:
         """
         Trigger the PCM to generate a pulse of the duration set in
         setPulseDuration.
@@ -150,7 +150,7 @@ class Solenoid(SolenoidBase):
         """
         hal.fireOneShot(self.solenoidHandle)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Solenoid")
         builder.setActuator(True)
         builder.setSafeState(lambda: self.set(False))

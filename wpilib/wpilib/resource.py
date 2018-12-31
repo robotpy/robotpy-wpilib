@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 import weakref
+from typing import Optional
 
 __all__ = ["Resource"]
 
@@ -28,7 +29,7 @@ class Resource:
     _global_resources = []
 
     @staticmethod
-    def _reset():
+    def _reset() -> None:
         """
             This clears all resources in the program and calls free() on any
             objects that have a free method.
@@ -48,7 +49,6 @@ class Resource:
                         obj.free()
 
             resource.numAllocated = [None] * len(resource.numAllocated)
-
         for ref in Resource._global_resources:
             obj = ref()
             if obj is not None:
@@ -56,14 +56,13 @@ class Resource:
                     obj.close()
                 elif hasattr(obj, "free"):
                     obj.free()
-
         del Resource._global_resources[:]
 
     @staticmethod
-    def _add_global_resource(obj):
+    def _add_global_resource(obj: object) -> None:
         Resource._global_resources.append(weakref.ref(obj))
 
-    def __init__(self, size):
+    def __init__(self, size: int) -> None:
         """Allocate storage for a new instance of Resource.
         Allocate a bool array of values that will get initialized to
         indicate that no resources have been allocated yet. The indices
@@ -74,7 +73,7 @@ class Resource:
         Resource._resource_objects.append(self)
         self.numAllocated = [None] * size
 
-    def allocate(self, obj, index=None):
+    def allocate(self, obj: object, index: Optional[int] = None) -> int:
         """Allocate a resource.
 
         When index is None or unspecified, a free resource value within the
@@ -103,7 +102,7 @@ class Resource:
         self.numAllocated[index] = weakref.ref(obj)
         return index
 
-    def free(self, index):
+    def free(self, index: int) -> None:
         """Force-free an allocated resource.
         After a resource is no longer needed, for example a destructor is
         called for a channel assignment class, free will release the resource

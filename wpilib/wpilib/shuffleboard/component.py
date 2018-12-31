@@ -6,11 +6,13 @@
 # the project.
 # ----------------------------------------------------------------------------
 from .container import ShuffleboardContainer
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 class ShuffleboardComponent:
-    def __init__(self, parent: ShuffleboardContainer, title: str, type: str = None):
+    def __init__(
+        self, parent: ShuffleboardContainer, title: str, type: Optional[str] = None
+    ):
         assert parent is not None, "parent cannot be None"
         assert title is not None, "title cannot be None"
         self.parent = parent

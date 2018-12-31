@@ -19,19 +19,18 @@ class Utility:
     """
 
     @staticmethod
-    def getFPGAVersion():
+    def getFPGAVersion() -> int:
         """Return the FPGA Version number.
 
         .. deprecated:: 2018.0.0
             Use :meth:`.RobotController.getFPGAVersion` instead
 
         :returns: FPGA Version number.
-        :rtype: int
         """
         return hal.getFPGAVersion()
 
     @staticmethod
-    def getFPGARevision():
+    def getFPGARevision() -> int:
         """Return the FPGA Revision number. The format of the revision is 3
         numbers.  The 12 most significant bits are the Major Revision. the
         next 8 bits are the Minor Revision. The 12 least significant bits
@@ -41,30 +40,27 @@ class Utility:
             Use :meth:`.RobotController.getFPGARevision` instead
 
         :returns: FPGA Revision number.
-        :rtype: int
         """
         return hal.getFPGARevision()
 
     @staticmethod
-    def getFPGATime():
+    def getFPGATime() -> int:
         """Read the microsecond timer from the FPGA.
 
         .. deprecated:: 2018.0.0
             Use :meth:`.RobotController.getFPGATime` instead
 
         :returns: The current time in microseconds according to the FPGA.
-        :rtype: int
         """
         return hal.getFPGATime()
 
     @staticmethod
-    def getUserButton():
+    def getUserButton() -> bool:
         """Get the state of the "USER" button on the roboRIO.
 
         .. deprecated:: 2018.0.0
             Use :meth:`.RobotController.getUserButton` instead
 
         :returns: True if the button is currently pressed down
-        :rtype: bool
         """
         return hal.getFPGAButton()

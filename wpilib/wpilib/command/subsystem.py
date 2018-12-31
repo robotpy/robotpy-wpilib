@@ -7,10 +7,15 @@
 # ----------------------------------------------------------------------------
 
 import logging
+from typing import Optional
 
-from .scheduler import Scheduler
 from ..livewindow import LiveWindow
+from .scheduler import Scheduler
 from ..sendablebase import SendableBase
+from ..sendablebuilder import SendableBuilder
+
+from . import command
+from .. import sendable
 
 __all__ = ["Subsystem"]
 
@@ -32,7 +37,7 @@ class Subsystem(SendableBase):
     .. seealso:: :class:`.Command`
     """
 
-    def __init__(self, name=None):
+    def __init__(self, name: Optional[str] = None) -> None:
         """Creates a subsystem.
 
         :param name: the name of the subsystem; if None, it will be set to the
@@ -56,7 +61,7 @@ class Subsystem(SendableBase):
         # The default command
         self.defaultCommand = None
 
-    def initDefaultCommand(self):
+    def initDefaultCommand(self) -> None:
         """Initialize the default command for a subsystem
         By default subsystems have no default command, but if they do, the
         default command is set with this method. It is called on all
@@ -65,7 +70,7 @@ class Subsystem(SendableBase):
         """
         pass
 
-    def periodic(self):
+    def periodic(self) -> None:
         """When the run method of the scheduler is called this method will be called.
         """
         func = self.periodic.__func__
@@ -73,7 +78,7 @@ class Subsystem(SendableBase):
             self.logger.info("Default Subsystem.periodic() method... Overload me!")
             func.firstRun = False
 
-    def setDefaultCommand(self, command):
+    def setDefaultCommand(self, command: "command.Command") -> None:
         """Sets the default command.  If this is not called or is called with
         None, then there will be no default command for the subsystem.
 
@@ -89,7 +94,7 @@ class Subsystem(SendableBase):
                 raise ValueError("A default command must require the subsystem")
             self.defaultCommand = command
 
-    def getDefaultCommand(self):
+    def getDefaultCommand(self) -> "command.Command":
         """Returns the default command (or None if there is none).
         
         :returns: the default command
@@ -99,7 +104,7 @@ class Subsystem(SendableBase):
             self.initDefaultCommand()
         return self.defaultCommand
 
-    def getDefaultCommandName(self):
+    def getDefaultCommandName(self) -> str:
         """
         Returns the default command name, or empty string is there is none.
 
@@ -110,7 +115,7 @@ class Subsystem(SendableBase):
             return defaultCommand.getName()
         return ""
 
-    def setCurrentCommand(self, command):
+    def setCurrentCommand(self, command: Optional["command.Command"]) -> None:
         """Sets the current command
         
         :param command: the new current command
@@ -118,7 +123,7 @@ class Subsystem(SendableBase):
         self.currentCommand = command
         self.currentCommandChanged = True
 
-    def confirmCommand(self):
+    def confirmCommand(self) -> None:
         """Call this to alert Subsystem that the current command is actually
         the command.  Sometimes, the Subsystem is told that it has no command
         while the Scheduler is going through the loop, only to be soon after
@@ -127,14 +132,14 @@ class Subsystem(SendableBase):
         if self.currentCommandChanged:
             self.currentCommandChanged = False
 
-    def getCurrentCommand(self):
+    def getCurrentCommand(self) -> "command.Command":
         """Returns the command which currently claims this subsystem.
         
         :returns: the command which currently claims this subsystem
         """
         return self.currentCommand
 
-    def getCurrentCommandName(self):
+    def getCurrentCommandName(self) -> str:
         """
         Returns the current command name, or empty string if no current command.
 
@@ -145,7 +150,7 @@ class Subsystem(SendableBase):
             return currentCommand.getName()
         return ""
 
-    def addChild(self, child, name=None):
+    def addChild(self, child: "sendable.Sendable", name: Optional[str] = None) -> None:
         """
         Associate a :class:`.Sendable` with this Subsystem.
         Update the child's name if provided
@@ -159,10 +164,10 @@ class Subsystem(SendableBase):
             child.setSubsystem(self.getSubsystem())
         LiveWindow.add(child)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.getSubsystem()
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Subsystem")
         builder.addBooleanProperty(
             ".hasDefault", lambda: self.defaultCommand is not None, None

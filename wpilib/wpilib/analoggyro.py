@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Union, Optional
 
 import hal
 
@@ -37,7 +38,12 @@ class AnalogGyro(GyroBase):
 
     PIDSourceType = PIDSource.PIDSourceType
 
-    def __init__(self, channel, center=None, offset=None):
+    def __init__(
+        self,
+        channel: Union[AnalogInput, int],
+        center: Optional[int] = None,
+        offset: Optional[float] = None,
+    ) -> None:
         """Gyro constructor.
 
         Also initializes the gyro. Calibrate the gyro by running for a number
@@ -51,9 +57,7 @@ class AnalogGyro(GyroBase):
         :param channel: The analog channel index or AnalogInput object that
             the gyro is connected to. Gyros can only be used on on-board channels 0-1.
         :param center: Preset uncalibrated value to use as the accumulator center value
-        :type center: int
         :param offset: Preset uncalibrated value to use as the gyro offset
-        :type offset: float
         """
         super().__init__()
 
@@ -83,15 +87,15 @@ class AnalogGyro(GyroBase):
             )
             self.reset()
 
-    def calibrate(self):
+    def calibrate(self) -> None:
         """:see: :meth:`.Gyro.calibrate`"""
         hal.calibrateAnalogGyro(self.gyroHandle)
 
-    def reset(self):
+    def reset(self) -> None:
         """:see: :meth:`.Gyro.reset`"""
         hal.resetAnalogGyro(self.gyroHandle)
 
-    def close(self):
+    def close(self) -> None:
         """:see: :meth:`.Gyro.close`"""
         super().close()
         if self.analog is not None and self.channelAllocated:
@@ -100,7 +104,7 @@ class AnalogGyro(GyroBase):
         hal.freeAnalogGyro(self.gyroHandle)
         self.gyroHandle = 0
 
-    def getAngle(self):
+    def getAngle(self) -> float:
         """:see: :meth:`.Gyro.getAngle`"""
 
         if self.analog is None:
@@ -108,14 +112,14 @@ class AnalogGyro(GyroBase):
 
         return hal.getAnalogGyroAngle(self.gyroHandle)
 
-    def getRate(self):
+    def getRate(self) -> float:
         """:see: :meth:`.Gyro.getRate`"""
         if self.analog is None:
             return 0.0
         else:
             return hal.getAnalogGyroRate(self.gyroHandle)
 
-    def getOffset(self):
+    def getOffset(self) -> float:
         """Return the gyro offset value set during calibration to
         use as a future preset
         
@@ -123,7 +127,7 @@ class AnalogGyro(GyroBase):
         """
         return hal.getAnalogGyroOffset(self.gyroHandle)
 
-    def getCenter(self):
+    def getCenter(self) -> int:
         """Return the gyro center value set during calibration to
         use as a future preset
         
@@ -131,7 +135,7 @@ class AnalogGyro(GyroBase):
         """
         return hal.getAnalogGyroCenter(self.gyroHandle)
 
-    def setSensitivity(self, voltsPerDegreePerSecond):
+    def setSensitivity(self, voltsPerDegreePerSecond: float) -> None:
         """Set the gyro sensitivity. This takes the number of
         volts/degree/second sensitivity of the gyro and uses it in subsequent
         calculations to allow the code to work with multiple gyros. This value
@@ -139,20 +143,18 @@ class AnalogGyro(GyroBase):
 
         :param voltsPerDegreePerSecond:
             The sensitivity in Volts/degree/second
-        :type  voltsPerDegreePerSecond: float
         """
         hal.setAnalogGyroVoltsPerDegreePerSecond(
             self.gyroHandle, voltsPerDegreePerSecond
         )
 
-    def setDeadband(self, volts):
+    def setDeadband(self, volts: float) -> None:
         """Set the size of the neutral zone.  Any voltage from the gyro less
         than this amount from the center is considered stationary.  Setting a
         deadband will decrease the amount of drift when the gyro isn't
         rotating, but will make it less accurate.
 
         :param volts: The size of the deadband in volts
-        :type  volts: float
         """
         if self.analog is None:
             return

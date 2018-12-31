@@ -12,11 +12,12 @@ import weakref
 from .resource import Resource
 from .sendablebase import SendableBase
 from .sensorutil import SensorUtil
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["AnalogOutput"]
 
 
-def _freeAnalogOutput(port):
+def _freeAnalogOutput(port: hal.AnalogOutputHandle) -> None:
     hal.freeAnalogOutputPort(port)
 
 
@@ -25,7 +26,7 @@ class AnalogOutput(SendableBase):
 
     channels = Resource(SensorUtil.kAnalogOutputChannels)
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Construct an analog output on a specified MXP channel.
 
         :param channel: The channel number to represent.
@@ -49,7 +50,7 @@ class AnalogOutput(SendableBase):
             return None
         return self._port
 
-    def close(self):
+    def close(self) -> None:
         """Channel destructor.
         """
         super().close()
@@ -59,17 +60,17 @@ class AnalogOutput(SendableBase):
         self.__finalizer()
         self.channel = None
 
-    def getChannel(self):
+    def getChannel(self) -> int:
         """Get the channel of this AnalogOutput.
         """
         return self.channel
 
-    def setVoltage(self, voltage):
+    def setVoltage(self, voltage: float) -> None:
         hal.setAnalogOutput(self.port, voltage)
 
-    def getVoltage(self):
+    def getVoltage(self) -> float:
         return hal.getAnalogOutput(self.port)
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Analog Output")
         builder.addDoubleProperty("Value", self.getVoltage, self.setVoltage)

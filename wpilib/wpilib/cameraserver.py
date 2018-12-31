@@ -1,6 +1,8 @@
 # notrack
+from typing import Optional
 
 import hal
+import subprocess
 import threading
 
 import logging
@@ -26,12 +28,12 @@ class CameraServer:
     _launched = False
 
     @classmethod
-    def is_alive(cls):
+    def is_alive(cls) -> bool:
         """:returns: True if the CameraServer is still alive"""
         return cls._alive
 
     @classmethod
-    def launch(cls, vision_py=None):
+    def launch(cls, vision_py: Optional[str] = None) -> None:
         """
             Launches the CameraServer process in autocapture mode or
             using a user-specified python script
@@ -61,8 +63,6 @@ class CameraServer:
             logger.info("Launching CameraServer process")
 
             # Launch the cscore launcher in a separate process
-
-            import subprocess
             import sys
 
             args = [sys.executable, "-m", "cscore"]
@@ -88,7 +88,7 @@ class CameraServer:
             th.start()
 
     @classmethod
-    def _monitor_child(cls, proc):
+    def _monitor_child(cls, proc: subprocess.Popen) -> None:
         proc.wait()
         logger.warning("CameraServer process exited with exitcode %s", proc.returncode)
         cls._alive = False

@@ -8,7 +8,9 @@
 
 import hal
 
+from . import analogtrigger
 from .digitalsource import DigitalSource
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["AnalogTriggerOutput"]
 
@@ -18,7 +20,7 @@ class AnalogTriggerOutput(DigitalSource):
     
     This class is used to get the current output value and also as a
     :class:`.DigitalSource` to provide routing of an output to digital
-    subsystems on the FPGA such as :class:`.Counter`, :class:`.Encoder:,
+    subsystems on the FPGA such as :class:`counter.Counter`, :class:`.Encoder:,
     and :class:`.Interrupt`.
 
     The TriggerState output indicates the primary output value of the trigger.
@@ -55,7 +57,9 @@ class AnalogTriggerOutput(DigitalSource):
         kRisingPulse = hal.AnalogTriggerType.kRisingPulse
         kFallingPulse = hal.AnalogTriggerType.kFallingPulse
 
-    def __init__(self, trigger, outputType):
+    def __init__(
+        self, trigger: "analogtrigger.AnalogTrigger", outputType: AnalogTriggerType
+    ) -> None:
         """Create an object that represents one of the four outputs from an
         analog trigger.
 
@@ -75,22 +79,21 @@ class AnalogTriggerOutput(DigitalSource):
             outputType,
         )
 
-    def get(self):
+    def get(self) -> AnalogTriggerType:
         """Get the state of the analog trigger output.
 
         :returns: The state of the analog trigger output.
-        :rtype: :class:`.AnalogTriggerOutput.AnalogTriggerType`
         """
         return hal.getAnalogTriggerOutput(self.trigger.port, self.outputType)
 
-    def getPortHandleForRouting(self):
+    def getPortHandleForRouting(self) -> int:
         return self.trigger.port
 
-    def getChannel(self):
+    def getChannel(self) -> int:
         return self.trigger.index
 
-    def getAnalogTriggerTypeForRouting(self):
+    def getAnalogTriggerTypeForRouting(self) -> AnalogTriggerType:
         return self.outputType
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         pass

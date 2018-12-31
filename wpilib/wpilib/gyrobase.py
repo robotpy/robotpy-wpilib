@@ -6,9 +6,9 @@
 # the project.
 # ----------------------------------------------------------------------------
 
-
 from .interfaces import PIDSource
 from .sendablebase import SendableBase
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["GyroBase"]
 
@@ -21,30 +21,29 @@ class GyroBase(SendableBase):
 
     PIDSourceType = PIDSource.PIDSourceType
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.pidSource = self.PIDSourceType.kDisplacement
         self.valueEntry = None
 
-    def calibrate(self):
+    def calibrate(self) -> None:
         raise NotImplementedError()
 
-    def reset(self):
+    def reset(self) -> None:
         raise NotImplementedError()
 
-    def getAngle(self):
+    def getAngle(self) -> float:
         raise NotImplementedError()
 
-    def getRate(self):
+    def getRate(self) -> float:
         raise NotImplementedError()
 
-    def setPIDSourceType(self, pidSource):
+    def setPIDSourceType(self, pidSource: PIDSourceType) -> None:
         """Set which parameter of the gyro you are using as a process
         control variable. The Gyro class supports the rate and angle
         parameters.
 
         :param pidSource: An enum to select the parameter.
-        :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
         if pidSource not in (
             self.PIDSourceType.kDisplacement,
@@ -53,15 +52,14 @@ class GyroBase(SendableBase):
             raise ValueError("Must be kRate or kDisplacement")
         self.pidSource = pidSource
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         return self.pidSource
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         """Get the output of the gyro for use with PIDControllers. May be
         the angle or rate depending on the set :class:`.PIDSourceType`
 
         :returns: the current angle according to the gyro
-        :rtype: float
         """
         if self.pidSource == self.PIDSourceType.kRate:
             return self.getRate()
@@ -70,6 +68,6 @@ class GyroBase(SendableBase):
         else:
             return 0.0
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Gyro")
         builder.addDoubleProperty("Value", self.getAngle, None)

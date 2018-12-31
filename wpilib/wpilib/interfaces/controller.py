@@ -8,11 +8,11 @@ class Controller:
     that is controlling an actuator in a separate thread.
     """
 
-    def enable(self):
+    def enable(self) -> None:
         """Allows the control loop to run."""
         raise NotImplementedError
 
-    def disable(self):
+    def disable(self) -> None:
         """Stops the control loop from running until explicitly re-enabled by
         calling :meth:`enable`.
         """

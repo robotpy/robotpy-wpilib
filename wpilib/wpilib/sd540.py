@@ -20,7 +20,7 @@ class SD540(PWMSpeedController):
         .. not_implemented: initSD540
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Constructor.
 
         :param channel: The PWM channel that the SD540 is attached to. 0-9 are on-board, 10-19 are on the MXP port

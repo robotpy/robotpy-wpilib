@@ -5,21 +5,22 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import List, Optional
 
 import hal
 import weakref
 from enum import IntEnum
 
-from .livewindow import LiveWindow
 from .motorsafety import MotorSafety
 from .resource import Resource
 from .sensorutil import SensorUtil
+from .sendablebuilder import SendableBuilder
 from .sendablebase import SendableBase
 
 __all__ = ["Relay"]
 
 
-def _freeRelay(*handles):
+def _freeRelay(*handles: List[hal.RelayHandle]) -> None:
     for handle in handles:
         try:
             hal.setRelay(handle, False)
@@ -31,7 +32,7 @@ def _freeRelay(*handles):
 
 class Relay(SendableBase, MotorSafety):
     """Controls VEX Robotics Spike style relay outputs.
-    
+
     Relays are intended to be connected to Spikes or similar relays. The relay
     channels controls a pair of channels that are either both off, one on, the
     other on, or both on. This translates into two Spike outputs at 0v, one at
@@ -40,7 +41,7 @@ class Relay(SendableBase, MotorSafety):
     variable speed. It also allows the two channels (forward and reverse) to
     be used independently for something that does not care about voltage
     polarity (like a solenoid).
-    
+
     .. not_implemented: initRelay
     """
 
@@ -61,11 +62,11 @@ class Relay(SendableBase, MotorSafety):
         #: Reverse
         kReverse = 3
 
-        def getPrettyValue(self):
+        def getPrettyValue(self) -> str:
             return self.name[1:]
 
         @classmethod
-        def getValueOf(cls, name):
+        def getValueOf(cls, name: str) -> "Relay.Value":
             return getattr(cls, "k" + name, cls.kOff)
 
     class Direction(IntEnum):
@@ -80,16 +81,14 @@ class Relay(SendableBase, MotorSafety):
         #: Only reverse is valid
         kReverse = 2
 
-    def __init__(self, channel, direction=None):
+    def __init__(self, channel: int, direction: Optional[Direction] = None) -> None:
         """Relay constructor given a channel.
 
         Initially the relay is set to both lines at 0v.
 
         :param channel: The channel number for this relay (0-3)
-        :type  channel: int
         :param direction: The direction that the Relay object will control.
             If not specified, defaults to allowing both directions.
-        :type  direction: :class:`Relay.Direction`
         """
         super().__init__()
         if direction is None:
@@ -105,7 +104,7 @@ class Relay(SendableBase, MotorSafety):
 
         MotorSafety.__init__(self)
 
-    def _initRelay(self):
+    def _initRelay(self) -> None:
         SensorUtil.checkRelayChannel(self.channel)
         portHandle = hal.getPort(self.channel)
 
@@ -139,29 +138,30 @@ class Relay(SendableBase, MotorSafety):
         self.setName("Relay", self.channel)
 
     @property
-    def forwardHandle(self):
+    def forwardHandle(self) -> hal.RelayHandle:
         if not self.__finalizer.alive:
             raise ValueError("Cannot use relay after close() has been called")
         return self._forwardHandle
 
     @property
-    def reverseHandle(self):
+    def reverseHandle(self) -> hal.RelayHandle:
         if not self.__finalizer.alive:
             raise ValueError("Cannot use relay after close() has been called")
         return self._reverseHandle
 
-    def close(self):
+    def close(self) -> None:
         super().close()
         self.freeRelay()
 
-    def freeRelay(self):
+    def freeRelay(self) -> None:
         self.__finalizer()
         Relay.relayChannels.free(self.channel * 2)
         Relay.relayChannels.free(self.channel * 2 + 1)
         self._forwardHandle = None
         self._reverseHandle = None
 
-    def set(self, value):
+    def set(self, value: Value) -> None:
+
         """Set the relay state.
 
         Valid values depend on which directions of the relay are controlled by
@@ -175,7 +175,6 @@ class Relay(SendableBase, MotorSafety):
         kOff and kOn is recommended.
 
         :param value: The state to set the relay.
-        :type  value: :class:`Relay.Value`
         """
         if value == self.Value.kOff:
             if (
@@ -226,7 +225,7 @@ class Relay(SendableBase, MotorSafety):
         else:
             raise ValueError("Invalid value argument '%s'" % value)
 
-    def get(self):
+    def get(self) -> Value:
         """Get the Relay State
 
         Gets the current state of the relay.
@@ -235,7 +234,6 @@ class Relay(SendableBase, MotorSafety):
         not kForward/kReverse (per the recommendation in Set)
 
         :returns: The current state of the relay
-        :rtype: :class:`Relay.Value`
         """
         if self.direction == self.Direction.kForward:
             if hal.getRelay(self.forwardHandle):
@@ -259,7 +257,7 @@ class Relay(SendableBase, MotorSafety):
                 else:
                     return self.Value.kOff
 
-    def getChannel(self):
+    def getChannel(self) -> int:
         """
         Get the channel number.
 
@@ -267,13 +265,13 @@ class Relay(SendableBase, MotorSafety):
         """
         return self.channel
 
-    def stopMotor(self):
+    def stopMotor(self) -> None:
         self.set(self.Value.kOff)
 
-    def getDescription(self):
+    def getDescription(self) -> str:
         return "Relay ID {}".format(self.getChannel())
 
-    def setDirection(self, direction):
+    def setDirection(self, direction: Direction) -> None:
         """Set the Relay Direction.
 
         Changes which values the relay can be set to depending on which
@@ -282,7 +280,6 @@ class Relay(SendableBase, MotorSafety):
         Valid inputs are kBothDirections, kForwardOnly, and kReverseOnly.
 
         :param direction: The direction for the relay to operate in
-        :type  direction: :class:`Relay.Direction`
         """
         if self.direction == direction:
             return
@@ -294,7 +291,7 @@ class Relay(SendableBase, MotorSafety):
         self.direction = direction
         self._initRelay()
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Relay")
         builder.setActuator(True)
         builder.setSafeState(lambda: self.set(self.Value.kOff))

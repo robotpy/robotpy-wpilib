@@ -41,11 +41,10 @@ class Victor(PWMSpeedController):
         .. not_implemented: initVictor
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: int) -> None:
         """Constructor.
 
         :param channel: The PWM channel that the Victor is attached to. 0-9 are on-board, 10-19 are on the MXP port
-        :type  channel: int
         """
         super().__init__(channel)
         self.setBounds(2.027, 1.525, 1.507, 1.49, 1.026)

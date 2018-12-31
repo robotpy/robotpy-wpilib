@@ -5,12 +5,14 @@
 # must be accompanied by the FIRST BSD license file in the root directory of */
 # the project.                                                               */
 # ----------------------------------------------------------------------------*/
+from typing import Union
 
 import hal
 
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
 from .sendablebase import SendableBase
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["AnalogPotentiometer"]
 
@@ -28,7 +30,12 @@ class AnalogPotentiometer(SendableBase):
 
     PIDSourceType = PIDSource.PIDSourceType
 
-    def __init__(self, channel, fullRange=1.0, offset=0.0):
+    def __init__(
+        self,
+        channel: Union[AnalogInput, int],
+        fullRange: float = 1.0,
+        offset: float = 0.0,
+    ) -> None:
         """AnalogPotentiometer constructor.
 
         Use the fullRange and offset values so that the output produces
@@ -38,13 +45,10 @@ class AnalogPotentiometer(SendableBase):
         -135.0 since the halfway point after scaling is 135 degrees.
 
         :param channel: The analog channel this potentiometer is plugged into.
-        :type  channel: int or :class:`.AnalogInput`
         :param fullRange: The scaling to multiply the fraction by to get a
             meaningful unit.  Defaults to 1.0 if unspecified.
-        :type  fullRange: float
         :param offset: The offset to add to the scaled value for controlling
             the zero value.  Defaults to 0.0 if unspecified.
-        :type  offset: float
         """
 
         super().__init__()
@@ -58,11 +62,10 @@ class AnalogPotentiometer(SendableBase):
         self.pidSource = self.PIDSourceType.kDisplacement
         self.setName("AnalogPotentiometer", self.analog_input.getChannel())
 
-    def get(self):
+    def get(self) -> float:
         """Get the current reading of the potentiometer.
 
         :returns: The current position of the potentiometer.
-        :rtype: float
         """
         if self.analog_input is None:
             return self.offset
@@ -70,34 +73,33 @@ class AnalogPotentiometer(SendableBase):
             self.analog_input.getVoltage() / hal.getUserVoltage5V()
         ) * self.fullRange + self.offset
 
-    def setPIDSourceType(self, pidSource):
+    def setPIDSourceType(self, pidSource: PIDSourceType) -> None:
         """Set which parameter you are using as a process
         control variable. 
 
         :param pidSource: An enum to select the parameter.
-        :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
         if pidSource != self.PIDSourceType.kDisplacement:
             raise ValueError("Only displacement PID is allowed for potentiometers.")
         self.pidSource = pidSource
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         return self.pidSource
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         """Implement the PIDSource interface.
 
         :returns: The current reading.
-        :rtype: float
         """
         return self.get()
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         if self.analog_input is not None:
             self.analog_input.initSendable(builder)
 
-    def close(self):
+    def close(self) -> None:
         super().close()
+
         if self.init_analog_input:
             self.analog_input.close()
             del self.analog_input

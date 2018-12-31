@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Optional
 
 from .subsystem import Subsystem
 
@@ -23,7 +24,15 @@ class PIDSubsystem(Subsystem):
     control to the programmer.
     """
 
-    def __init__(self, p, i, d, period=None, f=0.0, name=None):
+    def __init__(
+        self,
+        p: float,
+        i: float,
+        d: float,
+        period: Optional[float] = None,
+        f: float = 0.0,
+        name: Optional[str] = None,
+    ) -> None:
         """Instantiates a PIDSubsystem that will use the given p, i and d
         values.
         It will use the class name as its name unless otherwise specified.
@@ -45,7 +54,7 @@ class PIDSubsystem(Subsystem):
         )
         self.addChild(self.controller)
 
-    def getPIDController(self):
+    def getPIDController(self) -> PIDController:
         """Returns the PIDController used by this PIDSubsystem.
         Use this if you would like to fine tune the pid loop.
 
@@ -57,7 +66,7 @@ class PIDSubsystem(Subsystem):
         """
         return self.controller
 
-    def setSetpointRelative(self, deltaSetpoint):
+    def setSetpointRelative(self, deltaSetpoint: float) -> None:
         """Adds the given value to the setpoint.
         If :meth:`setRange` was used, then the bounds will still be honored by
         this method.
@@ -66,7 +75,7 @@ class PIDSubsystem(Subsystem):
         """
         self.setSetpoint(self.getSetpoint() + deltaSetpoint)
 
-    def setSetpoint(self, setpoint):
+    def setSetpoint(self, setpoint: float) -> None:
         """Sets the setpoint to the given value.  If :meth:`setRange` was called,
         then the given setpoint will be trimmed to fit within the range.
         
@@ -74,21 +83,21 @@ class PIDSubsystem(Subsystem):
         """
         self.controller.setSetpoint(setpoint)
 
-    def getSetpoint(self):
+    def getSetpoint(self) -> float:
         """Returns the setpoint.
         
         :returns: the setpoint
         """
         return self.controller.getSetpoint()
 
-    def getPosition(self):
+    def getPosition(self) -> float:
         """Returns the current position
         
         :returns: the current position
         """
         return self.returnPIDInput()
 
-    def setInputRange(self, minimumInput, maximumInput):
+    def setInputRange(self, minimumInput: float, maximumInput: float) -> None:
         """Sets the maximum and minimum values expected from the input.
 
         :param minimumInput: the minimum value expected from the input
@@ -96,7 +105,7 @@ class PIDSubsystem(Subsystem):
         """
         self.controller.setInputRange(minimumInput, maximumInput)
 
-    def setOutputRange(self, minimumOutput, maximumOutput):
+    def setOutputRange(self, minimumOutput: float, maximumOutput: float) -> None:
         """Sets the maximum and minimum values to write.
 
         :param minimumOutput: the minimum value to write to the output
@@ -104,7 +113,7 @@ class PIDSubsystem(Subsystem):
         """
         self.controller.setOutputRange(minimumOutput, maximumOutput)
 
-    def setAbsoluteTolerance(self, t):
+    def setAbsoluteTolerance(self, t: float) -> None:
         """Set the absolute error which is considered tolerable for use with
         OnTarget.
         
@@ -112,7 +121,7 @@ class PIDSubsystem(Subsystem):
         """
         self.controller.setAbsoluteTolerance(t)
 
-    def setPercentTolerance(self, p):
+    def setPercentTolerance(self, p: float) -> None:
         """Set the percentage error which is considered tolerable for use with
         OnTarget.
         
@@ -120,7 +129,7 @@ class PIDSubsystem(Subsystem):
         """
         self.controller.setPercentTolerance(p)
 
-    def onTarget(self):
+    def onTarget(self) -> bool:
         """Return True if the error is within the percentage of the total
         input range, determined by setAbsoluteTolerance or setPercentTolerance.
         This assumes that the maximum and minimum input were set using
@@ -130,7 +139,7 @@ class PIDSubsystem(Subsystem):
         """
         return self.controller.onTarget()
 
-    def returnPIDInput(self):
+    def returnPIDInput(self) -> float:
         """Returns the input for the pid loop.
 
         It returns the input for the pid loop, so if this command was based
@@ -145,7 +154,7 @@ class PIDSubsystem(Subsystem):
         """
         raise NotImplementedError
 
-    def usePIDOutput(self, output):
+    def usePIDOutput(self, output: float) -> None:
         """Uses the value that the pid loop calculated.  The calculated value
         is the "output" parameter.
         This method is a good time to set motor values, maybe something along
@@ -160,12 +169,12 @@ class PIDSubsystem(Subsystem):
         """
         pass
 
-    def enable(self):
+    def enable(self) -> None:
         """Enables the internal :class:`.PIDController`
         """
         self.controller.enable()
 
-    def disable(self):
+    def disable(self) -> None:
         """Disables the internal :class:`.PIDController`
         """
         self.controller.disable()

@@ -34,11 +34,11 @@ class MotorSafety:
     helpers_lock = threading.Lock()
 
     @staticmethod
-    def _reset():
+    def _reset() -> None:
         with MotorSafety.helpers_lock:
             MotorSafety.helpers.clear()
 
-    def __init__(self):
+    def __init__(self) -> None:
         """The constructor for a MotorSafety object.
         The helper object is constructed for every object that wants to
         implement the Motor Safety protocol. The helper object has the code
@@ -53,45 +53,42 @@ class MotorSafety:
         with MotorSafety.helpers_lock:
             MotorSafety.helpers.add(self)
 
-    def feed(self):
+    def feed(self) -> None:
         """Feed the motor safety object.
         Resets the timer on this object that is used to do the timeouts.
         """
         with self.mutex:
             self.safetyStopTime = Timer.getFPGATimestamp() + self.safetyExpiration
 
-    def setExpiration(self, expirationTime):
+    def setExpiration(self, expirationTime: float) -> None:
         """Set the expiration time for the corresponding motor safety object.
 
         :param expirationTime: The timeout value in seconds.
-        :type expirationTime: float
         """
         with self.mutex:
             self.safetyExpiration = expirationTime
 
-    def getExpiration(self):
+    def getExpiration(self) -> float:
         """Retrieve the timeout value for the corresponding motor safety
         object.
 
         :returns: the timeout value in seconds.
-        :rtype: float
         """
         with self.mutex:
             return self.safetyExpiration
 
-    def isAlive(self):
+    def isAlive(self) -> bool:
         """Determine of the motor is still operating or has timed out.
 
         :returns: True if the motor is still operating normally and hasn't
             timed out.
-        :rtype: float
         """
         with self.mutex:
             return (
                 not self.safetyEnabled or self.safetyStopTime > Timer.getFPGATimestamp()
             )
 
-    def check(self):
+    def check(self) -> None:
         """Check if this motor has exceeded its timeout.
         This method is called periodically to determine if this motor has
         exceeded its timeout value. If it has, the stop method is called,
@@ -110,28 +107,26 @@ class MotorSafety:
 
             self.stopMotor()
 
-    def setSafetyEnabled(self, enabled):
+    def setSafetyEnabled(self, enabled: bool) -> None:
         """Enable/disable motor safety for this device.
         Turn on and off the motor safety option for this PWM object.
 
         :param enabled: True if motor safety is enforced for this object
-        :type  enabled: bool
         """
         with self.mutex:
             self.safetyEnabled = bool(enabled)
 
-    def isSafetyEnabled(self):
+    def isSafetyEnabled(self) -> bool:
         """Return the state of the motor safety enabled flag.
         Return if the motor safety is currently enabled for this device.
 
         :returns: True if motor safety is enforced for this device
-        :rtype: bool
         """
         with self.mutex:
             return self.safetyEnabled
 
     @staticmethod
-    def checkMotors():
+    def checkMotors() -> None:
         """Check the motors to see if any have timed out.
         This static method is called periodically to poll all the motors and
         stop any that have timed out.

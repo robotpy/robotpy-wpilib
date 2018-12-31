@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-
+from typing import Callable, Optional
 import enum
 import weakref
 
@@ -24,7 +24,7 @@ class InterruptableSensorBase(SendableBase):
         kFallingEdge = 0x100
         kBoth = 0x101
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create a new InterrupatableSensorBase"""
         super().__init__()
         # The interrupt resource
@@ -34,25 +34,27 @@ class InterruptableSensorBase(SendableBase):
         self.isSynchronousInterrupt = False
 
     @property
-    def interrupt(self):
+    def interrupt(self) -> Optional[hal.InterruptHandle]:
         if self._interrupt_finalizer is None:
             return None
         if not self._interrupt_finalizer.alive:
             return None
         return self._interrupt
 
-    def close(self):
+    def close(self) -> None:
         super().close()
         if self.interrupt is not None:
             self.cancelInterrupts()
 
-    def getAnalogTriggerTypeForRouting(self):
+    def getAnalogTriggerTypeForRouting(self) -> int:
         raise NotImplementedError
 
-    def getPortHandleForRouting(self):
+    def getPortHandleForRouting(self) -> int:
         raise NotImplementedError
 
-    def requestInterrupts(self, handler=None):
+    def requestInterrupts(
+        self, handler: Optional[Callable[[int], None]] = None
+    ) -> None:
         """Request one of the 8 interrupts asynchronously on this digital
         input.
 
@@ -78,7 +80,7 @@ class InterruptableSensorBase(SendableBase):
         )
         self.setUpSourceEdge(True, False)
 
-    def allocateInterrupts(self, watcher):
+    def allocateInterrupts(self, watcher: bool) -> None:
         """Allocate the interrupt
 
         :param watcher: True if the interrupt should be in synchronous mode
@@ -93,7 +95,7 @@ class InterruptableSensorBase(SendableBase):
             self, hal.cleanInterrupts, self._interrupt
         )
 
-    def cancelInterrupts(self):
+    def cancelInterrupts(self) -> None:
         """Cancel interrupts on this device. This deallocates all the
         chipobject structures and disables any interrupts.
         """
@@ -103,7 +105,7 @@ class InterruptableSensorBase(SendableBase):
         hal.cleanInterrupts(self.interrupt)
         self.interrupt = None
 
-    def waitForInterrupt(self, timeout, ignorePrevious=True):
+    def waitForInterrupt(self, timeout: float, ignorePrevious: bool = True) -> int:
         """In synchronous mode, wait for the defined interrupt to occur.
         You should **NOT** attempt to read the sensor from another thread
         while waiting for an interrupt. This is not threadsafe, and can cause 
@@ -122,7 +124,7 @@ class InterruptableSensorBase(SendableBase):
         result = rising | falling
         return self.WaitResult(result)
 
-    def enableInterrupts(self):
+    def enableInterrupts(self) -> None:
         """Enable interrupts to occur on this input. Interrupts are disabled
         when the RequestInterrupt call is made. This gives time to do the
         setup of the other options before starting to field interrupts.
@@ -133,7 +135,7 @@ class InterruptableSensorBase(SendableBase):
             raise ValueError("You do not need to enable synchronous interrupts")
         hal.enableInterrupts(self.interrupt)
 
-    def disableInterrupts(self):
+    def disableInterrupts(self) -> None:
         """Disable Interrupts without without deallocating structures."""
         if self.interrupt is None:
             raise ValueError("The interrupt is not allocated.")
@@ -141,7 +143,7 @@ class InterruptableSensorBase(SendableBase):
             raise ValueError("You can not disable synchronous interrupts")
         hal.disableInterrupts(self.interrupt)
 
-    def readRisingTimestamp(self):
+    def readRisingTimestamp(self) -> float:
         """Return the timestamp for the rising interrupt that occurred most
         recently.  This is in the same time domain as getClock().  The
         rising-edge interrupt should be enabled with setUpSourceEdge.
@@ -152,7 +154,7 @@ class InterruptableSensorBase(SendableBase):
             raise ValueError("The interrupt is not allocated.")
         return hal.readInterruptRisingTimestamp(self.interrupt) * 1e-6
 
-    def readFallingTimestamp(self):
+    def readFallingTimestamp(self) -> float:
         """Return the timestamp for the falling interrupt that occurred most
         recently.  This is in the same time domain as getClock().  The
         falling-edge interrupt should be enabled with setUpSourceEdge.
@@ -163,7 +165,7 @@ class InterruptableSensorBase(SendableBase):
             raise ValueError("The interrupt is not allocated.")
         return hal.readInterruptFallingTimestamp(self.interrupt) * 1e-6
 
-    def setUpSourceEdge(self, risingEdge, fallingEdge):
+    def setUpSourceEdge(self, risingEdge: bool, fallingEdge: bool) -> None:
         """Set which edge to trigger interrupts on
 
         :param risingEdge: True to interrupt on rising edge

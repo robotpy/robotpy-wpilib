@@ -5,12 +5,14 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import Union
 
 import hal
 
 from .analoginput import AnalogInput
 from .interfaces import PIDSource
 from .sendablebase import SendableBase
+from .sendablebuilder import SendableBuilder
 
 __all__ = ["AnalogAccelerometer"]
 
@@ -27,12 +29,11 @@ class AnalogAccelerometer(SendableBase):
 
     PIDSourceType = PIDSource.PIDSourceType
 
-    def __init__(self, channel):
+    def __init__(self, channel: Union[AnalogInput, int]) -> None:
         """Constructor. Create a new instance of Accelerometer from either an existing
         AnalogChannel or from an analog channel port index.
 
         :param channel: port index or an already initialized AnalogInput
-        :type channel: int or :class:`.AnalogInput`
         """
         super().__init__()
         if not hasattr(channel, "getAverageVoltage"):  # If 'channel' is an integer
@@ -51,19 +52,18 @@ class AnalogAccelerometer(SendableBase):
         )
         self.setName("Accelerometer", self.analogChannel.getChannel())
 
-    def close(self):
+    def close(self) -> None:
         super().close()
         if self.analogChannel and self.allocatedChannel:
             self.analogChannel.close()
         self.analogChannel = None
 
-    def getAcceleration(self):
+    def getAcceleration(self) -> float:
         """Return the acceleration in Gs.
 
         The acceleration is returned units of Gs.
 
         :returns: The current acceleration of the sensor in Gs.
-        :rtype: float
         """
         if not self.analogChannel:
             return 0.0
@@ -71,7 +71,7 @@ class AnalogAccelerometer(SendableBase):
             self.analogChannel.getAverageVoltage() - self.zeroGVoltage
         ) / self.voltsPerG
 
-    def setSensitivity(self, sensitivity):
+    def setSensitivity(self, sensitivity: float) -> None:
         """Set the accelerometer sensitivity.
 
         This sets the sensitivity of the accelerometer used for calculating
@@ -79,41 +79,37 @@ class AnalogAccelerometer(SendableBase):
         There are constants defined for various models.
 
         :param sensitivity: The sensitivity of accelerometer in Volts per G.
-        :type  sensitivity: float
         """
         self.voltsPerG = sensitivity
 
-    def setZero(self, zero):
+    def setZero(self, zero: float) -> None:
         """Set the voltage that corresponds to 0 G.
 
         The zero G voltage varies by accelerometer model. There are constants
         defined for various models.
 
         :param zero: The zero G voltage.
-        :type  zero: float
         """
         self.zeroGVoltage = zero
 
-    def setPIDSourceType(self, pidSource):
+    def setPIDSourceType(self, pidSource: PIDSourceType) -> None:
         """Set which parameter you are using as a process
         control variable. 
 
         :param pidSource: An enum to select the parameter.
-        :type  pidSource: :class:`.PIDSource.PIDSourceType`
         """
         self.pidSource = pidSource
 
-    def getPIDSourceType(self):
+    def getPIDSourceType(self) -> PIDSourceType:
         return self.pidSource
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         """Get the Acceleration for the PID Source parent.
 
         :returns: The current acceleration in Gs.
-        :rtype: float
         """
         return self.getAcceleration()
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Accelerometer")
         builder.addDoubleProperty("Value", self.getAcceleration, None)

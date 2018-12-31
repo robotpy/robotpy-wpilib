@@ -5,12 +5,14 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-
-import hal
 import collections
 import math
 from operator import mul
+from typing import Sequence
 
+import hal
+
+from .interfaces.pidsource import PIDSource
 from .filter import Filter
 
 __all__ = ["LinearDigitalFilter"]
@@ -80,15 +82,14 @@ class LinearDigitalFilter(Filter):
 
     instances = 0
 
-    def __init__(self, source, ffGains, fbGains):
+    def __init__(
+        self, source: PIDSource, ffGains: Sequence[float], fbGains: Sequence[float]
+    ) -> None:
         """Constructor. Create a linear FIR or IIR filter
         
         :param source: The PIDSource object that is used to get values
-        :type source: :class:`.PIDSource`, callable
         :param ffGains: The "feed forward" or FIR gains
-        :type ffGains: list, tuple
         :param fbGains: The "feed back" or IIR gains
-        :type fbGains: list, tuple
         """
 
         super().__init__(source)
@@ -107,7 +108,9 @@ class LinearDigitalFilter(Filter):
         )
 
     @staticmethod
-    def singlePoleIIR(source, timeConstant, period):
+    def singlePoleIIR(
+        source: PIDSource, timeConstant: float, period: float
+    ) -> "LinearDigitalFilter":
         """Creates a one-pole IIR low-pass filter of the form::
         
             y[n] = (1-gain)*x[n] + gain*y[n-1]
@@ -117,12 +120,9 @@ class LinearDigitalFilter(Filter):
         This filter is stable for time constants greater than zero
         
         :param source: The PIDSource object that is used to get values
-        :type source: :class:`.PIDSource`, callable
         :param timeConstant: The discrete-time time constant in seconds
-        :type timeConstant: float
         :param period: The period in seconds between samples taken by the user
-        :type period: float
-        
+
         :returns: :class:`LinearDigitalFilter`
         """
 
@@ -133,7 +133,9 @@ class LinearDigitalFilter(Filter):
         return LinearDigitalFilter(source, ffGains, fbGains)
 
     @staticmethod
-    def highPass(source, timeConstant, period):
+    def highPass(
+        source: PIDSource, timeConstant: float, period: float
+    ) -> "LinearDigitalFilter":
         """Creates a first-order high-pass filter of the form::
         
             y[n] = gain*x[n] + (-gain)*x[n-1] + gain*y[n-1]
@@ -143,12 +145,9 @@ class LinearDigitalFilter(Filter):
         This filter is stable for time constants greater than zero
         
         :param source: The PIDSource object that is used to get values
-        :type source: :class:`.PIDSource`, callable
         :param timeConstant: The discrete-time time constant in seconds
-        :type timeConstant: float
         :param period: The period in seconds between samples taken by the user
-        :type period: float
-        
+
         :returns: :class:`LinearDigitalFilter`
         """
         gain = math.exp(-period / float(timeConstant))
@@ -158,7 +157,7 @@ class LinearDigitalFilter(Filter):
         return LinearDigitalFilter(source, ffGains, fbGains)
 
     @staticmethod
-    def movingAverage(source, taps):
+    def movingAverage(source: PIDSource, taps: int) -> "LinearDigitalFilter":
         """Creates a K-tap FIR moving average filter of the form::
         
             y[n] = 1/k * (x[k] + x[k-1] + ... + x[0])
@@ -166,10 +165,8 @@ class LinearDigitalFilter(Filter):
         This filter is always stable.
         
         :param source: The PIDSource object that is used to get values
-        :type source: :class:`.PIDSource`, callable
         :param taps: The number of samples to average over. Higher = smoother but slower
-        :type taps: int
-        
+
         :raises: :exc:`ValueError` if number of taps is less than 1
         
         :returns: :class:`LinearDigitalFilter`
@@ -182,7 +179,7 @@ class LinearDigitalFilter(Filter):
 
         return LinearDigitalFilter(source, ffGains, fbGains)
 
-    def get(self):
+    def get(self) -> float:
         """Returns the current filter estimate without also inserting new data as
         :meth:`pidGet` would do.
         
@@ -196,12 +193,12 @@ class LinearDigitalFilter(Filter):
 
         return retVal
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the filter state"""
         self.inputs.clear()
         self.outputs.clear()
 
-    def pidGet(self):
+    def pidGet(self) -> float:
         """Calculates the next value of the filter
         
         :returns: The filtered value at this step

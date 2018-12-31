@@ -43,7 +43,7 @@ class XboxController(GenericHID):
 
         hal.report(hal.UsageReporting.kResourceType_XboxController, port)
 
-    def getX(self, hand: GenericHID.Hand) -> float:
+    def getX(self, hand: GenericHID.Hand = GenericHID.Hand.kRight) -> float:
         """Get the X axis value of the controller.
 
         :param hand: Side of controller whose value should be returned
@@ -54,7 +54,7 @@ class XboxController(GenericHID):
         else:
             return self.getRawAxis(4)
 
-    def getY(self, hand: GenericHID.Hand) -> float:
+    def getY(self, hand: GenericHID.Hand = GenericHID.Hand.kRight) -> float:
         """Get the Y axis value of the controller.
 
         :param hand: Side of controller whose value should be returned

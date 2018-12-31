@@ -23,17 +23,16 @@ class Timer:
     """
 
     @staticmethod
-    def getFPGATimestamp():
+    def getFPGATimestamp() -> float:
         """Return the system clock time in seconds. Return the time from the
         FPGA hardware clock in seconds since the FPGA started.
 
         :returns: Robot running time in seconds.
-        :rtype: float
         """
         return hal.getFPGATime() / 1000000.0
 
     @staticmethod
-    def getMatchTime():
+    def getMatchTime() -> float:
         """Return the approximate match time.
         The FMS does not currently send the official match time to the robots,
         but does send an approximate match time. The value will count down
@@ -47,14 +46,13 @@ class Timer:
         on the field.
 
         :returns: Time remaining in current match period (auto or teleop) in seconds
-        :rtype: float
         """
         from .driverstation import DriverStation
 
         return DriverStation.getInstance().getMatchTime()
 
     @staticmethod
-    def delay(seconds):
+    def delay(seconds: float) -> None:
         """Pause the thread for a specified time. Pause the execution of the
         thread for a specified period of time given in seconds. Motors will
         continue to run at their last assigned values, and sensors will
@@ -62,8 +60,7 @@ class Timer:
         until the wait time is expired.
 
         :param seconds: Length of time to pause
-        :type seconds: float
-        
+
         .. warning:: If you're tempted to use this function for autonomous
                      mode to time transitions between actions, don't do it!
                      
@@ -74,27 +71,25 @@ class Timer:
         """
         hal.sleep(seconds)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.mutex = threading.RLock()
         self.startTime = self.getMsClock()
         self.accumulatedTime = 0.0
         self.running = False
 
-    def getMsClock(self):
+    def getMsClock(self) -> int:
         """
             :returns: the system clock time in milliseconds.
-            :rtype: int
         """
         return hal.getFPGATime() / 1000
 
-    def get(self):
+    def get(self) -> float:
         """Get the current time from the timer. If the clock is running it is
         derived from the current system clock the start time stored in the
         timer class. If the clock is not running, then return the time when
         it was last stopped.
 
         :returns: Current time value for this timer in seconds
-        :rtype: float
         """
         with self.mutex:
             if self.running:
@@ -104,7 +99,7 @@ class Timer:
             else:
                 return self.accumulatedTime
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the timer by setting the time to 0.
         Make the timer startTime the current time so new requests will be
         relative now.
@@ -113,7 +108,7 @@ class Timer:
             self.accumulatedTime = 0.0
             self.startTime = self.getMsClock()
 
-    def start(self):
+    def start(self) -> None:
         """Start the timer running.
         Just set the running flag to true indicating that all time requests
         should be relative to the system clock.
@@ -122,7 +117,7 @@ class Timer:
             self.startTime = self.getMsClock()
             self.running = True
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the timer.
         This computes the time as of now and clears the running flag, causing
         all subsequent time requests to be read from the accumulated time
@@ -133,14 +128,13 @@ class Timer:
             self.accumulatedTime = temp
             self.running = False
 
-    def hasPeriodPassed(self, period):
+    def hasPeriodPassed(self, period: float) -> bool:
         """Check if the period specified has passed and if it has, advance the start
         time by that period. This is useful to decide if it's time to do periodic
         work without drifting later by the time it took to get around to checking.
  
         :param period: The period to check for (in seconds).
         :returns: If the period has passed.
-        :rtype: bool
         """
 
         with self.mutex:

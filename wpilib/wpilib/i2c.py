@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+from typing import List, Union
 
 import hal
 import warnings
@@ -13,7 +14,7 @@ import weakref
 __all__ = ["I2C"]
 
 
-def _freeI2C(port):
+def _freeI2C(port: "I2C.Port") -> None:
     hal.closeI2C(port)
 
 
@@ -35,11 +36,10 @@ class I2C:
         kOnboard = 0
         kMXP = 1
 
-    def __init__(self, port, deviceAddress, simPort=None):
+    def __init__(self, port: Port, deviceAddress: int, simPort=None) -> None:
         """Constructor.
 
         :param port: The I2C port the device is connected to.
-        :type port: :class:`.I2C.Port`
         :param deviceAddress: The address of the device on the I2C bus.
         :param simPort: This must be an object that implements all of
                         the i2c* functions from hal_impl that you use.
@@ -79,7 +79,7 @@ class I2C:
             raise ValueError("Cannot use i2c port after free() has been called")
         return self._port
 
-    def free(self):
+    def free(self) -> None:
         """
         .. deprecated:: 2019.0.0
             Use close instead
@@ -87,10 +87,12 @@ class I2C:
         warnings.warn("use close instead", DeprecationWarning, stacklevel=2)
         self.close()
 
-    def close(self):
+    def close(self) -> None:
         self.__finalizer()
 
-    def transaction(self, dataToSend, receiveSize):
+    def transaction(
+        self, dataToSend: Union[bytes, List[int]], receiveSize: int
+    ) -> bytes:
         """Generic transaction.
 
         This is a lower-level interface to the I2C hardware giving you more
@@ -100,17 +102,14 @@ class I2C:
         result in an error.
 
         :param dataToSend: Buffer of data to send as part of the transaction.
-        :type dataToSend: iterable of bytes
         :param receiveSize: Number of bytes to read from the device.
-        :type receiveSize: int
         :returns: Data received from the device.
-        :rtype: iterable of bytes
         """
         return hal.transactionI2C(
             self.port, self.deviceAddress, dataToSend, receiveSize
         )
 
-    def addressOnly(self):
+    def addressOnly(self) -> bool:
         """Attempt to address a device on the I2C bus.
 
         This allows you to figure out if there is a device on the I2C bus that
@@ -124,7 +123,7 @@ class I2C:
             return True
         return False
 
-    def write(self, registerAddress, data):
+    def write(self, registerAddress: int, data: int) -> bool:
         """Execute a write transaction with the device.
 
         Write a single byte to a register on a device and wait until the
@@ -141,14 +140,13 @@ class I2C:
             return True
         return False
 
-    def writeBulk(self, data):
+    def writeBulk(self, data: bytes) -> bool:
         """Execute a write transaction with the device.
 
         Write multiple bytes to a register on a device and wait until the
         transaction is complete.
 
         :param data: The data to write to the device.
-        :type data: iterable of bytes
         :returns: Transfer Aborted... False for success, True for aborted.
         
         Usage::
@@ -165,7 +163,7 @@ class I2C:
             return True
         return False
 
-    def read(self, registerAddress, count):
+    def read(self, registerAddress: int, count: int) -> bytearray:
         """Execute a read transaction with the device.
 
         Read bytes from a device. Most I2C devices will auto-increment
@@ -175,13 +173,12 @@ class I2C:
         :param registerAddress: The register to read first in the transaction.
         :param count: The number of bytes to read in the transaction.
         :returns: The data read from the device.
-        :rtype: iterable of bytes
         """
         if count < 1:
             raise ValueError("count must be at least 1, %s given" % count)
         return self.transaction([registerAddress], count)
 
-    def readOnly(self, count):
+    def readOnly(self, count: int) -> bytes:
         """Execute a read only transaction with the device.
 
         Read bytes from a device. This method does not write any data
@@ -189,13 +186,12 @@ class I2C:
 
         :param count: The number of bytes to read in the transaction.
         :returns: The data read from the device.
-        :rtype: iterable of bytes
         """
         if count < 1:
             raise ValueError("count must be at least 1, %s given" % count)
         return hal.readI2C(self.port, self.deviceAddress, count)
 
-    def verifySensor(self, registerAddress, expected):
+    def verifySensor(self, registerAddress: int, expected: bytes) -> bool:
         """Verify that a device's registers contain expected values.
 
         Most devices will have a set of registers that contain a known value

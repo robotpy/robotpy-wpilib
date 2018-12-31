@@ -22,5 +22,5 @@ class WaitForChildren(Command):
     sequence.
     """
 
-    def isFinished(self):
+    def isFinished(self) -> bool:
         return self.getGroup() is None or not self.getGroup().children

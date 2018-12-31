@@ -19,7 +19,7 @@ class PrintCommand(InstantCommand):
     reaches a certain point.
     """
 
-    def __init__(self, message):
+    def __init__(self, message: str) -> None:
         """Instantiates a PrintCommand which will print the given message when
         it is run.
         
@@ -28,5 +28,5 @@ class PrintCommand(InstantCommand):
         super().__init__('Print("%s")' % message)
         self.message = message
 
-    def initialize(self):
+    def initialize(self) -> None:
         print(self.message)
