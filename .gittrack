@@ -2,5 +2,5 @@
 validation_root = wpilib/wpilib
 exclude_commits_file = devtools/exclude_commits
 upstream_root = ../allwpilib/wpilibj/src/main/java
-upstream_commit = f3864e9abbc107738eb3824e1181dcbc26335b11
+upstream_commit = c12d7729e34ebbe80d1f0f72894dc19ab689f2f7
 
