@@ -5,9 +5,15 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+
+from typing import TYPE_CHECKING, Optional, overload
+
 from networktables.entry import NetworkTableEntry
-from .._impl.utils import match_arglist
 from ..sendable import Sendable
+
+if TYPE_CHECKING:
+    from .complexwidget import ComplexWidget
+    from .simplewidget import SimpleWidget
 
 __all__ = ["ShuffleboardContainer"]
 
@@ -15,7 +21,7 @@ __all__ = ["ShuffleboardContainer"]
 class ShuffleboardContainer:
     """Common interface for objects that can contain shuffleboard components."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.usedTitles = set()
         self.components = []
         self.layouts = {}
@@ -42,83 +48,76 @@ class ShuffleboardContainer:
 
         return self.layouts[title]
 
-    def add(self, *args, **kwargs) -> "ShuffleboardWidget":
+    @overload
+    def add(self, value: Sendable, *, title: Optional[str] = None) -> "ComplexWidget":
+        ...
+
+    @overload
+    def add(self, *, title: str, value) -> "SimpleWidget":
+        ...
+
+    def add(self, value, *, title: Optional[str] = None):
         """
         Adds a widget to this container to display the given sendable.
 
-        raises AssertionError if a widget already exists in this container 
-        with the given title
-
-        :param title:    the title of the widget. if not provided, `sendable.getName()` is used.
-        :param sendable: the sendable to display
-        :param defaultValue: the default value of the widget. not to be combined with `sendable`. note empty lists cannot be used here
-        :returns: a widget to display the sendable data          
+        :param value: the Sendable to display, or the default value of the widget
+        :param title: the title of the widget (defaults to the
+                      Sendable's name if the value is Sendable)
+        :returns: a widget to display the sendable data
+        :rtype: ComplexWidget or SimpleWidget
+        :raises ValueError: if a widget already exists in this container
+                            with the given title.
         """
-        title_arg = ("title", [str])
-        sendable_arg = ("sendable", [Sendable])
-        defaultValue_arg = ("defaultValue", [object])
-        templates = [
-            [title_arg, sendable_arg],
-            [sendable_arg],
-            [title_arg, defaultValue_arg],
-        ]
-        index, results = match_arglist("ContainerHelper.add", args, kwargs, templates)
-
-        if index in [0, 1]:
+        if isinstance(value, Sendable):
             from .complexwidget import ComplexWidget
 
-            sendable = results["sendable"]
-            if index == 1:
-                assert not (
-                    sendable.getName() is None or sendable.getName() == ""
-                ), "Sendable must have a name"
-                title = sendable.getName()
-            else:
-                title = results["title"]
-            self.checkTitle(title)
-            widget = ComplexWidget(self, title, sendable)
+            if not title:
+                title = value.getName()
+                if not title:
+                    raise ValueError("Sendable must have a name")
+            self._checkTitle(title)
+            widget = ComplexWidget(self, title, value)
             self.components.append(widget)
-            return widget
-        elif index == 2:
+        else:
             from .simplewidget import SimpleWidget
 
-            title = results["title"]
-            defaultValue = results["defaultValue"]
-            assert title is not None, "title cannot be None"
-            assert defaultValue is not None, "Default value cannot be None"
-            self.checkTitle(title)
-            self.checkNtType(defaultValue)
+            if not title:
+                raise ValueError("A simple widget must have a title")
+
+            self._checkTitle(title)
+            self._checkNtType(value)
 
             widget = SimpleWidget(self, title)
             self.components.append(widget)
-            widget.getEntry().setDefaultValue(defaultValue)
-            return widget
+            widget.getEntry().setDefaultValue(value)
 
-    def checkNtType(self, data):
-        assert NetworkTableEntry.isValidDataType(
-            data
-        ), "Cannot add data of type%s to Shuffleboard" % (type(data),)
+        return widget
 
-    def checkTitle(self, title: str) -> None:
-        assert title not in self.usedTitles, "Title is already in use: %s" % (title,)
+    def _checkNtType(self, data) -> None:
+        if not NetworkTableEntry.isValidDataType(data):
+            raise TypeError("Cannot add data of type %r to Shuffleboard" % type(data))
+
+    def _checkTitle(self, title: str) -> None:
+        if title in self.usedTitles:
+            raise ValueError("Title is already in use: " + title)
         self.usedTitles.add(title)
 
     def addPersistent(self, title: str, defaultValue):
         """
-        Adds a widget to this container to display a simple piece of data. 
-        Unlike :meth:`.add`, the value in the widget will be saved on the 
-        robot and will be used when the robot program next starts rather than 
+        Adds a widget to this container to display a simple piece of data.
+        Unlike :meth:`.add`, the value in the widget will be saved on the
+        robot and will be used when the robot program next starts rather than
         `defaultValue`.
-        
-        raises AssertionError if a widget already exists in this container 
-        with the given title
-
-        see :meth:`.add`
 
         :param title:        the title of the widget
         :param defaultValue: the default value of the widget. note empty lists cannot be used here
-        :returns: a widget to display the sendable data          
+        :returns: a widget to display the sendable data
+        :rtype: SimpleWidget
+        :raises ValueError: if a widget already exists in this container
+                            with the given title.
+
+        .. seealso:: :meth:`.add`
         """
-        widget = self.add(title, defaultValue)
+        widget = self.add(title=title, value=defaultValue)
         widget.getEntry().setPersistent()
         return widget

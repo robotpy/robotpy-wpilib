@@ -15,10 +15,10 @@ class ShuffleboardTab(ShuffleboardContainer):
         self.root = root
         self.title = title
 
-    def getTitle(self):
+    def getTitle(self) -> str:
         return self.title
 
-    def getRoot(self):
+    def getRoot(self) -> ShuffleboardRoot:
         return self.root
 
     def buildInto(self, parentTable, metaTable) -> None:

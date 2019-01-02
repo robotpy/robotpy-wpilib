@@ -31,9 +31,9 @@ class SimpleWidget(ShuffleboardWidget):
             self.entry = parentTable.getEntry(self.getTitle())
 
     def _forceGenerate(self):
-        parent = self.getParent()
+        parent = self.getParent()  # type: ShuffleboardContainer
         while isinstance(parent, ShuffleboardLayout):
             parent = parent.getParent()
 
-        tab = parent
+        tab = parent  # type: ShuffleboardTab
         tab.getRoot().update()

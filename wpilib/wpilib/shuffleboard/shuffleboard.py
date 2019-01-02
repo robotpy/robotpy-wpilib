@@ -29,7 +29,7 @@ class Shuffleboard:
     For example, displaying a boolean entry with a toggle button::
 
         myBoolean = (Shuffleboard.getTab("Example Tab")
-            .add("My Boolean", False)
+            .add(title="My Boolean", value=False)
             .withWidget("Toggle Button")
             .getEntry())
 
@@ -37,7 +37,7 @@ class Shuffleboard:
     Changing the colors of the boolean box::
 
         myBoolean = (Shuffleboard.getTab("Example Tab")
-            .add("My Boolean", False)
+            .add(title="My Boolean", value=False)
             .withWidget("Boolean Box")
             .withProperties({"colorWhenTrue": "green", "colorWhenFalse": "maroon"})
             .getEntry())
@@ -50,7 +50,7 @@ class Shuffleboard:
 
         myBoolean = (Shuffleboard.getTab("Example Tab")
             .getLayout("List", "Example List")
-            .add("My Boolean", False)
+            .add(title="My Boolean", value=False)
             .withWidget("Toggle Button")
             .getEntry())
 

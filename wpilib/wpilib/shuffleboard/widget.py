@@ -17,7 +17,7 @@ class ShuffleboardWidget(ShuffleboardComponent):
     def __init__(self, parent: ShuffleboardContainer, title: str):
         super().__init__(parent, title)
 
-    def withWidget(self, widgetType):
+    def withWidget(self, widgetType) -> "ShuffleboardWidget":
         """
         Sets the type of widget used to display the data. If not set, the 
         default widget type will be used.
