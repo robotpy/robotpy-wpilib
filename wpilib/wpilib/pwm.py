@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 from typing import Tuple
 
 import hal
@@ -58,7 +59,7 @@ class PWM(MotorSafety, SendableBase):
       update period less than 5.05 ms.
     """
 
-    class PeriodMultiplier:
+    class PeriodMultiplier(enum.IntEnum):
         """Represents the amount to multiply the minimum servo-pulse pwm
         period by.
         """

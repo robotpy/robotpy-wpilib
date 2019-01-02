@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 from typing import Optional
 
 import hal
@@ -39,32 +40,32 @@ class SerialPort:
         http://www.ni.com/pdf/manuals/370132c.pdf
     """
 
-    class Port:
+    class Port(enum.IntEnum):
         kOnboard = 0
         kMXP = 1
         kUSB = 2
         kUSB1 = 2
         kUSB2 = 3
 
-    class Parity:
+    class Parity(enum.IntEnum):
         kNone = 0
         kOdd = 1
         kEven = 2
         kMark = 3
         kSpace = 4
 
-    class StopBits:
+    class StopBits(enum.IntEnum):
         kOne = 10
         kOnePointFive = 15
         kTwo = 20
 
-    class FlowControl:
+    class FlowControl(enum.IntEnum):
         kNone = 0
         kXonXoff = 1
         kRtsCts = 2
         kDtsDsr = 4
 
-    class WriteBufferMode:
+    class WriteBufferMode(enum.IntEnum):
         kFlushOnAccess = 1
         kFlushWhenFull = 2
 

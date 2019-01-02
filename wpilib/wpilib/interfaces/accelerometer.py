@@ -4,6 +4,7 @@
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.
 # ----------------------------------------------------------------------------
+import enum
 
 __all__ = ["Accelerometer"]
 
@@ -11,7 +12,7 @@ __all__ = ["Accelerometer"]
 class Accelerometer:
     """Interface for 3-axis accelerometers"""
 
-    class Range:
+    class Range(enum.IntEnum):
         k2G = 0
         k4G = 1
         k8G = 2

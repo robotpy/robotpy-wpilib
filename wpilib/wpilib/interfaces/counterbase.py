@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 
 __all__ = ["CounterBase"]
 
@@ -18,7 +19,7 @@ class CounterBase:
     need them to be zeroed before use.
     """
 
-    class EncodingType:
+    class EncodingType(enum.IntEnum):
         """The number of edges for the counterbase to increment or decrement on"""
 
         #: Count only the rising edge

@@ -9,7 +9,7 @@ from typing import List, Optional
 
 import hal
 import weakref
-from enum import IntEnum
+import enum
 
 from .motorsafety import MotorSafety
 from .resource import Resource
@@ -47,7 +47,7 @@ class Relay(SendableBase, MotorSafety):
 
     relayChannels = Resource(SensorUtil.kRelayChannels * 2)
 
-    class Value(IntEnum):
+    class Value(enum.IntEnum):
         """The state to drive a Relay to."""
 
         #: Off
@@ -69,7 +69,7 @@ class Relay(SendableBase, MotorSafety):
         def getValueOf(cls, name: str) -> "Relay.Value":
             return getattr(cls, "k" + name, cls.kOff)
 
-    class Direction(IntEnum):
+    class Direction(enum.IntEnum):
         """The Direction(s) that a relay is configured to operate in."""
 
         #: Both directions are valid

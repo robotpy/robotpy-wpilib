@@ -5,6 +5,8 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
+
 from typing import Tuple, Optional
 
 import hal
@@ -40,7 +42,7 @@ class ADXL345_I2C(SendableBase):
 
     Range = Accelerometer.Range
 
-    class Axes:
+    class Axes(enum.IntEnum):
         kX = 0x00
         kY = 0x02
         kZ = 0x04
