@@ -5,8 +5,8 @@
     If you are not using the Command framework, you can ignore these classes.
 """
 
-from .button import *
-from .internalbutton import *
-from .joystickbutton import *
-from .networkbutton import *
-from .trigger import *
+from .button import Button
+from .internalbutton import InternalButton
+from .joystickbutton import JoystickButton
+from .networkbutton import NetworkButton
+from .trigger import Trigger

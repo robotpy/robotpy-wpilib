@@ -4,8 +4,8 @@
     organize your robot programs, by organizing your robot program into
     components based on :class:`.Command` and :class:`.Subsystem`
     
-    The python implementation of the Command framework closely follows the 
-    Java language implementation. RobotPy has several examples of command 
+    The Python implementation of the Command framework closely follows the
+    Java language implementation. RobotPy has several examples of command
     based robots available.
     
     Each one of the objects in the Command framework has detailed
@@ -15,17 +15,17 @@
     `FRC Control System documentation <http://wpilib.screenstepslive.com/s/4485/m/13809/c/88893>`_
 """
 
-from .command import *
-from .commandgroup import *
-from .conditionalcommand import *
-from .instantcommand import *
-from .pidcommand import *
-from .pidsubsystem import *
-from .printcommand import *
-from .scheduler import *
-from .startcommand import *
-from .subsystem import *
-from .timedcommand import *
-from .waitcommand import *
-from .waitforchildren import *
-from .waituntilcommand import *
+from .command import Command
+from .commandgroup import CommandGroup
+from .conditionalcommand import ConditionalCommand
+from .instantcommand import InstantCommand
+from .pidcommand import PIDCommand
+from .pidsubsystem import PIDSubsystem
+from .printcommand import PrintCommand
+from .scheduler import Scheduler
+from .startcommand import StartCommand
+from .subsystem import Subsystem
+from .timedcommand import TimedCommand
+from .waitcommand import WaitCommand
+from .waitforchildren import WaitForChildren
+from .waituntilcommand import WaitUntilCommand
