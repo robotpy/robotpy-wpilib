@@ -1,6 +1,6 @@
-# validated: 2017-12-06 DV dd7563376bf6 edu/wpi/first/wpilibj/RobotBase.java
+# validated: 2018-12-31 TW d817001259d6 edu/wpi/first/wpilibj/RobotBase.java
 # ----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -57,10 +57,20 @@ class RobotBase:
 
         LiveWindow.setEnabled(False)
 
+        from .shuffleboard.shuffleboard import Shuffleboard
+
+        Shuffleboard.disableActuatorWidgets()
+
         self.__initialized = True
 
     def free(self) -> None:
-        """Free the resources for a RobotBase class."""
+        """Free the resources for a RobotBase class.
+
+        .. deprecated:: 2019.0.0
+            Use :meth:`close` instead"""
+        pass
+
+    def close(self) -> None:
         pass
 
     @staticmethod
@@ -180,7 +190,11 @@ class RobotBase:
                 with open("/tmp/frc_versions/FRC_Lib_Version.ini", "w") as fp:
                     fp.write("RobotPy %s" % wpilib.__version__)
             except:
-                logger.warning("Could not write FRC version file to disk")
+                from .driverstation import DriverStation
+
+                DriverStation.reportError(
+                    "Could not write FRC version file to disk", True
+                )
 
         try:
             robot.startCompetition()
