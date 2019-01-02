@@ -7,13 +7,13 @@
     objects as long as they have the same methods.
 """
 
-from .accelerometer import *
-from .controller import *
-from .counterbase import *
-from .generichid import *
-from .gyro import *
-from .namedsendable import *
-from .pidoutput import *
-from .pidsource import *
-from .potentiometer import *
-from .speedcontroller import *
+from .accelerometer import Accelerometer
+from .controller import Controller
+from .counterbase import CounterBase
+from .generichid import GenericHID
+from .gyro import Gyro
+from .namedsendable import NamedSendable
+from .pidoutput import PIDOutput
+from .pidsource import PIDSource
+from .potentiometer import Potentiometer
+from .speedcontroller import SpeedController
