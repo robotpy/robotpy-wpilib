@@ -1,6 +1,6 @@
-# validated: 2018-01-01 EN f9bece2ffbf7 edu/wpi/first/wpilibj/SensorUtil.java
+# validated: 2019-01-02 DV ecfe95383cdf edu/wpi/first/wpilibj/SensorUtil.java
 # ----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2016. All Rights Reserved.
+# Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
