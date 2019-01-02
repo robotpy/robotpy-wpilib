@@ -9,18 +9,18 @@ def getTable(networktables):
 
 @pytest.fixture(scope="function")
 def recordingcontroller(wpilib, networktables):
-    nt_instance = networktables.instance.NetworkTablesInstance.getDefault()
-    rc = wpilib.shuffleboard.RecordingController(nt_instance)
+    nt_instance = networktables.NetworkTables
+    rc = wpilib.shuffleboard.recordingcontroller.RecordingController(nt_instance)
     return rc
 
 
 def test_enableActuatorWidgets(wpilib, getTable):
     tab = wpilib.shuffleboard.Shuffleboard.getTab("tacos")
-    tab.add("simplevalue", 1)
+    tab.add(title="simplevalue", value=1)
     d_output = wpilib.DigitalOutput(1)
     motor = wpilib.NidecBrushless(2, 3)
     layout = tab.getLayout("tortilla", "the_tortilla")
-    layout.add("complexvalue", d_output)
+    layout.add(title="complexvalue", value=d_output)
     layout.add(motor)
     wpilib.shuffleboard.Shuffleboard.update()
     wpilib.shuffleboard.Shuffleboard.enableActuatorWidgets()
@@ -34,18 +34,17 @@ def test_addPersistent(wpilib, getTable):
 
 
 def test_getTab(wpilib, getTable):
-    shuffleTable = getTable("/Shuffleboard")
     metaTable = getTable("/Shuffleboard/.metadata")
 
     assert metaTable.getStringArray("Tabs", []) == []
     tab = wpilib.shuffleboard.Shuffleboard.getTab("tacos")
-    tab.add("simplevalue", 1)
+    tab.add(1, title="simplevalue")
     assert metaTable.getStringArray("Tabs", []) == ("tacos",)
 
 
 def test_setType(wpilib, getTable):
     tab = wpilib.shuffleboard.Shuffleboard.getTab("tacos")
-    tab.add("street_taco", 1).setType("taco")
+    tab.add(title="street_taco", value=1).setType("taco")
     tacoTable = getTable("/Shuffleboard/.metadata/tacos/street_taco")
     assert tacoTable.getString("PreferredComponent", None) is None
     wpilib.shuffleboard.Shuffleboard.update()
@@ -54,7 +53,7 @@ def test_setType(wpilib, getTable):
 
 def test_withProperties(wpilib, getTable):
     tab = wpilib.shuffleboard.Shuffleboard.getTab("tacos")
-    tab.add("street_taco", 1).withProperties({"sauce": "spicy"})
+    tab.add(title="street_taco", value=1).withProperties({"sauce": "spicy"})
     tacoTable = getTable("/Shuffleboard/.metadata/tacos/street_taco/Properties")
     assert tacoTable.getString("sauce", None) is None
     wpilib.shuffleboard.Shuffleboard.update()
@@ -63,7 +62,7 @@ def test_withProperties(wpilib, getTable):
 
 def test_withPosition(wpilib, getTable):
     tab = wpilib.shuffleboard.Shuffleboard.getTab("tacos")
-    tab.add("street_taco", 1).withPosition(columnIndex=4, rowIndex=5)
+    tab.add(title="street_taco", value=1).withPosition(columnIndex=4, rowIndex=5)
     tacoTable = getTable("/Shuffleboard/.metadata/tacos/street_taco")
     assert tacoTable.getNumberArray("Position", None) is None
     wpilib.shuffleboard.Shuffleboard.update()
@@ -72,7 +71,7 @@ def test_withPosition(wpilib, getTable):
 
 def test_withSize(wpilib, getTable):
     tab = wpilib.shuffleboard.Shuffleboard.getTab("tacos")
-    tab.add("street_taco", 1).withSize(width=300, height=200)
+    tab.add(title="street_taco", value=1).withSize(width=300, height=200)
     tacoTable = getTable("/Shuffleboard/.metadata/tacos/street_taco")
     assert tacoTable.getNumberArray("Size", None) is None
     wpilib.shuffleboard.Shuffleboard.update()
@@ -81,7 +80,7 @@ def test_withSize(wpilib, getTable):
 
 def test_withWidget(wpilib, getTable):
     tab = wpilib.shuffleboard.Shuffleboard.getTab("tacos")
-    tab.add("street_taco", 1).withWidget("guacamole")
+    tab.add(title="street_taco", value=1).withWidget("guacamole")
     tacoTable = getTable("/Shuffleboard/.metadata/tacos/street_taco")
     assert tacoTable.getString("PreferredComponent", None) is None
     wpilib.shuffleboard.Shuffleboard.update()
@@ -99,7 +98,7 @@ def test_recording(wpilib):
 
 def test_RecordingController_init(wpilib, networktables):
     nt_instance = networktables.instance.NetworkTablesInstance.getDefault()
-    rc = wpilib.shuffleboard.RecordingController(nt_instance)
+    rc = wpilib.shuffleboard.recordingcontroller.RecordingController(nt_instance)
     assert rc.eventsTable.path == "/Shuffleboard/.recording/events"
     assert (
         rc.recordingFileNameFormatEntry.getName()
@@ -110,13 +109,13 @@ def test_RecordingController_init(wpilib, networktables):
 
 def test_RecordingController_startRecording(recordingcontroller):
     rc = recordingcontroller
-    assert rc.recordingControlEntry.getBoolean(None) == None
+    assert rc.recordingControlEntry.getBoolean(None) is None
     rc.startRecording()
-    assert rc.recordingControlEntry.getBoolean(None) == True
+    assert rc.recordingControlEntry.getBoolean(None)
     rc.stopRecording()
-    assert rc.recordingControlEntry.getBoolean(None) == False
+    assert rc.recordingControlEntry.getBoolean(None) is False
     rc.startRecording()
-    assert rc.recordingControlEntry.getBoolean(None) == True
+    assert rc.recordingControlEntry.getBoolean(None)
 
 
 def test_RecordingController_setRecordingFileNameFormat(recordingcontroller):
@@ -158,7 +157,7 @@ def test_RecordingController_addEventMarker(
     assert rc.eventsTable.getSubTable(name).getStringArray("Info", None) == expected
 
 
-@pytest.mark.parametrize("name", [(None), (""), ("  "), ("\t"), ("\n")])
+@pytest.mark.parametrize("name", [(""), ("  "), ("\t"), ("\n")])
 def test_RecordingController_addEventMarker_refuses_name(
     wpilib, recordingcontroller, DriverStation, name
 ):
@@ -166,17 +165,6 @@ def test_RecordingController_addEventMarker_refuses_name(
     rc.addEventMarker(name, "tacos", wpilib.shuffleboard.EventImportance.kCritical)
     DriverStation.reportError.assert_called_with(
         "Shuffleboard event name was not specified", True
-    )
-
-
-@pytest.mark.parametrize("importance", [(None)])
-def test_RecordingController_addEventMarker_refuses_importance(
-    wpilib, recordingcontroller, DriverStation, importance
-):
-    rc = recordingcontroller
-    rc.addEventMarker("tacos", "tacos", importance)
-    DriverStation.reportError.assert_called_with(
-        "Shuffleboard event importance was null", True
     )
 
 

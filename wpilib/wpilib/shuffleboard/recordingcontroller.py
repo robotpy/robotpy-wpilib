@@ -45,12 +45,8 @@ class RecordingController:
         self.recordingFileNameFormatEntry.delete()
 
     def addEventMarker(self, name: str, description: str, importance: EventImportance):
-        if name is None or name == "" or name.isspace():
+        if not name or name.isspace():
             DriverStation.reportError("Shuffleboard event name was not specified", True)
-            return
-
-        if importance is None:
-            DriverStation.reportError("Shuffleboard event importance was null", True)
             return
 
         eventDescription = description

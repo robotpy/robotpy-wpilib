@@ -13,8 +13,6 @@ class ShuffleboardComponent:
     def __init__(
         self, parent: ShuffleboardContainer, title: str, type: Optional[str] = None
     ):
-        assert parent is not None, "parent cannot be None"
-        assert title is not None, "title cannot be None"
         self.parent = parent
         self.title = title
         self.type = type
@@ -23,7 +21,7 @@ class ShuffleboardComponent:
         self.row = -1
         self.width = -1
         self.height = -1
-        self.properties = {}
+        self.properties = {}  # type: Dict[str, Any]
 
     def getParent(self) -> ShuffleboardContainer:
         return self.parent
@@ -38,7 +36,7 @@ class ShuffleboardComponent:
     def getTitle(self) -> str:
         return self.title
 
-    def getProperties(self):
+    def getProperties(self) -> Dict[str, Any]:
         return self.properties
 
     def withProperties(self, properties: Dict[str, Any]) -> "ShuffleboardComponent":
@@ -102,17 +100,32 @@ class ShuffleboardComponent:
         if self.width <= 0 or self.height <= 0:
             metaTable.getEntry("Size").delete()
         else:
-            metaTable.getEntry("Size").setNumberArray([self.width, self.height])
+            metaTable.getEntry("Size").setNumberArray((self.width, self.height))
 
         # Tile position
-        if self.column <= 0 or self.row <= 0:
+        if self.column < 0 or self.row < 0:
             metaTable.getEntry("Position").delete()
         else:
-            metaTable.getEntry("Position").setNumberArray([self.column, self.row])
+            metaTable.getEntry("Position").setNumberArray((self.column, self.row))
 
         # Custom properties
-        if self.getProperties() is not None:
+        if self.getProperties():
             propTable = metaTable.getSubTable("Properties")
             for name, value in self.getProperties().items():
                 propTable.getEntry(name).setValue(value)
         self.metadataDirty = False
+
+    # ShuffleboardValue interface
+
+    def buildInto(self, parentTable, metaTable) -> None:
+        """Builds the entries for this value.
+
+        :param parentTable: the table containing all the data for the parent. Values that require a
+                            complex entry or table structure should call
+                            ``parentTable.getSubTable(getTitle())`` to get the table to put data into.
+                            Values that only use a single entry should call
+                            ``parentTable.getEntry(getTitle())`` to get that entry.
+
+        :param metaTable: the table containing all the metadata for this value and its sub-values
+        """
+        raise NotImplementedError

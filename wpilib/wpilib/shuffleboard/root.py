@@ -6,6 +6,11 @@
 # the project.
 # ----------------------------------------------------------------------------
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .tab import ShuffleboardTab
+
 
 class ShuffleboardRoot:
     """

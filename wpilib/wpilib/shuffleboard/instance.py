@@ -12,10 +12,9 @@ from .container import ShuffleboardContainer
 
 
 class ShuffleboardInstance(ShuffleboardRoot):
-    def __init__(self, ntInstance):
+    def __init__(self, ntInstance) -> None:
         from .shuffleboard import Shuffleboard
 
-        assert ntInstance is not None, "NetworkTable instance cannot be None"
         self.rootTable = ntInstance.getTable(Shuffleboard.kBaseTableName)
         self.rootMetaTable = self.rootTable.getSubTable(".metadata")
         self.selectedTabEntry = self.rootMetaTable.getEntry("Selected")
@@ -23,7 +22,6 @@ class ShuffleboardInstance(ShuffleboardRoot):
         self.tabs = {}
 
     def getTab(self, title: str) -> "ShuffleboardTab":
-        assert title is not None, "Tab title cannot be None"
         if title not in self.tabs:
             self.tabs[title] = ShuffleboardTab(self, title)
             self.tabsChanged = True
