@@ -19,3 +19,7 @@ e548a5f7054ccc221ede1917bb62f512d1fb0fe3 # PMD 6.3.0
 e2100730447d83b20267f7fff87fc1ca6bf47fb0 # Move HAL classes to their own base package  
 0e9172f9a70820f1a3ac8f5c8c55f63092e832d3 # Fix many errorprone warnings (#1247)
 acb786a7916621478166be85c32c20d9241c6c1c # Move MotorSafetyHelper into MotorSafety base class
+2e5fece594fd2098cdf83290370620d50b36f83a # utility class checks
+a60f312d19ee3a38df4318e1fec86c6789ef667a # eager null checks in drive base classes
+89d15f061b339e446285e75b0e58559081408062 # Fix main function initialization
+0d7d880261b662eb580e0001bfa603a958135387 # full Java 8 compatibility

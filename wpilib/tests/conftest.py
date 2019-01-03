@@ -173,3 +173,8 @@ def robotstate_impl():
 def MockNotifier(wpilib):
     with patch("wpilib.pidcontroller.Notifier", new=MagicMock()) as Notifier:
         yield Notifier
+
+
+def SimTimerTask(wpilib):
+    with patch("wpilib.pidcontroller.TimerTask", new=MagicMock()) as timertask:
+        yield timertask

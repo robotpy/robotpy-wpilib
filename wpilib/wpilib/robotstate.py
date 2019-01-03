@@ -1,4 +1,12 @@
 # validated: 2018-01-04 TW e1195e8b9dab edu/wpi/first/wpilibj/RobotState.java
+# ----------------------------------------------------------------------------
+# Copyright (c) FIRST 2016-2018. All Rights Reserved.
+# Open Source Software - may be modified and shared by FRC teams. The code
+# must be accompanied by the FIRST BSD license file in the root directory of
+# the project.
+# ----------------------------------------------------------------------------
+
+from .driverstation import DriverStation
 
 __all__ = ["RobotState"]
 
@@ -8,24 +16,22 @@ class RobotState:
     robot code.
     """
 
-    impl = None
-
     @staticmethod
     def isDisabled() -> bool:
-        return RobotState.impl.isDisabled()
+        return DriverStation.getInstance().isDisabled()
 
     @staticmethod
     def isEnabled() -> bool:
-        return RobotState.impl.isEnabled()
+        return DriverStation.getInstance().isEnabled()
 
     @staticmethod
     def isOperatorControl() -> bool:
-        return RobotState.impl.isOperatorControl()
+        return DriverStation.getInstance().isOperatorControl()
 
     @staticmethod
     def isAutonomous() -> bool:
-        return RobotState.impl.isAutonomous()
+        return DriverStation.getInstance().isAutonomous()
 
     @staticmethod
     def isTest() -> bool:
-        return RobotState.impl.isTest()
+        return DriverStation.getInstance().isTest()

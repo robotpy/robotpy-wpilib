@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, call, patch
 
 
 @pytest.fixture(scope="function")
-def command(wpilib, robotstate_impl):
+def command(wpilib):
     return wpilib.command.Command()
 
 
@@ -227,16 +227,16 @@ def test_command_run4(command, is_finished, is_canceled, expected):
     assert command.run() == expected
 
 
-def test_command_run5(command, robotstate_impl):
-    robotstate_impl.isDisabled.return_value = True
+def test_command_run5(command, hal_impl_mode_helpers):
+    hal_impl_mode_helpers.set_mode("teleop", new_enabled=False)
     command.cancel = MagicMock()
     command.run()
 
     assert command.cancel.called
 
 
-def test_command_run6(command, robotstate_impl):
-    robotstate_impl.isDisabled.return_value = True
+def test_command_run6(command, hal_impl_mode_helpers):
+    hal_impl_mode_helpers.set_mode("teleop", new_enabled=False)
     command.cancel = MagicMock()
     command.setRunWhenDisabled(True)
     command.run()
