@@ -1,6 +1,6 @@
-# validated: 2018-09-09 EN ecfe95383cdf edu/wpi/first/wpilibj/command/PIDSubsystem.java
+# validated: 2019-01-01 DV ab493454603c edu/wpi/first/wpilibj/command/PIDSubsystem.java
 # ----------------------------------------------------------------------------
-# Copyright (c) FIRST 2008-2012. All Rights Reserved.
+# Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -16,7 +16,7 @@ __all__ = ["PIDSubsystem"]
 
 class PIDSubsystem(Subsystem):
     """This class is designed to handle the case where there is a Subsystem
-    which uses a single {@link PIDController} almost constantly (for instance,
+    which uses a single :class:`.PIDController` almost constantly (for instance,
     an elevator which attempts to stay at a constant height).
 
     It provides some convenience methods to run an internal PIDController.
@@ -29,8 +29,9 @@ class PIDSubsystem(Subsystem):
         p: float,
         i: float,
         d: float,
-        period: Optional[float] = None,
         f: float = 0.0,
+        *,
+        period: Optional[float] = None,
         name: Optional[str] = None,
     ) -> None:
         """Instantiates a PIDSubsystem that will use the given p, i and d
@@ -42,17 +43,23 @@ class PIDSubsystem(Subsystem):
         :param p: the proportional value
         :param i: the integral value
         :param d: the derivative value
-        :param period: the time (in seconds) between calculations (optional)
         :param f: the feed forward value
+        :param period: the time (in seconds) between calculations (optional)
         :param name: the name (optional)
         """
         super().__init__(name)
         if period is None:
             period = PIDController.kDefaultPeriod
         self.controller = PIDController(
-            p, i, d, f, self.returnPIDInput, self.usePIDOutput, period
+            p,
+            i,
+            d,
+            f,
+            source=self.returnPIDInput,
+            output=self.usePIDOutput,
+            period=period,
         )
-        self.addChild(self.controller)
+        self.addChild(child=self.controller, name="PIDController")
 
     def getPIDController(self) -> PIDController:
         """Returns the PIDController used by this PIDSubsystem.
