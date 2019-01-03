@@ -1,6 +1,6 @@
-# validated: 2018-11-18 EN 54fbec27df19 edu/wpi/first/wpilibj/IterativeRobotBase.java
+# validated: 2019-01-02 DV 6bdd7ce50679 edu/wpi/first/wpilibj/IterativeRobotBase.java
 # ----------------------------------------------------------------------------
-# Copyright (c) 2017 FIRST. All Rights Reserved.
+# Copyright (c) 2017-2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
@@ -34,15 +34,18 @@ class IterativeRobotBase(RobotBase):
 
     init() functions -- each of the following functions is called once when the
     appropriate mode is entered:
-    - disabledInit()   -- called only when first disabled
+
+    - disabledInit()   -- called each and every time disabled is entered from
+      another mode
     - autonomousInit() -- called each and every time autonomous is entered from
-    another mode
+      another mode
     - teleopInit()     -- called each and every time teleop is entered from
-    another mode
+      another mode
     - testInit()       -- called each and every time test is entered from
-    another mode
+      another mode
 
     periodic() functions -- each of these functions is called on an interval:
+
     - robotPeriodic()
     - disabledPeriodic()
     - autonomousPeriodic()
