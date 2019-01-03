@@ -91,6 +91,8 @@ class Relay(SendableBase, MotorSafety):
             If not specified, defaults to allowing both directions.
         """
         super().__init__()
+        MotorSafety.__init__(self)
+
         if direction is None:
             direction = self.Direction.kBoth
         self.channel = channel
@@ -101,8 +103,6 @@ class Relay(SendableBase, MotorSafety):
         self._initRelay()
 
         self.set(self.Value.kOff)
-
-        MotorSafety.__init__(self)
 
     def _initRelay(self) -> None:
         SensorUtil.checkRelayChannel(self.channel)
