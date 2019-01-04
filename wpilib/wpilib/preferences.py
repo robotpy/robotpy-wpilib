@@ -1,4 +1,4 @@
-# novalidate
+# validated: 2019-01-04 DS 3178911eef5 edu/wpi/first/wpilibj/Preferences.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
