@@ -1,4 +1,5 @@
 import enum
+
 #
 # Everything in here should be usable on all implementations of the HAL
 #
