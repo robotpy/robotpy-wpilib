@@ -14,7 +14,7 @@ class RuntimeType(enum.IntEnum):
     Mock = 1
 
 
-class UsageReporting(enum.IntEnum):
+class UsageReporting:
     # enum tResourceType
     kResourceType_Controller = 0
     kResourceType_Module = 1
