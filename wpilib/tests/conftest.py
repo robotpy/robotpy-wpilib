@@ -169,7 +169,7 @@ def robotstate_impl():
         yield impl
 
 
-@pytest.fixture(scope="function")
-def SimTimerTask(wpilib):
-    with patch("wpilib.pidcontroller.TimerTask", new=MagicMock()) as timertask:
-        yield timertask
+@pytest.fixture("function")
+def MockNotifier(wpilib):
+    with patch("wpilib.pidcontroller.Notifier", new=MagicMock()) as Notifier:
+        yield Notifier

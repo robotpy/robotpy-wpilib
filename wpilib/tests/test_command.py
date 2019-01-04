@@ -357,7 +357,7 @@ def test_timedcommand_init2(wpilib):
     assert subsystem in command.requirements
 
 
-def test_pidcommand_init1(wpilib, SimTimerTask):
+def test_pidcommand_init1(wpilib, MockNotifier):
     command = wpilib.command.PIDCommand(1.0, 2.0, 3.0)
 
     assert command.getName() == "PIDCommand"
@@ -371,7 +371,7 @@ def test_pidcommand_init1(wpilib, SimTimerTask):
     assert len(command.requirements) == 0
 
 
-def test_pidcommand_init2(wpilib, SimTimerTask):
+def test_pidcommand_init2(wpilib, MockNotifier):
     command = wpilib.command.PIDCommand(1.0, 2.0, 3.0, 4.0)
 
     assert command.getName() == "PIDCommand"
@@ -385,7 +385,7 @@ def test_pidcommand_init2(wpilib, SimTimerTask):
     assert len(command.requirements) == 0
 
 
-def test_pidcommand_init3(wpilib, SimTimerTask):
+def test_pidcommand_init3(wpilib, MockNotifier):
     command = wpilib.command.PIDCommand(1.0, 2.0, 3.0, 4.0, 5.0)
 
     assert command.getName() == "PIDCommand"
@@ -399,7 +399,7 @@ def test_pidcommand_init3(wpilib, SimTimerTask):
     assert len(command.requirements) == 0
 
 
-def test_pidcommand_init4(wpilib, SimTimerTask):
+def test_pidcommand_init4(wpilib, MockNotifier):
     command = wpilib.command.PIDCommand(1.0, 2.0, 3.0, 4.0, 5.0, "Percival")
 
     assert command.getName() == "Percival"
@@ -413,7 +413,7 @@ def test_pidcommand_init4(wpilib, SimTimerTask):
     assert len(command.requirements) == 0
 
 
-def test_pidcommand_init5(wpilib, SimTimerTask):
+def test_pidcommand_init5(wpilib, MockNotifier):
     subsystem = wpilib.command.Subsystem()
     command = wpilib.command.PIDCommand(1.0, 2.0, 3.0, 4.0, 5.0, "Percival", subsystem)
 
