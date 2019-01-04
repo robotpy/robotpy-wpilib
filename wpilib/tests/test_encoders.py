@@ -200,9 +200,10 @@ def test_encoder_stopped(wpilib, encoder_data):
 
 def test_encoder_getRate(wpilib, encoder_data):
     encoder = wpilib.Encoder(1, 2)
+    encoder.setDistancePerPulse(2.1)
 
     encoder_data["rate"] = 3.0
-    assert encoder.getRate() == pytest.approx(3.0, 0.01)
+    assert encoder.getRate() == pytest.approx(6.3, 0.01)
 
 
 def test_encoder_setMinRate(wpilib, encoder_data):
@@ -232,8 +233,9 @@ def test_encoder_samplesToAverage(wpilib, encoder_data):
     assert encoder.getSamplesToAverage() == 17
 
 
-def test_encoder_pidget_displacement(wpilib):
+def test_encoder_pidget_displacement1(wpilib):
     encoder = wpilib.Encoder(1, 2)
+    encoder.setDistancePerPulse(1.0)
     encoder.getDistance = MagicMock(return_value=4.4)
 
     encoder.setPIDSourceType(wpilib.interfaces.PIDSource.PIDSourceType.kDisplacement)
@@ -241,8 +243,9 @@ def test_encoder_pidget_displacement(wpilib):
     assert encoder.pidGet() == pytest.approx(4.4, 0.01)
 
 
-def test_encoder_pidget_displacement(wpilib, encoder_data):
+def test_encoder_pidget_displacement2(wpilib, encoder_data):
     encoder = wpilib.Encoder(1, 2)
+    encoder.setDistancePerPulse(1.0)
     encoder_data["rate"] = 3.0
     encoder.setPIDSourceType(wpilib.interfaces.PIDSource.PIDSourceType.kRate)
     assert encoder.pidGet() == pytest.approx(3.0, 0.01)
@@ -273,7 +276,7 @@ def test_encoder_initSendable_update(wpilib, encoder_data, sendablebuilder):
     sendablebuilder.updateTable()
 
     assert sendablebuilder.getTable().getNumber("Speed", 0.0) == pytest.approx(
-        3.3, 0.01
+        6.93, 0.01
     )
     assert sendablebuilder.getTable().getNumber("Distance", 0.0) == pytest.approx(
         4.2, 0.01
