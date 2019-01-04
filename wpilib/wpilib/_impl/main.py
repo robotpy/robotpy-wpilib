@@ -2,6 +2,7 @@
 
 import argparse
 import inspect
+import os
 import sys
 
 from os.path import exists
@@ -56,6 +57,39 @@ def _log_versions():
         # packages unless we need to load them
         dist = entry_point.dist
         logger.info("%s version %s", dist.project_name, dist.version)
+
+
+def _enable_faulthandler():
+    #
+    # In the event of a segfault, faulthandler will dump the currently
+    # active stack so you can figure out what went wrong.
+    #
+    # Additionally, on non-Windows platforms we register a SIGUSR2
+    # handler -- if you send the robot process a SIGUSR2, then
+    # faulthandler will dump all of your current stacks. This can
+    # be really useful for figuring out things like deadlocks.
+    #
+
+    import logging
+
+    logger = logging.getLogger("faulthandler")
+
+    try:
+        # These should work on all platforms
+        import faulthandler
+
+        faulthandler.enable()
+    except Exception as e:
+        logger.warn("Could not enable faulthandler: %s", e)
+        return
+
+    try:
+        import signal
+
+        faulthandler.register(signal.SIGUSR2)
+        logger.info("registered SIGUSR2 for PID %s", os.getpid())
+    except Exception:
+        return
 
 
 class _CustomHelpAction(argparse.Action):
@@ -159,6 +193,8 @@ def run(robot_class, **kwargs):
     configure_logging(options.verbose)
 
     _log_versions()
+    _enable_faulthandler()
+
     retval = options.cmdobj.run(options, robot_class, **kwargs)
 
     if retval is None:
