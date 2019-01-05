@@ -1,4 +1,4 @@
-# validated: 2018-12-25 DV 8d95c38e39b4 edu/wpi/first/wpilibj/Watchdog.java
+# validated: 2019-01-02 DV a2368a6199b1 edu/wpi/first/wpilibj/Watchdog.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code

@@ -79,6 +79,8 @@ class PWM(MotorSafety, SendableBase):
         :param channel: The PWM channel number. 0-9 are on-board, 10-19 are on the MXP port
         """
         super().__init__()
+        SendableBase.__init__(self)
+
         SensorUtil.checkPWMChannel(channel)
         self.channel = channel
 

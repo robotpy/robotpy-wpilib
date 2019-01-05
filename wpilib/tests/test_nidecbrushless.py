@@ -58,7 +58,7 @@ def test_nidec_expiration(nidec):
     assert nidec.getExpiration() == 111
 
 
-def test_nidec_setSafetyEnabled1(nidec, robotstate_impl):
+def test_nidec_setSafetyEnabled1(nidec):
     nidec.stopMotor = MagicMock()
 
     nidec.setSafetyEnabled(True)
@@ -69,7 +69,7 @@ def test_nidec_setSafetyEnabled1(nidec, robotstate_impl):
     nidec.stopMotor.assert_not_called()
 
 
-def test_nidec_setSafetyEnabled2(nidec, robotstate_impl):
+def test_nidec_setSafetyEnabled2(nidec):
     nidec.stopMotor = MagicMock()
 
     nidec.setSafetyEnabled(True)

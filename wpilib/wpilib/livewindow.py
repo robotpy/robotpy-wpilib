@@ -1,4 +1,4 @@
-# validated: 2017-12-09 EN f9bece2ffbf7 edu/wpi/first/wpilibj/livewindow/LiveWindow.java
+# validated: 2019-01-02 DV 97ba195b881e edu/wpi/first/wpilibj/livewindow/LiveWindow.java
 # ----------------------------------------------------------------------------
 #  Copyright (c) 2008-2017 FIRST. All Rights Reserved.
 #  Open Source Software - may be modified and shared by FRC teams. The code
@@ -107,6 +107,9 @@ class LiveWindow:
 
         with cls.mutex:
             if cls.liveWindowEnabled != enabled:
+                cls.startLiveWindow = enabled
+                cls.liveWindowEnabled = enabled
+                cls.updateValues()  # Force table generation now to make sure everything is defined
                 scheduler = Scheduler.getInstance()
                 if enabled:
                     logger.info("Starting live window mode.")
@@ -118,8 +121,6 @@ class LiveWindow:
                     for component in components:
                         component.builder.stopLiveWindowMode()
                     scheduler.enable()
-                cls.startLiveWindow = enabled
-                cls.liveWindowEnabled = enabled
                 cls.enabledEntry().setBoolean(enabled)
 
     @classmethod
@@ -297,7 +298,7 @@ class LiveWindow:
         """
         Remove a component from the LiveWindow.
 
-        @param sendable component to remove
+        :param sendable: component to remove
         """
         with cls.mutex:
             if sendable in cls.components:

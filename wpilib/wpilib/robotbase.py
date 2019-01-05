@@ -140,23 +140,9 @@ class RobotBase:
         raise NotImplementedError
 
     @staticmethod
-    def initializeHardwareConfiguration() -> None:
-        """Common initialization for all robot programs."""
-
-        # Python specific: do not call this, initialize() is already called when
-        # hal is imported
-        # hal.initialize()
-
-        from .driverstation import DriverStation
-        from .robotstate import RobotState
-
-        RobotState.impl = DriverStation.getInstance()
-
-    @staticmethod
     def main(robot_cls: Type["RobotBase"]) -> bool:
         """Starting point for the applications."""
-        RobotBase.initializeHardwareConfiguration()
-
+        # Python-specific: don't call hal.initialize() again here.
         hal.report(
             hal.UsageReporting.kResourceType_Language,
             hal.UsageReporting.kLanguage_Python,

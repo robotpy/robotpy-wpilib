@@ -46,7 +46,7 @@ def test_init_two(kw, mc, wpimock, halmock):
 
     assert drive.maxOutput == wpimock.RobotDrive.kDefaultMaxOutput
     assert drive.sensitivity == wpimock.RobotDrive.kDefaultSensitivity
-    assert drive.safetyEnabled
+    assert drive._MotorSafety__enabled
 
     assert drive.frontLeftMotor is None
     assert drive.frontRightMotor is None
@@ -122,7 +122,7 @@ def test_init_four(kw, mc, wpimock, halmock):
 
     assert drive.maxOutput == wpimock.RobotDrive.kDefaultMaxOutput
     assert drive.sensitivity == wpimock.RobotDrive.kDefaultSensitivity
-    assert drive.safetyEnabled
+    assert drive._MotorSafety__enabled
 
     if mc is None:
         assert drive.frontLeftMotor == fleft
