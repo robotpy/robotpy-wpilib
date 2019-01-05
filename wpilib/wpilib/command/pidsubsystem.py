@@ -32,7 +32,7 @@ class PIDSubsystem(Subsystem):
         f: float = 0.0,
         *,
         period: Optional[float] = None,
-        name: Optional[str] = None,
+        name: Optional[str] = None
     ) -> None:
         """Instantiates a PIDSubsystem that will use the given p, i and d
         values.
