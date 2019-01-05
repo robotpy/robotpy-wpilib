@@ -118,7 +118,7 @@ def test_command_removed1(command):
     mock.assert_has_calls([])
 
 
-def test_command_removed2(command):
+def test_command_removed2(command, enable_robot):
     mock = MagicMock()
     command.end = lambda: mock("end")
     command.interrupted = lambda: mock("interrupted")
@@ -131,7 +131,7 @@ def test_command_removed2(command):
     mock.assert_has_calls([call("end")])
 
 
-def test_command_removed3(command):
+def test_command_removed3(command, enable_robot):
     mock = MagicMock()
     command.end = lambda: mock("end")
     command.interrupted = lambda: mock("interrupted")
@@ -145,7 +145,7 @@ def test_command_removed3(command):
     mock.assert_has_calls([call("end")])
 
 
-def test_command_removed4(command):
+def test_command_removed4(command, enable_robot):
     mock = MagicMock()
     command.end = lambda: mock("end")
     command.interrupted = lambda: mock("interrupted")
@@ -159,7 +159,7 @@ def test_command_removed4(command):
     mock.assert_has_calls([call("interrupted")])
 
 
-def test_command_removed5(command):
+def test_command_removed5(command, enable_robot):
     mock = MagicMock()
     command.end = lambda: mock("end")
     command.interrupted = lambda: mock("interrupted")
@@ -174,7 +174,7 @@ def test_command_removed5(command):
     mock.assert_has_calls([call("interrupted")])
 
 
-def test_command_run1(command):
+def test_command_run1(command, enable_robot):
     mock = MagicMock()
     command.initialize = lambda: mock("initialize")
     command.execute = lambda: mock("execute")
@@ -185,7 +185,7 @@ def test_command_run1(command):
     mock.assert_has_calls([call("initialize"), call("execute")])
 
 
-def test_command_run2(command):
+def test_command_run2(command, enable_robot):
     mock = MagicMock()
     command.initialize = lambda: mock("initialize")
     command.execute = lambda: mock("execute")
@@ -227,16 +227,14 @@ def test_command_run4(command, is_finished, is_canceled, expected):
     assert command.run() == expected
 
 
-def test_command_run5(command, hal_impl_mode_helpers):
-    hal_impl_mode_helpers.set_mode("teleop", new_enabled=False)
+def test_command_run5(command, disable_robot):
     command.cancel = MagicMock()
     command.run()
 
     assert command.cancel.called
 
 
-def test_command_run6(command, hal_impl_mode_helpers):
-    hal_impl_mode_helpers.set_mode("teleop", new_enabled=False)
+def test_command_run6(command, disable_robot):
     command.cancel = MagicMock()
     command.setRunWhenDisabled(True)
     command.run()

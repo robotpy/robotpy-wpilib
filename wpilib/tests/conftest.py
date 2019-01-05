@@ -42,6 +42,16 @@ def hal_impl_mode_helpers(_module_patch):
 
 
 @pytest.fixture(scope="function")
+def enable_robot(hal_impl_mode_helpers):
+    hal_impl_mode_helpers.set_mode("teleop", new_enabled=True)
+
+
+@pytest.fixture(scope="function")
+def disable_robot(hal_impl_mode_helpers):
+    hal_impl_mode_helpers.set_mode("teleop", new_enabled=False)
+
+
+@pytest.fixture(scope="function")
 def hal_data(_module_patch):
     """Simulation data for HAL"""
     import hal_impl.functions
@@ -159,14 +169,6 @@ def sim_hooks():
     with patch("hal_impl.functions.hooks", new=SimHooks()) as hooks:
         hal_impl.functions.reset_hal()
         yield hooks
-
-
-@pytest.fixture(scope="function")
-def robotstate_impl():
-    impl_mock = MagicMock()
-    impl_mock.isDisabled.return_value = False
-    with patch("wpilib.robotstate.RobotState.impl", new=impl_mock) as impl:
-        yield impl
 
 
 @pytest.fixture("function")

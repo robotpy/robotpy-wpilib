@@ -1,4 +1,4 @@
-def test_JoystickButton_whenPressed(wpilib, hal_data):
+def test_JoystickButton_whenPressed(wpilib, hal_data, enable_robot):
     ds = wpilib.DriverStation.getInstance()
     joystick = wpilib.Joystick(1)
     data = hal_data["joysticks"][1]
@@ -70,7 +70,7 @@ def test_JoystickButton_whileHeld(wpilib, hal_data):
     assert not command.isRunning()
 
 
-def test_JoystickButton_whenReleased(wpilib, hal_data):
+def test_JoystickButton_whenReleased(wpilib, hal_data, enable_robot):
     ds = wpilib.DriverStation.getInstance()
     joystick = wpilib.Joystick(1)
     data = hal_data["joysticks"][1]
@@ -114,7 +114,7 @@ def test_JoystickButton_whenReleased(wpilib, hal_data):
     assert command.isRunning()
 
 
-def test_JoystickButton_toggleWhenPressed(wpilib, hal_data):
+def test_JoystickButton_toggleWhenPressed(wpilib, hal_data, enable_robot):
     ds = wpilib.DriverStation.getInstance()
     joystick = wpilib.Joystick(1)
     data = hal_data["joysticks"][1]
