@@ -77,11 +77,12 @@ class JoystickDescriptor(C.Structure):
 JoystickDescriptor_ptr = C.POINTER(JoystickDescriptor)
 
 class MatchInfo(C.Structure):
-    _fields_ = [("eventName", C.c_char_p),
+    _fields_ = [("eventName", C.c_char * 64),
                 ("matchType", C.c_int),
                 ("matchNumber", C.c_uint16),
                 ("replayNumber", C.c_uint8),
-                ("gameSpecificMessage", C.c_char_p)]
+                ("gameSpecificMessage", C.c_char * 64),
+                ("gameSpecificMessageSize", C.c_uint16)]
 MatchInfo_ptr = C.POINTER(MatchInfo)
 
 

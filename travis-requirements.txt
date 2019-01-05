@@ -1,0 +1,13 @@
+git+git://github.com/robotpy/pynetworktables.git#egg=pynetworktables
+
+-e ./wpilib
+-e ./hal-base
+-e ./hal-sim
+
+pytest>=2.8
+coverage
+robotpy-cppheaderparser
+pcpp
+
+# used in examples tests
+git+git://github.com/robotpy/pyfrc.git#egg=pyfrc

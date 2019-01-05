@@ -667,7 +667,7 @@ def _get_trigger_value(analogTriggerHandle):
         return atr, ain["avg_value"]
     if trig_type == "filtered":
         return atr, ain["value"]  # XXX
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def getAnalogTriggerInWindow(analogTriggerHandle, status):
@@ -710,19 +710,19 @@ def CAN_SendMessage(
     messageID: int, data: bytes, dataSize: int, periodMs: int, status
 ) -> None:
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def CAN_ReceiveMessage(messageIDMask: int, data: bytearray, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def CAN_OpenStreamSession(
     messageID: int, messageIDMask: int, maxMessages: int, status
 ) -> int:
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def CAN_CloseStreamSession(sessionHandle: int) -> None:
@@ -746,7 +746,7 @@ def CAN_GetCANStatus(status):
 
 def initializeCAN(manufacturer, deviceId, deviceType, status) -> types.CANHandle:
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def cleanCAN(handle: types.CANHandle) -> None:
@@ -755,12 +755,12 @@ def cleanCAN(handle: types.CANHandle) -> None:
 
 def writeCANPacket(handle, data, length, apiId, status) -> None:
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def writeCANPacketRepeating(handle, data, length, apiId, repeatMs, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def stopCANPacketRepeating(handle: types.CANHandle, apiId: int, status) -> None:
@@ -770,22 +770,22 @@ def stopCANPacketRepeating(handle: types.CANHandle, apiId: int, status) -> None:
 
 def readCANPacketNew(handle, apiId, data, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def readCANPacketLatest(handle, apiId, data, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def readCANPacketTimeout(handle, apiId, data, timeoutMs, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def readCANPeriodicPacket(handle, apiId, data, timeoutMs, periodMs, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 #############################################################################
@@ -1298,7 +1298,7 @@ def freeJoystickName(name):
 
 
 def getJoystickAxisType(joystickNum, axis):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setJoystickOutputs(joystickNum, outputs, leftRumble, rightRumble):
@@ -1421,12 +1421,12 @@ def getEncoder(encoderHandle, status):
 
 def getEncoderRaw(encoderHandle, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def getEncoderEncodingScale(encoderHandle, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def resetEncoder(encoderHandle, status):
@@ -1511,7 +1511,7 @@ def getEncoderFPGAIndex(encoderHandle, status):
 
 def getEncoderDecodingScaleFactor(encoderHandle, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def getEncoderDistancePerPulse(encoderHandle, status):
@@ -1521,7 +1521,7 @@ def getEncoderDistancePerPulse(encoderHandle, status):
 
 def getEncoderEncodingType(encoderHandle, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 #############################################################################
@@ -1530,11 +1530,11 @@ def getEncoderEncodingType(encoderHandle, status):
 
 
 def loadOneExtension(library):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def loadExtensions():
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 #############################################################################
@@ -1554,25 +1554,25 @@ def loadExtensions():
 
 
 def initializeI2C(port, status):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def transactionI2C(
     port, deviceAddress, dataToSend, sendSize, dataReceived, receiveSize
 ):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def writeI2C(port, deviceAddress, dataToSend, sendSize):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def readI2C(port, deviceAddress, buffer, count):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def closeI2C(port):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 #############################################################################
@@ -1581,49 +1581,49 @@ def closeI2C(port):
 
 
 def initializeInterrupts(watcher, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 def cleanInterrupts(interruptHandle, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 def waitForInterrupt(interruptHandle, timeout, ignorePrevious, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 def enableInterrupts(interruptHandle, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 def disableInterrupts(interruptHandle, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 def readInterruptRisingTimestamp(interruptHandle, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 def readInterruptFallingTimestamp(interruptHandle, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 def requestInterrupts(interruptHandle, digitalSourceHandle, analogTriggerType, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def attachInterruptHandler(interruptHandle, handler, param, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 def attachInterruptHandlerThreaded(interruptHandle, handler, param, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setInterruptUpSourceEdge(interruptHandle, risingEdge, fallingEdge, status):
-    raise NotImplementedError  # TODO
+    raise NotImplementedError("Not implemented in simulation")  # TODO
 
 
 #############################################################################
@@ -1859,7 +1859,7 @@ def getPWMConfigRaw(
     pwmPortHandle, status
 ):  # , maxPwm, deadbandMaxPwm, centerPwm, deadbandMinPwm, minPwm, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setPWMEliminateDeadband(pwmPortHandle, eliminateDeadband, status):
@@ -2157,96 +2157,96 @@ def getRelay(relayPortHandle, status):
 
 def initializeSPI(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def transactionSPI(port, dataToSend, dataReceived, size):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def writeSPI(port, dataToSend, sendSize):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def readSPI(port, buffer, count):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def closeSPI(port):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSPISpeed(port, speed):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSPIOpts(port, msbFirst, sampleOnTrailing, clkIdleHigh):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSPIChipSelectActiveHigh(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSPIChipSelectActiveLow(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def getSPIHandle(port):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSPIHandle(port, handle):
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def initSPIAuto(port, bufferSize, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def freeSPIAuto(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def startSPIAutoRate(port, period, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def startSPIAutoTrigger(
     port, digitalSourceHandle, analogTriggerType, triggerRising, triggerFalling, status
 ):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def stopSPIAuto(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSPIAutoTransmitData(port, dataToSend, dataSize, zeroSize, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def forceSPIAutoRead(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def readSPIAutoReceivedData(port, buffer, numToRead, timeout, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def getSPIAutoDroppedCount(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 #############################################################################
@@ -2264,97 +2264,97 @@ def getSPIAutoDroppedCount(port, status):
 
 def initializeSerialPort(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def initializeSerialPortDirect(port, portName, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialBaudRate(port, baud, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialDataBits(port, bits, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialParity(port, parity, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialStopBits(port, stopBits, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialWriteMode(port, mode, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialFlowControl(port, flow, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialTimeout(port, timeout, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def enableSerialTermination(port, terminator, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def disableSerialTermination(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialReadBufferSize(port, size, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def setSerialWriteBufferSize(port, size, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def getSerialBytesReceived(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def readSerial(port, buffer, count, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def writeSerial(port, buffer, count, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def flushSerial(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def clearSerial(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 def closeSerial(port, status):
     status.value = 0
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 #############################################################################
@@ -2457,7 +2457,7 @@ def setOneShotDuration(solenoidPortHandle, durMS, status):
 def fireOneShot(solenoidPortHandle, status):
     status.value = 0
     # TODO: need to schedule a callback to implement this somehow
-    raise NotImplementedError
+    raise NotImplementedError("Not implemented in simulation")
 
 
 # This needs to be here otherwise tests will fail, as hal.initialize() does not call this
