@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 
 import hal
 
@@ -49,7 +50,7 @@ class AnalogTriggerOutput(DigitalSource):
     sensor will then be limited.
     """
 
-    class AnalogTriggerType:
+    class AnalogTriggerType(enum.IntEnum):
         """Defines the state in which the :class:`.AnalogTrigger` triggers"""
 
         kInWindow = hal.AnalogTriggerType.kInWindow

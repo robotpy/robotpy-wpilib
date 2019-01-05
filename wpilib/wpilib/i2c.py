@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 from typing import List, Union
 
 import hal
@@ -32,7 +33,7 @@ class I2C:
         data = i2c.transaction(b'text', 4)
     """
 
-    class Port:
+    class Port(enum.IntEnum):
         kOnboard = 0
         kMXP = 1
 

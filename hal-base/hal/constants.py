@@ -1,3 +1,5 @@
+import enum
+
 #
 # Everything in here should be usable on all implementations of the HAL
 #
@@ -7,7 +9,7 @@
 #############################################################################
 
 
-class RuntimeType:
+class RuntimeType(enum.IntEnum):
     Athena = 0
     Mock = 1
 
@@ -161,7 +163,7 @@ HALUsageReporting = UsageReporting
 #############################################################################
 
 
-class AccelerometerRange:
+class AccelerometerRange(enum.IntEnum):
     kRange_2G = 0
     kRange_4G = 1
     kRange_8G = 2
@@ -172,7 +174,7 @@ class AccelerometerRange:
 #############################################################################
 
 
-class AnalogTriggerType:
+class AnalogTriggerType(enum.IntEnum):
     kInWindow = 0
     kState = 1
     kRisingPulse = 2
@@ -184,7 +186,7 @@ class AnalogTriggerType:
 #############################################################################
 
 
-class CANDeviceType:
+class CANDeviceType(enum.IntEnum):
     kBroadcast = 0
     kRobotController = 1
     kMotorController = 2
@@ -199,7 +201,7 @@ class CANDeviceType:
     kFirmwareUpdate = 31
 
 
-class CANManufacturer:
+class CANManufacturer(enum.IntEnum):
     kBroadcast = 0
     kNI = 1
     kLM = 2
@@ -214,7 +216,7 @@ class CANManufacturer:
 #############################################################################
 
 
-class CounterMode:
+class CounterMode(enum.IntEnum):
     kTwoPulse = 0
     kSemiperiod = 1
     kPulseLength = 2
@@ -226,7 +228,7 @@ class CounterMode:
 #############################################################################
 
 
-class AllianceStationID:
+class AllianceStationID(enum.IntEnum):
     kRed1 = 0
     kRed2 = 1
     kRed3 = 2
@@ -235,7 +237,7 @@ class AllianceStationID:
     kBlue3 = 5
 
 
-class MatchType:
+class MatchType(enum.IntEnum):
     kMatchType_none = 0
     kMatchType_practice = 1
     kMatchType_qualification = 2
@@ -250,14 +252,14 @@ kMaxJoystickPOVs = 12
 #############################################################################
 
 
-class EncoderIndexingType:
+class EncoderIndexingType(enum.IntEnum):
     kResetWhileHigh = 0
     kResetWhileLow = 1
     kResetOnFallingEdge = 2
     kResetOnRisingEdge = 3
 
 
-class EncoderEncodingType:
+class EncoderEncodingType(enum.IntEnum):
     k1X = 0
     k2X = 1
     k4X = 2

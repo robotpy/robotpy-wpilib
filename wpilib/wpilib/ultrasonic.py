@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 from typing import Union
 
 import hal
@@ -39,7 +40,7 @@ class Ultrasonic(SendableBase):
     .. not_implemented: initialize
     """
 
-    class Unit:
+    class Unit(enum.IntEnum):
         """The units to return when PIDGet is called"""
 
         kInches = 0

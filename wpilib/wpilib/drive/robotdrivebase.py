@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 from typing import List
 
 from ..motorsafety import MotorSafety
@@ -16,7 +17,7 @@ __all__ = ["RobotDriveBase"]
 class RobotDriveBase(SendableBase, MotorSafety):
     """Common base class for drive platforms"""
 
-    class MotorType:
+    class MotorType(enum.IntEnum):
         """The location of a motor on the robot for the purpose of driving."""
 
         #: Front left

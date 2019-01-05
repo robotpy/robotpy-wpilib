@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import enum
 from typing import Callable
 
 __all__ = ["PIDSource"]
@@ -37,7 +38,7 @@ class PIDSource:
 
         return objc
 
-    class PIDSourceType:
+    class PIDSourceType(enum.IntEnum):
         """A description for the type of output value to provide to a
         :class:`.PIDController`"""
 

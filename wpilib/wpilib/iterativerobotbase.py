@@ -50,7 +50,7 @@ class IterativeRobotBase(RobotBase):
     - testPeriodic()
     """
 
-    class Mode(enum.Enum):
+    class Mode(enum.IntEnum):
         kNone = 0
         kDisabled = 1
         kAutonomous = 2
