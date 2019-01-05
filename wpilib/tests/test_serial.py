@@ -19,6 +19,6 @@ def test_serial(wpilib):
     serial = wpilib.SerialPort(9600, wpilib.SerialPort.Port.kOnboard, simPort=simPort)
 
     # TODO: expand the tests
-    serial.write(b"some bytes")
+    serial.write(b"some bytes", 10)
 
     assert serial.read(4) == b"cccc"
