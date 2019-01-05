@@ -1,4 +1,4 @@
-# validated: 2018-09-09 EN 0614913f1abb edu/wpi/first/wpilibj/smartdashboard/SendableBuilderImpl.java
+# validated: 2019-01-04 TW 97ba195b881e edu/wpi/first/wpilibj/smartdashboard/SendableBuilderImpl.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2017 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -88,13 +88,15 @@ class SendableBuilder:
         """Hook setters for all properties"""
         for prop in self.properties:
             prop.startListener()
-        self.controllableEntry.setBoolean(True)
+        if self.controllableEntry is not None:
+            self.controllableEntry.setBoolean(True)
 
     def stopListeners(self) -> None:
         """Unhook setters for all properties"""
         for prop in self.properties:
             prop.stopListener()
-        self.controllableEntry.setBoolean(False)
+        if self.controllableEntry is not None:
+            self.controllableEntry.setBoolean(False)
 
     def startLiveWindowMode(self) -> None:
         """
