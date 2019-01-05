@@ -140,6 +140,7 @@ class SendableChooser(SendableBase):
                 return self.selected if self.selected else self.defaultChoice
 
         builder.addStringProperty(SendableChooser.ACTIVE, _active_property_getter, None)
+
         with self.mutex:
             try:
                 self.activeEntries.append(builder.getEntry(SendableChooser.ACTIVE))

@@ -1,4 +1,4 @@
-# validated: 2018-01-06 DS 479d0beb5a79 edu/wpi/first/wpilibj/SerialPort.java
+# validated: 2019-01-05 TW ecfe95383cdf edu/wpi/first/wpilibj/SerialPort.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -143,7 +143,7 @@ class SerialPort:
             raise ValueError("Cannot use serial port after free() has been called")
         return self._port
 
-    def free(self) -> None:
+    def close(self) -> None:
         """Destructor"""
         self.__finalizer()
 
@@ -201,12 +201,14 @@ class SerialPort:
         """
         return hal.readSerial(self.port, count)
 
-    def write(self, buffer: bytes) -> int:
+    def write(self, buffer: bytes, count: int) -> int:
         """Write raw bytes to the serial port.
         
         :param buffer: The buffer of bytes to write.
         :returns: The number of bytes actually written into the port.
         """
+        if len(buffer) < count:
+            raise ValueError("buffer is too small, must be at least %d" % count)
         return hal.writeSerial(self.port, buffer)
 
     def writeString(self, data: str) -> int:
@@ -215,7 +217,7 @@ class SerialPort:
         :param data: The string to write to the serial port.
         :returns: The number of bytes actually written into the port.
         """
-        return self.write(data.encode("ascii"))
+        return self.write(data.encode("ascii"), len(data))
 
     def setTimeout(self, timeout: float) -> None:
         """Configure the timeout of the serial self.port.

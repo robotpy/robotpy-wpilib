@@ -19,29 +19,25 @@ def test_smartdashboard_basic(networktables, wpilib):
     assert sd.getString("string", None) == "s"
 
 
-def test_smartdashboard_getSelected(wpilib):
-
+def test_smartdashboard_getSelected(wpilib, sendablebuilder):
     o1 = object()
     o2 = object()
     o3 = object()
 
     chooser = wpilib.SendableChooser()
-    chooser.addObject("o1", o1)
-    chooser.addObject("o2", o2)
-    chooser.addDefault("o3", o3)
+    chooser.addOption("o1", o1)
+    chooser.addOption("o2", o2)
+    chooser.setDefaultOption("o3", o3)
+    chooser.initSendable(sendablebuilder)
 
     # Default should work
     assert chooser.getSelected() == o3
 
     wpilib.SmartDashboard.putData("Autonomous Mode", chooser)
-
     # Default should still work
     assert chooser.getSelected() == o3
-
     # switch it up
-    ct = wpilib.SmartDashboard.getTable().getSubTable("Autonomous Mode")
-    ct.putString(chooser.SELECTED, "o1")
-
+    sendablebuilder.properties.__getitem__(3).setter("o1")
     # New choice should now be returned
     assert chooser.getSelected() == o1
 
@@ -54,7 +50,6 @@ def test_smartdashboard_getSelected_nodefault(wpilib, sendablebuilder):
     chooser = wpilib.SendableChooser()
     chooser.addObject("o1", o1)
     chooser.addObject("o2", o2)
-
     chooser.initSendable(sendablebuilder)
 
     assert chooser.getSelected() is None
@@ -62,6 +57,7 @@ def test_smartdashboard_getSelected_nodefault(wpilib, sendablebuilder):
     # switch it up
     ct = sendablebuilder.getTable()
     ct.putString(chooser.SELECTED, "o1")
+    sendablebuilder.properties.__getitem__(3).setter("o1")
 
     # New choice should now be returned
     assert chooser.getSelected() == o1
