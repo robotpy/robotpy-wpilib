@@ -93,8 +93,9 @@ class MotorSafety:
             return
 
         if stopTime < Timer.getFPGATimestamp():
+            # TODO: fix this, causes recursion error
             logger.warning(
-                "%s... Output not updated often enough.", self.getDescription()
+                "%s... Output not updated often enough." % self.getDescription()
             )
 
             self.stopMotor()
