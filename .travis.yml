@@ -10,76 +10,59 @@ python:
 matrix:
   fast_finish: true
 
-stages:
-- test
-- deploy-pypi
-- deploy-github
-
-env:
-- RUNCOVERAGE=1 ROBOTPY_NO_DEPS=1
-
-# command to install dependencies
 install:
-  - pip install -U pip
-  - "pushd wpilib; pip install -r travis-requirements.txt; popd"
-  - pip install -r docs/requirements.txt
-# command to run tests
+  - ROBOTPY_NO_DEPS=1 pip install -r travis-requirements.txt
 script:
-  - wpilib/tests/run_tests.sh
-  - "pushd docs && make html && popd"
+  - RUNCOVERAGE=1 wpilib/tests/run_tests.sh
 
 jobs:
   include:
+  - python: "3.5"
+    # NOTE: keep this version in sync with readthedocs
+    install:
+    - pip install -r docs/requirements.txt
+    script:
+    - make -C docs html
+
   - stage: format-check
-    python:
-    - "3.6"
+    python: "3.6"
     install:
     - pip install black
     script:
     - black --check --diff .
+
   - stage: deploy-pypi
     if: tag IS present
-    install: true
-    script: cd hal-sim
+    env:
+      - PACKAGE=hal-base
+      - PACKAGE=wpilib
+    install: skip
+    script: cd $PACKAGE
     deploy:
     - provider: pypi
       user: $PYPI_USERNAME
       password: $PYPI_PASSWORD
+      distributions: sdist bdist_wheel
       on:
         tags: true
-  - stage: deploy-pypi
-    if: tag IS present
-    install: true
-    script: cd hal-base
+
+  - if: tag IS present
+    env:
+      - PACKAGE=hal-sim
+      - PACKAGE=hal-roborio
+    install: skip
+    script: cd $PACKAGE
     deploy:
     - provider: pypi
       user: $PYPI_USERNAME
       password: $PYPI_PASSWORD
+      distributions: sdist
       on:
         tags: true
-  - stage: deploy-pypi
-    if: tag IS present
-    install: true
-    script: cd hal-roborio
-    deploy:
-    - provider: pypi
-      user: $PYPI_USERNAME
-      password: $PYPI_PASSWORD
-      on:
-        tags: true
-  - stage: deploy-pypi
-    install: true
-    if: tag IS present
-    script: cd wpilib
-    deploy:
-      provider: pypi
-      user: $PYPI_USERNAME
-      password: $PYPI_PASSWORD
-      on:
-        tags: true
+
   - stage: deploy-github
     if: tag IS present
-    install: true
+    install: skip
     script: devtools/build_installer.sh
     deploy:
     - provider: releases

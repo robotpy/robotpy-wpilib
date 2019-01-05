@@ -1,5 +1,4 @@
 sphinx
 sphinx-rtd-theme
 sphinx-autodoc-typehints
-git+git://github.com/robotpy/pynetworktables.git
--e ./wpilib
+git+git://github.com/robotpy/pynetworktables.git#egg=pynetworktables
