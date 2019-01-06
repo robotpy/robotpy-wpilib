@@ -15,16 +15,33 @@ install:
 script:
   - RUNCOVERAGE=1 wpilib/tests/run_tests.sh
 
+deploy:
+  - provider: pypi
+    user: $PYPI_USERNAME
+    password: $PYPI_PASSWORD
+    distributions: sdist
+    on:
+      tags: true
+      condition: -n $PACKAGE
+
+stages:
+  - test
+  - name: deploy-pypi
+    if: tag IS present
+  - name: deploy-github
+    if: tag IS present
+
 jobs:
   include:
-  - python: "3.5"
+  - name: docs
+    python: "3.5"
     # NOTE: keep this version in sync with readthedocs
     install:
     - pip install -r docs/requirements.txt
     script:
     - make -C docs html
 
-  - stage: format-check
+  - name: format-check
     python: "3.6"
     install:
     - pip install black
@@ -32,36 +49,23 @@ jobs:
     - black --check --diff .
 
   - stage: deploy-pypi
-    if: tag IS present
-    env:
-      - PACKAGE=hal-base
-      - PACKAGE=wpilib
+    env: PACKAGE=hal-base
     install: skip
     script: cd $PACKAGE
-    deploy:
-    - provider: pypi
-      user: $PYPI_USERNAME
-      password: $PYPI_PASSWORD
-      distributions: sdist bdist_wheel
-      on:
-        tags: true
 
-  - if: tag IS present
-    env:
-      - PACKAGE=hal-sim
-      - PACKAGE=hal-roborio
+  - env: PACKAGE=wpilib
     install: skip
     script: cd $PACKAGE
-    deploy:
-    - provider: pypi
-      user: $PYPI_USERNAME
-      password: $PYPI_PASSWORD
-      distributions: sdist
-      on:
-        tags: true
+
+  - env: PACKAGE=hal-sim
+    install: skip
+    script: cd $PACKAGE
+
+  - env: PACKAGE=hal-roborio
+    install: skip
+    script: cd $PACKAGE
 
   - stage: deploy-github
-    if: tag IS present
     install: skip
     script: devtools/build_installer.sh
     deploy:
