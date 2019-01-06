@@ -62,7 +62,7 @@ class SendableChooser(SendableBase):
         self.defaultChoice = ""
         self.activeEntries = []
         self.mutex = threading.RLock()
-        with (SendableChooser._increment_lock):
+        with SendableChooser._increment_lock:
             SendableChooser._instances += 1
 
     def addOption(self, name: str, object: Any) -> None:

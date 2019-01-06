@@ -201,14 +201,13 @@ class SerialPort:
         """
         return hal.readSerial(self.port, count)
 
-    def write(self, buffer: bytes, count: int) -> int:
+    def write(self, buffer: bytes) -> int:
         """Write raw bytes to the serial port.
         
         :param buffer: The buffer of bytes to write.
+        Python-Specific: No count parameter needed
         :returns: The number of bytes actually written into the port.
         """
-        if len(buffer) < count:
-            raise ValueError("buffer is too small, must be at least %d" % count)
         return hal.writeSerial(self.port, buffer)
 
     def writeString(self, data: str) -> int:
@@ -217,7 +216,7 @@ class SerialPort:
         :param data: The string to write to the serial port.
         :returns: The number of bytes actually written into the port.
         """
-        return self.write(data.encode("ascii"), len(data))
+        return self.write(data.encode("ascii"))
 
     def setTimeout(self, timeout: float) -> None:
         """Configure the timeout of the serial self.port.
