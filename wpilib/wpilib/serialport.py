@@ -205,6 +205,7 @@ class SerialPort:
         """Write raw bytes to the serial port.
         
         :param buffer: The buffer of bytes to write.
+
         Python-Specific: No count parameter needed
         :returns: The number of bytes actually written into the port.
         """
