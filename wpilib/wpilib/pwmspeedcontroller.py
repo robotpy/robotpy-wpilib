@@ -8,11 +8,12 @@
 
 from .pwm import PWM
 from .sendablebuilder import SendableBuilder
+from .speedcontroller import SpeedController
 
 __all__ = ["PWMSpeedController"]
 
 
-class PWMSpeedController(PWM):
+class PWMSpeedController(PWM, SpeedController):
     """
         Common base class for all PWM Speed Controllers.
     """
