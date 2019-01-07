@@ -5,16 +5,23 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Union
-from typing_extensions import Protocol
+from typing import Union, TYPE_CHECKING
 
 from .component import ShuffleboardComponent
 from .container import ShuffleboardContainer
 
+if TYPE_CHECKING:
+    from typing_extensions import Protocol
 
-class WidgetType(Protocol):
-    def getWidgetName(self) -> str:
-        ...
+    class WidgetType(Protocol):
+        def getWidgetName(self) -> str:
+            ...
+
+
+else:
+
+    class WidgetType:
+        pass
 
 
 class ShuffleboardWidget(ShuffleboardComponent):
