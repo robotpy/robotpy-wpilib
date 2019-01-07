@@ -6,14 +6,15 @@
 # the project.
 # ----------------------------------------------------------------------------
 from typing import Union
+from typing_extensions import Protocol
 
 from .component import ShuffleboardComponent
 from .container import ShuffleboardContainer
 
 
-class WidgetType:
+class WidgetType(Protocol):
     def getWidgetName(self) -> str:
-        pass
+        ...
 
 
 class ShuffleboardWidget(ShuffleboardComponent):
@@ -32,8 +33,8 @@ class ShuffleboardWidget(ShuffleboardComponent):
         :param widgetType: the type of the widget used to display the data
         :returns: this widget object
         """
-        if isinstance(widgetType, WidgetType):
-            self.setType(widgetType.getWidgetName())
-        else:
+        if isinstance(widgetType, str):
             self.setType(widgetType)
+        else:
+            self.setType(widgetType.getWidgetName())
         return self
