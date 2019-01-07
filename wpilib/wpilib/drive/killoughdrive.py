@@ -1,4 +1,4 @@
-# validated: 2018-11-17 EN 0614913f1abb edu/wpi/first/wpilibj/drive/KilloughDrive.java
+# validated: 2019-01-06 TW a60f312d19ee edu/wpi/first/wpilibj/drive/KilloughDrive.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -73,6 +73,9 @@ class KilloughDrive(RobotDriveBase):
         :param rightMotorAngle: The angle of the right wheel's forward direction of travel
         :param backMotorAngle: The angle of the back wheel's forward direction of travel
         """
+        assert leftMotor is not None, "Left Motor should not be None"
+        assert rightMotor is not None, "Right Motor should not be None"
+        assert backMotor is not None, "Back Motor should not be None"
         super().__init__()
 
         self.leftMotor = leftMotor
