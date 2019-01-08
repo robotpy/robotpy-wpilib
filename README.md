@@ -1,7 +1,7 @@
 RobotPy WPILib
 ==============
 
-[![Build Status](https://travis-ci.org/robotpy/robotpy-wpilib.svg)](https://travis-ci.org/robotpy/robotpy-wpilib)
+[![Build Status](https://travis-ci.org/robotpy/robotpy-wpilib.svg?branch=master)](https://travis-ci.org/robotpy/robotpy-wpilib)
 
 This repository contains the source code for a 100% python implementation of WPILib, 
 the library used to interface with hardware for the FIRST Robotics Competition. 
