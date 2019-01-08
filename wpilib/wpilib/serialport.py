@@ -206,9 +206,9 @@ class SerialPort:
         
         :param buffer: The buffer of bytes to write.
 
-        Python-Specific: No count parameter needed
         :returns: The number of bytes actually written into the port.
         """
+        # Python-Specific: No count parameter needed
         return hal.writeSerial(self.port, buffer)
 
     def writeString(self, data: str) -> int:
