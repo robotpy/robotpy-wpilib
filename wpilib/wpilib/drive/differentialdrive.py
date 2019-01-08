@@ -1,4 +1,4 @@
-# validated: 2018-11-12 EN da9a575526a7 edu/wpi/first/wpilibj/drive/DifferentialDrive.java
+# validated: 2019-01-06 TW a60f312d19ee edu/wpi/first/wpilibj/drive/DifferentialDrive.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2018. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -110,6 +110,8 @@ class DifferentialDrive(RobotDriveBase):
         :param leftMotor: Left motor(s)
         :param rightMotor: Right motor(s)
         """
+        assert leftMotor is not None, "Left Motor should not be None"
+        assert rightMotor is not None, "Right Motor should not be None"
         super().__init__()
 
         self.leftMotor = leftMotor

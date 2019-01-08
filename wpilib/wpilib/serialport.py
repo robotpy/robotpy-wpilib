@@ -1,4 +1,4 @@
-# validated: 2018-01-06 DS 479d0beb5a79 edu/wpi/first/wpilibj/SerialPort.java
+# validated: 2019-01-05 TW ecfe95383cdf edu/wpi/first/wpilibj/SerialPort.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -143,7 +143,7 @@ class SerialPort:
             raise ValueError("Cannot use serial port after free() has been called")
         return self._port
 
-    def free(self) -> None:
+    def close(self) -> None:
         """Destructor"""
         self.__finalizer()
 
@@ -205,8 +205,10 @@ class SerialPort:
         """Write raw bytes to the serial port.
         
         :param buffer: The buffer of bytes to write.
+
         :returns: The number of bytes actually written into the port.
         """
+        # Python-Specific: No count parameter needed
         return hal.writeSerial(self.port, buffer)
 
     def writeString(self, data: str) -> int:

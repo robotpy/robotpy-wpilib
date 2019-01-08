@@ -1,10 +1,11 @@
-# validated: 2018-03-04 DV 9d7293734a65 edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
+# validated: 2019-01-04 TW 0d7d880261b6 edu/wpi/first/wpilibj/smartdashboard/SendableChooser.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import threading
 from typing import Any
 
 from .sendablebase import SendableBase
@@ -42,19 +43,29 @@ class SendableChooser(SendableBase):
     DEFAULT = "default"
     # The key for the selected option
     SELECTED = "selected"
+    # The key for the active option
+    ACTIVE = "active"
     # The key for the option array
     OPTIONS = "options"
-    # A table linking strings to the objects the represent
+    # The key for the instance number
+    INSTANCE = ".instance"
+
+    _increment_lock = threading.Lock()
+    _instances = 0
 
     def __init__(self) -> None:
         """Instantiates a SendableChooser.
         """
         super().__init__(addLiveWindow=False)
         self.map = {}
-        self.tableSelected = None
+        self.selected = None
         self.defaultChoice = ""
+        self.activeEntries = []
+        self.mutex = threading.RLock()
+        with SendableChooser._increment_lock:
+            SendableChooser._instances += 1
 
-    def addObject(self, name: str, object: Any) -> None:
+    def addOption(self, name: str, object: Any) -> None:
         """Adds the given object to the list of options. On the
         :class:`.SmartDashboard` on the desktop, the object will appear as the
         given name.
@@ -64,7 +75,20 @@ class SendableChooser(SendableBase):
         """
         self.map[name] = object
 
-    def addDefault(self, name: str, object: Any) -> None:
+    def addObject(self, name: str, object: Any) -> None:
+        """Adds the given object to the list of options. On the
+        :class:`.SmartDashboard` on the desktop, the object will appear as the
+        given name.
+
+        :param name: the name of the option
+        :param object: the option
+
+        .. deprecated:: 2019.0.0
+            Use :meth:`addOption` instead
+        """
+        self.addOption(name, object)
+
+    def setDefaultOption(self, name: str, object: Any) -> None:
         """Add the given object to the list of options and marks it as the
         default.  Functionally, this is very close to :meth:`.addObject` except
         that it will use this as the default option if none other is
@@ -78,6 +102,20 @@ class SendableChooser(SendableBase):
         self.defaultChoice = name
         self.addObject(name, object)
 
+    def addDefault(self, name: str, object: Any) -> None:
+        """Add the given object to the list of options and marks it as the
+        default.  Functionally, this is very close to :meth:`.addObject` except
+        that it will use this as the default option if none other is
+        explicitly selected.
+
+        :param name: the name of the option
+        :param object: the option
+
+        .. deprecated:: 2019.0.0
+            Use :meth:`setDefaultOption` instead
+        """
+        self.setDefaultOption(name, object)
+
     def getSelected(self) -> Any:
         """Returns the object associated with the selected option. If there
         is none selected, it will return the default. If there is none
@@ -85,13 +123,39 @@ class SendableChooser(SendableBase):
 
         :returns: the object associated with the selected option
         """
-        selected = self.defaultChoice
-        if self.tableSelected is not None:
-            selected = self.tableSelected.getString(self.defaultChoice)
-        return self.map.get(selected)
+        with self.mutex:
+            if self.selected is not None:
+                return self.map.get(self.selected)
+            else:
+                return self.map.get(self.defaultChoice)
 
     def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("String Chooser")
+        builder.getEntry(SendableChooser.INSTANCE).setDouble(SendableChooser._instances)
         builder.addStringProperty(self.DEFAULT, lambda: self.defaultChoice, None)
         builder.addStringArrayProperty(self.OPTIONS, lambda: self.map.keys(), None)
-        self.tableSelected = builder.getEntry(self.SELECTED)
+
+        def _active_property_getter():
+            with self.mutex:
+                return self.selected if self.selected else self.defaultChoice
+
+        builder.addStringProperty(SendableChooser.ACTIVE, _active_property_getter, None)
+
+        with self.mutex:
+            try:
+                self.activeEntries.append(builder.getEntry(SendableChooser.ACTIVE))
+            except:
+                pass
+
+        def _selected_property_setter(val):
+            with self.mutex:
+                try:
+                    self.selected = val
+                    for entry in self.activeEntries:
+                        entry.setString(val)
+                except:
+                    pass
+
+        builder.addStringProperty(
+            SendableChooser.SELECTED, None, _selected_property_setter
+        )

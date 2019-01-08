@@ -1,4 +1,4 @@
-# validated: 2018-11-18 EN 175c6c1f0130 edu/wpi/first/wpilibj/shuffleboard/ContainerHelper.java
+# validated: 2019-01-05 TW 01d13220660c edu/wpi/first/wpilibj/shuffleboard/ContainerHelper.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -30,7 +30,7 @@ class ShuffleboardContainer:
         """Gets the components that are direct children of this container."""
         return self.components
 
-    def getLayout(self, type: str, title: str):
+    def getLayout(self, title: str, type: str = None):
         """
         Gets the layout with the given type and title, creating it if it does 
         not already exist at the time this method is called.
@@ -42,6 +42,8 @@ class ShuffleboardContainer:
         from .layout import ShuffleboardLayout
 
         if title not in self.layouts:
+            if type is None:
+                raise KeyError("No layout has been defined with the title '%s'" % title)
             layout = ShuffleboardLayout(self, type, title)
             self.components.append(layout)
             self.layouts[title] = layout

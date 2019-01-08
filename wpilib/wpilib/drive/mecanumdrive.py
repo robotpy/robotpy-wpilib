@@ -1,4 +1,4 @@
-# validated: 2018-11-17 EN 0614913f1abb edu/wpi/first/wpilibj/drive/MecanumDrive.java
+# validated: 2019-01-06 TW a60f312d19ee edu/wpi/first/wpilibj/drive/MecanumDrive.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2017. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -77,6 +77,10 @@ class MecanumDrive(RobotDriveBase):
         :param frontRightMotor: Front Right Motor
         :param rearRightMotor: Rear Right Motor
         """
+        assert frontLeftMotor is not None, "Front Left Motor should not be None"
+        assert rearLeftMotor is not None, "Rear Left Motor should not be None"
+        assert frontRightMotor is not None, "Front Right Motor should not be None"
+        assert rearRightMotor is not None, "Rear Right Motor should not be None"
         super().__init__()
 
         self.frontLeftMotor = frontLeftMotor
