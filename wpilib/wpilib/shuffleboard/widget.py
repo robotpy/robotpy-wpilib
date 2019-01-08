@@ -5,23 +5,11 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Union, TYPE_CHECKING
+from typing import Union
 
+from .builtinwidgettypes import BuiltInWidgetTypes
 from .component import ShuffleboardComponent
 from .container import ShuffleboardContainer
-
-if TYPE_CHECKING:
-    from typing_extensions import Protocol
-
-    class WidgetType(Protocol):
-        def getWidgetName(self) -> str:
-            ...
-
-
-else:
-
-    class WidgetType:
-        pass
 
 
 class ShuffleboardWidget(ShuffleboardComponent):
@@ -32,7 +20,9 @@ class ShuffleboardWidget(ShuffleboardComponent):
     def __init__(self, parent: ShuffleboardContainer, title: str):
         super().__init__(parent, title)
 
-    def withWidget(self, widgetType: Union[WidgetType, str]) -> "ShuffleboardWidget":
+    def withWidget(
+        self, widgetType: Union[BuiltInWidgetTypes, str]
+    ) -> "ShuffleboardWidget":
         """
         Sets the type of widget used to display the data. If not set, the 
         default widget type will be used.
