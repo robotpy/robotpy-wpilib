@@ -214,7 +214,34 @@
             t = '  doc: |\r\n    ' + t.replace(/\r\n/g, '\r\n    ');
             return t;
           } else if (getOutputMethodType() == "cstring") {
-            t = '"' + t.split(/\r\n/g).join('\\n"\r\n"') + '"';
+            var nta = [];
+            var ta = t.split(/\r\n/g);
+            for (var i = 0; i < ta.length; i++) {
+              if (ta[i].startsWith(":param") || ta[i].startsWith(":returns:")) {
+                ta[i] = ta[i] + "\\n";
+              }
+              if (i != 0 && ta[i] === "") {
+                if (!nta[nta.length - 1].startsWith(":param")) {
+                  nta[nta.length - 1] = nta[nta.length - 1] + "\\n\\n";
+                }
+              } else {
+                nta.push(ta[i]);
+              }
+            }
+            for (var i = 0; i < nta.length; i++) {
+              if (!nta[i].endsWith("\\n")) {
+                nta[i] = nta[i] + " ";
+              }
+            }
+            // remove trailing \n
+            if (nta.length > 0) {
+              var lastLine = nta[nta.length - 1];
+              while (lastLine.endsWith("\\n")) {
+                lastLine = lastLine.slice(0, -2);
+              }
+              nta[nta.length - 1] = lastLine
+            }
+            t = '"' + nta.join('"\r\n"') + '"';
           } else {
             t = formatDocstring(t);
           }
