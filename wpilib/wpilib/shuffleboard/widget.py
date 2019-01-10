@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 from typing import Union
 
-from .builtinwidgettypes import BuiltInWidgetTypes
+from .builtinwidgets import BuiltInWidgets
 from .component import ShuffleboardComponent
 from .container import ShuffleboardContainer
 
@@ -21,17 +21,17 @@ class ShuffleboardWidget(ShuffleboardComponent):
         super().__init__(parent, title)
 
     def withWidget(
-        self, widgetType: Union[BuiltInWidgetTypes, str]
+        self, widgetType: Union[BuiltInWidgets, str]
     ) -> "ShuffleboardWidget":
         """
-        Sets the type of widget used to display the data. If not set, the 
+        Sets the type of widget used to display the data. If not set, the
         default widget type will be used.
 
         :param widgetType: the type of the widget used to display the data
         :returns: this widget object
         """
-        if isinstance(widgetType, str):
-            self.setType(widgetType)
+        if isinstance(widgetType, BuiltInWidgets):
+            self.setType(widgetType.value)
         else:
-            self.setType(widgetType.getWidgetName())
+            self.setType(widgetType)
         return self
