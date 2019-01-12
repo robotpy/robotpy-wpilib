@@ -46,12 +46,12 @@ class BuiltInWidgets(enum.Enum):
     #: Custom properties:
     #:
     #: .. csv-table::
-    #:    :header: Name,Type,Default Value,Notes
+    #:    :header: Name, Type, Default Value, Notes
     #:    :widths: auto
     #:
-    #:    Min,Number,-1.0,The minimum value of the slider
-    #:    Max,Number,1.0,The maximum value of the slider
-    #:    Block increment,Number,0.0625,How much to move the slider by with the arrow keys
+    #:    Min,             Number, -1.0,   The minimum value of the slider
+    #:    Max,             Number, 1.0,    The maximum value of the slider
+    #:    Block increment, Number, 0.0625, How much to move the slider by with the arrow keys
     kNumberSlider = "Number Slider"
 
     #: Displays a number with a view-only bar.
