@@ -76,10 +76,12 @@ def generate_sidebar(conf, conf_api):
     toctree("API Reference")
     write_api("wpilib", "WPILib")
     write_api("pynetworktables", "NetworkTables")
+    write_api("cscore", "CSCore")
     write_api("utilities", "Utilities")
     write_api("pyfrc", "PyFRC")
     write_api("ctre", "CTRE Libraries")
     write_api("navx", "NavX Library")
+    write_api("rev", "SPARK MAX Library")
     endl()
 
     toctree("Additional Info")
