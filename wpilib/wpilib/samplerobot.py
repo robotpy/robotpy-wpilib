@@ -66,7 +66,7 @@ class SampleRobot(RobotBase):
 
     def disabled(self) -> None:
         """Disabled should go here.
-        Users should overload this method to run code that should run while
+        Users should override this method to run code that should run while
         the field is disabled.
 
         Called once each time the robot enters the disabled state.
