@@ -86,7 +86,7 @@ class IterativeRobotBase(RobotBase):
         .. note:: It is simpler to override this function instead of defining
                   a constructor for your robot class
         """
-        self.logger.info("Default IterativeRobot.robotInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.robotInit() method... Override me!")
 
     def disabledInit(self) -> None:
         """Initialization code for disabled mode should go here.
@@ -94,7 +94,7 @@ class IterativeRobotBase(RobotBase):
         Users should override this method for initialization code which will be
         called each time the robot enters disabled mode.
         """
-        self.logger.info("Default IterativeRobot.disabledInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.disabledInit() method... Override me!")
 
     def autonomousInit(self) -> None:
         """Initialization code for autonomous mode should go here.
@@ -103,7 +103,7 @@ class IterativeRobotBase(RobotBase):
         called each time the robot enters autonomous mode.
         """
         self.logger.info(
-            "Default IterativeRobot.autonomousInit() method... Overload me!"
+            "Default IterativeRobot.autonomousInit() method... Override me!"
         )
 
     def teleopInit(self) -> None:
@@ -112,7 +112,7 @@ class IterativeRobotBase(RobotBase):
         Users should override this method for initialization code which will be
         called each time the robot enters teleop mode.
         """
-        self.logger.info("Default IterativeRobot.teleopInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.teleopInit() method... Override me!")
 
     def testInit(self) -> None:
         """Initialization code for test mode should go here.
@@ -120,7 +120,7 @@ class IterativeRobotBase(RobotBase):
         Users should override this method for initialization code which will be
         called each time the robot enters test mode.
         """
-        self.logger.info("Default IterativeRobot.testInit() method... Overload me!")
+        self.logger.info("Default IterativeRobot.testInit() method... Override me!")
 
     # ----------- Overridable periodic code -----------------
 
@@ -129,7 +129,7 @@ class IterativeRobotBase(RobotBase):
         func = self.robotPeriodic.__func__
         if not hasattr(func, "firstRun"):
             self.logger.info(
-                "Default IterativeRobot.robotPeriodic() method... Overload me!"
+                "Default IterativeRobot.robotPeriodic() method... Override me!"
             )
             func.firstRun = False
 
@@ -138,7 +138,7 @@ class IterativeRobotBase(RobotBase):
         func = self.disabledPeriodic.__func__
         if not hasattr(func, "firstRun"):
             self.logger.info(
-                "Default IterativeRobot.disabledPeriodic() method... Overload me!"
+                "Default IterativeRobot.disabledPeriodic() method... Override me!"
             )
             func.firstRun = False
 
@@ -147,7 +147,7 @@ class IterativeRobotBase(RobotBase):
         func = self.autonomousPeriodic.__func__
         if not hasattr(func, "firstRun"):
             self.logger.info(
-                "Default IterativeRobot.autonomousPeriodic() method... Overload me!"
+                "Default IterativeRobot.autonomousPeriodic() method... Override me!"
             )
             func.firstRun = False
 
@@ -156,7 +156,7 @@ class IterativeRobotBase(RobotBase):
         func = self.teleopPeriodic.__func__
         if not hasattr(func, "firstRun"):
             self.logger.warning(
-                "Default IterativeRobot.teleopPeriodic() method... Overload me!"
+                "Default IterativeRobot.teleopPeriodic() method... Override me!"
             )
             func.firstRun = False
 
@@ -165,7 +165,7 @@ class IterativeRobotBase(RobotBase):
         func = self.testPeriodic.__func__
         if not hasattr(func, "firstRun"):
             self.logger.info(
-                "Default IterativeRobot.testPeriodic() method... Overload me!"
+                "Default IterativeRobot.testPeriodic() method... Override me!"
             )
             func.firstRun = False
 

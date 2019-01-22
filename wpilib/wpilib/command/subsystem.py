@@ -75,7 +75,7 @@ class Subsystem(SendableBase):
         """
         func = self.periodic.__func__
         if not hasattr(func, "firstRun"):
-            self.logger.info("Default Subsystem.periodic() method... Overload me!")
+            self.logger.info("Default Subsystem.periodic() method... Override me!")
             func.firstRun = False
 
     def setDefaultCommand(self, command: "command.Command") -> None:
