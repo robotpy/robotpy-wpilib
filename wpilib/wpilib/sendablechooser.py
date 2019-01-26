@@ -64,6 +64,7 @@ class SendableChooser(SendableBase):
         self.activeEntries = []
         self.mutex = threading.RLock()
         with SendableChooser._increment_lock:
+            self.instance = SendableChooser._instances
             SendableChooser._instances += 1
 
     def addOption(self, name: str, object: Any) -> None:
@@ -142,7 +143,7 @@ class SendableChooser(SendableBase):
 
     def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("String Chooser")
-        builder.getEntry(SendableChooser.INSTANCE).setDouble(SendableChooser._instances)
+        builder.getEntry(SendableChooser.INSTANCE).setDouble(self.instance)
         builder.addStringProperty(self.DEFAULT, lambda: self.defaultChoice, None)
         builder.addStringArrayProperty(self.OPTIONS, lambda: self.map.keys(), None)
 
