@@ -6,6 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 import threading
+import warnings
 from typing import Any
 
 from .sendablebase import SendableBase
@@ -63,6 +64,7 @@ class SendableChooser(SendableBase):
         self.activeEntries = []
         self.mutex = threading.RLock()
         with SendableChooser._increment_lock:
+            self.instance = SendableChooser._instances
             SendableChooser._instances += 1
 
     def addOption(self, name: str, object: Any) -> None:
@@ -86,6 +88,11 @@ class SendableChooser(SendableBase):
         .. deprecated:: 2019.0.0
             Use :meth:`addOption` instead
         """
+        warnings.warn(
+            "SendableChooser.addObject is deprecated, use addOption instead",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         self.addOption(name, object)
 
     def setDefaultOption(self, name: str, object: Any) -> None:
@@ -100,7 +107,7 @@ class SendableChooser(SendableBase):
         if name is None:
             raise ValueError("Name cannot be None")
         self.defaultChoice = name
-        self.addObject(name, object)
+        self.addOption(name, object)
 
     def addDefault(self, name: str, object: Any) -> None:
         """Add the given object to the list of options and marks it as the
@@ -114,6 +121,11 @@ class SendableChooser(SendableBase):
         .. deprecated:: 2019.0.0
             Use :meth:`setDefaultOption` instead
         """
+        warnings.warn(
+            "SendableChooser.addDefault is deprecated, use setDefaultOption instead",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         self.setDefaultOption(name, object)
 
     def getSelected(self) -> Any:
@@ -131,7 +143,7 @@ class SendableChooser(SendableBase):
 
     def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("String Chooser")
-        builder.getEntry(SendableChooser.INSTANCE).setDouble(SendableChooser._instances)
+        builder.getEntry(SendableChooser.INSTANCE).setDouble(self.instance)
         builder.addStringProperty(self.DEFAULT, lambda: self.defaultChoice, None)
         builder.addStringArrayProperty(self.OPTIONS, lambda: self.map.keys(), None)
 
