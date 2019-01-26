@@ -6,6 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 import threading
+import warnings
 from typing import Any
 
 from .sendablebase import SendableBase
@@ -86,6 +87,11 @@ class SendableChooser(SendableBase):
         .. deprecated:: 2019.0.0
             Use :meth:`addOption` instead
         """
+        warnings.warn(
+            "SendableChooser.addObject is deprecated, use addOption instead",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         self.addOption(name, object)
 
     def setDefaultOption(self, name: str, object: Any) -> None:
@@ -114,6 +120,11 @@ class SendableChooser(SendableBase):
         .. deprecated:: 2019.0.0
             Use :meth:`setDefaultOption` instead
         """
+        warnings.warn(
+            "SendableChooser.addDefault is deprecated, use setDefaultOption instead",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         self.setDefaultOption(name, object)
 
     def getSelected(self) -> Any:
