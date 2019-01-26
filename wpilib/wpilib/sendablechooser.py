@@ -100,7 +100,7 @@ class SendableChooser(SendableBase):
         if name is None:
             raise ValueError("Name cannot be None")
         self.defaultChoice = name
-        self.addObject(name, object)
+        self.addOption(name, object)
 
     def addDefault(self, name: str, object: Any) -> None:
         """Add the given object to the list of options and marks it as the
