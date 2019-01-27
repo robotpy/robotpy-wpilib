@@ -2,7 +2,7 @@
 # These are opaque types used internally by the simulation HAL
 #
 
-from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
+from _hal_constants import kMaxJoystickAxes, kMaxJoystickPOVs
 
 # fmt: off
 __all__ = [

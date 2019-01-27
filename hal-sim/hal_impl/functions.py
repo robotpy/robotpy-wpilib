@@ -1,13 +1,11 @@
-from hal import constants
-from . import types
-
+import logging
 import operator
 
+import _hal_constants as constants
 from . import data
+from . import types
 from .data import hal_data, NotifyDict
-from hal_impl.sim_hooks import SimHooks
-
-import logging
+from .sim_hooks import SimHooks
 
 logger = logging.getLogger("hal")
 
