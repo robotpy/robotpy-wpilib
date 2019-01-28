@@ -208,7 +208,13 @@ def reset_wpilib():
                      other debugging tools with the simulated HAL!
     """
 
-    modules = ["wpilib", "wpilib.buttons", "wpilib.command", "wpilib.interfaces"]
+    modules = [
+        "wpilib",
+        "wpilib.buttons",
+        "wpilib.command",
+        "wpilib.interfaces",
+        "wpilib.shuffleboard",
+    ]
 
     for modname in modules:
         try:
