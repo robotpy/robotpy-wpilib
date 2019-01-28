@@ -8,3 +8,4 @@ from .eventimportance import EventImportance
 from .layout import ShuffleboardLayout
 from .simplewidget import SimpleWidget
 from .tab import ShuffleboardTab
+from .widget import ShuffleboardWidget
