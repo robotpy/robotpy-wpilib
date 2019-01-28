@@ -51,6 +51,7 @@ setup(
     url="https://github.com/robotpy/robotpy-wpilib",
     keywords="frc first robotics hal can",
     packages=["hal"],
+    py_modules=["_hal_constants"],
     entry_points={"robotpy": ["run = hal.main:Main"]},
     license="BSD License",
     classifiers=[

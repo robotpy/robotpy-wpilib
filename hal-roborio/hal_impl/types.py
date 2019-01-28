@@ -1,7 +1,8 @@
 # fmt: off
 
 import ctypes as C
-from hal.constants import kMaxJoystickAxes, kMaxJoystickPOVs
+
+from _hal_constants import kMaxJoystickAxes, kMaxJoystickPOVs
 
 __all__ = [
     "ControlWord", "ControlWord_ptr",

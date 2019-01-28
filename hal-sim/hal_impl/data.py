@@ -2,11 +2,11 @@
 # All data that passes through the HAL comes to/from here
 #
 
-from hal import constants
-import sys
 import copy
-
 import logging
+import sys
+
+import _hal_constants as constants
 
 logger = logging.getLogger("hal.data")
 
