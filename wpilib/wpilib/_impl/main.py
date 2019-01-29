@@ -1,6 +1,7 @@
 # novalidate
 
 import argparse
+import atexit
 import inspect
 import os
 import sys
@@ -10,6 +11,32 @@ from pkg_resources import iter_entry_points
 
 from .logconfig import configure_logging
 import hal_impl
+
+# Make silly mistakes more obvious
+_show_run_warning = True
+
+
+def _atexit():
+    if _show_run_warning and not "pytest" in sys.modules:
+        print("ERROR: robot program exited without calling wpilib.run! To fix this,")
+        print("add the following to your robot.py:")
+        print("")
+        print('    if __name__ == "__main__":')
+        print("        wpilib.run(MyRobot)")
+        print()
+
+
+def _excepthook(*args):
+    global _show_run_warning
+    _show_run_warning = False
+    sys.excepthook = _orig_excepthook
+    _orig_excepthook(*args)
+
+
+_orig_excepthook = sys.excepthook
+sys.excepthook = _excepthook
+
+atexit.register(_atexit)
 
 
 def _log_versions():
@@ -132,6 +159,9 @@ def run(robot_class, **kwargs):
         :param **kwargs: Keyword arguments that will be passed to the executed entry points
         :returns: This function should never return
     """
+
+    global _show_run_warning
+    _show_run_warning = False
 
     # sanity check
     if not hasattr(robot_class, "main"):
