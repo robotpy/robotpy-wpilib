@@ -1,4 +1,4 @@
-# validated: 2019-01-02 DV a2368a6199b1 edu/wpi/first/wpilibj/Watchdog.java
+# validated: 2019-01-30 DV f121ccff0dfb edu/wpi/first/wpilibj/Watchdog.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -14,7 +14,7 @@ import hal
 
 import logging
 
-logger = logging.getLogger("robotpy")
+logger = logging.getLogger(__name__)
 
 
 __all__ = ["Watchdog"]
@@ -237,13 +237,18 @@ class Watchdog:
                                     "Watchdog not fed after %.6fs",
                                     watchdog._timeout / 1e6,
                                 )
+
+                        # Set expiration flag before calling the callback so any
+                        # manipulation of the flag in the callback (e.g. calling
+                        # Disable()) isn't clobbered.
+                        watchdog._isExpired = True
+
                         lock.release()
                         try:
                             watchdog._callback()
                         except Exception:
                             logger.exception("Uncaught exception in Watchdog callback")
                         lock.acquire()
-                        watchdog._isExpired = True
 
                     # Otherwise, a Watchdog removed itself from the queue (it
                     # notifies the scheduler of this), we are being reset (by
