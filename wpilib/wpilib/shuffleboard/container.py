@@ -6,9 +6,10 @@
 # the project.
 # ----------------------------------------------------------------------------
 
-from typing import TYPE_CHECKING, Optional, overload
+from typing import TYPE_CHECKING, List, Optional, Union, overload
 
 from networktables.entry import NetworkTableEntry
+from .builtinlayouts import BuiltInLayouts
 from ..sendable import Sendable
 
 if TYPE_CHECKING:
@@ -23,20 +24,20 @@ class ShuffleboardContainer:
 
     def __init__(self) -> None:
         self.usedTitles = set()
-        self.components = []
+        self.components = []  # type: List[ShuffleboardContainer]
         self.layouts = {}
 
-    def getComponents(self):
+    def getComponents(self) -> "List[ShuffleboardContainer]":
         """Gets the components that are direct children of this container."""
         return self.components
 
-    def getLayout(self, title: str, type: str = None):
+    def getLayout(self, title: str, type: Optional[Union[BuiltInLayouts, str]] = None):
         """
-        Gets the layout with the given type and title, creating it if it does 
+        Gets the layout with the given type and title, creating it if it does
         not already exist at the time this method is called.
 
-        :param type:  the type of the layout, eg "List" or "Grid"
         :param title: the title of the layout
+        :param type:  the type of the layout, eg "List Layout" or "Grid Layout"
         :returns: the layout
         """
         from .layout import ShuffleboardLayout
@@ -44,6 +45,8 @@ class ShuffleboardContainer:
         if title not in self.layouts:
             if type is None:
                 raise KeyError("No layout has been defined with the title '%s'" % title)
+            if isinstance(type, BuiltInLayouts):
+                type = type.value
             layout = ShuffleboardLayout(self, type, title)
             self.components.append(layout)
             self.layouts[title] = layout
