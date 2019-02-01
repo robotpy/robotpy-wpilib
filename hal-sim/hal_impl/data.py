@@ -408,6 +408,7 @@ def _reset_hal_data(current_hooks):
         # The key is the device number as an integer. The value is a dictionary
         # that is specific to each CAN device
         'CAN': NotifyDict(),
+        "CANSparkMax": NotifyDict(),
     })
     # fmt: on
 
