@@ -22,7 +22,9 @@ def _RETFUNC(
     handle_missing=False,
     c_name=None
 ):
-    prototype = C.CFUNCTYPE(restype, *tuple(param[1] for param in params))
+    prototype = C.CFUNCTYPE(
+        restype, *tuple(param[1] for param in params), use_errno=True
+    )
     paramflags = []
     for param in params:
         if out is not None and param[0] in out:
