@@ -1,4 +1,4 @@
-# validated: 2018-11-17 EN 89d15f061b33 edu/wpi/first/wpilibj/Timer.java
+# validated: 2019-02-01 DV 444b899a9f03 edu/wpi/first/wpilibj/Timer.java
 # ----------------------------------------------------------------------------
 # Copyright (c) FIRST 2008-2012. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -94,8 +94,8 @@ class Timer:
         with self.mutex:
             if self.running:
                 return (
-                    (self.getMsClock() - self.startTime) + self.accumulatedTime
-                ) / 1000.0
+                    self.accumulatedTime + (self.getMsClock() - self.startTime) / 1000
+                )
             else:
                 return self.accumulatedTime
 
