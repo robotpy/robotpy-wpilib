@@ -1,4 +1,4 @@
-# validated: 2019-01-30 DV f121ccff0dfb edu/wpi/first/wpilibj/Watchdog.java
+# validated: 2019-02-02 DV 43696956d20b edu/wpi/first/wpilibj/Watchdog.java
 # ----------------------------------------------------------------------------
 # Copyright (c) 2018 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
@@ -190,8 +190,6 @@ class Watchdog:
     def disable(self) -> None:
         """Disables the watchdog timer."""
         with self._queueMutex:
-            self._isExpired = False
-
             watchdogs = self._watchdogs
             try:
                 watchdogs.remove(self)
