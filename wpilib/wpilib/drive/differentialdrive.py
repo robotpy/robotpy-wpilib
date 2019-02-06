@@ -203,7 +203,7 @@ class DifferentialDrive(RobotDriveBase):
             hal.report(
                 hal.UsageReporting.kResourceType_RobotDrive,
                 2,
-                hal.UsageReporting.kRobotDrive2_Curvature,
+                hal.UsageReporting.kRobotDrive2_DifferentialCurvature,
             )
             self.reported = True
 

@@ -392,6 +392,12 @@ def test_arcadeDrive_error(drive_diff):
         drive_diff.arcadeDrive(1, 1, 1, 1, 1, 1)
 
 
+def test_real_diff_curvature(wpilib):
+    drive_diff = wpilib.drive.DifferentialDrive(wpilib.Spark(0), wpilib.Spark(1))
+    drive_diff.curvatureDrive(1, 0.25, False)
+    drive_diff.curvatureDrive(-1, -1, True)
+
+
 def test_mecanumDrive_Cartesian(drive_mecanum):
     drive_mecanum.driveCartesian(0.3, 0.4, -0.2, -20)
     # TODO: check values
