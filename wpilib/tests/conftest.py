@@ -1,6 +1,7 @@
 import sys
 import pytest
 from unittest.mock import MagicMock, patch
+import _hal_constants
 import hal
 import hal_impl
 from hal_impl.sim_hooks import SimHooks as BaseSimHooks
@@ -103,20 +104,9 @@ def halmock(request):
     ), "Cannot use mock and real fixtures in same function!"
 
     hal = MagicMock(name="mock_hal")
-    hal.kHALAllianceStationID_red1 = 0
-    hal.kHALAllianceStationID_red2 = 1
-    hal.kHALAllianceStationID_red3 = 2
-    hal.kHALAllianceStationID_blue1 = 3
-    hal.kHALAllianceStationID_blue2 = 4
-    hal.kHALAllianceStationID_blue3 = 5
-    hal.AllianceStationID.kRed1 = 0
-    hal.AllianceStationID.kRed2 = 1
-    hal.AllianceStationID.kRed3 = 2
-    hal.AllianceStationID.kBlue1 = 3
-    hal.AllianceStationID.kBlue2 = 4
-    hal.AllianceStationID.kBlue3 = 5
-    hal.kMaxJoystickAxes = 12
-    hal.kMaxJoystickPOVs = 12
+    hal.constants = _hal_constants
+    for name, value in vars(_hal_constants).items():
+        setattr(hal, name, value)
     return hal
 
 

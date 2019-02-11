@@ -226,12 +226,12 @@ def test_isOperatorControl(auto, test, oper, dsmock, halmock):
 
 
 @pytest.mark.parametrize(
-    "alliance", ["red1", "red2", "red3", "blue1", "blue2", "blue3", -1]
+    "alliance", ["Red1", "Red2", "Red3", "Blue1", "Blue2", "Blue3", -1]
 )
 def test_getAlliance(alliance, dsmock, halmock):
     if alliance != -1:
-        result = getattr(dsmock.Alliance, alliance[:-1].title())
-        alliance = getattr(halmock, "kHALAllianceStationID_" + alliance)
+        result = getattr(dsmock.Alliance, alliance[:-1])
+        alliance = getattr(halmock.AllianceStationID, "k" + alliance)
     else:
         result = dsmock.Alliance.Invalid
     halmock.getAllianceStation.return_value = alliance
@@ -239,12 +239,12 @@ def test_getAlliance(alliance, dsmock, halmock):
 
 
 @pytest.mark.parametrize(
-    "alliance", ["red1", "red2", "red3", "blue1", "blue2", "blue3", -1]
+    "alliance", ["Red1", "Red2", "Red3", "Blue1", "Blue2", "Blue3", -1]
 )
 def test_getLocation(alliance, dsmock, halmock):
     if alliance != -1:
         result = int(alliance[-1])
-        alliance = getattr(halmock, "kHALAllianceStationID_" + alliance)
+        alliance = getattr(halmock.AllianceStationID, "k" + alliance)
     else:
         result = 0
     halmock.getAllianceStation.return_value = alliance
