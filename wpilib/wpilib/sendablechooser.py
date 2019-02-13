@@ -154,19 +154,13 @@ class SendableChooser(SendableBase):
         builder.addStringProperty(SendableChooser.ACTIVE, _active_property_getter, None)
 
         with self.mutex:
-            try:
-                self.activeEntries.append(builder.getEntry(SendableChooser.ACTIVE))
-            except:
-                pass
+            self.activeEntries.append(builder.getEntry(SendableChooser.ACTIVE))
 
         def _selected_property_setter(val):
             with self.mutex:
-                try:
-                    self.selected = val
-                    for entry in self.activeEntries:
-                        entry.setString(val)
-                except:
-                    pass
+                self.selected = val
+                for entry in self.activeEntries:
+                    entry.setString(val)
 
         builder.addStringProperty(
             SendableChooser.SELECTED, None, _selected_property_setter
