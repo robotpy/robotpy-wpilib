@@ -162,6 +162,7 @@ class SendableChooser(SendableBase):
                 for entry in self.activeEntries:
                     entry.setString(val)
 
+        # python-specific: set local=True
         builder.addStringProperty(
-            SendableChooser.SELECTED, None, _selected_property_setter
+            SendableChooser.SELECTED, None, _selected_property_setter, local=True
         )

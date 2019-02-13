@@ -15,20 +15,31 @@ __all__ = ["SendableBuilder"]
 
 class Property:
     def __init__(
-        self, table: NetworkTable, key: str, update: Callable, setter: Callable
+        self,
+        table: NetworkTable,
+        key: str,
+        update: Callable,
+        setter: Callable,
+        listen_local: bool,
     ) -> None:
         self.entry = table.getEntry(key)
         self.key = key
         self.update = update
         self.setter = setter
         self.listener = None
+        # python-specific: sendable chooser needs to be able to hear local updates
+        self.listen_local = listen_local
 
     def createListener(self, entry: NetworkTableEntry) -> None:
-        self.listener = entry.addListener(
-            lambda entry, key, value, param: self.setter(value),
+        flags = (
             NetworkTables.NotifyFlags.IMMEDIATE
             | NetworkTables.NotifyFlags.NEW
-            | NetworkTables.NotifyFlags.UPDATE,
+            | NetworkTables.NotifyFlags.UPDATE
+        )
+        if self.listen_local:
+            flags |= NetworkTables.NotifyFlags.LOCAL
+        self.listener = entry.addListener(
+            lambda entry, key, value, param: self.setter(value), flags
         )
 
     def startListener(self) -> None:
@@ -166,8 +177,10 @@ class SendableBuilder:
         """
         return self.table.getEntry(key)
 
-    def _addProperty(self, key: str, updater: Callable, setter: Callable) -> None:
-        prop = Property(self.table, key, updater, setter)
+    def _addProperty(
+        self, key: str, updater: Callable, setter: Callable, listen_local: bool
+    ) -> None:
+        prop = Property(self.table, key, updater, setter, listen_local)
         self.properties.append(prop)
 
     def addBooleanProperty(
@@ -175,6 +188,7 @@ class SendableBuilder:
         key: str,
         getter: Optional[Callable[[], bool]],
         setter: Optional[Callable[[bool], Any]],
+        local: bool = False,
     ) -> None:
         """
         Add a boolean property.
@@ -182,15 +196,17 @@ class SendableBuilder:
         :param key:     property name
         :param getter:  getter function (returns current value)
         :param setter:  setter function (sets new value)
+        :param local:   (python-specific) if True, setter will be called on local updates
         """
         updater = None if getter is None else lambda entry: entry.setBoolean(getter())
-        self._addProperty(key, updater, setter)
+        self._addProperty(key, updater, setter, local)
 
     def addDoubleProperty(
         self,
         key: str,
         getter: Optional[Callable[[], float]],
         setter: Optional[Callable[[float], Any]],
+        local: bool = False,
     ) -> None:
         """
         Add a double property.
@@ -198,15 +214,17 @@ class SendableBuilder:
         :param key:     property name
         :param getter:  getter function (returns current value)
         :param setter:  setter function (sets new value)
+        :param local:   (python-specific) if True, setter will be called on local updates
         """
         updater = None if getter is None else lambda entry: entry.setDouble(getter())
-        self._addProperty(key, updater, setter)
+        self._addProperty(key, updater, setter, local)
 
     def addStringProperty(
         self,
         key: str,
         getter: Optional[Callable[[], str]],
         setter: Optional[Callable[[str], Any]],
+        local: bool = False,
     ) -> None:
         """
         Add a string property.
@@ -214,15 +232,17 @@ class SendableBuilder:
         :param key:     property name
         :param getter:  getter function (returns current value)
         :param setter:  setter function (sets new value)
+        :param local:   (python-specific) if True, setter will be called on local updates
         """
         updater = None if getter is None else lambda entry: entry.setString(getter())
-        self._addProperty(key, updater, setter)
+        self._addProperty(key, updater, setter, local)
 
     def addBooleanArrayProperty(
         self,
         key: str,
         getter: Optional[Callable[[], List[bool]]],
         setter: Optional[Callable[[List[bool]], Any]],
+        local: bool = False,
     ) -> None:
         """
         Add a boolean array property.
@@ -230,17 +250,19 @@ class SendableBuilder:
         :param key:     property name
         :param getter:  getter function (returns current value)
         :param setter:  setter function (sets new value)
+        :param local:   (python-specific) if True, setter will be called on local updates
         """
         updater = (
             None if getter is None else lambda entry: entry.setBooleanArray(getter())
         )
-        self._addProperty(key, updater, setter)
+        self._addProperty(key, updater, setter, local)
 
     def addDoubleArrayProperty(
         self,
         key: str,
         getter: Optional[Callable[[], List[float]]],
         setter: Optional[Callable[[List[float]], Any]],
+        local: bool = False,
     ) -> None:
         """
         Add a double array property.
@@ -248,17 +270,19 @@ class SendableBuilder:
         :param key:     property name
         :param getter:  getter function (returns current value)
         :param setter:  setter function (sets new value)
+        :param local:   (python-specific) if True, setter will be called on local updates
         """
         updater = (
             None if getter is None else lambda entry: entry.setDoubleArray(getter())
         )
-        self._addProperty(key, updater, setter)
+        self._addProperty(key, updater, setter, local)
 
     def addStringArrayProperty(
         self,
         key: str,
         getter: Optional[Callable[[], List[str]]],
         setter: Optional[Callable[[List[str]], Any]],
+        local: bool = False,
     ) -> None:
         """
         Add a string array property.
@@ -266,17 +290,19 @@ class SendableBuilder:
         :param key:     property name
         :param getter:  getter function (returns current value)
         :param setter:  setter function (sets new value)
+        :param local:   (python-specific) if True, setter will be called on local updates
         """
         updater = (
             None if getter is None else lambda entry: entry.setStringArray(getter())
         )
-        self._addProperty(key, updater, setter)
+        self._addProperty(key, updater, setter, local)
 
     def addRawProperty(
         self,
         key: str,
         getter: Optional[Callable[[], bytes]],
         setter: Optional[Callable[[bytes], Any]],
+        local: bool = False,
     ) -> None:
         """
         Add a raw property.
@@ -284,6 +310,7 @@ class SendableBuilder:
         :param key:     property name
         :param getter:  getter function (returns current value)
         :param setter:  setter function (sets new value)
+        :param local:   (python-specific) if True, setter will be called on local updates
         """
         updater = None if getter is None else lambda entry: entry.setRaw(getter())
-        self._addProperty(key, updater, setter)
+        self._addProperty(key, updater, setter, local)
