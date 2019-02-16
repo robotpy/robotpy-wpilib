@@ -7,8 +7,8 @@
 #
 
 
-hal_version = "2019.1.1"
-wpiutil_version = "2019.1.1"
+hal_version = "2019.3.1"
+wpiutil_version = "2019.3.1"
 
 frc_site = "http://first.wpi.edu/FRC/roborio/maven/release"
 frc_site_dev = "http://first.wpi.edu/FRC/roborio/maven/development"
