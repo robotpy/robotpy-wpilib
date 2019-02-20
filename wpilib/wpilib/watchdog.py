@@ -8,7 +8,7 @@
 
 import heapq
 import threading
-from typing import Callable
+from typing import Callable, Dict, List
 
 import hal
 
@@ -157,8 +157,9 @@ class Watchdog:
         now = hal.getFPGATime()
         if now - self._lastEpochsPrintTime > self.kMinPrintPeriod:
             self._lastEpochsPrintTime = now
+            log = logger.info
             for key, value in self._epochs.items():
-                logger.info("\t%s: %.6fs", key, value / 1e6)
+                log("\t%s: %.6fs", key, value / 1e6)
 
     def reset(self) -> None:
         """Resets the watchdog timer.
