@@ -58,8 +58,12 @@ def _STATUSFUNC(name, restype, *params, out=None, library=_dll,
     realparams.append(("status", C.POINTER(C.c_int32)))
     _inner = _inner_func(name, restype, *realparams, out=out, library=library,
                         errcheck=errcheck, handle_missing=handle_missing, c_name=None)
+
+    # micro-optimization: don't lookup C global each time function is called
+    # .. timeit says this saves 2us
+    c_int32 = C.c_int32
     def outer(*args, **kwargs):
-        status = C.c_int32(0)
+        status = c_int32(0)
         rv = _inner(*args, status=status, **kwargs)
         if status.value == 0:
             return rv
