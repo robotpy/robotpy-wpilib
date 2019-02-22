@@ -340,7 +340,7 @@ def _reset_hal_data(current_hooks):
             'rate':               OUT(0),
             'min_rate':           OUT(0),
 
-        } for _ in range(13)],
+        } for _ in range(8)],
 
         # There is a lot of config involved here...
         'counter': [{
