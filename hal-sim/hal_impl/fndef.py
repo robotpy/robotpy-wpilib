@@ -24,6 +24,12 @@ FuncData = collections.namedtuple(
     ],
 )
 
+from hal.exceptions import HALError
+
+
+class SimulationError(HALError):
+    """If you get this error, an undefined simulation error occurred"""
+
 
 def gen_check(pname, ptype):
 
@@ -206,20 +212,27 @@ def gen_func(f, name, restype, params, out, _thunk):
             """
         %s
         def %s(%s):
-            %s
-            return_value = %s(%s)
-            %s
-            return return_value
+            try:
+                %s
+                return_value = %s(%s)
+                %s
+            except (NotImplementedError, HALError):
+                raise
+            except Exception as e:
+                raise SimulationError("unexpected exception calling '%s'") from e
+            else:
+                return return_value
     """
         )
         % (
             init,
             name,
             ", ".join(args),
-            "\n    ".join(checks),
+            "\n        ".join(checks),
             fn_call,
             ", ".join(args),
-            "\n    ".join(retchecks),
+            "\n        ".join(retchecks),
+            name,
         )
     )
 
@@ -254,10 +267,9 @@ def _RETFUNC(
 
     # exec:
     # TODO: give it a filename?
-    if _thunk:
-        elocals = {"_C": C}
-    else:
-        elocals = {"_dll": _dll, "_C": C}
+    elocals = {"_C": C, "HALError": HALError, "SimulationError": SimulationError}
+    if not _thunk:
+        elocals["_dll"] = _dll
 
     exec(fn_body, elocals)
 
