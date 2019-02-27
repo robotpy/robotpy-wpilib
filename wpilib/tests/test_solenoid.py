@@ -175,11 +175,11 @@ def test_solenoid_initSendable_setter(solenoid, sendablebuilder, hal_data, value
 
 
 @pytest.mark.parametrize("value", [(1,), (0,), ([],)])
-def test_solenoid_initSendable_setter_invalid(solenoid, sendablebuilder, value):
+def test_solenoid_initSendable_setter_invalid(hal, solenoid, sendablebuilder, value):
     solenoid.initSendable(sendablebuilder)
     prop = sendablebuilder.properties[0]
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(hal.HALError):
         prop.setter(value)
 
 
