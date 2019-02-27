@@ -2128,8 +2128,6 @@ def setRelay(relayPortHandle, on, status):
 
 def getRelay(relayPortHandle, status):
     status.value = 0
-    if not relayPortHandle:
-        return False
     channel, fwd = _handle_to_channel(relayPortHandle)
     if fwd:
         return hal_data["relay"][channel]["fwd"]

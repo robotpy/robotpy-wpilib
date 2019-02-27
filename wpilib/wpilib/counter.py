@@ -22,16 +22,16 @@ __all__ = ["Counter"]
 
 
 def _freeCounter(counterObj: "Counter") -> None:
-    hal.setCounterUpdateWhenEmpty(counterObj._counter, True)
+    hal.setCounterUpdateWhenEmpty(counterObj.counter, True)
 
     counterObj.clearUpSource()
     counterObj.clearDownSource()
 
-    hal.freeCounter(counterObj._counter)
+    hal.freeCounter(counterObj.counter)
 
     counterObj.upSource = None
     counterObj.downSource = None
-    counterObj._counter = None
+    counterObj.counter = None
 
 
 class Counter(SendableBase):
@@ -155,7 +155,7 @@ class Counter(SendableBase):
         self.pidSource = self.PIDSourceType.kDisplacement
 
         # create counter
-        self._counter, self.index = hal.initializeCounter(mode)
+        self.counter, self.index = hal.initializeCounter(mode)
         self.__finalizer = weakref.finalize(self, _freeCounter, self)
 
         self.setMaxPeriod(0.5)
@@ -178,21 +178,16 @@ class Counter(SendableBase):
         if upSource is not None and downSource is not None:
             if encodingType == self.EncodingType.k1X:
                 self.setUpSourceEdge(True, False)
-                hal.setCounterAverageSize(self._counter, 1)
+                hal.setCounterAverageSize(self.counter, 1)
             else:
                 self.setUpSourceEdge(True, True)
-                hal.setCounterAverageSize(self._counter, 2)
+                hal.setCounterAverageSize(self.counter, 2)
             self.setDownSourceEdge(inverted, True)
-
-    @property
-    def counter(self):
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use counter after close() has been called")
-        return self._counter
 
     def close(self) -> None:
         super().close()
         self.__finalizer()
+        self.counter = None
 
     def getFPGAIndex(self) -> int:
         """
@@ -291,7 +286,7 @@ class Counter(SendableBase):
             self.upSource.close()
             self.allocatedUpSource = False
         self.upSource = None
-        hal.clearCounterUpSource(self._counter)
+        hal.clearCounterUpSource(self.counter)
 
     def setDownSource(self, *args, **kwargs) -> None:
         """Set the down counting source for the counter.
@@ -387,7 +382,7 @@ class Counter(SendableBase):
             self.allocatedDownSource = False
         self.downSource = None
 
-        hal.clearCounterDownSource(self._counter)
+        hal.clearCounterDownSource(self.counter)
 
     def setUpDownCounterMode(self) -> None:
         """Set standard up / down counting mode on this counter. Up and down

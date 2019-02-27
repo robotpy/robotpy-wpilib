@@ -42,7 +42,7 @@ class DigitalOutput(SendableBase):
         """
 
         super().__init__()
-        self._pwmGenerator = None
+        self.pwmGenerator = None
         self._pwmGenerator_finalizer = None
 
         SensorUtil.checkDigitalChannel(channel)
@@ -53,21 +53,13 @@ class DigitalOutput(SendableBase):
         hal.report(hal.UsageReporting.kResourceType_DigitalOutput, channel)
         self.setName("DigitalOutput", channel)
 
-    @property
-    def pwmGenerator(self) -> Optional[int]:
-        if self._pwmGenerator_finalizer is None:
-            return None
-        if not self._pwmGenerator_finalizer.alive:
-            return None
-        return self._pwmGenerator
-
     def close(self) -> None:
         """Free the resources associated with a digital output."""
         super().close()
         # finalize the pwm only if we have allocated it
         if self.pwmGenerator is not None:
             self._pwmGenerator_finalizer()
-        self._pwmGenerator = None
+        self.pwmGenerator = None
         if self.pwmGenerator is not self.invalidPwmGenerator:
             self.disablePWM()
         hal.freeDIOPort(self.handle)
@@ -134,11 +126,11 @@ class DigitalOutput(SendableBase):
         """
         if self.pwmGenerator is not self.invalidPwmGenerator:
             return
-        self._pwmGenerator = hal.allocateDigitalPWM()
-        hal.setDigitalPWMDutyCycle(self._pwmGenerator, initialDutyCycle)
-        hal.setDigitalPWMOutputChannel(self._pwmGenerator, self.channel)
+        self.pwmGenerator = hal.allocateDigitalPWM()
+        hal.setDigitalPWMDutyCycle(self.pwmGenerator, initialDutyCycle)
+        hal.setDigitalPWMOutputChannel(self.pwmGenerator, self.channel)
         self._pwmGenerator_finalizer = weakref.finalize(
-            self, _freePWMGenerator, self._pwmGenerator
+            self, _freePWMGenerator, self.pwmGenerator
         )
 
     def disablePWM(self) -> None:
@@ -149,8 +141,8 @@ class DigitalOutput(SendableBase):
         """
         if self.pwmGenerator is not self.invalidPwmGenerator:
             return
-        hal.setDigitalPWMOutputChannel(self._pwmGenerator, SensorUtil.kDigitalChannels)
-        hal.freeDigitalPWM(self._pwmGenerator)
+        hal.setDigitalPWMOutputChannel(self.pwmGenerator, SensorUtil.kDigitalChannels)
+        hal.freeDigitalPWM(self.pwmGenerator)
         self._pwmGenerator_finalizer()
 
     def updateDutyCycle(self, dutyCycle: float) -> None:
@@ -163,7 +155,7 @@ class DigitalOutput(SendableBase):
         """
         if self.pwmGenerator is self.invalidPwmGenerator:
             return
-        hal.setDigitalPWMDutyCycle(self._pwmGenerator, dutyCycle)
+        hal.setDigitalPWMDutyCycle(self.pwmGenerator, dutyCycle)
 
     def initSendable(self, builder: SendableBuilder) -> None:
         builder.setSmartDashboardType("Digital Output")

@@ -97,15 +97,12 @@ def test_relay_create_error(hal, wpilib):
 
 def test_relay_close(relay, hal, wpilib):
     # wasport = relay._port
-    assert relay.forwardHandle == relay._forwardHandle
-    assert relay.reverseHandle == relay._reverseHandle
+    # assert relay.forwardHandle == relay._forwardHandle
+    # assert relay.reverseHandle == relay._reverseHandle
 
     relay.close()
-
-    with pytest.raises(ValueError):
-        _ = relay.forwardHandle
-    with pytest.raises(ValueError):
-        _ = relay.reverseHandle
+    assert relay.forwardHandle is None
+    assert relay.reverseHandle is None
 
     # hal.setRelayForward.assert_called_once_with(wasport, False)
     # hal.setRelayReverse.assert_called_once_with(wasport, False)
@@ -152,10 +149,10 @@ def test_relay_set_badvalue(relay):
     # assert not hal.setRelayForward.called and not hal.setRelayReverse.called
 
 
-def test_relay_set_freed(relay):
+def test_relay_set_freed(hal, relay):
     relay.close()
     # hal.reset_mock()
-    with pytest.raises(ValueError):
+    with pytest.raises(hal.HALError):
         relay.set(relay.Value.kOff)
     # assert not hal.setRelayForward.called and not hal.setRelayReverse.called
 
@@ -190,10 +187,10 @@ def test_relay_get(dir, value, fwd, rev, wpilib, relay_data):
     # hal.getRelayReverse.assert_called_once_with(relay._port)
 
 
-def test_relay_get_freed(relay, hal):
+def test_relay_get_freed(hal, relay):
     relay.close()
     # hal.reset_mock()
-    with pytest.raises(ValueError):
+    with pytest.raises(hal.HALError):
         relay.get()
     # assert not hal.setRelayForward.called and not hal.setRelayReverse.called
 

@@ -97,8 +97,8 @@ class Relay(SendableBase, MotorSafety):
             direction = self.Direction.kBoth
         self.channel = channel
         self.direction = direction
-        self._forwardHandle = None
-        self._reverseHandle = None
+        self.forwardHandle = None
+        self.reverseHandle = None
 
         self._initRelay()
 
@@ -114,7 +114,7 @@ class Relay(SendableBase, MotorSafety):
                 or self.direction == self.Direction.kForward
             ):
                 Relay.relayChannels.allocate(self, self.channel * 2)
-                self._forwardHandle = hal.initializeRelayPort(portHandle, True)
+                self.forwardHandle = hal.initializeRelayPort(portHandle, True)
                 hal.report(hal.UsageReporting.kResourceType_Relay, self.channel)
 
             if (
@@ -122,7 +122,7 @@ class Relay(SendableBase, MotorSafety):
                 or self.direction == self.Direction.kReverse
             ):
                 Relay.relayChannels.allocate(self, self.channel * 2 + 1)
-                self._reverseHandle = hal.initializeRelayPort(portHandle, False)
+                self.reverseHandle = hal.initializeRelayPort(portHandle, False)
                 hal.report(hal.UsageReporting.kResourceType_Relay, self.channel + 128)
         except IndexError as e:
             raise IndexError(
@@ -130,24 +130,12 @@ class Relay(SendableBase, MotorSafety):
             ) from e
 
         self.__finalizer = weakref.finalize(
-            self, _freeRelay, self._forwardHandle, self._reverseHandle
+            self, _freeRelay, self.forwardHandle, self.reverseHandle
         )
 
         self.setSafetyEnabled(False)
 
         self.setName("Relay", self.channel)
-
-    @property
-    def forwardHandle(self) -> hal.RelayHandle:
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use relay after close() has been called")
-        return self._forwardHandle
-
-    @property
-    def reverseHandle(self) -> hal.RelayHandle:
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use relay after close() has been called")
-        return self._reverseHandle
 
     def close(self) -> None:
         super().close()
@@ -157,8 +145,8 @@ class Relay(SendableBase, MotorSafety):
         self.__finalizer()
         Relay.relayChannels.free(self.channel * 2)
         Relay.relayChannels.free(self.channel * 2 + 1)
-        self._forwardHandle = None
-        self._reverseHandle = None
+        self.forwardHandle = None
+        self.reverseHandle = None
 
     def set(self, value: Value) -> None:
 

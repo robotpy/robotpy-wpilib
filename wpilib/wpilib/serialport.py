@@ -109,12 +109,12 @@ class SerialPort:
                 msg = "Using stub simulator for Serial port %s" % port
                 warnings.warn(msg)
 
-            self._port = (simPort, port)
+            self.port = (simPort, port)
         else:
-            self._port = port
+            self.port = port
 
-        hal.initializeSerialPort(self._port)
-        self.__finalizer = weakref.finalize(self, _freeSerialPort, self._port)
+        hal.initializeSerialPort(self.port)
+        self.__finalizer = weakref.finalize(self, _freeSerialPort, self.port)
 
         hal.setSerialBaudRate(self.port, baudRate)
         hal.setSerialDataBits(self.port, dataBits)
@@ -137,15 +137,10 @@ class SerialPort:
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
-    @property
-    def port(self) -> Port:
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use serial port after free() has been called")
-        return self._port
-
     def close(self) -> None:
         """Destructor"""
         self.__finalizer()
+        self.port = None
 
     def setFlowControl(self, flowControl: FlowControl) -> None:
         """Set the type of flow control to enable on this port.

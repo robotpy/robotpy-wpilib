@@ -56,8 +56,8 @@ class AnalogTrigger(SendableBase):
         else:
             self.analogInput = channel
 
-        self._port, self.index = hal.initializeAnalogTrigger(self.analogInput.port)
-        self.__finalizer = weakref.finalize(self, _freeAnalogTrigger, self._port)
+        self.port, self.index = hal.initializeAnalogTrigger(self.analogInput.port)
+        self.__finalizer = weakref.finalize(self, _freeAnalogTrigger, self.port)
 
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
@@ -66,16 +66,11 @@ class AnalogTrigger(SendableBase):
 
         self.setName("AnalogTrigger", self.analogInput.getChannel())
 
-    @property
-    def port(self):
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use AnalogTrigger after close() has been called")
-        return self._port
-
     def close(self) -> None:
         """Release the resources used by this object"""
         super().close()
         self.__finalizer()
+        self.port = None
         if self.analogInput:
             self.analogInput.close()
 

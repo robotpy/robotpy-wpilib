@@ -84,8 +84,8 @@ class PWM(MotorSafety, SendableBase):
         SensorUtil.checkPWMChannel(channel)
         self.channel = channel
 
-        self._handle = hal.initializePWMPort(hal.getPort(channel))
-        self.__finalizer = weakref.finalize(self, _freePWM, self._handle)
+        self.handle = hal.initializePWMPort(hal.getPort(channel))
+        self.__finalizer = weakref.finalize(self, _freePWM, self.handle)
 
         self.setDisabled()
 
@@ -99,12 +99,6 @@ class PWM(MotorSafety, SendableBase):
         # Python-specific: Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
 
-    @property
-    def handle(self) -> hal.DigitalHandle:
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use channel after free() has been called")
-        return self._handle
-
     def close(self) -> None:
         """Free the PWM channel.
 
@@ -112,10 +106,10 @@ class PWM(MotorSafety, SendableBase):
         to 0.
         """
         super().close()
-        if self._handle is None:
+        if self.handle is None:
             return
         self.__finalizer()
-        self._handle = None
+        self.handle = None
 
     def stopMotor(self):
         self.setDisabled()
