@@ -186,13 +186,13 @@ class Encoder(SendableBase):
         self.indexSource = indexSource
         self.encodingType = encodingType
         self.pidSource = self.PIDSourceType.kDisplacement
-        self._encoder = None
+        self.encoder = None
         self.counter = None
         self.speedEntry = None
         self.distanceEntry = None
         self.distancePerTickEntry = None
 
-        self._encoder = hal.initializeEncoder(
+        self.encoder = hal.initializeEncoder(
             aSource.getPortHandleForRouting(),
             aSource.getAnalogTriggerTypeForRouting(),
             bSource.getPortHandleForRouting(),
@@ -201,7 +201,7 @@ class Encoder(SendableBase):
             encodingType,
         )
 
-        self.__finalizer = weakref.finalize(self, _freeEncoder, self._encoder)
+        self.__finalizer = weakref.finalize(self, _freeEncoder, self.encoder)
 
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
@@ -212,12 +212,6 @@ class Encoder(SendableBase):
         self.index = self.getFPGAIndex()
         hal.report(hal.UsageReporting.kResourceType_Encoder, self.index, encodingType)
         self.setName("Encoder", self.index)
-
-    @property
-    def encoder(self):
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use encoder after free() has been called")
-        return self._encoder
 
     def getFPGAIndex(self) -> int:
         """
@@ -250,7 +244,7 @@ class Encoder(SendableBase):
         self.bSource = None
         self.indexSource = None
         self.__finalizer()
-        self._encoder = None
+        self.encoder = None
 
     def getRaw(self) -> int:
         """Gets the raw value from the encoder. The raw value is the actual

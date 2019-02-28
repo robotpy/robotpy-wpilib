@@ -112,7 +112,7 @@ def test_solenoid(wpilib, hal, hal_data):
 
             s.close()
 
-            with pytest.raises(ValueError):
+            with pytest.raises(hal.HALError):
                 s.set(True)
 
 

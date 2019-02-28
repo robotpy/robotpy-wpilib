@@ -80,28 +80,22 @@ class Solenoid(SolenoidBase):
         SensorUtil.checkSolenoidChannel(channel)
 
         portHandle = hal.getPortWithModule(moduleNumber, channel)
-        self._solenoidHandle = hal.initializeSolenoidPort(portHandle)
+        self.solenoidHandle = hal.initializeSolenoidPort(portHandle)
 
         hal.report(hal.UsageReporting.kResourceType_Solenoid, channel, moduleNumber)
         self.setName("Solenoid", self.moduleNumber, self.channel)
 
-        self.__finalizer = weakref.finalize(self, _freeSolenoid, self._solenoidHandle)
+        self.__finalizer = weakref.finalize(self, _freeSolenoid, self.solenoidHandle)
 
         # Need this to free on unit test wpilib reset
         Resource._add_global_resource(self)
-
-    @property
-    def solenoidHandle(self) -> None:
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use channel after close() has been called")
-        return self._solenoidHandle
 
     def close(self) -> None:
         """Mark the solenoid as close."""
         super().close()
 
         self.__finalizer()
-        self._solenoidHandle = None
+        self.solenoidHandle = None
 
     def set(self, on: bool) -> None:
         """Set the value of a solenoid.

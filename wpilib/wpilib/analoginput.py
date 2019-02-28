@@ -61,18 +61,12 @@ class AnalogInput(SendableBase):
         self.pidSource = self.PIDSourceType.kDisplacement
 
         port = hal.getPort(channel)
-        self._port = hal.initializeAnalogInputPort(port)
+        self.port = hal.initializeAnalogInputPort(port)
 
         hal.report(hal.UsageReporting.kResourceType_AnalogChannel, channel)
         self.setName("AnalogInput", self.channel)
 
-        self.__finalizer = weakref.finalize(self, _freeAnalogInput, self._port)
-
-    @property
-    def port(self):
-        if not self.__finalizer.alive:
-            return None
-        return self._port
+        self.__finalizer = weakref.finalize(self, _freeAnalogInput, self.port)
 
     def close(self) -> None:
         """ Channel destructor """
@@ -83,6 +77,7 @@ class AnalogInput(SendableBase):
         self.__finalizer()
         self.channel = None
         self.accumulatorOffset = 0
+        self.port = None
 
     def getValue(self) -> int:
         """Get a sample straight from this channel. The sample is a 12-bit

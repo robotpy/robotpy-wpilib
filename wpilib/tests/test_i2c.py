@@ -39,7 +39,7 @@ class I2CSimulator(I2CSimBase):
         self.closed = port
 
 
-def test_i2c(wpilib):
+def test_i2c(hal, wpilib):
 
     sim = I2CSimulator()
     port = wpilib.I2C.Port.kMXP
@@ -63,5 +63,5 @@ def test_i2c(wpilib):
     i2c.close()
     assert sim.closed == port
 
-    with pytest.raises(ValueError):
-        i2c.port
+    with pytest.raises(hal.HALError):
+        i2c.readOnly(7)

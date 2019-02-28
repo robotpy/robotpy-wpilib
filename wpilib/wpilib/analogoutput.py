@@ -37,18 +37,12 @@ class AnalogOutput(SendableBase):
         self.channel = channel
 
         port = hal.getPort(channel)
-        self._port = hal.initializeAnalogOutputPort(port)
+        self.port = hal.initializeAnalogOutputPort(port)
 
         self.setName("AnalogOutput", channel)
         hal.report(hal.UsageReporting.kResourceType_AnalogChannel, channel, 1)
 
-        self.__finalizer = weakref.finalize(self, _freeAnalogOutput, self._port)
-
-    @property
-    def port(self):
-        if not self.__finalizer.alive:
-            return None
-        return self._port
+        self.__finalizer = weakref.finalize(self, _freeAnalogOutput, self.port)
 
     def close(self) -> None:
         """Channel destructor.
@@ -59,6 +53,7 @@ class AnalogOutput(SendableBase):
         AnalogOutput.channels.free(self.channel)
         self.__finalizer()
         self.channel = None
+        self.port = None
 
     def getChannel(self) -> int:
         """Get the channel of this AnalogOutput.

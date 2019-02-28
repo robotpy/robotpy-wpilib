@@ -63,22 +63,16 @@ class I2C:
             assert hasattr(simPort, "initializeI2C")
             assert hasattr(simPort, "closeI2C")
 
-            self._port = (simPort, port)
+            self.port = (simPort, port)
         else:
-            self._port = port
+            self.port = port
 
         self.deviceAddress = deviceAddress
 
-        hal.initializeI2C(self._port)
-        self.__finalizer = weakref.finalize(self, _freeI2C, self._port)
+        hal.initializeI2C(self.port)
+        self.__finalizer = weakref.finalize(self, _freeI2C, self.port)
 
         hal.report(hal.UsageReporting.kResourceType_I2C, deviceAddress)
-
-    @property
-    def port(self):
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use i2c port after free() has been called")
-        return self._port
 
     def free(self) -> None:
         """
@@ -90,6 +84,7 @@ class I2C:
 
     def close(self) -> None:
         self.__finalizer()
+        self.port = None
 
     def transaction(
         self, dataToSend: Union[bytes, List[int]], receiveSize: int

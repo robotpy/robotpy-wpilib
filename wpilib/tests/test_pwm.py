@@ -48,12 +48,11 @@ def test_pwm_create_all(wpilib):
         pwms.append(wpilib.PWM(i))
 
 
-def test_pwm_close(pwm, pwm_data, wpilib):
-    assert pwm.handle == pwm._handle
+def test_pwm_close(pwm, pwm_data, wpilib, hal):
     pwm.close()
 
-    with pytest.raises(ValueError):
-        _ = pwm.handle
+    with pytest.raises(hal.HALError):
+        pwm.getSpeed()
 
     assert pwm_data["initialized"] == False
 
@@ -103,9 +102,9 @@ def test_pwm_setRaw(pwm, pwm_data):
     assert pwm_data["raw_value"] == 60
 
 
-def test_pwm_setRaw_freed(pwm, pwm_data):
+def test_pwm_setRaw_freed(hal, pwm, pwm_data):
     pwm.close()
-    with pytest.raises(ValueError):
+    with pytest.raises(hal.HALError):
         pwm.setRaw(60)
     assert pwm_data["raw_value"] == 0
 
@@ -115,9 +114,9 @@ def test_pwm_getRaw(pwm, pwm_data):
     assert pwm.getRaw() == 1234
 
 
-def test_pwm_getRaw_freed(pwm):
+def test_pwm_getRaw_freed(hal, pwm):
     pwm.close()
-    with pytest.raises(ValueError):
+    with pytest.raises(hal.HALError):
         pwm.getRaw()
 
 
@@ -127,9 +126,9 @@ def test_pwm_setPeriodMultiplier(param, expected, pwm, pwm_data):
     assert pwm_data["period_scale"] == expected
 
 
-def test_pwm_setPeriodMultiplier_freed(pwm, pwm_data):
+def test_pwm_setPeriodMultiplier_freed(hal, pwm, pwm_data):
     pwm.close()
-    with pytest.raises(ValueError):
+    with pytest.raises(hal.HALError):
         pwm.setPeriodMultiplier(pwm.PeriodMultiplier.k4X)
     assert pwm_data["period_scale"] is None
 
@@ -145,8 +144,8 @@ def test_pwm_setZeroLatch(pwm, pwm_data):
     assert pwm_data["zero_latch"] == True
 
 
-def test_pwm_setZeroLatch_freed(pwm, pwm_data):
+def test_pwm_setZeroLatch_freed(hal, pwm, pwm_data):
     pwm.close()
-    with pytest.raises(ValueError):
+    with pytest.raises(hal.HALError):
         pwm.setZeroLatch()
     assert pwm_data["zero_latch"] == False

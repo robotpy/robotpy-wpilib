@@ -73,9 +73,9 @@ class SPI:
             assert hasattr(simPort, "initializeSPI")
             assert hasattr(simPort, "closeSPI")
 
-            self._port = (simPort, port)
+            self.port = (simPort, port)
         else:
-            self._port = port
+            self.port = port
 
         # python-specific: these are bools instead of integers
         self.msbFirst = False
@@ -84,23 +84,18 @@ class SPI:
 
         self.accum = None
 
-        hal.initializeSPI(self._port)
-        self.__finalizer = weakref.finalize(self, _freeSPI, self._port)
+        hal.initializeSPI(self.port)
+        self.__finalizer = weakref.finalize(self, _freeSPI, self.port)
 
         SPI.devices += 1
         hal.report(hal.UsageReporting.kResourceType_SPI, SPI.devices)
-
-    @property
-    def port(self) -> Port:
-        if not self.__finalizer.alive:
-            raise ValueError("Cannot use SPI after free() has been called")
-        return self._port
 
     def close(self) -> None:
         if self.accum is not None:
             self.accum.close()
             self.accum = None
         self.__finalizer()
+        self.port = None
 
     def setClockRate(self, hz: int) -> None:
         """Configure the rate of the generated clock signal. The default value is 500,000 Hz. The maximum

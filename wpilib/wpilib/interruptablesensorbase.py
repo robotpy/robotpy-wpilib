@@ -28,18 +28,10 @@ class InterruptableSensorBase(SendableBase):
         """Create a new InterrupatableSensorBase"""
         super().__init__()
         # The interrupt resource
-        self._interrupt = None
+        self.interrupt = None
         self._interrupt_finalizer = None
         # Flags if the interrupt being allocated is synchronous
         self.isSynchronousInterrupt = False
-
-    @property
-    def interrupt(self) -> Optional[hal.InterruptHandle]:
-        if self._interrupt_finalizer is None:
-            return None
-        if not self._interrupt_finalizer.alive:
-            return None
-        return self._interrupt
 
     def close(self) -> None:
         super().close()
@@ -90,9 +82,9 @@ class InterruptableSensorBase(SendableBase):
         if self.interrupt is not None:
             raise ValueError("The interrupt has already been allocated")
         self.isSynchronousInterrupt = watcher
-        self._interrupt = hal.initializeInterrupts(watcher)
+        self.interrupt = hal.initializeInterrupts(watcher)
         self._interrupt_finalizer = weakref.finalize(
-            self, hal.cleanInterrupts, self._interrupt
+            self, hal.cleanInterrupts, self.interrupt
         )
 
     def cancelInterrupts(self) -> None:

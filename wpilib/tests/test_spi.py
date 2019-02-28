@@ -80,9 +80,6 @@ def test_spi(wpilib, monkeypatch):
     spi.close()
     assert sim.closed == True
 
-    with pytest.raises(ValueError):
-        spi.port
-
 
 def test_adxrs450(wpilib, hal_data, monkeypatch, sim_hooks):
 
