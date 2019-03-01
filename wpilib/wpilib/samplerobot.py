@@ -150,19 +150,22 @@ class SampleRobot(RobotBase):
 
         if hasattr(self, "_no_robot_main"):
             while True:
-                if self.isDisabled():
+                # python-specific
+                isEnabled, isAutonomous, isTest = self.getControlState()
+
+                if not isEnabled:
                     self.ds.InDisabled(True)
                     self.disabled()
                     self.ds.InDisabled(False)
                     while self.isDisabled():
                         Timer.delay(0.01)
-                elif self.isAutonomous():
+                elif isAutonomous:
                     self.ds.InAutonomous(True)
                     self.autonomous()
                     self.ds.InAutonomous(False)
-                    while self.isAutonomous() and not self.isDisabled():
+                    while self.isAutonomousEnabled():
                         Timer.delay(0.01)
-                elif self.isTest():
+                elif isTest:
                     LiveWindow.setEnabled(True)
                     Shuffleboard.enableActuatorWidgets()
                     self.ds.InTest(True)
@@ -176,5 +179,5 @@ class SampleRobot(RobotBase):
                     self.ds.InOperatorControl(True)
                     self.operatorControl()
                     self.ds.InOperatorControl(False)
-                    while self.isOperatorControl() and not self.isDisabled():
+                    while self.isOperatorControlEnabled():
                         Timer.delay(0.01)
