@@ -173,7 +173,9 @@ class IterativeRobotBase(RobotBase):
         """Call the appropriate function depending upon the current robot mode"""
         self.watchdog.reset()
 
-        if self.isDisabled():
+        isEnabled, isAutonomous, isTest = self.getControlState()
+
+        if not isEnabled:
             if self.last_mode is not self.Mode.kDisabled:
                 LiveWindow.setEnabled(False)
                 Shuffleboard.disableActuatorWidgets()
@@ -183,7 +185,7 @@ class IterativeRobotBase(RobotBase):
             hal.observeUserProgramDisabled()
             self.disabledPeriodic()
             self.watchdog.addEpoch("disabledPeriodic()")
-        elif self.isAutonomous():
+        elif isAutonomous:
             if self.last_mode is not self.Mode.kAutonomous:
                 LiveWindow.setEnabled(False)
                 Shuffleboard.disableActuatorWidgets()
@@ -193,7 +195,7 @@ class IterativeRobotBase(RobotBase):
             hal.observeUserProgramAutonomous()
             self.autonomousPeriodic()
             self.watchdog.addEpoch("autonomousPeriodic()")
-        elif self.isOperatorControl():
+        elif not isTest:
             if self.last_mode is not self.Mode.kTeleop:
                 LiveWindow.setEnabled(False)
                 Shuffleboard.disableActuatorWidgets()

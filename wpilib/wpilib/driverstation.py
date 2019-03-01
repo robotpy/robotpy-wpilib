@@ -7,7 +7,7 @@
 import threading
 
 import enum
-from typing import Optional
+from typing import Optional, Tuple
 
 import hal
 import sys
@@ -527,6 +527,24 @@ class DriverStation:
             )
 
         return hal.getJoystickAxisType(stick, axis)
+
+    def getControlState(self) -> Tuple[bool, bool, bool]:
+        """More efficient way to determine what state the robot is in.
+
+        :returns: booleans representing enabled, isautonomous, istest
+
+        .. versionadded:: 2019.2.1
+
+        .. note:: This function only exists in RobotPy
+        """
+        with self.controlWordMutex:
+            self._updateControlWord(False)
+            controlWordCache = self.controlWordCache
+            return (
+                (controlWordCache.enabled != 0 and controlWordCache.dsAttached != 0),
+                controlWordCache.autonomous != 0,
+                controlWordCache.test != 0,
+            )
 
     def isEnabled(self) -> bool:
         """Gets a value indicating whether the Driver Station requires the

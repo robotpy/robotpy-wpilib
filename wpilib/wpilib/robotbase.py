@@ -5,7 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
-from typing import Type
+from typing import Tuple, Type
 
 import hal
 from networktables import NetworkTables
@@ -52,6 +52,7 @@ class RobotBase:
 
         # python-specific micro-optimization: attach all of the ds methods
         # to this object to avoid an extra function call
+        self.getControlState = self.ds.getControlState
         self.isDisabled = self.ds.isDisabled
         self.isEnabled = self.ds.isEnabled
         self.isAutonomous = self.ds.isAutonomous
@@ -99,6 +100,17 @@ class RobotBase:
         :returns: If the robot is running in the real world.
         """
         return not hal.isSimulation()
+
+    def getControlState(self) -> Tuple[bool, bool, bool]:
+        """More efficient way to determine what state the robot is in.
+
+        :returns: booleans representing enabled, isautonomous, istest
+
+        .. versionadded:: 2019.2.1
+
+        .. note:: This function only exists in RobotPy
+        """
+        return self.ds.getControlState()
 
     def isDisabled(self) -> bool:
         """Determine if the Robot is currently disabled.
