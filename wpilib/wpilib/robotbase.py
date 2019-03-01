@@ -50,6 +50,17 @@ class RobotBase:
 
         self.ds = DriverStation.getInstance()
 
+        # python-specific micro-optimization: attach all of the ds methods
+        # to this object to avoid an extra function call
+        self.isDisabled = self.ds.isDisabled
+        self.isEnabled = self.ds.isEnabled
+        self.isAutonomous = self.ds.isAutonomous
+        self.isAutonomousEnabled = self.ds.isAutonomousEnabled
+        self.isTest = self.ds.isTest
+        self.isOperatorControl = self.ds.isOperatorControl
+        self.isOperatorControlEnabled = self.ds.isOperatorControlEnabled
+        self.isNewDataAvailable = self.ds.isNewControlData
+
         NetworkTables.getTable("LiveWindow").getSubTable(".status").getEntry(
             "LW Enabled"
         ).setBoolean(False)
@@ -111,6 +122,19 @@ class RobotBase:
         """
         return self.ds.isAutonomous()
 
+    def isAutonomousEnabled(self) -> bool:
+        """Equivalent to calling ``isAutonomous() and isEnabled()`` but
+        more efficient.
+
+        :returns: True if the robot is in autonomous mode and is enabled,
+            False otherwise.
+        
+        .. versionadded:: 2019.2.1
+
+        .. note:: This function only exists in RobotPy
+        """
+        return self.ds.isAutonomousEnabled()
+
     def isTest(self) -> bool:
         """Determine if the robot is currently in Test mode as
         determined by the driver station.
@@ -126,6 +150,19 @@ class RobotBase:
         :returns: True if the robot is currently operating in Tele-Op mode
         """
         return self.ds.isOperatorControl()
+
+    def isOperatorControlEnabled(self) -> bool:
+        """Equivalent to calling ``isOperatorControl() and isEnabled()`` but
+        more efficient.
+
+        :returns: True if the robot is in operator-controlled mode and is enabled,
+            False otherwise.
+        
+        .. versionadded:: 2019.2.1
+
+        .. note:: This function only exists in RobotPy
+        """
+        return self.ds.isOperatorControlEnabled()
 
     def isNewDataAvailable(self) -> bool:
         """Indicates if new data is available from the driver station.

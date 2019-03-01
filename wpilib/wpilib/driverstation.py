@@ -559,6 +559,26 @@ class DriverStation:
             self._updateControlWord(False)
             return self.controlWordCache.autonomous != 0
 
+    def isAutonomousEnabled(self) -> bool:
+        """Equivalent to calling ``isAutonomous() and isEnabled()`` but
+        more efficient.
+
+        :returns: True if the robot is in autonomous mode and is enabled,
+            False otherwise.
+
+        .. versionadded:: 2019.2.1
+
+        .. note:: This function only exists in RobotPy
+        """
+        with self.controlWordMutex:
+            self._updateControlWord(False)
+            controlWordCache = self.controlWordCache
+            return (
+                controlWordCache.autonomous != 0
+                and controlWordCache.enabled != 0
+                and controlWordCache.dsAttached != 0
+            )
+
     def isOperatorControl(self) -> bool:
         """Gets a value indicating whether the Driver Station requires the
         robot to be running in operator-controlled mode.
@@ -570,6 +590,26 @@ class DriverStation:
             self._updateControlWord(False)
             return not (
                 self.controlWordCache.autonomous != 0 or self.controlWordCache.test != 0
+            )
+
+    def isOperatorControlEnabled(self) -> bool:
+        """Equivalent to calling ``isOperatorControl() and isEnabled()`` but
+        more efficient.
+
+        :returns: True if the robot is in operator-controlled mode and is enabled,
+            False otherwise.
+
+        .. versionadded:: 2019.2.1
+
+        .. note:: This function only exists in RobotPy
+        """
+        with self.controlWordMutex:
+            self._updateControlWord(False)
+            controlWordCache = self.controlWordCache
+            return (
+                not (controlWordCache.autonomous != 0 or controlWordCache.test != 0)
+                and controlWordCache.enabled != 0
+                and controlWordCache.dsAttached != 0
             )
 
     def isTest(self) -> bool:

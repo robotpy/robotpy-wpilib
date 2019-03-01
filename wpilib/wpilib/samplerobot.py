@@ -156,11 +156,11 @@ class SampleRobot(RobotBase):
                     self.ds.InDisabled(False)
                     while self.isDisabled():
                         Timer.delay(0.01)
-                elif self.isAutonomous():
+                elif self.isAutonomousEnabled():
                     self.ds.InAutonomous(True)
                     self.autonomous()
                     self.ds.InAutonomous(False)
-                    while self.isAutonomous() and not self.isDisabled():
+                    while self.isAutonomousEnabled():
                         Timer.delay(0.01)
                 elif self.isTest():
                     LiveWindow.setEnabled(True)
@@ -176,5 +176,5 @@ class SampleRobot(RobotBase):
                     self.ds.InOperatorControl(True)
                     self.operatorControl()
                     self.ds.InOperatorControl(False)
-                    while self.isOperatorControl() and not self.isDisabled():
+                    while self.isOperatorControlEnabled():
                         Timer.delay(0.01)
