@@ -42,6 +42,7 @@ from .livewindowsendable import LiveWindowSendable
 from .motorsafety import MotorSafety
 from .nidecbrushless import NidecBrushless
 from .notifier import Notifier
+from .pidbase import PIDBase
 from .pidcontroller import PIDController
 from .powerdistributionpanel import PowerDistributionPanel
 from .preferences import Preferences
