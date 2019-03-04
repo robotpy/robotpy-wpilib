@@ -5,6 +5,7 @@
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
 # ----------------------------------------------------------------------------
+import hal
 import threading
 import warnings
 from typing import Any
@@ -164,5 +165,8 @@ class SendableChooser(SendableBase):
 
         # python-specific: set local=True
         builder.addStringProperty(
-            SendableChooser.SELECTED, None, _selected_property_setter, local=True
+            SendableChooser.SELECTED,
+            None,
+            _selected_property_setter,
+            local=hal.isSimulation(),  # only need local updates in simulation
         )
