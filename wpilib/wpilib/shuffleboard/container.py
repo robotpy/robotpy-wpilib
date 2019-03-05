@@ -22,6 +22,8 @@ __all__ = ["ShuffleboardContainer"]
 class ShuffleboardContainer:
     """Common interface for objects that can contain shuffleboard components."""
 
+    __slots__ = ("usedTitles", "components", "layouts")
+
     def __init__(self) -> None:
         self.usedTitles = set()
         self.components = []  # type: List[ShuffleboardContainer]
@@ -125,4 +127,23 @@ class ShuffleboardContainer:
         """
         widget = self.add(title=title, value=defaultValue)
         widget.getEntry().setPersistent()
+        return widget
+
+    def addCamera(self, name: str, title: Optional[str] = None):
+        """
+        Adds a CameraServer stream widget by name.
+
+        :param name: the name of the camera stream
+        :param title: the title of the widget
+        :rtype: ShuffleboardWidget
+        """
+        # python-specific: Rough replacement for add(VideoSource)
+        from .camerawidget import CameraWidget
+
+        if not title:
+            title = name
+        self._checkTitle(title)
+
+        widget = CameraWidget(self, title, name)
+        self.components.append(widget)
         return widget
