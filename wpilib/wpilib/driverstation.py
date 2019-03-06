@@ -882,6 +882,10 @@ class DriverStation:
         # Force a control word update, to make sure the data is the newest.
         self._updateControlWord(True)
 
+        # python-specific: decode these outside the lock
+        eventName = self.matchInfoCache.eventName.decode("utf-8")
+        gameSpecificMessage = self.matchInfoCache.gameSpecificMessage.decode("utf-8")
+
         # lock joystick mutex to swap cache data
         with self.cacheDataMutex:
             for i in range(self.kJoystickPorts):
@@ -909,10 +913,8 @@ class DriverStation:
                 self.joystickPOVs,
             )
 
-            self.matchInfo.eventName = self.matchInfoCache.eventName.decode("utf-8")
-            self.matchInfo.gameSpecificMessage = self.matchInfoCache.gameSpecificMessage.decode(
-                "utf-8"
-            )
+            self.matchInfo.eventName = eventName
+            self.matchInfo.gameSpecificMessage = gameSpecificMessage
             self.matchInfo.matchNumber = self.matchInfoCache.matchNumber
             self.matchInfo.replayNumber = self.matchInfoCache.replayNumber
             self.matchInfo.matchType = self.matchInfoCache.matchType
