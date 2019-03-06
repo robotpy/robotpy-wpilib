@@ -841,10 +841,15 @@ class DriverStation:
         """
         self.userInTest = entering
 
+    _red_alliance_ids = {
+        hal.AllianceStationID.kRed1,
+        hal.AllianceStationID.kRed2,
+        hal.AllianceStationID.kRed3,
+    }
+
     def _sendMatchData(self) -> None:
         alliance = hal.getAllianceStation()
-        hAid = hal.AllianceStationID
-        isRedAlliance = alliance in {hAid.kRed1, hAid.kRed2, hAid.kRed3}
+        isRedAlliance = alliance in self._red_alliance_ids
         stationNumber = self._station_numbers.get(alliance, 0)
 
         with self.cacheDataMutex:
