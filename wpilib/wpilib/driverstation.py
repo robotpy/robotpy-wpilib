@@ -841,10 +841,15 @@ class DriverStation:
         """
         self.userInTest = entering
 
+    _red_alliance_ids = {
+        hal.AllianceStationID.kRed1,
+        hal.AllianceStationID.kRed2,
+        hal.AllianceStationID.kRed3,
+    }
+
     def _sendMatchData(self) -> None:
         alliance = hal.getAllianceStation()
-        hAid = hal.AllianceStationID
-        isRedAlliance = alliance in {hAid.kRed1, hAid.kRed2, hAid.kRed3}
+        isRedAlliance = alliance in self._red_alliance_ids
         stationNumber = self._station_numbers.get(alliance, 0)
 
         with self.cacheDataMutex:
@@ -863,7 +868,9 @@ class DriverStation:
         self.matchDataSender.matchType.setDouble(matchType)
 
         with self.controlWordMutex:
-            self.matchDataSender.controlWord.setDouble(self.controlWordCache.bits)
+            bits = self.controlWordCache.bits
+
+        self.matchDataSender.controlWord.setDouble(bits)
 
     def _getData(self) -> None:
         """Copy data from the DS task for the user.
@@ -881,6 +888,10 @@ class DriverStation:
 
         # Force a control word update, to make sure the data is the newest.
         self._updateControlWord(True)
+
+        # python-specific: decode these outside the lock
+        eventName = self.matchInfoCache.eventName.decode("utf-8")
+        gameSpecificMessage = self.matchInfoCache.gameSpecificMessage.decode("utf-8")
 
         # lock joystick mutex to swap cache data
         with self.cacheDataMutex:
@@ -909,10 +920,8 @@ class DriverStation:
                 self.joystickPOVs,
             )
 
-            self.matchInfo.eventName = self.matchInfoCache.eventName.decode("utf-8")
-            self.matchInfo.gameSpecificMessage = self.matchInfoCache.gameSpecificMessage.decode(
-                "utf-8"
-            )
+            self.matchInfo.eventName = eventName
+            self.matchInfo.gameSpecificMessage = gameSpecificMessage
             self.matchInfo.matchNumber = self.matchInfoCache.matchNumber
             self.matchInfo.replayNumber = self.matchInfoCache.replayNumber
             self.matchInfo.matchType = self.matchInfoCache.matchType
