@@ -978,6 +978,6 @@ class DriverStation:
         """
         now = hal.getFPGATime()
         with self.controlWordMutex:
-            if (now - self.lastControlWordUpdate) > 50 or force:
+            if (now - self.lastControlWordUpdate) > 50000 or force:
                 hal.getControlWord(self.controlWordCache)
                 self.lastControlWordUpdate = now

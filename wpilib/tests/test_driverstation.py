@@ -259,11 +259,16 @@ def test_isFMSAttached_mock(dsmock, halmock):
     assert not dsmock.isFMSAttached()
 
 
-def test_isFMSAttached(ds, hal_data):
+def test_isFMSAttached(ds, hal_data, sim_hooks):
     hal_data["control"]["fmsAttached"] = True
+    sim_hooks.delaySeconds(0.1)
     assert ds.isFMSAttached()
 
     hal_data["control"]["fmsAttached"] = False
+    assert ds.isFMSAttached()
+    sim_hooks.delaySeconds(0.025)
+    assert ds.isFMSAttached()
+    sim_hooks.delaySeconds(0.03)
     assert not ds.isFMSAttached()
 
 
