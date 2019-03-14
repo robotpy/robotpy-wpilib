@@ -53,7 +53,8 @@ class LiveWindow:
     _enabledEntry = None
     startLiveWindow = False
     liveWindowEnabled = False
-    telemetryEnabled = True
+    # robotpy specific, need to improve ntcore before re-enabling this
+    telemetryEnabled = False
     mutex = threading.RLock()
 
     @classmethod
