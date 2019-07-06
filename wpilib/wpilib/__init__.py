@@ -17,7 +17,6 @@ from .analogtriggeroutput import AnalogTriggerOutput
 from .builtinaccelerometer import BuiltInAccelerometer
 from .cameraserver import CameraServer
 from .compressor import Compressor
-from .controllerpower import ControllerPower
 from .counter import Counter
 from .digitalglitchfilter import DigitalGlitchFilter
 from .digitalinput import DigitalInput
@@ -38,7 +37,6 @@ from .jaguar import Jaguar
 from .joystick import Joystick
 from .lineardigitalfilter import LinearDigitalFilter
 from .livewindow import LiveWindow
-from .livewindowsendable import LiveWindowSendable
 from .motorsafety import MotorSafety
 from .nidecbrushless import NidecBrushless
 from .notifier import Notifier
@@ -75,7 +73,6 @@ from .talon import Talon
 from .timedrobot import TimedRobot
 from .timer import Timer
 from .ultrasonic import Ultrasonic
-from .utility import Utility
 from .victor import Victor
 from .victorsp import VictorSP
 from .watchdog import Watchdog

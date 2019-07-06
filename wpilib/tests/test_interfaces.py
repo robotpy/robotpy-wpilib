@@ -63,12 +63,6 @@ def test_GenericHID(wpilib):
         x.getY()
 
 
-def test_NamedSendable(wpilib):
-    x = wpilib.interfaces.NamedSendable()
-    with pytest.raises(NotImplementedError):
-        x.getName()
-
-
 def test_PIDOutput(wpilib):
     x = wpilib.interfaces.PIDOutput()
     with pytest.raises(NotImplementedError):

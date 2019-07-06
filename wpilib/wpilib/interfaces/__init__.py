@@ -12,7 +12,6 @@ from .controller import Controller
 from .counterbase import CounterBase
 from .generichid import GenericHID
 from .gyro import Gyro
-from .namedsendable import NamedSendable
 from .pidoutput import PIDOutput
 from .pidsource import PIDSource
 from .potentiometer import Potentiometer
