@@ -37,7 +37,7 @@ See [LICENSE.txt](wpilib/LICENSE.txt)
 Contributors
 ============
 
-Peter Johnson ([@PeterJohnson](https://github.com/PeterJohnson), FRC Team 294) & Dustin Spicuzza (@virtuald,
+Peter Johnson ([@PeterJohnson](https://github.com/PeterJohnson), FRC Team 294) & Dustin Spicuzza (@[virtuald](https://github.com/virtuald),
 FRC Team 1418/2423) are the primary maintainers of RobotPy.
 
 Christian Balcom ([@computer-whisperer](https://github.com/computer-whisperer), FRC Team 4819) has done a significant
