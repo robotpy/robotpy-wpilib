@@ -7,7 +7,7 @@ git+git://github.com/robotpy/pynetworktables.git#egg=pynetworktables
 pytest>=2.8
 coverage
 robotpy-cppheaderparser
-pcpp
+pcpp~=1.21
 
 # used in examples tests
 git+git://github.com/robotpy/pyfrc.git#egg=pyfrc
