@@ -5,12 +5,6 @@ from os.path import dirname, exists, join
 import sys, subprocess
 from setuptools import find_packages, setup
 
-if sys.version_info.major < 3 or (
-    sys.version_info.major == 3 and sys.version_info.minor < 5
-):
-    sys.stderr.write("ERROR: RobotPy requires Python 3.5+\n")
-    exit(1)
-
 setup_dir = dirname(__file__)
 git_dir = join(setup_dir, "..", ".git")
 base_package = "wpilib"
@@ -62,14 +56,16 @@ setup(
     packages=find_packages(),
     install_requires=["pynetworktables>=2019.0.1"],
     license="BSD License",
+    python_requires=">=3.6",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering",
     ],
 )

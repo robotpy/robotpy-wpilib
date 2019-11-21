@@ -37,14 +37,14 @@ See [LICENSE.txt](wpilib/LICENSE.txt)
 Contributors
 ============
 
-Peter Johnson (@PeterJohnson, FRC Team 294) & Dustin Spicuzza (@virtuald,
+Peter Johnson ([@PeterJohnson](https://github.com/PeterJohnson), FRC Team 294) & Dustin Spicuzza (@[virtuald](https://github.com/virtuald),
 FRC Team 1418/2423) are the primary maintainers of RobotPy.
 
-Christian Balcom (@computer-whisperer, FRC Team 4819) has done a significant
+Christian Balcom ([@computer-whisperer](https://github.com/computer-whisperer), FRC Team 4819) has done a significant
 amount of work on the pure python port of WPILib, and various useful tooling.
 
 Other contributors include:
 
-* Sam Rosenblum (@sarosenb, FRC Team 2423)
+* Sam Rosenblum ([@sarosenb](https://github.com/sarosenb), FRC Team 2423)
 
 
