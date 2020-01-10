@@ -97,7 +97,7 @@ def test_recording(wpilib):
 
 
 def test_RecordingController_init(wpilib, networktables):
-    nt_instance = networktables.instance.NetworkTablesInstance.getDefault()
+    nt_instance = networktables.NetworkTables
     rc = wpilib.shuffleboard.recordingcontroller.RecordingController(nt_instance)
     assert rc.eventsTable.path == "/Shuffleboard/.recording/events"
     assert (

@@ -6,7 +6,7 @@
 # the project.
 # ----------------------------------------------------------------------------
 from ..driverstation import DriverStation
-from networktables.instance import NetworkTablesInstance
+from networktables import NetworkTablesInstance
 from .eventimportance import EventImportance
 
 
