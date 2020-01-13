@@ -53,6 +53,8 @@ class RobotStarter:
         import hal
         import wpilib
 
+        DriverStation = wpilib.DriverStation
+
         hal.report(
             hal.tResourceType.kResourceType_Language, hal.tInstances.kLanguage_Python,
         )
@@ -60,8 +62,6 @@ class RobotStarter:
         try:
             self.robot = robot_cls()
         except:
-            from .driverstation import DriverStation
-
             DriverStation.reportError(
                 "Unhandled exception instantiating robot " + robot_cls.__name__, True
             )
@@ -83,8 +83,6 @@ class RobotStarter:
                 with open("/tmp/frc_versions/FRC_Lib_Version.ini", "w") as fp:
                     fp.write("RobotPy %s" % wpilib.__version__)
             except:
-                from .driverstation import DriverStation
-
                 DriverStation.reportError(
                     "Could not write FRC version file to disk", True
                 )
@@ -100,7 +98,6 @@ class RobotStarter:
             return True
         except:
             self.robot = None
-            DriverStation = wpilib.DriverStation
 
             DriverStation.reportError("Unhandled exception", True)
             DriverStation.reportWarning("Robots should not quit, but yours did!", False)
@@ -116,8 +113,6 @@ class RobotStarter:
                 return True
             else:
                 # startCompetition never returns unless exception occurs....
-                DriverStation = wpilib.DriverStation
-
                 DriverStation.reportWarning(
                     "Robots should not quit, but yours did!", False
                 )
