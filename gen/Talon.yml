@@ -1,0 +1,10 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  Talon:
+    shared_ptr: true
+    methods:
+      Talon:

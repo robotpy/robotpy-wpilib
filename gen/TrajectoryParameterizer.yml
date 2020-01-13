@@ -1,0 +1,7 @@
+---
+
+classes:
+  TrajectoryParameterizer:
+    shared_ptr: true
+    methods:
+      TimeParameterizeTrajectory:

@@ -1,0 +1,10 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  VictorSP:
+    shared_ptr: true
+    methods:
+      VictorSP:

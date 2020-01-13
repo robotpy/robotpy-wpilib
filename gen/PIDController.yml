@@ -1,0 +1,40 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  PIDController:
+    shared_ptr: true
+    ignored_bases:
+    - frc::SendableHelper<PIDController>
+    methods:
+      PIDController:
+        param_override:
+          period:
+            default: 20_ms
+      SetPID:
+        ignore: true # not implemented
+      SetP:
+      SetI:
+      SetD:
+      GetP:
+      GetI:
+      GetD:
+      GetPeriod:
+      SetSetpoint:
+      GetSetpoint:
+      AtSetpoint:
+      EnableContinuousInput:
+      DisableContinuousInput:
+      SetIntegratorRange:
+      SetTolerance:
+      GetPositionError:
+      GetVelocityError:
+      Calculate:
+        overloads:
+          double:
+          double, double:
+      Reset:
+      InitSendable:
+      GetContinuousError:

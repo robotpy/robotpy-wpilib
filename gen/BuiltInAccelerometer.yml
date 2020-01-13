@@ -1,0 +1,21 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  BuiltInAccelerometer:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<BuiltInAccelerometer>
+    typealias:
+    - frc::Accelerometer::Range
+    constants:
+    - frc::Accelerometer::Range::kRange_8G
+    methods:
+      BuiltInAccelerometer:
+      SetRange:
+      GetX:
+      GetY:
+      GetZ:
+      InitSendable:

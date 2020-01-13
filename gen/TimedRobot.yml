@@ -1,0 +1,18 @@
+---
+
+classes:
+  TimedRobot:
+    shared_ptr: false
+    ignored_bases:
+    - ErrorBase
+    attributes:
+      kDefaultPeriod:
+    methods:
+      StartCompetition:
+      EndCompetition:
+      GetPeriod:
+      TimedRobot:
+        overloads:
+          double:
+            ignore: true
+          units::second_t:

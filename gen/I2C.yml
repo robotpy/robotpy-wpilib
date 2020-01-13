@@ -1,0 +1,16 @@
+---
+
+classes:
+  I2C:
+    shared_ptr: true
+    enums:
+      Port:
+    methods:
+      I2C:
+      Transaction:
+      AddressOnly:
+      Write:
+      WriteBulk:
+      Read:
+      ReadOnly:
+      VerifySensor:

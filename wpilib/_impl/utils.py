@@ -208,6 +208,8 @@ def reset_wpilib():
                      other debugging tools with the simulated HAL!
     """
 
+    raise NotImplementedError("Not supported yet for 2020")
+
     modules = [
         "wpilib",
         "wpilib.buttons",

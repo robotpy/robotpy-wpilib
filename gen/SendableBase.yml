@@ -1,0 +1,13 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  SendableBase:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<SendableBase>
+    methods:
+      SendableBase:
+        ignore: true

@@ -1,0 +1,29 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/Counter.h
+- frc/Encoder.h
+
+classes:
+  DigitalGlitchFilter:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<DigitalGlitchFilter>
+    methods:
+      DigitalGlitchFilter:
+      Add:
+        overloads:
+          DigitalSource*:
+          frc::Encoder*:
+          frc::Counter*:
+      Remove:
+        overloads:
+          DigitalSource*:
+          frc::Encoder*:
+          frc::Counter*:
+      SetPeriodCycles:
+      SetPeriodNanoSeconds:
+      GetPeriodCycles:
+      GetPeriodNanoSeconds:
+      InitSendable:

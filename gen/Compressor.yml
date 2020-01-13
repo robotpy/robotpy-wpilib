@@ -1,0 +1,29 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  Compressor:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<Compressor>
+    attributes:
+      m_compressorHandle:
+    methods:
+      Compressor:
+      Start:
+      Stop:
+      Enabled:
+      GetPressureSwitchValue:
+      GetCompressorCurrent:
+      SetClosedLoopControl:
+      GetClosedLoopControl:
+      GetCompressorCurrentTooHighFault:
+      GetCompressorCurrentTooHighStickyFault:
+      GetCompressorShortedStickyFault:
+      GetCompressorShortedFault:
+      GetCompressorNotConnectedStickyFault:
+      GetCompressorNotConnectedFault:
+      ClearAllPCMStickyFaults:
+      InitSendable:

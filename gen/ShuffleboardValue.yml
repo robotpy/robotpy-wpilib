@@ -1,0 +1,11 @@
+---
+
+classes:
+  ShuffleboardValue:
+    shared_ptr: true
+    methods:
+      ShuffleboardValue:
+      GetTitle:
+      BuildInto:
+      EnableIfActuator:
+      DisableIfActuator:

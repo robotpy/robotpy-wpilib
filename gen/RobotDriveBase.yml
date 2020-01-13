@@ -1,0 +1,22 @@
+---
+
+extra_includes:
+- frc/SpeedController.h
+
+classes:
+  RobotDriveBase:
+    shared_ptr: true
+    attributes:
+      m_deadband:
+      m_maxOutput:
+    enums:
+      MotorType:
+    methods:
+      RobotDriveBase:
+      SetDeadband:
+      SetMaxOutput:
+      FeedWatchdog:
+      StopMotor:
+      GetDescription:
+      ApplyDeadband:
+      Normalize:

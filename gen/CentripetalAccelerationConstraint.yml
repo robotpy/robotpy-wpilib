@@ -1,0 +1,9 @@
+---
+
+classes:
+  CentripetalAccelerationConstraint:
+    shared_ptr: true
+    methods:
+      CentripetalAccelerationConstraint:
+      MaxVelocity:
+      MinMaxAcceleration:

@@ -1,0 +1,13 @@
+---
+
+classes:
+  Transform2d:
+    shared_ptr: true
+    methods:
+      Transform2d:
+        overloads:
+          frc::Pose2d, frc::Pose2d:
+          Translation2d, Rotation2d:
+          "":
+      Translation:
+      Rotation:

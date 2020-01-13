@@ -1,0 +1,41 @@
+---
+
+extra_includes:
+- frc/DriverStation.h
+
+classes:
+  XboxController:
+    shared_ptr: true
+    typealias:
+    - frc::GenericHID::JoystickHand
+    enums:
+      Button:
+    methods:
+      XboxController:
+      GetX:
+      GetY:
+      GetTriggerAxis:
+      GetBumper:
+      GetBumperPressed:
+      GetBumperReleased:
+      GetStickButton:
+      GetStickButtonPressed:
+      GetStickButtonReleased:
+      GetAButton:
+      GetAButtonPressed:
+      GetAButtonReleased:
+      GetBButton:
+      GetBButtonPressed:
+      GetBButtonReleased:
+      GetXButton:
+      GetXButtonPressed:
+      GetXButtonReleased:
+      GetYButton:
+      GetYButtonPressed:
+      GetYButtonReleased:
+      GetBackButton:
+      GetBackButtonPressed:
+      GetBackButtonReleased:
+      GetStartButton:
+      GetStartButtonPressed:
+      GetStartButtonReleased:

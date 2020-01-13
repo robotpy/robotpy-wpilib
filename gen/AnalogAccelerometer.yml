@@ -1,0 +1,23 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  AnalogAccelerometer:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<AnalogAccelerometer>
+    methods:
+      AnalogAccelerometer:
+        overloads:
+          int:
+          AnalogInput*:
+            ignore: true
+          std::shared_ptr<AnalogInput>:
+      GetAcceleration:
+      SetSensitivity:
+      SetZero:
+      PIDGet:
+        rename: pidGet
+      InitSendable:

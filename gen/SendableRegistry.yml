@@ -1,0 +1,56 @@
+---
+
+extra_includes:
+- frc/smartdashboard/Sendable.h
+
+classes:
+  SendableRegistry:
+    nodelete: true
+    methods:
+      GetInstance:
+        return_value_policy: reference
+      Add:
+        overloads:
+          frc::Sendable*, wpi::Twine&:
+          frc::Sendable*, wpi::Twine&, int:
+          frc::Sendable*, wpi::Twine&, int, int:
+          frc::Sendable*, wpi::Twine&, wpi::Twine&:
+      AddLW:
+        overloads:
+          frc::Sendable*, wpi::Twine&:
+          frc::Sendable*, wpi::Twine&, int:
+          frc::Sendable*, wpi::Twine&, int, int:
+          frc::Sendable*, wpi::Twine&, wpi::Twine&:
+      AddChild:
+        overloads:
+          frc::Sendable*, frc::Sendable*:
+          frc::Sendable*, void*:
+            ignore: true
+      Remove:
+      Move:
+      Contains:
+      GetName:
+      SetName:
+        overloads:
+          frc::Sendable*, wpi::Twine&:
+          frc::Sendable*, wpi::Twine&, int:
+          frc::Sendable*, wpi::Twine&, int, int:
+          frc::Sendable*, wpi::Twine&, wpi::Twine&:
+      GetSubsystem:
+      SetSubsystem:
+      GetDataHandle:
+        ignore: true
+      SetData:
+        ignore: true
+      GetData:
+        ignore: true
+      EnableLiveWindow:
+      DisableLiveWindow:
+      GetUniqueId:
+      GetSendable:
+      Publish:
+      Update:
+      ForeachLiveWindow:
+        ignore: true
+  SendableRegistry::CallbackData:
+    ignore: true

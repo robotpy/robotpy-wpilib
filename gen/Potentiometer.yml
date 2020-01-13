@@ -1,0 +1,9 @@
+---
+
+classes:
+  Potentiometer:
+    shared_ptr: true
+    methods:
+      Potentiometer:
+      Get:
+      SetPIDSourceType:

@@ -1,0 +1,9 @@
+---
+
+classes:
+  IterativeRobot:
+    shared_ptr: false
+    methods:
+      IterativeRobot:
+      StartCompetition:
+      EndCompetition:

@@ -1,0 +1,53 @@
+---
+
+classes:
+  SmartDashboard:
+    nodelete: true
+    force_no_trampoline: true
+    ignored_bases:
+    - ErrorBase
+    - Sendable
+    - SendableHelper<SmartDashboard>
+    methods:
+      init:
+      ContainsKey:
+      GetKeys:
+      SetPersistent:
+      ClearPersistent:
+      IsPersistent:
+      SetFlags:
+      ClearFlags:
+      GetFlags:
+      Delete:
+      GetEntry:
+      PutData:
+        overloads:
+          wpi::StringRef, Sendable*:
+          Sendable*:
+      GetData:
+      PutBoolean:
+      SetDefaultBoolean:
+      GetBoolean:
+      PutNumber:
+      SetDefaultNumber:
+      GetNumber:
+      PutString:
+      SetDefaultString:
+      GetString:
+      PutBooleanArray:
+      SetDefaultBooleanArray:
+      GetBooleanArray:
+      PutNumberArray:
+      SetDefaultNumberArray:
+      GetNumberArray:
+      PutStringArray:
+      SetDefaultStringArray:
+      GetStringArray:
+      PutRaw:
+      SetDefaultRaw:
+      GetRaw:
+      PutValue:
+      SetDefaultValue:
+      GetValue:
+      PostListenerTask:
+      UpdateValues:

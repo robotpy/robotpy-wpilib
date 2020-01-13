@@ -1,0 +1,12 @@
+---
+
+classes:
+  MecanumDriveWheelSpeeds:
+    shared_ptr: true
+    attributes:
+      frontLeft:
+      frontRight:
+      rearLeft:
+      rearRight:
+    methods:
+      Normalize:

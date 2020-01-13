@@ -1,0 +1,8 @@
+---
+
+classes:
+  ShuffleboardLayout:
+    shared_ptr: true
+    methods:
+      ShuffleboardLayout:
+      BuildInto:

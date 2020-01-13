@@ -1,0 +1,22 @@
+---
+
+classes:
+  TrajectoryConfig:
+    shared_ptr: true
+    methods:
+      TrajectoryConfig:
+      SetStartVelocity:
+      SetEndVelocity:
+      SetReversed:
+      AddConstraint:
+      SetKinematics:
+        overloads:
+          DifferentialDriveKinematics&:
+          MecanumDriveKinematics:
+          SwerveDriveKinematics<NumModules>&:
+      StartVelocity:
+      EndVelocity:
+      MaxVelocity:
+      MaxAcceleration:
+      Constraints:
+      IsReversed:

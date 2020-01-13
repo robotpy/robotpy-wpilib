@@ -1,0 +1,15 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  GyroBase:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<GyroBase>
+    methods:
+      GyroBase:
+      PIDGet:
+        rename: pidGet
+      InitSendable:

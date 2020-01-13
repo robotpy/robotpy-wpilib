@@ -1,0 +1,78 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/DigitalGlitchFilter.h
+- frc/DMA.h
+- frc/DMASample.h
+
+classes:
+  Counter:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<Counter>
+    typealias:
+    - frc::CounterBase::EncodingType
+    attributes:
+      m_upSource:
+      m_downSource:
+      m_counter:
+    enums:
+      Mode:
+    methods:
+      Counter:
+        overloads:
+          frc::Counter::Mode:
+            param_override:
+              mode:
+                default: frc::Counter::Mode::kTwoPulse
+          int:
+          DigitalSource*:
+            ignore: true
+          std::shared_ptr<DigitalSource>:
+          AnalogTrigger&:
+          EncodingType, DigitalSource*, DigitalSource*, bool:
+            ignore: true
+          EncodingType, std::shared_ptr<DigitalSource>, std::shared_ptr<DigitalSource>, bool:
+      SetUpSource:
+        overloads:
+          int:
+          AnalogTrigger*, AnalogTriggerType:
+            ignore: true
+          std::shared_ptr<AnalogTrigger>, AnalogTriggerType:
+          DigitalSource*:
+            ignore: true
+          std::shared_ptr<DigitalSource>:
+          DigitalSource&:
+            ignore: true
+      SetUpSourceEdge:
+      ClearUpSource:
+      SetDownSource:
+        overloads:
+          int:
+          AnalogTrigger*, AnalogTriggerType:
+            ignore: true
+          std::shared_ptr<AnalogTrigger>, AnalogTriggerType:
+          DigitalSource*:
+            ignore: true
+          DigitalSource&:
+            ignore: true
+          std::shared_ptr<DigitalSource>:
+      SetDownSourceEdge:
+      ClearDownSource:
+      SetUpDownCounterMode:
+      SetExternalDirectionMode:
+      SetSemiPeriodMode:
+      SetPulseLengthMode:
+      SetReverseDirection:
+      SetSamplesToAverage:
+      GetSamplesToAverage:
+      GetFPGAIndex:
+      Get:
+      Reset:
+      GetPeriod:
+      SetMaxPeriod:
+      SetUpdateWhenEmpty:
+      GetStopped:
+      GetDirection:
+      InitSendable:

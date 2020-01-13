@@ -1,0 +1,9 @@
+---
+
+classes:
+  MecanumDriveKinematicsConstraint:
+    shared_ptr: true
+    methods:
+      MecanumDriveKinematicsConstraint:
+      MaxVelocity:
+      MinMaxAcceleration:

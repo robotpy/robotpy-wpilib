@@ -1,0 +1,21 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  Solenoid:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<Solenoid>
+    methods:
+      Solenoid:
+        overloads:
+          int:
+          int, int:
+      Set:
+      Get:
+      IsBlackListed:
+      SetPulseDuration:
+      StartPulse:
+      InitSendable:

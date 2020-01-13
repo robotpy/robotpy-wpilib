@@ -1,0 +1,42 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- pybind11/stl.h
+
+classes:
+  PySpeedControllerGroup:
+    rename: SpeedControllerGroup
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<PySpeedControllerGroup>
+    methods:
+      PySpeedControllerGroup:
+        cpp_code: |
+          .def(py::init([](py::args args) {
+            if (args.size() < 1) {
+              throw py::value_error("requires 1+ arguments");
+            }
+            using Vector = std::vector<std::shared_ptr<SpeedController>>;
+            Vector v = args.cast<Vector>();
+            for (auto iter = v.cbegin(); iter != v.cend(); ++iter) {
+              if (!*iter) {
+                throw py::value_error("Arguments must not be None");
+              }
+            }
+            return std::make_shared<PySpeedControllerGroup>(std::move(v));
+          })
+        keepalive: []
+        param_override:
+          args:
+            ignore: true
+
+      Set:
+      Get:
+      SetInverted:
+      GetInverted:
+      Disable:
+      StopMotor:
+      PIDWrite:
+        rename: pidWrite
+      InitSendable:

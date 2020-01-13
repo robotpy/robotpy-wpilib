@@ -1,0 +1,13 @@
+---
+
+classes:
+  SpeedController:
+    shared_ptr: true
+    methods:
+      Set:
+      SetVoltage:
+      Get:
+      SetInverted:
+      GetInverted:
+      Disable:
+      StopMotor:

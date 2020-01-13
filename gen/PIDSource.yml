@@ -1,0 +1,14 @@
+---
+
+enums:
+  PIDSourceType:
+classes:
+  PIDSource:
+    shared_ptr: true
+    attributes:
+      m_pidSource:
+    methods:
+      SetPIDSourceType:
+      GetPIDSourceType:
+      PIDGet:
+        rename: pidGet

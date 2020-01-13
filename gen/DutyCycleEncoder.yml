@@ -1,0 +1,35 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/DutyCycle.h
+- frc/DigitalSource.h
+
+classes:
+  DutyCycleEncoder:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<DutyCycleEncoder>
+    methods:
+      DutyCycleEncoder:
+        overloads:
+          int:
+          frc::DutyCycle&:
+            ignore: true
+          frc::DutyCycle*:
+            ignore: true
+          std::shared_ptr<DutyCycle>:
+          frc::DigitalSource&:
+            ignore: true
+          frc::DigitalSource*:
+            ignore: true
+          std::shared_ptr<DigitalSource>:
+      GetFrequency:
+      IsConnected:
+      SetConnectedFrequencyThreshold:
+      Reset:
+      Get:
+      SetDistancePerRotation:
+      GetDistancePerRotation:
+      GetDistance:
+      InitSendable:

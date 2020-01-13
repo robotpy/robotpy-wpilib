@@ -1,0 +1,17 @@
+---
+
+classes:
+  Filter:
+    shared_ptr: true
+    methods:
+      Filter:
+        overloads:
+          PIDSource&:
+          std::shared_ptr<PIDSource>:
+      SetPIDSourceType:
+      GetPIDSourceType:
+      PIDGet:
+        rename: pidGet
+      Get:
+      Reset:
+      PIDGetSource:

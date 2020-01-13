@@ -1,0 +1,48 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+functions:
+  ReportProfiledPIDController:
+    ignore: true
+classes:
+  ProfiledPIDController:
+    shared_ptr: true
+    methods:
+      ProfiledPIDController:
+      SetPID:
+      SetP:
+      SetI:
+      SetD:
+      GetP:
+      GetI:
+      GetD:
+      GetPeriod:
+      SetGoal:
+        overloads:
+          'typename TrapezoidProfile<Distance>::':
+          units::unit_t<Distance>:
+      GetGoal:
+      AtGoal:
+      SetConstraints:
+      GetSetpoint:
+      AtSetpoint:
+      EnableContinuousInput:
+      DisableContinuousInput:
+      SetIntegratorRange:
+      SetTolerance:
+      GetPositionError:
+      GetVelocityError:
+      Calculate:
+        overloads:
+          units::unit_t<Distance>:
+          'units::unit_t<Distance>, typename TrapezoidProfile<Distance>::':
+          units::unit_t<Distance>, units::unit_t<Distance>:
+          units::unit_t<Distance>, units::unit_t<Distance>, typename frc::TrapezoidProfile<Distance>::Constraints:
+      Reset:
+        overloads:
+          typename TrapezoidProfile<Distance>::&:
+          units::unit_t<Distance>, units::unit_t<Velocity>:
+          units::unit_t<Distance>:
+      InitSendable:

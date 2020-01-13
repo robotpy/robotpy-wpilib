@@ -1,0 +1,15 @@
+---
+
+classes:
+  SendableChooser:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper
+    - x
+    methods:
+      AddOption:
+      SetDefaultOption:
+      AddObject:
+      AddDefault:
+      GetSelected:
+      InitSendable:

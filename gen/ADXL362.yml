@@ -1,0 +1,35 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/DigitalSource.h
+
+classes:
+  ADXL362:
+    shared_ptr: true
+    typealias:
+    - frc::Accelerometer::Range
+    constants:
+    - frc::Accelerometer::Range::kRange_2G
+    ignored_bases:
+    - SendableHelper<ADXL362>
+    enums:
+      Axes:
+    methods:
+      ADXL362:
+        overloads:
+          Range:
+          SPI::Port, Range:
+      SetRange:
+      GetX:
+      GetY:
+      GetZ:
+      GetAcceleration:
+      GetAccelerations:
+      InitSendable:
+  ADXL362::AllAxes:
+    shared_ptr: false
+    attributes:
+      XAxis:
+      YAxis:
+      ZAxis:

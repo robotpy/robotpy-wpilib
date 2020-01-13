@@ -1,0 +1,22 @@
+---
+
+extra_includes:
+- frc/ErrorBase.h
+
+classes:
+  Error:
+    shared_ptr: true
+    methods:
+      Error:
+        overloads:
+          "":
+          int, wpi::Twine&, wpi::StringRef, wpi::StringRef, int, frc::ErrorBase*:
+      GetCode:
+      GetMessage:
+      GetFilename:
+      GetFunction:
+      GetLineNumber:
+      GetOriginatingObject:
+      GetTimestamp:
+      Clear:
+      Set:

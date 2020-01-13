@@ -1,0 +1,9 @@
+---
+
+classes:
+  SwerveDriveKinematicsConstraint:
+    shared_ptr: true
+    methods:
+      SwerveDriveKinematicsConstraint:
+      MaxVelocity:
+      MinMaxAcceleration:

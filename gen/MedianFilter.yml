@@ -1,0 +1,9 @@
+---
+
+classes:
+  MedianFilter:
+    shared_ptr: true
+    methods:
+      MedianFilter:
+      Calculate:
+      Reset:

@@ -1,0 +1,64 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/DigitalSource.h
+- frc/DigitalGlitchFilter.h
+- frc/DMA.h
+- frc/DMASample.h
+
+classes:
+  Encoder:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<Encoder>
+    typealias:
+    - frc::Encoder::EncodingType
+    enums:
+      IndexingType:
+    methods:
+      Encoder:
+        overloads:
+          int, int, bool, EncodingType:
+            param_override:
+              encodingType:
+                default: frc::Encoder::EncodingType::k4X
+          frc::DigitalSource*, frc::DigitalSource*, bool, EncodingType:
+            ignore: true
+          frc::DigitalSource&, frc::DigitalSource&, bool, EncodingType:
+            ignore: true
+          std::shared_ptr<DigitalSource>, std::shared_ptr<DigitalSource>, bool, EncodingType:
+            param_override:
+              encodingType:
+                default: frc::Encoder::EncodingType::k4X
+      Get:
+      Reset:
+      GetPeriod:
+      SetMaxPeriod:
+      GetStopped:
+      GetDirection:
+      GetRaw:
+      GetEncodingScale:
+      GetDistance:
+      GetRate:
+      SetMinRate:
+      SetDistancePerPulse:
+      GetDistancePerPulse:
+      SetReverseDirection:
+      SetSamplesToAverage:
+      GetSamplesToAverage:
+      PIDGet:
+        rename: pidGet
+      SetIndexSource:
+        overloads:
+          int, frc::Encoder::IndexingType:
+            param_override:
+              type:
+                default: frc::Encoder::IndexingType::kResetOnRisingEdge
+          frc::DigitalSource&, frc::Encoder::IndexingType:
+            param_override:
+              type:
+                default: frc::Encoder::IndexingType::kResetOnRisingEdge
+      SetSimDevice:
+      GetFPGAIndex:
+      InitSendable:

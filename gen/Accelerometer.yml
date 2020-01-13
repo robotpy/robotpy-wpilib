@@ -1,0 +1,13 @@
+---
+
+classes:
+  Accelerometer:
+    shared_ptr: true
+    enums:
+      Range:
+    methods:
+      Accelerometer:
+      SetRange:
+      GetX:
+      GetY:
+      GetZ:

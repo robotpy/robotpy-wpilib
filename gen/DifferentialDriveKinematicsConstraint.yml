@@ -1,0 +1,9 @@
+---
+
+classes:
+  DifferentialDriveKinematicsConstraint:
+    shared_ptr: true
+    methods:
+      DifferentialDriveKinematicsConstraint:
+      MaxVelocity:
+      MinMaxAcceleration:

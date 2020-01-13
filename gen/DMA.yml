@@ -1,0 +1,29 @@
+---
+
+extra_includes:
+- frc/AnalogInput.h
+- frc/Counter.h
+- frc/DigitalSource.h
+- frc/DMASample.h
+- frc/DutyCycle.h
+- frc/Encoder.h
+
+classes:
+  DMA:
+    shared_ptr: true
+    methods:
+      DMA:
+      SetPause:
+      SetRate:
+      AddEncoder:
+      AddEncoderPeriod:
+      AddCounter:
+      AddCounterPeriod:
+      AddDigitalSource:
+      AddDutyCycle:
+      AddAnalogInput:
+      AddAveragedAnalogInput:
+      AddAnalogAccumulator:
+      SetExternalTrigger:
+      StartDMA:
+      StopDMA:

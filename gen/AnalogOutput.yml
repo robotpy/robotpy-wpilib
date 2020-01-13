@@ -1,0 +1,19 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  AnalogOutput:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<AnalogOutput>
+    attributes:
+      m_channel:
+      m_port:
+    methods:
+      AnalogOutput:
+      SetVoltage:
+      GetVoltage:
+      GetChannel:
+      InitSendable:

@@ -1,0 +1,20 @@
+---
+
+classes:
+  SendableHelper:
+    shared_ptr: true
+    methods:
+      GetName:
+      SetName:
+        overloads:
+          wpi::Twine&:
+          wpi::Twine&, wpi::Twine&:
+          wpi::Twine&, int:
+          wpi::Twine&, int, int:
+      GetSubsystem:
+      SetSubsystem:
+      AddChild:
+        overloads:
+          std::shared_ptr<Sendable>:
+          void*:
+      SendableHelper:

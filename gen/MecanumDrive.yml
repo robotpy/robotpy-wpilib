@@ -1,0 +1,20 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/SpeedController.h
+
+classes:
+  MecanumDrive:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<MecanumDrive>
+    methods:
+      MecanumDrive:
+      DriveCartesian:
+      DrivePolar:
+      IsRightSideInverted:
+      SetRightSideInverted:
+      StopMotor:
+      GetDescription:
+      InitSendable:

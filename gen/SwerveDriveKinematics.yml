@@ -1,0 +1,13 @@
+---
+
+classes:
+  SwerveDriveKinematics:
+    shared_ptr: true
+    methods:
+      SwerveDriveKinematics:
+      ToSwerveModuleStates:
+      ToChassisSpeeds:
+        overloads:
+          ModuleStates ...&&:
+          std::array<SwerveModuleState, NumModules>:
+      NormalizeWheelSpeeds:

@@ -1,0 +1,17 @@
+---
+
+extra_includes:
+- frc/shuffleboard/ShuffleboardContainer.h
+
+functions:
+  GetStringForWidgetType:
+classes:
+  ShuffleboardWidget:
+    shared_ptr: true
+    methods:
+      ShuffleboardWidget:
+      WithWidget:
+        overloads:
+          BuiltInWidgets:
+          WidgetType&:
+          wpi::Twine&:

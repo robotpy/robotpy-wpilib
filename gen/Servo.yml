@@ -1,0 +1,18 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  Servo:
+    shared_ptr: true
+    methods:
+      Servo:
+      Set:
+      SetOffline:
+      Get:
+      SetAngle:
+      GetAngle:
+      GetMaxAngle:
+      GetMinAngle:
+      InitSendable:

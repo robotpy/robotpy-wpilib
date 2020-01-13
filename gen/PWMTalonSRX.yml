@@ -1,0 +1,10 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  PWMTalonSRX:
+    shared_ptr: true
+    methods:
+      PWMTalonSRX:

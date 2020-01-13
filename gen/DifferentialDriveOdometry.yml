@@ -1,0 +1,10 @@
+---
+
+classes:
+  DifferentialDriveOdometry:
+    shared_ptr: true
+    methods:
+      DifferentialDriveOdometry:
+      ResetPosition:
+      GetPose:
+      Update:

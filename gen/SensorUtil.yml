@@ -1,0 +1,28 @@
+---
+
+classes:
+  SensorUtil:
+    nodelete: true
+    attributes:
+      kDigitalChannels:
+      kAnalogInputs:
+      kAnalogOutputs:
+        ignore: true # not implemented
+      kSolenoidChannels:
+      kSolenoidModules:
+      kPwmChannels:
+      kRelayChannels:
+      kPDPChannels:
+    methods:
+      SensorUtil:
+        ignore: true
+      GetDefaultSolenoidModule:
+      CheckSolenoidModule:
+      CheckDigitalChannel:
+      CheckRelayChannel:
+      CheckPWMChannel:
+      CheckAnalogInputChannel:
+      CheckAnalogOutputChannel:
+      CheckSolenoidChannel:
+      CheckPDPChannel:
+      CheckPDPModule:

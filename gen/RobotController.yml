@@ -1,0 +1,38 @@
+---
+
+classes:
+  CANStatus:
+    shared_ptr: false
+    attributes:
+      percentBusUtilization:
+      busOffCount:
+      txFullCount:
+      receiveErrorCount:
+      transmitErrorCount:
+  RobotController:
+    shared_ptr: false
+    nodelete: true
+    methods:
+      RobotController:
+        ignore: true
+      GetFPGAVersion:
+      GetFPGARevision:
+      GetFPGATime:
+      GetUserButton:
+      IsSysActive:
+      IsBrownedOut:
+      GetInputVoltage:
+      GetInputCurrent:
+      GetVoltage3V3:
+      GetCurrent3V3:
+      GetEnabled3V3:
+      GetFaultCount3V3:
+      GetVoltage5V:
+      GetCurrent5V:
+      GetEnabled5V:
+      GetFaultCount5V:
+      GetVoltage6V:
+      GetCurrent6V:
+      GetEnabled6V:
+      GetFaultCount6V:
+      GetCANStatus:

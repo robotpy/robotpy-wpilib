@@ -1,0 +1,11 @@
+---
+
+classes:
+  SwerveDriveOdometry:
+    shared_ptr: true
+    methods:
+      SwerveDriveOdometry:
+      ResetPosition:
+      GetPose:
+      UpdateWithTime:
+      Update:

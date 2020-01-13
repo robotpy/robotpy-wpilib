@@ -1,0 +1,6 @@
+---
+
+functions:
+  wpi_assert_impl:
+  wpi_assertEqual_impl:
+  wpi_assertNotEqual_impl:

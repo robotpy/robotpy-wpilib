@@ -1,0 +1,18 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/DigitalSource.h
+
+classes:
+  ADXRS450_Gyro:
+    shared_ptr: true
+    methods:
+      ADXRS450_Gyro:
+        overloads:
+          "":
+          SPI::Port:
+      GetAngle:
+      GetRate:
+      Reset:
+      Calibrate:

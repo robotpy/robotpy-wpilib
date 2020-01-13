@@ -1,0 +1,16 @@
+---
+
+classes:
+  RamseteController:
+    shared_ptr: true
+    methods:
+      RamseteController:
+        overloads:
+          double, double:
+          "":
+      AtReference:
+      SetTolerance:
+      Calculate:
+        overloads:
+          Pose2d&, Pose2d&, units::meters_per_second_t, units::radians_per_second_t:
+          Pose2d&, Trajectory::State&:

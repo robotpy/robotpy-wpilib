@@ -1,0 +1,48 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  ADXL345_I2C:
+    shared_ptr: true
+    typealias:
+    - frc::Accelerometer::Range
+    constants:
+    - frc::Accelerometer::Range::kRange_2G
+    ignored_bases:
+    - SendableHelper<ADXL345_I2C>
+    attributes:
+      m_i2c:
+        ignore: true
+      m_simDevice:
+      m_simRange:
+      m_simX:
+      m_simY:
+      m_simZ:
+      kAddress:
+      kPowerCtlRegister:
+      kDataFormatRegister:
+      kDataRegister:
+      kGsPerLSB:
+    enums:
+      Axes:
+    methods:
+      ADXL345_I2C:
+        param_override:
+          deviceAddress:
+            default: rpygen::Pyfrc__ADXL345_I2C<ADXL345_I2C>::kAddress
+      SetRange:
+      GetX:
+      GetY:
+      GetZ:
+      GetAcceleration:
+      GetAccelerations:
+      InitSendable:
+    
+  ADXL345_I2C::AllAxes:
+    shared_ptr: false
+    attributes:
+      XAxis:
+      YAxis:
+      ZAxis:

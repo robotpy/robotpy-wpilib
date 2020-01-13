@@ -1,0 +1,8 @@
+---
+
+classes:
+  CubicHermiteSpline:
+    shared_ptr: true
+    methods:
+      CubicHermiteSpline:
+      Coefficients:

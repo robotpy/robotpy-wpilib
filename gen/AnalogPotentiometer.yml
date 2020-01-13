@@ -1,0 +1,21 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  AnalogPotentiometer:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<AnalogPotentiometer>
+    methods:
+      AnalogPotentiometer:
+        overloads:
+          int, double, double:
+          AnalogInput*, double, double:
+            ignore: true
+          std::shared_ptr<AnalogInput>, double, double:
+      Get:
+      PIDGet:
+        rename: pidGet
+      InitSendable:

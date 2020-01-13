@@ -1,0 +1,18 @@
+---
+
+extra_includes:
+- frc/smartdashboard/Sendable.h
+
+classes:
+  LiveWindow:
+    shared_ptr: true
+    nodelete: true
+    methods:
+      GetInstance:
+        return_value_policy: reference
+      EnableTelemetry:
+      DisableTelemetry:
+      DisableAllTelemetry:
+      IsEnabled:
+      SetEnabled:
+      UpdateValues:

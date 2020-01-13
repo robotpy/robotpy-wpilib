@@ -1,0 +1,9 @@
+---
+
+classes:
+  DifferentialDriveVoltageConstraint:
+    shared_ptr: true
+    methods:
+      DifferentialDriveVoltageConstraint:
+      MaxVelocity:
+      MinMaxAcceleration:

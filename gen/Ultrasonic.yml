@@ -1,0 +1,43 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/DigitalInput.h
+- frc/DigitalOutput.h
+
+classes:
+  Ultrasonic:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<Ultrasonic>
+    enums:
+      DistanceUnit:
+    methods:
+      Ultrasonic:
+        overloads:
+          int, int, frc::Ultrasonic::DistanceUnit:
+            param_override:
+              units:
+                default: frc::Ultrasonic::DistanceUnit::kInches
+          frc::DigitalOutput*, frc::DigitalInput*, frc::Ultrasonic::DistanceUnit:
+            ignore: true
+          frc::DigitalOutput&, frc::DigitalInput&, frc::Ultrasonic::DistanceUnit:
+            ignore: true
+          std::shared_ptr<DigitalOutput>, std::shared_ptr<DigitalInput>, frc::Ultrasonic::DistanceUnit:
+            param_override:
+              units:
+                default: frc::Ultrasonic::DistanceUnit::kInches
+
+      Ping:
+      IsRangeValid:
+      SetAutomaticMode:
+      GetRangeInches:
+      GetRangeMM:
+      IsEnabled:
+      SetEnabled:
+      SetDistanceUnits:
+      GetDistanceUnits:
+      PIDGet:
+        rename: pidGet
+      SetPIDSourceType:
+      InitSendable:

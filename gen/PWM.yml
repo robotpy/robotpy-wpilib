@@ -1,0 +1,32 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/AddressableLED.h
+
+classes:
+  PWM:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<PWM>
+    enums:
+      PeriodMultiplier:
+    methods:
+      PWM:
+      StopMotor:
+      GetDescription:
+      SetRaw:
+      GetRaw:
+      SetPosition:
+      GetPosition:
+      SetSpeed:
+      GetSpeed:
+      SetDisabled:
+      SetPeriodMultiplier:
+      SetZeroLatch:
+      EnableDeadbandElimination:
+      SetBounds:
+      SetRawBounds:
+      GetRawBounds:
+      GetChannel:
+      InitSendable:

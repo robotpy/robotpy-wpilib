@@ -1,0 +1,7 @@
+---
+
+functions:
+  GetThreadPriority:
+  GetCurrentThreadPriority:
+  SetThreadPriority:
+  SetCurrentThreadPriority:

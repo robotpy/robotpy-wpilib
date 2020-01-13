@@ -1,0 +1,22 @@
+---
+
+classes:
+  DMASample:
+    shared_ptr: true
+    methods:
+      Update:
+      GetTime:
+      GetTimeStamp:
+      GetEncoderRaw:
+      GetEncoderDistance:
+      GetEncoderPeriodRaw:
+      GetCounter:
+      GetCounterPeriod:
+      GetDigitalSource:
+      GetAnalogInputRaw:
+      GetAnalogInputVoltage:
+      GetAveragedAnalogInputRaw:
+      GetAveragedAnalogInputVoltage:
+      GetAnalogAccumulator:
+      GetDutyCycleOutputRaw:
+      GetDutyCycleOutput:

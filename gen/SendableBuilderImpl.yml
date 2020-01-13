@@ -1,0 +1,35 @@
+---
+
+classes:
+  SendableBuilderImpl:
+    shared_ptr: true
+    methods:
+      SendableBuilderImpl:
+      SetTable:
+      GetTable:
+      HasTable:
+      IsActuator:
+      UpdateTable:
+      StartListeners:
+      StopListeners:
+      StartLiveWindowMode:
+      StopLiveWindowMode:
+      ClearProperties:
+      SetSmartDashboardType:
+      SetActuator:
+      SetSafeState:
+      SetUpdateTable:
+      GetEntry:
+      AddBooleanProperty:
+      AddDoubleProperty:
+      AddStringProperty:
+      AddBooleanArrayProperty:
+      AddDoubleArrayProperty:
+      AddStringArrayProperty:
+      AddRawProperty:
+      AddValueProperty:
+      AddSmallStringProperty:
+      AddSmallBooleanArrayProperty:
+      AddSmallDoubleArrayProperty:
+      AddSmallStringArrayProperty:
+      AddSmallRawProperty:

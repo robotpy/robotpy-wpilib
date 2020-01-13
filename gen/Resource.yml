@@ -1,0 +1,13 @@
+---
+
+classes:
+  Resource:
+    shared_ptr: true
+    methods:
+      CreateResourceObject:
+      Resource:
+      Allocate:
+        overloads:
+          std::string&:
+          uint32_t, std::string&:
+      Free:

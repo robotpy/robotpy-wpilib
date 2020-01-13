@@ -1,0 +1,15 @@
+---
+
+classes:
+  SimpleMotorFeedforward:
+    shared_ptr: true
+    methods:
+      SimpleMotorFeedforward:
+        overloads:
+          "":
+          units::volt_t, units::unit_t<kv_unit>, units::unit_t<ka_unit>:
+      Calculate:
+      MaxAchievableVelocity:
+      MinAchievableVelocity:
+      MaxAchievableAcceleration:
+      MinAchievableAcceleration:

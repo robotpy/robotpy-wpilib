@@ -1,0 +1,14 @@
+---
+
+classes:
+  ShuffleboardRoot:
+    shared_ptr: true
+    methods:
+      GetTab:
+      Update:
+      EnableActuatorWidgets:
+      DisableActuatorWidgets:
+      SelectTab:
+        overloads:
+          int:
+          wpi::StringRef:

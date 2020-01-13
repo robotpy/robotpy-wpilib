@@ -1,0 +1,15 @@
+---
+
+classes:
+  CounterBase:
+    shared_ptr: true
+    enums:
+      EncodingType:
+    methods:
+      CounterBase:
+      Get:
+      Reset:
+      GetPeriod:
+      SetMaxPeriod:
+      GetStopped:
+      GetDirection:

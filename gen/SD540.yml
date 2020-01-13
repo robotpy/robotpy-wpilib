@@ -1,0 +1,10 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  SD540:
+    shared_ptr: true
+    methods:
+      SD540:

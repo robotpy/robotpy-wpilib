@@ -1,0 +1,16 @@
+---
+
+classes:
+  LinearFilter:
+    shared_ptr: true
+    methods:
+      LinearFilter:
+        overloads:
+          wpi::ArrayRef<double>, wpi::ArrayRef<double>:
+          std::initializer_list<double>, std::initializer_list<double>:
+            ignore: true
+      SinglePoleIIR:
+      HighPass:
+      MovingAverage:
+      Reset:
+      Calculate:

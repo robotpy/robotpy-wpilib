@@ -1,0 +1,9 @@
+---
+
+classes:
+  ShuffleboardTab:
+    shared_ptr: true
+    methods:
+      ShuffleboardTab:
+      GetRoot:
+      BuildInto:

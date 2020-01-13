@@ -1,0 +1,17 @@
+---
+
+classes:
+  Vector2d:
+    shared_ptr: true
+    attributes:
+      x:
+      y:
+    methods:
+      Vector2d:
+        overloads:
+          "":
+          double, double:
+      Rotate:
+      Dot:
+      Magnitude:
+      ScalarProject:

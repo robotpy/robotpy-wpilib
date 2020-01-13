@@ -1,0 +1,29 @@
+---
+
+classes:
+  InterruptableSensorBase:
+    shared_ptr: true
+    typealias:
+    - frc::InterruptableSensorBase::WaitResult
+    attributes:
+      m_interrupt:
+    enums:
+      WaitResult:
+    methods:
+      InterruptableSensorBase:
+      GetPortHandleForRouting:
+      GetAnalogTriggerTypeForRouting:
+      RequestInterrupts:
+        overloads:
+          HAL_InterruptHandlerFunction, void*:
+            ignore: true
+          std::function<void ( WaitResult )>:
+          "":
+      CancelInterrupts:
+      WaitForInterrupt:
+      EnableInterrupts:
+      DisableInterrupts:
+      ReadRisingTimestamp:
+      ReadFallingTimestamp:
+      SetUpSourceEdge:
+      AllocateInterrupts:

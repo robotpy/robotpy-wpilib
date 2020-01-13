@@ -1,0 +1,8 @@
+---
+
+classes:
+  LayoutType:
+    shared_ptr: true
+    methods:
+      LayoutType:
+      GetLayoutName:

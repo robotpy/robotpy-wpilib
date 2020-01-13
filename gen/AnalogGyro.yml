@@ -1,0 +1,34 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/AnalogInput.h
+
+classes:
+  AnalogGyro:
+    shared_ptr: true
+    attributes:
+      kOversampleBits:
+      kAverageBits:
+      kSamplesPerSecond:
+      kCalibrationSampleTime:
+      kDefaultVoltsPerDegreePerSecond:
+      m_analog:
+    methods:
+      AnalogGyro:
+        overloads:
+          int:
+          frc::AnalogInput*:
+            ignore: true
+          std::shared_ptr<AnalogInput>:
+          int, int, double:
+          std::shared_ptr<AnalogInput>, int, double:
+      GetAngle:
+      GetRate:
+      GetCenter:
+      GetOffset:
+      SetSensitivity:
+      SetDeadband:
+      Reset:
+      InitGyro:
+      Calibrate:

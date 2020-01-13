@@ -1,0 +1,25 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/SpeedController.h
+
+classes:
+  KilloughDrive:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<KilloughDrive>
+    attributes:
+      kDefaultLeftMotorAngle:
+      kDefaultRightMotorAngle:
+      kDefaultBackMotorAngle:
+    methods:
+      KilloughDrive:
+        overloads:
+          frc::SpeedController&, frc::SpeedController&, frc::SpeedController&:
+          frc::SpeedController&, frc::SpeedController&, frc::SpeedController&, double, double, double:
+      DriveCartesian:
+      DrivePolar:
+      StopMotor:
+      GetDescription:
+      InitSendable:

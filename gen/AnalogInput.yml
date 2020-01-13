@@ -1,0 +1,43 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/DMA.h
+- frc/DMASample.h
+
+classes:
+  AnalogInput:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<AnalogInput>
+    attributes:
+      kAccumulatorModuleNumber:
+      kAccumulatorNumChannels:
+    methods:
+      AnalogInput:
+      GetValue:
+      GetAverageValue:
+      GetVoltage:
+      GetAverageVoltage:
+      GetChannel:
+      SetAverageBits:
+      GetAverageBits:
+      SetOversampleBits:
+      GetOversampleBits:
+      GetLSBWeight:
+      GetOffset:
+      IsAccumulatorChannel:
+      InitAccumulator:
+      SetAccumulatorInitialValue:
+      ResetAccumulator:
+      SetAccumulatorCenter:
+      SetAccumulatorDeadband:
+      GetAccumulatorValue:
+      GetAccumulatorCount:
+      GetAccumulatorOutput:
+      SetSampleRate:
+      GetSampleRate:
+      PIDGet:
+        rename: pidGet
+      SetSimDevice:
+      InitSendable:

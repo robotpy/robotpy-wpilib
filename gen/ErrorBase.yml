@@ -1,0 +1,30 @@
+---
+
+functions:
+  HAL_GetErrorMessage:
+    # forward declared instead of including HAL
+    ignore: true
+classes:
+  ErrorBase:
+    shared_ptr: true
+    attributes:
+      m_error:
+    methods:
+      ErrorBase:
+      GetError:
+        overloads:
+          "":
+          '[const]':
+      ClearError:
+      SetErrnoError:
+      SetImaqError:
+      SetError:
+      SetErrorRange:
+      SetWPIError:
+      CloneError:
+      StatusIsFatal:
+      SetGlobalError:
+      SetGlobalWPIError:
+      GetGlobalError:
+      GetGlobalErrors:
+      ClearGlobalErrors:

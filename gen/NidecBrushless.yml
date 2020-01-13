@@ -1,0 +1,24 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  NidecBrushless:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<NidecBrushless>
+    methods:
+      NidecBrushless:
+      Set:
+      Get:
+      SetInverted:
+      GetInverted:
+      Disable:
+      Enable:
+      PIDWrite:
+        rename: pidWrite
+      StopMotor:
+      GetDescription:
+      GetChannel:
+      InitSendable:

@@ -1,0 +1,23 @@
+---
+
+classes:
+  PyNotifier:
+    shared_ptr: true
+    rename: Notifier
+    methods:
+      PyNotifier:
+        overloads:
+          std::function<void ( )>:
+      SetName:
+      SetHandler:
+      StartSingle:
+        overloads:
+          double:
+            ignore: true
+          units::second_t:
+      StartPeriodic:
+        overloads:
+          double:
+            ignore: true
+          units::second_t:
+      Stop:

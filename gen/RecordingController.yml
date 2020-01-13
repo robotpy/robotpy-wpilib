@@ -1,0 +1,12 @@
+---
+
+classes:
+  RecordingController:
+    shared_ptr: true
+    methods:
+      RecordingController:
+      StartRecording:
+      StopRecording:
+      SetRecordingFileNameFormat:
+      ClearRecordingFileNameFormat:
+      AddEventMarker:

@@ -1,0 +1,33 @@
+---
+
+classes:
+  AddressableLED:
+    shared_ptr: true
+    methods:
+      AddressableLED:
+      SetLength:
+      SetData:
+        overloads:
+          wpi::ArrayRef<LEDData>:
+          std::initializer_list<LEDData>:
+            ignore: true
+      SetBitTiming:
+      SetSyncTime:
+      Start:
+      Stop:
+  AddressableLED::LEDData:
+    shared_ptr: true
+    ignored_bases:
+    - HAL_AddressableLEDData
+    force_no_trampoline: true
+    methods:
+      LEDData:
+        overloads:
+          "":
+          int, int, int:
+      SetRGB:
+      SetHSV:
+      SetLED:
+        overloads:
+          Color&:
+          Color8Bit&:

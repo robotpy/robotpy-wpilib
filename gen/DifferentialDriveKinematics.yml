@@ -1,0 +1,11 @@
+---
+
+classes:
+  DifferentialDriveKinematics:
+    shared_ptr: true
+    attributes:
+      trackWidth:
+    methods:
+      DifferentialDriveKinematics:
+      ToChassisSpeeds:
+      ToWheelSpeeds:

@@ -1,0 +1,55 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  PIDBase:
+    shared_ptr: true
+    attributes:
+      m_enabled:
+      m_thisMutex:
+      m_pidWriteMutex:
+      m_pidInput:
+      m_pidOutput:
+      m_setpointTimer:
+    methods:
+      PIDBase:
+        overloads:
+          double, double, double, PIDSource&, PIDOutput&:
+          double, double, double, double, PIDSource&, PIDOutput&:
+      Get:
+      SetContinuous:
+      SetInputRange:
+      SetOutputRange:
+      SetPID:
+        overloads:
+          double, double, double:
+          double, double, double, double:
+      SetP:
+      SetI:
+      SetD:
+      SetF:
+      GetP:
+      GetI:
+      GetD:
+      GetF:
+      SetSetpoint:
+      GetSetpoint:
+      GetDeltaSetpoint:
+      GetError:
+      GetAvgError:
+      SetPIDSourceType:
+      GetPIDSourceType:
+      SetTolerance:
+      SetAbsoluteTolerance:
+      SetPercentTolerance:
+      SetToleranceBuffer:
+      OnTarget:
+      Reset:
+      PIDWrite:
+        rename: pidWrite
+      InitSendable:
+      Calculate:
+      CalculateFeedForward:
+      GetContinuousError:

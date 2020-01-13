@@ -1,0 +1,10 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  Jaguar:
+    shared_ptr: true
+    methods:
+      Jaguar:

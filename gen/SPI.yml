@@ -1,0 +1,75 @@
+---
+
+extra_includes:
+- frc/DigitalSource.h
+
+classes:
+  SPI:
+    shared_ptr: true
+    attributes:
+      m_port:
+      m_msbFirst:
+      m_sampleOnTrailing:
+      m_clockIdleHigh:
+    enums:
+      Port:
+    methods:
+      SPI:
+      SetClockRate:
+      SetMSBFirst:
+      SetLSBFirst:
+      SetSampleDataOnLeadingEdge:
+      SetSampleDataOnTrailingEdge:
+      SetSampleDataOnFalling:
+      SetSampleDataOnRising:
+      SetClockActiveLow:
+      SetClockActiveHigh:
+      SetChipSelectActiveHigh:
+      SetChipSelectActiveLow:
+      Write:
+        buffers:
+        - { type: in, src: data, len: size }
+      Read:
+        buffers:
+        - { type: out, src: dataReceived, len: size }
+      Transaction:
+        buffers:
+        - { type: in, src: dataToSend, len: size }
+        - { type: out, src: dataReceived, len: size }
+        # TODO: dataToSend buffer must be at least as long as dataReceived buffer
+      InitAuto:
+      FreeAuto:
+      SetAutoTransmitData:
+      StartAutoRate:
+        overloads:
+          units::second_t:
+          double:
+            ignore: true
+      StartAutoTrigger:
+      StopAuto:
+      ForceAutoRead:
+      ReadAutoReceivedData:
+        overloads:
+          uint32_t*, int, units::second_t:
+            buffers:
+            - { type: out, src: buffer, len: numToRead }
+          uint32_t*, int, double:
+            ignore: true
+      GetAutoDroppedCount:
+      ConfigureAutoStall:
+      InitAccumulator:
+        overloads:
+          units::second_t, int, int, int, int, int, int, bool, bool:
+          double, int, int, int, int, int, int, bool, bool:
+      FreeAccumulator:
+      ResetAccumulator:
+      SetAccumulatorCenter:
+      SetAccumulatorDeadband:
+      GetAccumulatorLastValue:
+      GetAccumulatorValue:
+      GetAccumulatorCount:
+      GetAccumulatorAverage:
+      GetAccumulatorOutput:
+      SetAccumulatorIntegratedCenter:
+      GetAccumulatorIntegratedValue:
+      GetAccumulatorIntegratedAverage:

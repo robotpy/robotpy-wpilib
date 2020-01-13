@@ -1,0 +1,10 @@
+---
+
+classes:
+  DifferentialDriveWheelSpeeds:
+    shared_ptr: true
+    attributes:
+      left:
+      right:
+    methods:
+      Normalize:

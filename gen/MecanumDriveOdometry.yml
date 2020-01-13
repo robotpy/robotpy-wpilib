@@ -1,0 +1,11 @@
+---
+
+classes:
+  MecanumDriveOdometry:
+    shared_ptr: true
+    methods:
+      MecanumDriveOdometry:
+      ResetPosition:
+      GetPose:
+      UpdateWithTime:
+      Update:

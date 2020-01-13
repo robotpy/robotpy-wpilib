@@ -1,0 +1,53 @@
+---
+
+classes:
+  SerialPort:
+    shared_ptr: true
+    enums:
+      Parity:
+      StopBits:
+      FlowControl:
+      WriteBufferMode:
+      Port:
+    methods:
+      SerialPort:
+        overloads:
+          int, frc::SerialPort::Port, int, frc::SerialPort::Parity, frc::SerialPort::StopBits:
+            param_override:
+              port:
+                default: frc::SerialPort::Port::kOnboard
+              parity:
+                default: frc::SerialPort::Parity::kParity_None
+              stopBits:
+                default: frc::SerialPort::StopBits::kStopBits_One
+          int, wpi::Twine&, frc::SerialPort::Port, int, frc::SerialPort::Parity, frc::SerialPort::StopBits:
+            param_override:
+              port:
+                default: frc::SerialPort::Port::kOnboard
+              parity:
+                default: frc::SerialPort::Parity::kParity_None
+              stopBits:
+                default: frc::SerialPort::StopBits::kStopBits_One
+      SetFlowControl:
+      EnableTermination:
+        param_override:
+          terminator:
+            default: "'\\n'"
+      DisableTermination:
+      GetBytesReceived:
+      Read:
+        buffers:
+        - { type: out, src: buffer, len: count }
+      Write:
+        overloads:
+          char*, int:
+            buffers:
+            - { type: in, src: buffer, len: count }
+          wpi::StringRef:
+            ignore: true
+      SetTimeout:
+      SetReadBufferSize:
+      SetWriteBufferSize:
+      SetWriteBufferMode:
+      Flush:
+      Reset:

@@ -1,0 +1,22 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  DoubleSolenoid:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<DoubleSolenoid>
+    enums:
+      Value:
+    methods:
+      DoubleSolenoid:
+        overloads:
+          int, int:
+          int, int, int:
+      Set:
+      Get:
+      IsFwdSolenoidBlackListed:
+      IsRevSolenoidBlackListed:
+      InitSendable:

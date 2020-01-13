@@ -1,0 +1,24 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  Relay:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<Relay>
+    enums:
+      Value:
+      Direction:
+    methods:
+      Relay:
+        param_override:
+          direction:
+            default: frc::Relay::Direction::kBothDirections
+      Set:
+      Get:
+      GetChannel:
+      StopMotor:
+      GetDescription:
+      InitSendable:

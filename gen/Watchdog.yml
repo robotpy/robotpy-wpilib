@@ -1,0 +1,29 @@
+---
+
+classes:
+  Watchdog:
+    shared_ptr: true
+    methods:
+      Watchdog:
+        overloads:
+          double, std::function<void ( )>:
+            ignore: true
+          units::second_t, std::function<void ( )>:
+          double, Callable&&, Arg&&, Args ...&&:
+            ignore: true
+          units::second_t, Callable&&, Arg&&, Args ...&&:
+            ignore: true
+      GetTime:
+      SetTimeout:
+        overloads:
+          double:
+            ignore: true
+          units::second_t:
+      GetTimeout:
+      IsExpired:
+      AddEpoch:
+      PrintEpochs:
+      Reset:
+      Enable:
+      Disable:
+      SuppressTimeoutMessage:

@@ -1,0 +1,26 @@
+---
+
+classes:
+  IterativeRobotBase:
+    nodelete: true
+    attributes:
+      m_period:
+    methods:
+      RobotInit:
+      DisabledInit:
+      AutonomousInit:
+      TeleopInit:
+      TestInit:
+      RobotPeriodic:
+      DisabledPeriodic:
+      AutonomousPeriodic:
+      TeleopPeriodic:
+      TestPeriodic:
+      IterativeRobotBase:
+        overloads:
+          double:
+            ignore: true
+          units::second_t:
+            # ends up being a memory leak because nodelete
+            ignore: true
+      LoopFunc:

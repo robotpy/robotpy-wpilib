@@ -1,0 +1,14 @@
+---
+
+extra_includes:
+- frc/smartdashboard/Sendable.h
+- frc/shuffleboard/ShuffleboardContainer.h
+
+classes:
+  ComplexWidget:
+    shared_ptr: true
+    methods:
+      ComplexWidget:
+      EnableIfActuator:
+      DisableIfActuator:
+      BuildInto:

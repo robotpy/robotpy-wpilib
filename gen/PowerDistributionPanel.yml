@@ -1,0 +1,24 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  PowerDistributionPanel:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<PowerDistributionPanel>
+    methods:
+      PowerDistributionPanel:
+        overloads:
+          "":
+          int:
+      GetVoltage:
+      GetTemperature:
+      GetCurrent:
+      GetTotalCurrent:
+      GetTotalPower:
+      GetTotalEnergy:
+      ResetTotalEnergy:
+      ClearStickyFaults:
+      InitSendable:

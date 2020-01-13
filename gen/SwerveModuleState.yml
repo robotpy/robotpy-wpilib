@@ -1,0 +1,8 @@
+---
+
+classes:
+  SwerveModuleState:
+    shared_ptr: true
+    attributes:
+      speed:
+      angle:

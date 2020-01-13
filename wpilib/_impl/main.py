@@ -9,38 +9,26 @@ from os.path import exists
 from pkg_resources import iter_entry_points
 
 from .logconfig import configure_logging
-import hal_impl
 
 
 def _log_versions():
     import wpilib
     import hal
-    import hal_impl
 
     import logging
 
     logger = logging.getLogger("wpilib")
 
     logger.info("WPILib version %s", wpilib.__version__)
-    logger.info(
-        "HAL base version %s; %s platform version %s",
-        hal.__version__,
-        hal_impl.__halplatform__,
-        hal_impl.__version__,
-    )
-    if hasattr(hal_impl.version, "__hal_version__"):
-        logger.info("HAL library version %s", hal_impl.version.__hal_version__)
+    logger.info("HAL version %s", hal.__version__)
 
     # should we just die here?
-    if (
-        hal.__version__ != wpilib.__version__
-        and hal.__version__ != hal_impl.__version__
-    ):
+    if hal.__version__.split(".", 2) != wpilib.__version__.split(".", 2):
         logger.warning(
             "Core component versions are not identical! This is not a supported configuration, and you may run into errors!"
         )
 
-    if hal.isSimulation():
+    if wpilib.RobotBase.isSimulation():
         logger.info("Running with simulated HAL.")
 
         # check to see if we're on a RoboRIO

@@ -1,0 +1,9 @@
+---
+
+classes:
+  TrajectoryConstraint:
+    shared_ptr: true
+    methods:
+      TrajectoryConstraint:
+      MaxVelocity:
+      MinMaxAcceleration:

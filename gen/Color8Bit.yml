@@ -1,0 +1,15 @@
+---
+
+classes:
+  Color8Bit:
+    shared_ptr: true
+    attributes:
+      red:
+      green:
+      blue:
+    methods:
+      Color8Bit:
+        overloads:
+          "":
+          int, int, int:
+          Color&:

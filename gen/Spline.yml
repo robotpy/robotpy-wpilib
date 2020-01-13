@@ -1,0 +1,11 @@
+---
+
+classes:
+  Spline:
+    shared_ptr: true
+    methods:
+      Spline:
+      GetPoint:
+      Coefficients:
+      ToVector:
+      FromVector:

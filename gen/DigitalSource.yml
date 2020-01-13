@@ -1,0 +1,11 @@
+---
+
+classes:
+  DigitalSource:
+    shared_ptr: true
+    methods:
+      DigitalSource:
+      GetPortHandleForRouting:
+      GetAnalogTriggerTypeForRouting:
+      IsAnalogTrigger:
+      GetChannel:

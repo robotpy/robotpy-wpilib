@@ -1,0 +1,19 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  PWMSpeedController:
+    shared_ptr: true
+    methods:
+      Set:
+      Get:
+      SetInverted:
+      GetInverted:
+      Disable:
+      StopMotor:
+      PIDWrite:
+        rename: pidWrite
+      PWMSpeedController:
+      InitSendable:

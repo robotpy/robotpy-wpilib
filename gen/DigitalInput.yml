@@ -1,0 +1,20 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/DigitalGlitchFilter.h
+
+classes:
+  DigitalInput:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<DigitalInput>
+    methods:
+      DigitalInput:
+      Get:
+      GetPortHandleForRouting:
+      GetAnalogTriggerTypeForRouting:
+      IsAnalogTrigger:
+      GetChannel:
+      SetSimDevice:
+      InitSendable:

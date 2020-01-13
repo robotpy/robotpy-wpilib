@@ -1,0 +1,61 @@
+---
+
+extra_includes:
+- frc/shuffleboard/ComplexWidget.h
+- frc/smartdashboard/Sendable.h
+- frc/shuffleboard/ShuffleboardLayout.h
+- frc/shuffleboard/SimpleWidget.h
+
+functions:
+  Add:
+    overloads:
+      cs::VideoSource&:
+      wpi::Twine&, cs::VideoSource&:
+classes:
+  ShuffleboardContainer:
+    shared_ptr: true
+    attributes:
+      m_isLayout:
+    methods:
+      ShuffleboardContainer:
+      GetComponents:
+      GetLayout:
+        overloads:
+          wpi::Twine&, BuiltInLayouts:
+          wpi::Twine&, LayoutType&:
+          wpi::Twine&, wpi::Twine&:
+          wpi::Twine&:
+      Add:
+        overloads:
+          wpi::Twine&, frc::Sendable&:
+          wpi::Twine&, cs::VideoSource&:
+          frc::Sendable&:
+          cs::VideoSource&:
+          wpi::Twine&, std::shared_ptr<nt::Value>:
+          wpi::Twine&, bool:
+          wpi::Twine&, double:
+          wpi::Twine&, int:
+          wpi::Twine&, wpi::Twine&:
+          wpi::Twine&, char*:
+          wpi::Twine&, wpi::ArrayRef<bool>:
+          wpi::Twine&, wpi::ArrayRef<double>:
+          wpi::Twine&, wpi::ArrayRef<std::string>:
+      AddString:
+      AddNumber:
+      AddBoolean:
+      AddStringArray:
+      AddNumberArray:
+      AddBooleanArray:
+      AddRaw:
+      AddPersistent:
+        overloads:
+          wpi::Twine&, std::shared_ptr<nt::Value>:
+          wpi::Twine&, bool:
+          wpi::Twine&, double:
+          wpi::Twine&, int:
+          wpi::Twine&, wpi::Twine&:
+          wpi::Twine&, wpi::ArrayRef<bool>:
+          wpi::Twine&, wpi::ArrayRef<double>:
+          wpi::Twine&, wpi::ArrayRef<std::string>:
+      EnableIfActuator:
+      DisableIfActuator:

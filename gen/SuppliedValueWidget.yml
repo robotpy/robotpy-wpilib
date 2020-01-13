@@ -1,0 +1,8 @@
+---
+
+classes:
+  SuppliedValueWidget:
+    shared_ptr: true
+    methods:
+      SuppliedValueWidget:
+      BuildInto:

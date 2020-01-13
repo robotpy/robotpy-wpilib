@@ -1,0 +1,40 @@
+---
+
+extra_includes:
+- frc/DriverStation.h
+
+inline_code: |
+  #include <src/rpy/RobotBase.cpp.inl>
+
+functions:
+  # TODO
+  RunHALInitialization:
+    ignore: true
+  RunRobot:
+    ignore: true
+  StartRobot:
+    ignore: true
+classes:
+  RobotBase:
+    nodelete: true
+    attributes:
+      m_ds:
+        rename: ds
+        access: readonly
+      m_threadId:
+        ignore: true
+    methods:
+      IsEnabled:
+      IsDisabled:
+      IsAutonomous:
+      IsOperatorControl:
+      IsTest:
+      IsNewDataAvailable:
+      GetThreadId:
+      StartCompetition:
+      EndCompetition:
+      IsReal:
+      IsSimulation:
+      RobotBase:
+        # ends up being a memory leak because nodelete
+        ignore: true

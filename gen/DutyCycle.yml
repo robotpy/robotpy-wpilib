@@ -1,0 +1,29 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/AnalogTrigger.h
+- frc/DigitalSource.h
+- frc/DMA.h
+- frc/DMASample.h
+
+classes:
+  DutyCycle:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<DutyCycle>
+    methods:
+      DutyCycle:
+        overloads:
+          frc::DigitalSource&:
+            ignore: true
+          frc::DigitalSource*:
+            ignore: true
+          std::shared_ptr<DigitalSource>:
+      GetFrequency:
+      GetOutput:
+      GetOutputRaw:
+      GetOutputScaleFactor:
+      GetFPGAIndex:
+      GetSourceChannel:
+      InitSendable:

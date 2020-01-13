@@ -1,0 +1,10 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  PWMSparkMax:
+    shared_ptr: true
+    methods:
+      PWMSparkMax:

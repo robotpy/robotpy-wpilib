@@ -1,0 +1,24 @@
+---
+
+classes:
+  SendableBuilder:
+    shared_ptr: true
+    methods:
+      SetSmartDashboardType:
+      SetActuator:
+      SetSafeState:
+      SetUpdateTable:
+      GetEntry:
+      AddBooleanProperty:
+      AddDoubleProperty:
+      AddStringProperty:
+      AddBooleanArrayProperty:
+      AddDoubleArrayProperty:
+      AddStringArrayProperty:
+      AddRawProperty:
+      AddValueProperty:
+      AddSmallStringProperty:
+      AddSmallBooleanArrayProperty:
+      AddSmallDoubleArrayProperty:
+      AddSmallStringArrayProperty:
+      AddSmallRawProperty:

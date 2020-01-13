@@ -1,0 +1,17 @@
+---
+
+attributes:
+  kProtocol:
+functions:
+  GetSendableCameraWrapper:
+  AddToSendableRegistry:
+classes:
+  SendableCameraWrapper:
+    shared_ptr: true
+    methods:
+      SendableCameraWrapper:
+      Wrap:
+        overloads:
+          cs::VideoSource&:
+          CS_Source:
+      InitSendable:

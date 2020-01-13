@@ -1,0 +1,13 @@
+---
+
+classes:
+  TrajectoryGenerator:
+    shared_ptr: true
+    methods:
+      GenerateTrajectory:
+        overloads:
+          Spline<3>::ControlVector, std::vector<Translation2d>&, Spline<3>::ControlVector, TrajectoryConfig&:
+          Pose2d&, std::vector<Translation2d>&, Pose2d&, TrajectoryConfig&:
+          std::vector<Spline<5>::ControlVector>, TrajectoryConfig&:
+          std::vector<Pose2d>&, TrajectoryConfig&:
+      SplinePointsFromSplines:

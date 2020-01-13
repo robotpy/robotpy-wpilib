@@ -1,0 +1,26 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+- frc/AnalogInput.h
+
+classes:
+  AnalogEncoder:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<AnalogEncoder>
+    methods:
+      AnalogEncoder:
+        overloads:
+          frc::AnalogInput&:
+            ignore: true
+          frc::AnalogInput*:
+            ignore: true
+          std::shared_ptr<AnalogInput>:
+      Reset:
+      Get:
+      GetPositionOffset:
+      SetDistancePerRotation:
+      GetDistancePerRotation:
+      GetDistance:
+      InitSendable:

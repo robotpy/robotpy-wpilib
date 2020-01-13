@@ -1,0 +1,26 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  DigitalOutput:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<DigitalOutput>
+    methods:
+      DigitalOutput:
+      Set:
+      Get:
+      GetPortHandleForRouting:
+      GetAnalogTriggerTypeForRouting:
+      IsAnalogTrigger:
+      GetChannel:
+      Pulse:
+      IsPulsing:
+      SetPWMRate:
+      EnablePWM:
+      DisablePWM:
+      UpdateDutyCycle:
+      SetSimDevice:
+      InitSendable:

@@ -9,9 +9,27 @@ htmlcov
 .cache
 .pytest_cache/
 
+*.so
+*.dll
+*.dylib
+
 build 
 dist
 MANIFEST
+
+/wpilib/pkgcfg.py
+/wpilib/version.py
+/wpilib/_init_wpilib.py
+/wpilib/interfaces/_init_interfaces.py
+/wpilib/interfaces/pkgcfg.py
+/wpilib/drive/_init_drive.py
+/wpilib/drive/pkgcfg.py
+
+rpy-include
+/wpilib/_impl/_init_wpilibc.py
+/wpilib/_impl/pkgcfg.py
+/wpilib/_impl/include
+/wpilib/_impl/lib
 
 # Doc-related stuffs
 /docs/_build
@@ -48,15 +66,6 @@ version.py
 .idea/*
 .pycharmproject
 
-#Java parser output
-lextab.py
-parser.out
-parsetab.py
-
-# Downloaded libHALAthena
-/hal-roborio/hal_impl/libwpiHal.so
-/hal-roborio/hal_impl/libwpiutil.so
-/wpilib/tests/__hal__
 
 # deploy files
 .deploy_cfg

@@ -1,0 +1,10 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  DMC60:
+    shared_ptr: true
+    methods:
+      DMC60:

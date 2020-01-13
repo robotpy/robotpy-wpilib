@@ -1,0 +1,10 @@
+---
+
+classes:
+  SplineHelper:
+    shared_ptr: true
+    methods:
+      CubicControlVectorsFromWaypoints:
+      QuinticControlVectorsFromWaypoints:
+      CubicSplinesFromControlVectors:
+      QuinticSplinesFromControlVectors:

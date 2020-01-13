@@ -1,0 +1,30 @@
+---
+
+classes:
+  LinearDigitalFilter:
+    shared_ptr: true
+    methods:
+      LinearDigitalFilter:
+        overloads:
+          PIDSource&, wpi::ArrayRef<double>, wpi::ArrayRef<double>:
+          PIDSource&, std::initializer_list<double>, std::initializer_list<double>:
+            ignore: true
+          std::shared_ptr<PIDSource>, wpi::ArrayRef<double>, wpi::ArrayRef<double>:
+          std::shared_ptr<PIDSource>, std::initializer_list<double>, std::initializer_list<double>:
+            ignore: true
+      SinglePoleIIR:
+        overloads:
+          PIDSource&, double, double:
+          std::shared_ptr<PIDSource>, double, double:
+      HighPass:
+        overloads:
+          PIDSource&, double, double:
+          std::shared_ptr<PIDSource>, double, double:
+      MovingAverage:
+        overloads:
+          PIDSource&, int:
+          std::shared_ptr<PIDSource>, int:
+      Get:
+      Reset:
+      PIDGet:
+        rename: pidGet

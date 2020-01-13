@@ -1,0 +1,22 @@
+---
+
+classes:
+  SendableChooserBase:
+    ignored_bases:
+    - SendableHelper<SendableChooserBase>
+    shared_ptr: false
+    attributes:
+      kDefault:
+      kOptions:
+      kSelected:
+      kActive:
+      kInstance:
+      m_defaultChoice:
+      m_selected:
+      m_haveSelected:
+      m_activeEntries:
+      m_mutex:
+      m_instance:
+      s_instances:
+    methods:
+      SendableChooserBase:

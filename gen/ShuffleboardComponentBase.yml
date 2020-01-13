@@ -1,0 +1,18 @@
+---
+
+classes:
+  ShuffleboardComponentBase:
+    shared_ptr: true
+    attributes:
+      m_properties:
+      m_metadataDirty:
+      m_column:
+      m_row:
+      m_width:
+      m_height:
+    methods:
+      ShuffleboardComponentBase:
+      SetType:
+      BuildMetadata:
+      GetParent:
+      GetType:

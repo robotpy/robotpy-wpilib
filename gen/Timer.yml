@@ -1,0 +1,19 @@
+---
+
+functions:
+  Wait:
+  GetTime:
+classes:
+  Timer:
+    shared_ptr: true
+    attributes:
+      kRolloverTime:
+    methods:
+      Timer:
+      Get:
+      Reset:
+      Start:
+      Stop:
+      HasPeriodPassed:
+      GetFPGATimestamp:
+      GetMatchTime:

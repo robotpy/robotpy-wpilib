@@ -1,0 +1,11 @@
+---
+
+classes:
+  Gyro:
+    shared_ptr: true
+    methods:
+      Gyro:
+      Calibrate:
+      Reset:
+      GetAngle:
+      GetRate:

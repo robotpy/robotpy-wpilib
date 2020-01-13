@@ -1,0 +1,15 @@
+---
+
+classes:
+  RobotState:
+    shared_ptr: false
+    nodelete: true
+    methods:
+      RobotState:
+        ignore: true
+      IsDisabled:
+      IsEnabled:
+      IsEStopped:
+      IsOperatorControl:
+      IsAutonomous:
+      IsTest:

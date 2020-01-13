@@ -1,0 +1,17 @@
+---
+
+classes:
+  MotorSafety:
+    shared_ptr: true
+    methods:
+      MotorSafety:
+      Feed:
+      SetExpiration:
+      GetExpiration:
+      IsAlive:
+      SetSafetyEnabled:
+      IsSafetyEnabled:
+      Check:
+      CheckMotors:
+      StopMotor:
+      GetDescription:

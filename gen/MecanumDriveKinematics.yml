@@ -1,0 +1,9 @@
+---
+
+classes:
+  MecanumDriveKinematics:
+    shared_ptr: true
+    methods:
+      MecanumDriveKinematics:
+      ToWheelSpeeds:
+      ToChassisSpeeds:

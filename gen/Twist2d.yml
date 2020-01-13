@@ -1,0 +1,9 @@
+---
+
+classes:
+  Twist2d:
+    shared_ptr: true
+    attributes:
+      dx:
+      dy:
+      dtheta:
