@@ -234,7 +234,7 @@ generate = [
 
     # TODO, needs manual wrapping
     # { SendableChooser = "frc/smartdashboard/SendableChooser.h" },
-    # { SendableChooserBase = "frc/smartdashboard/SendableChooserBase.h" },
+    { SendableChooserBase = "frc/smartdashboard/SendableChooserBase.h" },
 
     # # This is just a template
     # # { SendableHelper = "frc/smartdashboard/SendableHelper.h" },
