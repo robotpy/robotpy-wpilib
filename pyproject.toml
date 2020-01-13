@@ -120,6 +120,7 @@ generate = [
     # { Resource = "frc/Resource.h" },
     # TODO: weirdness
     { RobotBase = "frc/RobotBase.h" },
+    { RobotBaseUser = "rpy/RobotBaseUser.h" },
     { RobotController = "frc/RobotController.h" },
     # deprecated
     # { RobotDrive = "frc/RobotDrive.h" },

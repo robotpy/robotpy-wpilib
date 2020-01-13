@@ -1,5 +1,8 @@
 ---
 
+extra_includes:
+- hal/DriverStation.h
+
 inline_code: |
   #include <src/rpy/DriverStation.cpp.inl>
 

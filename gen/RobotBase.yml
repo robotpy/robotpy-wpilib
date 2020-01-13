@@ -2,6 +2,7 @@
 
 extra_includes:
 - frc/DriverStation.h
+- hal/DriverStation.h
 
 inline_code: |
   #include <src/rpy/RobotBase.cpp.inl>

@@ -56,7 +56,10 @@ class RobotStarter:
         DriverStation = wpilib.DriverStation
 
         hal.report(
-            hal.tResourceType.kResourceType_Language, hal.tInstances.kLanguage_Python,
+            hal.tResourceType.kResourceType_Language,
+            hal.tInstances.kLanguage_Python,
+            0,
+            wpilib.__version__,
         )
 
         try:

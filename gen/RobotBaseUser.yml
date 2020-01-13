@@ -1,0 +1,5 @@
+classes:
+  RobotBaseUser:
+    shared_ptr: false
+    methods:
+      RobotBaseUser:
