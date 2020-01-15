@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "robotpy-build>=2020.0.8,<2021.0.0",
+    "robotpy-build>=2020.0.13,<2021.0.0",
     "robotpy-wpiutil>=2020.1.2.1,<2021.0.0",
     "robotpy-hal>=2020.1.2.0,<2021.0.0",
     "pyntcore>=2020.1.2.0,<2021.0.0",
@@ -47,7 +47,6 @@ generate = [
     { ADXL345_SPI = "frc/ADXL345_SPI.h" },
     { ADXL362 = "frc/ADXL362.h" },
     { ADXRS450_Gyro = "frc/ADXRS450_Gyro.h" },
-    # need to fix embedded class issues
     { AddressableLED = "frc/AddressableLED.h" },
     { AnalogAccelerometer = "frc/AnalogAccelerometer.h" },
     { AnalogEncoder = "frc/AnalogEncoder.h" },
@@ -87,7 +86,7 @@ generate = [
     # { GearTooth = "frc/GearTooth.h" },
     
     { GyroBase = "frc/GyroBase.h" },
-    # { I2C = "frc/I2C.h" },
+    { I2C = "frc/I2C.h" },
     { InterruptableSensorBase = "frc/InterruptableSensorBase.h" },
     { IterativeRobot = "frc/IterativeRobot.h" },
     { IterativeRobotBase = "frc/IterativeRobotBase.h" },
@@ -126,12 +125,11 @@ generate = [
     # { RobotDrive = "frc/RobotDrive.h" },
     { RobotState = "frc/RobotState.h" },
     { SD540 = "frc/SD540.h" },
-
-    # TODO: buffer bugs
-    # { SPI = "frc/SPI.h" },
+    { SPI = "frc/SPI.h" },
     { SensorUtil = "frc/SensorUtil.h" },
     { SerialPort = "frc/SerialPort.h" },
     { Servo = "frc/Servo.h" },
+    # TODO: template
     # { SlewRateLimiter = "frc/SlewRateLimiter.h" },
     { Solenoid = "frc/Solenoid.h" },
     { SolenoidBase = "frc/SolenoidBase.h" },

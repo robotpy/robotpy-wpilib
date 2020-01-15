@@ -8,6 +8,7 @@ classes:
     shared_ptr: true
     attributes:
       m_port:
+        ignore: true
       m_msbFirst:
       m_sampleOnTrailing:
       m_clockIdleHigh:
