@@ -327,3 +327,8 @@ install_requires = [
 
 [tool.robotpy-build.metadata.entry_points]
 robotpy = ["run = wpilib._impl.start:Main"]
+
+[tool.robotpy-build.macos_lib_locations]
+"libwpiutil.dylib" = "wpiutil/lib/libwpiutil.dylib"
+"libntcore.dylib" = "_pyntcore/lib/libntcore.dylib"
+"libwpiHal.dylib" = "hal/lib/libwpiHal.dylib"
