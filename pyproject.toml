@@ -19,6 +19,7 @@ libs = ["wpilibc"]
 
 [tool.robotpy-build.wrappers."wpilib._impl"]
 name = "wpilibc"
+depends = ["wpiHal", "wpiutil", "ntcore"]
 
 [tool.robotpy-build.wrappers."wpilib"]
 name = "wpilib_core"
