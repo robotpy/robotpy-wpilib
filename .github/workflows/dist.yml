@@ -42,7 +42,7 @@ jobs:
         python -m robotpy_build build-dep --install
 
     - name: Build wheel
-      run: python setup.py bdist_wheel
+      run: python -X faulthandler setup.py bdist_wheel
     
     - uses: actions/upload-artifact@v1
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
