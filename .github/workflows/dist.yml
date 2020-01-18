@@ -43,8 +43,6 @@ jobs:
 
     - name: Build wheel
       run: python setup.py bdist_wheel
-      env:
-        RPYBUILD_PARALLEL: 1
     
     - uses: actions/upload-artifact@v1
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
