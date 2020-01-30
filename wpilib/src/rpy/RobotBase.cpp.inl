@@ -38,17 +38,14 @@ cls_RobotBase
         ".. note:: This function only exists in RobotPy\n")
     .def(
         "isAutonomousEnabled",
-        [](RobotBase *that) -> py::bool_ {
+        [](RobotBase *that) -> bool {
+          py::gil_scoped_release release;
           HAL_ControlWord controlWord;
+          HAL_GetControlWord(&controlWord);
 
-          {
-            py::gil_scoped_release release;
-            HAL_GetControlWord(&controlWord);
-          }
-
-          return py::bool_(controlWord.autonomous != 0 &&
-                           controlWord.enabled != 0 &&
-                           controlWord.dsAttached != 0);
+          return controlWord.autonomous != 0 &&
+              controlWord.enabled != 0 &&
+              controlWord.dsAttached != 0;
         },
         "Equivalent to calling ``isAutonomous() and isEnabled()`` but\n"
         "more efficient.\n"
@@ -61,17 +58,13 @@ cls_RobotBase
         ".. note:: This function only exists in RobotPy\n")
     .def(
         "isOperatorControlEnabled",
-        [](RobotBase *that) -> py::bool_ {
+        [](RobotBase *that) -> bool {
+          py::gil_scoped_release release;
           HAL_ControlWord controlWord;
+          HAL_GetControlWord(&controlWord);
 
-          {
-            py::gil_scoped_release release;
-            HAL_GetControlWord(&controlWord);
-          }
-
-          return py::bool_(
-              !(controlWord.autonomous != 0 || controlWord.test != 0) &&
-              controlWord.enabled != 0 && controlWord.dsAttached != 0);
+          return !(controlWord.autonomous != 0 || controlWord.test != 0) &&
+              controlWord.enabled != 0 && controlWord.dsAttached != 0;
         },
         "Equivalent to calling ``isOperatorControl() and isEnabled()`` but\n"
         "more efficient.\n"
