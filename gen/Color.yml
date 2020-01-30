@@ -1,5 +1,8 @@
 ---
 
+extra_includes:
+- pybind11/operators.h
+
 classes:
   Color:
     shared_ptr: true
@@ -155,3 +158,6 @@ classes:
         overloads:
           "":
           double, double, double:
+
+inline_code: |
+  cls_Color.def(py::self == py::self);
