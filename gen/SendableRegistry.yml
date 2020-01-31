@@ -12,22 +12,42 @@ classes:
       Add:
         overloads:
           frc::Sendable*, wpi::Twine&:
+            keepalive:
+            - [1, 2]
           frc::Sendable*, wpi::Twine&, int:
+            keepalive:
+            - [1, 2]
           frc::Sendable*, wpi::Twine&, int, int:
+            keepalive:
+            - [1, 2]
           frc::Sendable*, wpi::Twine&, wpi::Twine&:
+            keepalive:
+            - [1, 2]
       AddLW:
         overloads:
           frc::Sendable*, wpi::Twine&:
+            keepalive:
+            - [1, 2]
           frc::Sendable*, wpi::Twine&, int:
+            keepalive:
+            - [1, 2]
           frc::Sendable*, wpi::Twine&, int, int:
+            keepalive:
+            - [1, 2]
           frc::Sendable*, wpi::Twine&, wpi::Twine&:
+            keepalive:
+            - [1, 2]
       AddChild:
         overloads:
           frc::Sendable*, frc::Sendable*:
+            keepalive:
+            - [1, 2]
+            - [2, 3]
           frc::Sendable*, void*:
             ignore: true
       Remove:
       Move:
+        ignore: true
       Contains:
       GetName:
       SetName:
