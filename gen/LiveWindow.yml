@@ -11,7 +11,11 @@ classes:
       GetInstance:
         return_value_policy: reference
       EnableTelemetry:
+        keepalive:
+        - [1, 2]
       DisableTelemetry:
+        keepalive:
+        - [1, 2]
       DisableAllTelemetry:
       IsEnabled:
       SetEnabled:
