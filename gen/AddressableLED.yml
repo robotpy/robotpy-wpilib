@@ -25,6 +25,13 @@ classes:
         overloads:
           "":
           int, int, int:
+            param_override:
+              _r:
+                name: r
+              _g:
+                name: g
+              _b:
+                name: b
       SetRGB:
       SetHSV:
       SetLED:
