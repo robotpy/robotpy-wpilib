@@ -13,7 +13,7 @@ base_package = "wpilib"
 artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
 repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2020.1.2"
+version = "2020.2.2"
 
 libs = ["wpilibc"]
 
