@@ -7,7 +7,7 @@ classes:
   SendableChooserBase:
     ignored_bases:
     - SendableHelper<SendableChooserBase>
-    shared_ptr: false
+    shared_ptr: true
     attributes:
       kDefault:
       kOptions:
@@ -23,3 +23,4 @@ classes:
       s_instances:
     methods:
       SendableChooserBase:
+        ignore: true

@@ -3,13 +3,25 @@
 classes:
   SendableChooser:
     shared_ptr: true
-    ignored_bases:
-    - SendableHelper
-    - x
+    template_params:
+    - T
     methods:
       AddOption:
       SetDefaultOption:
       AddObject:
+        ignore: true
       AddDefault:
+        ignore: true
       GetSelected:
+        # weirdness because return type
+        cpp_code: |
+          [](frc::SendableChooser<T> * __that) {
+            return __that->GetSelected();
+          }
       InitSendable:
+
+templates:
+  SendableChooser:
+    qualname: frc::SendableChooser
+    params:
+    - py::object

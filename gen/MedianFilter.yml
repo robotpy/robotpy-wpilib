@@ -3,7 +3,15 @@
 classes:
   MedianFilter:
     shared_ptr: true
+    template_params:
+    - T
     methods:
       MedianFilter:
       Calculate:
       Reset:
+
+templates:
+  MedianFilter:
+    qualname: frc::MedianFilter
+    params:
+    - double
