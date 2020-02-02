@@ -3,6 +3,8 @@
 classes:
   LinearFilter:
     shared_ptr: true
+    template_params:
+    - T
     methods:
       LinearFilter:
         overloads:
@@ -14,3 +16,9 @@ classes:
       MovingAverage:
       Reset:
       Calculate:
+
+templates:
+  LinearFilter:
+    qualname: frc::LinearFilter
+    params:
+    - double

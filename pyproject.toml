@@ -93,10 +93,8 @@ generate = [
     { IterativeRobotBase = "frc/IterativeRobotBase.h" },
     { Jaguar = "frc/Jaguar.h" },
     { Joystick = "frc/Joystick.h" },
-    # template required
-    # { LinearFilter = "frc/LinearFilter.h" },
-    # template required
-    # { MedianFilter = "frc/MedianFilter.h" },
+    { LinearFilter = "frc/LinearFilter.h" },
+    { MedianFilter = "frc/MedianFilter.h" },
     { MotorSafety = "frc/MotorSafety.h" },
     { NidecBrushless = "frc/NidecBrushless.h" },
     { Notifier = "rpy/Notifier.h" },
@@ -130,8 +128,7 @@ generate = [
     { SensorUtil = "frc/SensorUtil.h" },
     { SerialPort = "frc/SerialPort.h" },
     { Servo = "frc/Servo.h" },
-    # TODO: template
-    # { SlewRateLimiter = "frc/SlewRateLimiter.h" },
+    { SlewRateLimiter = "frc/SlewRateLimiter.h" },
     { Solenoid = "frc/Solenoid.h" },
     { SolenoidBase = "frc/SolenoidBase.h" },
     { Spark = "frc/Spark.h" },
@@ -230,10 +227,8 @@ generate = [
     { SendableBase = "frc/smartdashboard/SendableBase.h" },
     { SendableBuilder = "frc/smartdashboard/SendableBuilder.h" },
     { SendableBuilderImpl = "frc/smartdashboard/SendableBuilderImpl.h" },
-
-    # TODO, needs manual wrapping
-    # { SendableChooser = "frc/smartdashboard/SendableChooser.h" },
-    # { SendableChooserBase = "frc/smartdashboard/SendableChooserBase.h" },
+    { SendableChooser = "frc/smartdashboard/SendableChooser.h" },
+    { SendableChooserBase = "frc/smartdashboard/SendableChooserBase.h" },
 
     # # This is just a template
     # # { SendableHelper = "frc/smartdashboard/SendableHelper.h" },
