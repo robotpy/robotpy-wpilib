@@ -10,6 +10,7 @@ classes:
     - frc::GenericHID::JoystickHand
     enums:
       Button:
+      Axis:
     methods:
       XboxController:
       GetX:
