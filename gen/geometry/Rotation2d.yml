@@ -20,3 +20,13 @@ classes:
       Cos:
       Sin:
       Tan:
+      operator+:
+      operator+=:
+      operator-:
+        overloads:
+          frc::Rotation2d& [const]:
+          '[const]':
+      operator-=:
+      operator*:
+      operator==:
+      operator!=:

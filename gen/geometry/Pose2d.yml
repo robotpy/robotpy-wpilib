@@ -20,3 +20,8 @@ classes:
       RelativeTo:
       Exp:
       Log:
+      operator+:
+      operator+=:
+      operator-:
+      operator==:
+      operator!=:
