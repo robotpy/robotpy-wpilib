@@ -22,12 +22,14 @@ MANIFEST
 /wpilib/_init_wpilib.py
 /wpilib/controller/_init_controller.py
 /wpilib/controller/pkgcfg.py
+/wpilib/drive/_init_drive.py
+/wpilib/drive/pkgcfg.py
 /wpilib/geometry/_init_geometry.py
 /wpilib/geometry/pkgcfg.py
 /wpilib/interfaces/_init_interfaces.py
 /wpilib/interfaces/pkgcfg.py
-/wpilib/drive/_init_drive.py
-/wpilib/drive/pkgcfg.py
+/wpilib/kinematics/_init_controller.py
+/wpilib/kinematics/pkgcfg.py
 
 rpy-include
 /wpilib/_impl/_init_wpilibc.py

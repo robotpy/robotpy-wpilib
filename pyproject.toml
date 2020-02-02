@@ -154,28 +154,9 @@ generate = [
     { Watchdog = "frc/Watchdog.h" },
     { XboxController = "frc/XboxController.h" },
 
-    
-    
-
     # frc/filters (deprecated)
     # { Filter = "frc/filters/Filter.h" },
     # { LinearDigitalFilter = "frc/filters/LinearDigitalFilter.h" },
-
-
-
-    
-
-    # frc/kinematics
-    # { ChassisSpeeds = "frc/kinematics/ChassisSpeeds.h" },
-    # { DifferentialDriveKinematics = "frc/kinematics/DifferentialDriveKinematics.h" },
-    # { DifferentialDriveOdometry = "frc/kinematics/DifferentialDriveOdometry.h" },
-    # { DifferentialDriveWheelSpeeds = "frc/kinematics/DifferentialDriveWheelSpeeds.h" },
-    # { MecanumDriveKinematics = "frc/kinematics/MecanumDriveKinematics.h" },
-    # { MecanumDriveOdometry = "frc/kinematics/MecanumDriveOdometry.h" },
-    # { MecanumDriveWheelSpeeds = "frc/kinematics/MecanumDriveWheelSpeeds.h" },
-    # { SwerveDriveKinematics = "frc/kinematics/SwerveDriveKinematics.h" },
-    # { SwerveDriveOdometry = "frc/kinematics/SwerveDriveOdometry.h" },
-    # { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
 
     # frc/livewindow
     { LiveWindow = "frc/livewindow/LiveWindow.h" },
@@ -328,6 +309,30 @@ generate = [
     { Accelerometer = "frc/interfaces/Accelerometer.h" },
     { Gyro = "frc/interfaces/Gyro.h" },
     { Potentiometer = "frc/interfaces/Potentiometer.h" },
+]
+
+[tool.robotpy-build.wrappers."wpilib.kinematics"]
+
+name = "wpilibc_kinematics"
+extension = "_kinematics"
+sources = ["wpilib/kinematics/kinematics.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_geometry", "wpilibc_interfaces", "wpilibc",
+    "wpiHal", "wpiutil", "ntcore"
+]
+generation_data = "gen/kinematics"
+generate = [
+    # frc/kinematics
+    { ChassisSpeeds = "frc/kinematics/ChassisSpeeds.h" },
+    { DifferentialDriveKinematics = "frc/kinematics/DifferentialDriveKinematics.h" },
+    { DifferentialDriveOdometry = "frc/kinematics/DifferentialDriveOdometry.h" },
+    { DifferentialDriveWheelSpeeds = "frc/kinematics/DifferentialDriveWheelSpeeds.h" },
+    { MecanumDriveKinematics = "frc/kinematics/MecanumDriveKinematics.h" },
+    { MecanumDriveOdometry = "frc/kinematics/MecanumDriveOdometry.h" },
+    { MecanumDriveWheelSpeeds = "frc/kinematics/MecanumDriveWheelSpeeds.h" },
+    # { SwerveDriveKinematics = "frc/kinematics/SwerveDriveKinematics.h" },
+    # { SwerveDriveOdometry = "frc/kinematics/SwerveDriveOdometry.h" },
+    # { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
 ]
 
 [tool.robotpy-build.metadata]
