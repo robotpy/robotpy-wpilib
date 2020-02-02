@@ -3,9 +3,17 @@
 classes:
   SwerveDriveOdometry:
     shared_ptr: true
+    template_params:
+    - NumModules
     methods:
       SwerveDriveOdometry:
       ResetPosition:
       GetPose:
       UpdateWithTime:
       Update:
+
+templates:
+  SwerveDriveOdometry4:
+    qualname: frc::SwerveDriveOdometry
+    params:
+    - 4
