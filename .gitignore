@@ -22,6 +22,8 @@ MANIFEST
 /wpilib/_init_wpilib.py
 /wpilib/controller/_init_controller.py
 /wpilib/controller/pkgcfg.py
+/wpilib/geometry/_init_geometry.py
+/wpilib/geometry/pkgcfg.py
 /wpilib/interfaces/_init_interfaces.py
 /wpilib/interfaces/pkgcfg.py
 /wpilib/drive/_init_drive.py

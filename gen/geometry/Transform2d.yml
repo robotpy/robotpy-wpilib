@@ -1,5 +1,8 @@
 ---
 
+extra_includes:
+- frc/geometry/Pose2d.h
+
 classes:
   Transform2d:
     shared_ptr: true
@@ -11,3 +14,6 @@ classes:
           "":
       Translation:
       Rotation:
+      operator*:
+      operator==:
+      operator!=:

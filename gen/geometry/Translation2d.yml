@@ -18,3 +18,16 @@ classes:
       Y:
       Norm:
       RotateBy:
+      operator+:
+      operator+=:
+      operator-:
+        overloads:
+          frc::Translation2d& [const]:
+          '[const]':
+      operator-=:
+      operator*:
+      operator*=:
+      operator/:
+      operator==:
+      operator!=:
+      operator/=:

@@ -161,12 +161,7 @@ generate = [
     # { Filter = "frc/filters/Filter.h" },
     # { LinearDigitalFilter = "frc/filters/LinearDigitalFilter.h" },
 
-    # frc/geometry
-    # { Pose2d = "frc/geometry/Pose2d.h" },
-    # { Rotation2d = "frc/geometry/Rotation2d.h" },
-    # { Transform2d = "frc/geometry/Transform2d.h" },
-    # { Translation2d = "frc/geometry/Translation2d.h" },
-    # { Twist2d = "frc/geometry/Twist2d.h" },
+
 
     
 
@@ -262,7 +257,7 @@ name = "wpilibc_controller"
 extension = "_controller"
 sources = ["wpilib/controller/controller.cpp"]
 depends = [
-    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpilib_core", "wpilibc_geometry", "wpilibc_interfaces", "wpilibc",
     "wpiHal", "wpiutil", "ntcore"
 ]
 generation_data = "gen/controller"
@@ -293,6 +288,25 @@ generate = [
     { MecanumDrive = "frc/drive/MecanumDrive.h" },
     { RobotDriveBase = "frc/drive/RobotDriveBase.h" },
     { Vector2d = "frc/drive/Vector2d.h" },
+]
+
+[tool.robotpy-build.wrappers."wpilib.geometry"]
+
+name = "wpilibc_geometry"
+extension = "_geometry"
+sources = ["wpilib/geometry/geometry.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpiHal", "wpiutil", "ntcore"
+]
+generation_data = "gen/geometry"
+generate = [
+    # frc/geometry
+    { Pose2d = "frc/geometry/Pose2d.h" },
+    { Rotation2d = "frc/geometry/Rotation2d.h" },
+    { Transform2d = "frc/geometry/Transform2d.h" },
+    { Translation2d = "frc/geometry/Translation2d.h" },
+    { Twist2d = "frc/geometry/Twist2d.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.interfaces"]
