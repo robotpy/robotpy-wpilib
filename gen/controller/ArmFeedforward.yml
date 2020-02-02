@@ -3,6 +3,10 @@
 classes:
   ArmFeedforward:
     shared_ptr: true
+    typealias:
+    - frc::ArmFeedforward::Acceleration
+    - frc::ArmFeedforward::kv_unit
+    - frc::ArmFeedforward::ka_unit
     methods:
       ArmFeedforward:
         overloads:
@@ -13,3 +17,10 @@ classes:
       MinAchievableVelocity:
       MaxAchievableAcceleration:
       MinAchievableAcceleration:
+
+inline_code:
+  cls_ArmFeedforward
+    .def_readwrite("kS", &ArmFeedforward::kS)
+    .def_readwrite("kCos", &ArmFeedforward::kCos)
+    .def_readwrite("kV", &ArmFeedforward::kV)
+    .def_readwrite("kA", &ArmFeedforward::kA);

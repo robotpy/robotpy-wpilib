@@ -154,17 +154,7 @@ generate = [
     { Watchdog = "frc/Watchdog.h" },
     { XboxController = "frc/XboxController.h" },
 
-    # frc/controller
-    # { ArmFeedforward = "frc/controller/ArmFeedforward.h" },
-    # requires template
-    # { ElevatorFeedforward = "frc/controller/ElevatorFeedforward.h" },
-    { PIDController = "frc/controller/PIDController.h" },
-    # requires template
-    # { ProfiledPIDController = "frc/controller/ProfiledPIDController.h" },
-    { RamseteController = "frc/controller/RamseteController.h" },
-    # requires template
-    # { SimpleMotorFeedforward = "frc/controller/SimpleMotorFeedforward.h" },
-
+    
     
 
     # frc/filters (deprecated)
@@ -264,6 +254,26 @@ generate = [
 
     # frc2
     { Timer = "frc2/Timer.h" },
+]
+
+[tool.robotpy-build.wrappers."wpilib.controller"]
+
+name = "wpilibc_controller"
+extension = "_controller"
+sources = ["wpilib/controller/controller.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpiHal", "wpiutil", "ntcore"
+]
+generation_data = "gen/controller"
+generate = [
+    # frc/controller
+    { ArmFeedforward = "frc/controller/ArmFeedforward.h" },
+    { ElevatorFeedforward = "frc/controller/ElevatorFeedforward.h" },
+    { PIDController = "frc/controller/PIDController.h" },
+    # { ProfiledPIDController = "frc/controller/ProfiledPIDController.h" },
+    { RamseteController = "frc/controller/RamseteController.h" },
+    { SimpleMotorFeedforward = "frc/controller/SimpleMotorFeedforward.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.drive"]
