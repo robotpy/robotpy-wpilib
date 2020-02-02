@@ -14,7 +14,6 @@ classes:
           period:
             default: 20_ms
       SetPID:
-        ignore: true # not implemented
       SetP:
       SetI:
       SetD:

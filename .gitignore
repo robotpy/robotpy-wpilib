@@ -20,6 +20,8 @@ MANIFEST
 /wpilib/pkgcfg.py
 /wpilib/version.py
 /wpilib/_init_wpilib.py
+/wpilib/controller/_init_controller.py
+/wpilib/controller/pkgcfg.py
 /wpilib/interfaces/_init_interfaces.py
 /wpilib/interfaces/pkgcfg.py
 /wpilib/drive/_init_drive.py
