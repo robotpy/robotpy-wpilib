@@ -62,6 +62,7 @@ classes:
         overloads:
           units::second_t, int, int, int, int, int, int, bool, bool:
           double, int, int, int, int, int, int, bool, bool:
+            ignore: true
       FreeAccumulator:
       ResetAccumulator:
       SetAccumulatorCenter:
