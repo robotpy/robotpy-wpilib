@@ -1,0 +1,41 @@
+---
+
+extra_includes:
+- pybind11/stl.h
+
+classes:
+  Spline:
+    shared_ptr: true
+    is_polymorphic: true
+    template_params:
+    - int Degree
+    methods:
+      Spline:
+      GetPoint:
+      Coefficients:
+        ignore_pure: true
+      ToVector:
+        ignore: true
+      FromVector:
+        ignore: true
+    template_inline_code: |
+      cls_ControlVector
+        .def_readwrite("x", &frc::Spline<Degree>::ControlVector::x)
+        .def_readwrite("y", &frc::Spline<Degree>::ControlVector::y);
+  Spline::ControlVector:
+    shared_ptr: true
+    methods:
+      ',':
+        # CppHeaderParser bug
+        ignore: true
+
+templates:
+  Spline3:
+    qualname: frc::Spline
+    params:
+    - 3
+  
+  Spline5:
+    qualname: frc::Spline
+    params:
+    - 5

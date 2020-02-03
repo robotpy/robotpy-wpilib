@@ -1,7 +1,0 @@
----
-
-classes:
-  SplineParameterizer:
-    shared_ptr: true
-    methods:
-      Parameterize:

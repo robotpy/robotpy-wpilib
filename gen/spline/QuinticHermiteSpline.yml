@@ -6,3 +6,4 @@ classes:
     methods:
       QuinticHermiteSpline:
       Coefficients:
+        ignore: true

@@ -201,12 +201,7 @@ generate = [
     { SendableRegistry = "frc/smartdashboard/SendableRegistry.h" },
     { SmartDashboard = "frc/smartdashboard/SmartDashboard.h" },
 
-    # frc/spline
-    # { CubicHermiteSpline = "frc/spline/CubicHermiteSpline.h" },
-    # { QuinticHermiteSpline = "frc/spline/QuinticHermiteSpline.h" },
-    # { Spline = "frc/spline/Spline.h" },
-    # { SplineHelper = "frc/spline/SplineHelper.h" },
-    # { SplineParameterizer = "frc/spline/SplineParameterizer.h" },
+    
 
     # frc/trajectory
     # { Trajectory = "frc/trajectory/Trajectory.h" },
@@ -333,6 +328,25 @@ generate = [
     # { SwerveDriveKinematics = "frc/kinematics/SwerveDriveKinematics.h" },
     # { SwerveDriveOdometry = "frc/kinematics/SwerveDriveOdometry.h" },
     # { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
+]
+
+[tool.robotpy-build.wrappers."wpilib.spline"]
+
+name = "wpilibc_spline"
+extension = "_spline"
+sources = ["wpilib/spline/spline.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_geometry", "wpilibc",
+    "wpiHal", "wpiutil", "ntcore"
+]
+generation_data = "gen/spline"
+generate = [
+    # frc/spline
+    { CubicHermiteSpline = "frc/spline/CubicHermiteSpline.h" },
+    { QuinticHermiteSpline = "frc/spline/QuinticHermiteSpline.h" },
+    { Spline = "frc/spline/Spline.h" },
+    { SplineHelper = "frc/spline/SplineHelper.h" },
+    { SplineParameterizer = "frc/spline/SplineParameterizer.h" },
 ]
 
 [tool.robotpy-build.metadata]

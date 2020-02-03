@@ -1,0 +1,14 @@
+---
+
+classes:
+  SplineParameterizer:
+    shared_ptr: true
+    force_no_default_constructor: true
+    methods:
+      Parameterize:
+        template_impls:
+        - ["3"]
+        - ["5"]
+
+  SplineParameterizer::MalformedSplineException:
+    ignore: true
