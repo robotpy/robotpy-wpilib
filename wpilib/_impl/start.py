@@ -69,7 +69,7 @@ class RobotStarter:
         from _pyntcore import NetworkTables
 
         NetworkTables.setNetworkIdentity("Robot")
-        if isSimulation:
+        if not isSimulation:
             NetworkTables.startServer("/home/lvuser/networktables.ini")
         else:
             NetworkTables.startServer()
