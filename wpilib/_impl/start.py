@@ -62,6 +62,17 @@ class RobotStarter:
             wpilib.__version__,
         )
 
+        isSimulation = wpilib.RobotBase.isSimulation()
+
+        # hack: initialize networktables before creating the robot
+        #       class, otherwise our logger doesn't get created
+        from _pyntcore import NetworkTables
+        NetworkTables.setNetworkIdentity("Robot")
+        if isSimulation:
+            NetworkTables.startServer("/home/lvuser/networktables.ini")
+        else:
+            NetworkTables.startServer()
+
         try:
             self.robot = robot_cls()
         except:
@@ -81,7 +92,7 @@ class RobotStarter:
         #     )
         #     return False
 
-        if not wpilib.RobotBase.isSimulation():
+        if not isSimulation:
             try:
                 with open("/tmp/frc_versions/FRC_Lib_Version.ini", "w") as fp:
                     fp.write("RobotPy %s" % wpilib.__version__)
