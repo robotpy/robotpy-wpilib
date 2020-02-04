@@ -23,7 +23,7 @@ def _log_versions():
     logger.info("HAL version %s", hal.__version__)
 
     # should we just die here?
-    if hal.__version__.split(".", 2) != wpilib.__version__.split(".", 2):
+    if hal.__version__.split(".")[:3] != wpilib.__version__.split(".")[:3]:
         logger.warning(
             "Core component versions are not identical! This is not a supported configuration, and you may run into errors!"
         )
