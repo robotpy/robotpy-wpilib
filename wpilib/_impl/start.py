@@ -67,6 +67,7 @@ class RobotStarter:
         # hack: initialize networktables before creating the robot
         #       class, otherwise our logger doesn't get created
         from _pyntcore import NetworkTables
+
         NetworkTables.setNetworkIdentity("Robot")
         if isSimulation:
             NetworkTables.startServer("/home/lvuser/networktables.ini")
