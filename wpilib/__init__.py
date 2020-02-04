@@ -417,6 +417,10 @@ __all__ = [
 
 del _init_wpilib
 
+from .cameraserver import CameraServer
+
+__all__.append(CameraServer)
+
 try:
     from .version import version as __version__
 except ImportError:
