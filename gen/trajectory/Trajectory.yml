@@ -19,3 +19,14 @@ classes:
       TransformBy:
       RelativeTo:
       InitialPose:
+  Trajectory::State:
+    shared_ptr: true
+    attributes:
+      t:
+      velocity:
+      acceleration:
+      pose:
+    methods:
+      operator==:
+      operator!=:
+      Interpolate:

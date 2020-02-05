@@ -3,6 +3,8 @@
 classes:
   SwerveDriveKinematicsConstraint:
     shared_ptr: true
+    typealias:
+    - frc::TrajectoryConstraint::MinMax
     methods:
       SwerveDriveKinematicsConstraint:
       MaxVelocity:

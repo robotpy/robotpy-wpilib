@@ -3,6 +3,8 @@
 classes:
   CentripetalAccelerationConstraint:
     shared_ptr: true
+    typealias:
+    - frc::TrajectoryConstraint::MinMax
     methods:
       CentripetalAccelerationConstraint:
       MaxVelocity:

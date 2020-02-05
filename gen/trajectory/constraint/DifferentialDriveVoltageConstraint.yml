@@ -1,0 +1,11 @@
+---
+
+classes:
+  DifferentialDriveVoltageConstraint:
+    shared_ptr: true
+    typealias:
+    - frc::TrajectoryConstraint::MinMax
+    methods:
+      DifferentialDriveVoltageConstraint:
+      MaxVelocity:
+      MinMaxAcceleration:

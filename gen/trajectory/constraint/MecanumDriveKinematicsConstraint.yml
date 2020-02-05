@@ -3,6 +3,8 @@
 classes:
   MecanumDriveKinematicsConstraint:
     shared_ptr: true
+    typealias:
+    - frc::TrajectoryConstraint::MinMax
     methods:
       MecanumDriveKinematicsConstraint:
       MaxVelocity:

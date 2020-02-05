@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "robotpy-build>=2020.1.1,<2021.0.0",
+    "robotpy-build>=2020.1.2,<2021.0.0",
     "robotpy-wpiutil>=2020.2.2.0,<2021.0.0",
     "robotpy-hal>=2020.2.2.0,<2021.0.0",
     "pyntcore>=2020.2.2.0,<2021.0.0",
@@ -201,24 +201,6 @@ generate = [
     { SendableRegistry = "frc/smartdashboard/SendableRegistry.h" },
     { SmartDashboard = "frc/smartdashboard/SmartDashboard.h" },
 
-    
-
-    # frc/trajectory
-    # { Trajectory = "frc/trajectory/Trajectory.h" },
-    # { TrajectoryConfig = "frc/trajectory/TrajectoryConfig.h" },
-    # { TrajectoryGenerator = "frc/trajectory/TrajectoryGenerator.h" },
-    # { TrajectoryParameterizer = "frc/trajectory/TrajectoryParameterizer.h" },
-    # { TrajectoryUtil = "frc/trajectory/TrajectoryUtil.h" },
-    # { TrapezoidProfile = "frc/trajectory/TrapezoidProfile.h" },
-
-    # frc/trajectory/constraint
-    # { CentripetalAccelerationConstraint = "frc/trajectory/constraint/CentripetalAccelerationConstraint.h" },
-    # { DifferentialDriveKinematicsConstraint = "frc/trajectory/constraint/DifferentialDriveKinematicsConstraint.h" },
-    # { DifferentialDriveVoltageConstraint = "frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h" },
-    # { MecanumDriveKinematicsConstraint = "frc/trajectory/constraint/MecanumDriveKinematicsConstraint.h" },
-    # { SwerveDriveKinematicsConstraint = "frc/trajectory/constraint/SwerveDriveKinematicsConstraint.h" },
-    # { TrajectoryConstraint = "frc/trajectory/constraint/TrajectoryConstraint.h" },
-
     # frc/util
     { Color = "frc/util/Color.h" },
     { Color8Bit = "frc/util/Color8Bit.h" },
@@ -347,6 +329,49 @@ generate = [
     { Spline = "frc/spline/Spline.h" },
     { SplineHelper = "frc/spline/SplineHelper.h" },
     { SplineParameterizer = "frc/spline/SplineParameterizer.h" },
+]
+
+[tool.robotpy-build.wrappers."wpilib.trajectory"]
+
+name = "wpilibc_trajectory"
+extension = "_trajectory"
+sources = ["wpilib/trajectory/trajectory.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpilibc_geometry", "wpilibc_kinematics",
+    "wpilibc_trajectory_constraint",
+    "wpiHal", "wpiutil", "ntcore",
+]
+generation_data = "gen/trajectory"
+generate = [
+    # frc/trajectory
+    { Trajectory = "frc/trajectory/Trajectory.h" },
+    { TrajectoryConfig = "frc/trajectory/TrajectoryConfig.h" },
+    { TrajectoryGenerator = "frc/trajectory/TrajectoryGenerator.h" },
+    { TrajectoryParameterizer = "frc/trajectory/TrajectoryParameterizer.h" },
+    { TrajectoryUtil = "frc/trajectory/TrajectoryUtil.h" },
+    { TrapezoidProfile = "frc/trajectory/TrapezoidProfile.h" },
+]
+
+[tool.robotpy-build.wrappers."wpilib.trajectory.constraint"]
+
+name = "wpilibc_trajectory_constraint"
+extension = "_constraint"
+sources = ["wpilib/trajectory/constraint/constraint.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpilibc_geometry", "wpilibc_kinematics",
+    "wpiHal", "wpiutil", "ntcore",
+]
+generation_data = "gen/trajectory/constraint"
+generate = [
+    # frc/trajectory/constraint
+    { CentripetalAccelerationConstraint = "frc/trajectory/constraint/CentripetalAccelerationConstraint.h" },
+    { DifferentialDriveKinematicsConstraint = "frc/trajectory/constraint/DifferentialDriveKinematicsConstraint.h" },
+    { DifferentialDriveVoltageConstraint = "frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h" },
+    { MecanumDriveKinematicsConstraint = "frc/trajectory/constraint/MecanumDriveKinematicsConstraint.h" },
+    # { SwerveDriveKinematicsConstraint = "frc/trajectory/constraint/SwerveDriveKinematicsConstraint.h" },
+    { TrajectoryConstraint = "frc/trajectory/constraint/TrajectoryConstraint.h" },
 ]
 
 [tool.robotpy-build.metadata]

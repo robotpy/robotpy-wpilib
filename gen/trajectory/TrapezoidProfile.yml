@@ -1,0 +1,51 @@
+---
+
+classes:
+  TrapezoidProfile:
+    shared_ptr: true
+    typealias:
+    - Distance_t = units::unit_t<Distance>
+    - Velocity = units::compound_unit<Distance, units::inverse<units::seconds>>
+    - Velocity_t = units::unit_t<Velocity>
+    - Acceleration = units::compound_unit<Velocity, units::inverse<units::seconds>>
+    - Acceleration_t = units::unit_t<Acceleration>
+    - State = typename frc::TrapezoidProfile<Distance>::State
+    template_params:
+    - Distance
+    methods:
+      TrapezoidProfile:
+        param_override:
+          constraints:
+            x_type: typename TrapezoidProfile<Distance>::Constraints
+          goal:
+            x_type: typename TrapezoidProfile<Distance>::State
+          initial:
+            x_type: typename TrapezoidProfile<Distance>::State
+      Calculate:
+      TimeLeftUntil:
+      TotalTime:
+      IsFinished:
+  TrapezoidProfile::Constraints:
+    shared_ptr: true
+    methods:
+      Constraints:
+        overloads:
+          "":
+          units::unit_t<Velocity>, units::unit_t<Acceleration>:
+  TrapezoidProfile::State:
+    shared_ptr: true
+    methods:
+      operator==:
+        cpp_code: .def(py::self == State()
+      operator!=:
+        cpp_code: .def(py::self != State()
+
+templates:
+  TrapezoidProfileMeters:
+    qualname: frc::TrapezoidProfile
+    params:
+    - units::meter
+  TrapezoidProfileFeet:
+    qualname: frc::TrapezoidProfile
+    params:
+    - units::feet

@@ -3,6 +3,8 @@
 classes:
   DifferentialDriveKinematicsConstraint:
     shared_ptr: true
+    typealias:
+    - frc::TrajectoryConstraint::MinMax
     methods:
       DifferentialDriveKinematicsConstraint:
       MaxVelocity:

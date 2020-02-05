@@ -1,0 +1,36 @@
+---
+
+extra_includes:
+- frc/trajectory/constraint/CentripetalAccelerationConstraint.h
+- frc/trajectory/constraint/DifferentialDriveKinematicsConstraint.h
+- frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h
+- frc/trajectory/constraint/MecanumDriveKinematicsConstraint.h
+
+classes:
+  TrajectoryConfig:
+    shared_ptr: true
+    methods:
+      TrajectoryConfig:
+      SetStartVelocity:
+      SetEndVelocity:
+      SetReversed:
+      AddConstraint:
+        template_impls:
+        - [frc::CentripetalAccelerationConstraint]
+        - [frc::DifferentialDriveKinematicsConstraint]
+        - [frc::DifferentialDriveVoltageConstraint]
+        - [frc::MecanumDriveKinematicsConstraint]
+        # TODO: user constraint
+      SetKinematics:
+        overloads:
+          DifferentialDriveKinematics&:
+          MecanumDriveKinematics:
+          SwerveDriveKinematics<NumModules>&:
+            ignore: true
+      StartVelocity:
+      EndVelocity:
+      MaxVelocity:
+      MaxAcceleration:
+      Constraints:
+        ignore: true # seems hard, let me know if you need it
+      IsReversed:

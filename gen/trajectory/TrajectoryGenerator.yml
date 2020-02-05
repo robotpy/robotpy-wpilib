@@ -1,5 +1,9 @@
 ---
 
+extra_includes:
+- frc/spline/CubicHermiteSpline.h
+- frc/spline/QuinticHermiteSpline.h
+
 classes:
   TrajectoryGenerator:
     shared_ptr: true
@@ -11,3 +15,7 @@ classes:
           std::vector<Spline<5>::ControlVector>, TrajectoryConfig&:
           std::vector<Pose2d>&, TrajectoryConfig&:
       SplinePointsFromSplines:
+        template_impls:
+        - [CubicHermiteSpline]
+        - [QuinticHermiteSpline]
+      SetErrorHandler:

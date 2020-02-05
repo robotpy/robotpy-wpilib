@@ -4,7 +4,6 @@ classes:
   TrajectoryUtil:
     shared_ptr: true
     methods:
-      TrajectoryUtil:
       ToPathweaverJson:
       FromPathweaverJson:
       SerializeTrajectory:

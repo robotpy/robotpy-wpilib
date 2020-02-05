@@ -28,8 +28,14 @@ MANIFEST
 /wpilib/geometry/pkgcfg.py
 /wpilib/interfaces/_init_interfaces.py
 /wpilib/interfaces/pkgcfg.py
-/wpilib/kinematics/_init_controller.py
+/wpilib/kinematics/_init_kinematics.py
 /wpilib/kinematics/pkgcfg.py
+/wpilib/spline/_init_spline.py
+/wpilib/spline/pkgcfg.py
+/wpilib/trajectory/_init_trajectory.py
+/wpilib/trajectory/pkgcfg.py
+/wpilib/trajectory/constraint/_init_constraint.py
+/wpilib/trajectory/constraint/pkgcfg.py
 
 rpy-include
 /wpilib/_impl/_init_wpilibc.py
