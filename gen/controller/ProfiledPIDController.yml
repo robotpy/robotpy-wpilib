@@ -9,8 +9,19 @@ functions:
 classes:
   ProfiledPIDController:
     shared_ptr: true
+    template_params:
+    - Distance
+    ignored_bases:
+    - SendableHelper<ProfiledPIDController<Distance>>
+    typealias:
+    - typename frc::ProfiledPIDController<Distance>::Velocity
     methods:
       ProfiledPIDController:
+        param_override:
+          constraints:
+            x_type: typename TrapezoidProfile<Distance>::Constraints
+          period:
+            default: 20_ms
       SetPID:
       SetP:
       SetI:
@@ -22,6 +33,9 @@ classes:
       SetGoal:
         overloads:
           'typename TrapezoidProfile<Distance>::':
+            param_override:
+              goal:
+                x_type: typename TrapezoidProfile<Distance>::State
           units::unit_t<Distance>:
       GetGoal:
       AtGoal:
@@ -38,11 +52,30 @@ classes:
         overloads:
           units::unit_t<Distance>:
           'units::unit_t<Distance>, typename TrapezoidProfile<Distance>::':
+            param_override:
+              goal:
+                x_type: typename TrapezoidProfile<Distance>::State
           units::unit_t<Distance>, units::unit_t<Distance>:
           units::unit_t<Distance>, units::unit_t<Distance>, typename frc::TrapezoidProfile<Distance>::Constraints:
+            param_override:
+              constraints:
+                x_type: typename TrapezoidProfile<Distance>::Constraints
       Reset:
         overloads:
           typename TrapezoidProfile<Distance>::&:
+            param_override:
+              measurement:
+                x_type: typename TrapezoidProfile<Distance>::State
           units::unit_t<Distance>, units::unit_t<Velocity>:
           units::unit_t<Distance>:
       InitSendable:
+
+templates:
+  ProfiledPIDControllerMeters:
+    qualname: frc::ProfiledPIDController
+    params:
+    - units::meter
+  ProfiledPIDControllerFeet:
+    qualname: frc::ProfiledPIDController
+    params:
+    - units::feet

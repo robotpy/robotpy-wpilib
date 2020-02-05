@@ -215,8 +215,10 @@ name = "wpilibc_controller"
 extension = "_controller"
 sources = ["wpilib/controller/controller.cpp"]
 depends = [
-    "wpilib_core", "wpilibc_geometry", "wpilibc_interfaces", "wpilibc",
-    "wpiHal", "wpiutil", "ntcore"
+    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpilibc_geometry", "wpilibc_kinematics",
+    "wpilibc_trajectory_constraint",
+    "wpiHal", "wpiutil", "ntcore",
 ]
 generation_data = "gen/controller"
 generate = [
@@ -224,7 +226,7 @@ generate = [
     { ArmFeedforward = "frc/controller/ArmFeedforward.h" },
     { ElevatorFeedforward = "frc/controller/ElevatorFeedforward.h" },
     { PIDController = "frc/controller/PIDController.h" },
-    # { ProfiledPIDController = "frc/controller/ProfiledPIDController.h" },
+    { ProfiledPIDController = "frc/controller/ProfiledPIDController.h" },
     { RamseteController = "frc/controller/RamseteController.h" },
     { SimpleMotorFeedforward = "frc/controller/SimpleMotorFeedforward.h" },
 ]
