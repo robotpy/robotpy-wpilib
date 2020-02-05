@@ -30,3 +30,9 @@ classes:
       operator*:
       operator==:
       operator!=:
+
+inline_code: |
+  cls_Rotation2d
+    .def_static("fromDegrees", [](units::degree_t value) {
+      return std::make_shared<Rotation2d>(value);
+    });
