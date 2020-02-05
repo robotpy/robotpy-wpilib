@@ -74,8 +74,4 @@ templates:
   ProfiledPIDControllerMeters:
     qualname: frc::ProfiledPIDController
     params:
-    - units::meter
-  ProfiledPIDControllerFeet:
-    qualname: frc::ProfiledPIDController
-    params:
-    - units::feet
+      - units::dimensionless::scalar
