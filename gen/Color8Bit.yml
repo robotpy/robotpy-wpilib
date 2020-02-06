@@ -8,8 +8,11 @@ classes:
     shared_ptr: true
     attributes:
       red:
+        access: readonly
       green:
+        access: readonly
       blue:
+        access: readonly
     methods:
       Color8Bit:
         overloads:
@@ -18,4 +21,4 @@ classes:
           Color&:
 
 inline_code: |
-  cls_Color8Bit.def(py::self == py::self);
+  cls_Color8Bit.def(py::self == py::self).def(hash(py::self));

@@ -151,8 +151,11 @@ classes:
       kYellow:
       kYellowGreen:
       red:
+        access: readonly
       green:
+        access: readonly
       blue:
+        access: readonly
     methods:
       Color:
         overloads:
@@ -160,4 +163,4 @@ classes:
           double, double, double:
 
 inline_code: |
-  cls_Color.def(py::self == py::self);
+  cls_Color.def(py::self == py::self).def(hash(py::self));
