@@ -163,4 +163,12 @@ classes:
           double, double, double:
 
 inline_code: |
-  cls_Color.def(py::self == py::self).def(hash(py::self));
+  cls_Color.def(py::self == py::self)
+    .def("__hash__", [](Color *self) -> ssize_t {
+      ssize_t h = (ssize_t)(
+        std::hash<double>{}(self->red)
+        ^ (std::hash<double>{}(self->green) << 1)
+        ^ (std::hash<double>{}(self->blue) << 2)
+      );
+      return h != -1 ? h : -2;
+    });

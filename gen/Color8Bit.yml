@@ -21,4 +21,7 @@ classes:
           Color&:
 
 inline_code: |
-  cls_Color8Bit.def(py::self == py::self).def(hash(py::self));
+  cls_Color8Bit.def(py::self == py::self)
+    .def("__hash__", [](Color8Bit *self) -> ssize_t {
+      return (self->red) | (self->green << 8) | (self->blue << 16);
+    });
