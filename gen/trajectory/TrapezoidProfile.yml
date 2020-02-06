@@ -41,11 +41,7 @@ classes:
         cpp_code: .def(py::self != State()
 
 templates:
-  TrapezoidProfileMeters:
+  TrapezoidProfile:
     qualname: frc::TrapezoidProfile
     params:
-    - units::meter
-  TrapezoidProfileFeet:
-    qualname: frc::TrapezoidProfile
-    params:
-    - units::feet
+      - units::dimensionless::scalar
