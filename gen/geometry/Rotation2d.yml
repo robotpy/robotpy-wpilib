@@ -7,7 +7,6 @@ functions:
     ignore: true
 classes:
   Rotation2d:
-    shared_ptr: true
     methods:
       Rotation2d:
         overloads:
@@ -33,6 +32,6 @@ classes:
 
 inline_code: |
   cls_Rotation2d
-    .def_static("fromDegrees", [](units::degree_t value) {
-      return std::make_shared<Rotation2d>(value);
+    .def_static("fromDegrees", [](double value) {
+      return Rotation2d{units::degree_t(value)};
     });
