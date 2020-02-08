@@ -7,8 +7,7 @@ from ._trajectory import (
     TrajectoryGenerator,
     TrajectoryParameterizer,
     TrajectoryUtil,
-    TrapezoidProfileFeet,
-    TrapezoidProfileMeters,
+    TrapezoidProfile,
 )
 
 __all__ = [
@@ -17,8 +16,7 @@ __all__ = [
     "TrajectoryGenerator",
     "TrajectoryParameterizer",
     "TrajectoryUtil",
-    "TrapezoidProfileFeet",
-    "TrapezoidProfileMeters",
+    "TrapezoidProfile",
 ]
 
 del _init_trajectory

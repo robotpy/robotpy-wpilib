@@ -71,7 +71,7 @@ classes:
       InitSendable:
 
 templates:
-  ProfiledPIDControllerMeters:
+  ProfiledPIDController:
     qualname: frc::ProfiledPIDController
     params:
       - units::dimensionless::scalar
