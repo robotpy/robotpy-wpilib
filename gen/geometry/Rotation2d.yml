@@ -34,4 +34,7 @@ inline_code: |
   cls_Rotation2d
     .def_static("fromDegrees", [](double value) {
       return Rotation2d{units::degree_t(value)};
+    })
+    .def("__repr__", [](Rotation2d *self) {
+      return "Rotation2d(" + std::to_string(self->Radians()()) + ")";
     });
