@@ -2,7 +2,7 @@
 
 classes:
   Twist2d:
-    shared_ptr: true
+    shared_ptr: false
     attributes:
       dx:
       dy:

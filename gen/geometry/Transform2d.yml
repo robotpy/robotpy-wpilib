@@ -5,7 +5,7 @@ extra_includes:
 
 classes:
   Transform2d:
-    shared_ptr: true
+    shared_ptr: false
     methods:
       Transform2d:
         overloads:

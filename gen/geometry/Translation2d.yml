@@ -7,7 +7,7 @@ functions:
     ignore: true
 classes:
   Translation2d:
-    shared_ptr: true
+    shared_ptr: false
     methods:
       Translation2d:
         overloads:
