@@ -7,6 +7,7 @@ functions:
     ignore: true
 classes:
   Rotation2d:
+    shared_ptr: false
     methods:
       Rotation2d:
         overloads:

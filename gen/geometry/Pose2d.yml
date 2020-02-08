@@ -7,6 +7,7 @@ functions:
     ignore: true
 classes:
   Pose2d:
+    shared_ptr: false
     methods:
       Pose2d:
         overloads:
