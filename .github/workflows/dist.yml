@@ -121,10 +121,17 @@ jobs:
         user: __token__
         password: ${{ secrets.pypi_password }}
 
+    - name: Get Current Tag
+      id: currtag
+      run: |
+        export CURR_TAG=`awk -F'/' '{ print $NF }' <<< ${{ github.event.ref }}`
+        echo "::set-output name=tag::$CURR_TAG"
+        echo "Version Found: $CURR_TAG"
+
     - name: Ping pyfrc
       uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ secrets.REPO_ACCESS_TOKEN }}
         repository: robotpy/pyfrc
         event-type: tag
-        client-payload: '{"repository": "robotpy/robotpy-wpilib", "package_name": "wpilib"}'
+        client-payload: '{"package_name": "wpilib", "package_version": "${{ steps.currtag.outputs.tag }}"}'
