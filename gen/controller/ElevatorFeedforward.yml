@@ -32,4 +32,13 @@ templates:
     params:
       - units::dimensionless::scalar
 
+  # TODO: remove for 2021
+  ElevatorFeedforwardMeters:
+    qualname: frc::ElevatorFeedforward
+    params:
+      - units::meter
+  ElevatorFeedforwardFeet:
+    qualname: frc::ElevatorFeedforward
+    params:
+      - units::feet
 

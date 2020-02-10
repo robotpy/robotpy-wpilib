@@ -30,3 +30,13 @@ templates:
     qualname: frc::SimpleMotorFeedforward
     params:
       - units::dimensionless::scalar
+
+  # TODO: remove for 2021
+  SimpleMotorFeedforwardMeters:
+    qualname: frc::SimpleMotorFeedforward
+    params:
+      - units::meter
+  SimpleMotorFeedforwardFeet:
+    qualname: frc::SimpleMotorFeedforward
+    params:
+      - units::feet

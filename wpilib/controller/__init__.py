@@ -4,10 +4,14 @@ from . import _init_controller
 from ._controller import (
     ArmFeedforward,
     ElevatorFeedforward,
+    ElevatorFeedforwardFeet,
+    ElevatorFeedforwardMeters,
     PIDController,
     ProfiledPIDController,
     RamseteController,
     SimpleMotorFeedforward,
+    SimpleMotorFeedforwardFeet,
+    SimpleMotorFeedforwardMeters,
 )
 
 __all__ = [
