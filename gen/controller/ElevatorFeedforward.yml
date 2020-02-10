@@ -27,13 +27,9 @@ classes:
         .def_readwrite("kA", &ElevatorFeedforward<Distance>::kA);
 
 templates:
-  ElevatorFeedforwardMeters:
+  ElevatorFeedforward:
     qualname: frc::ElevatorFeedforward
     params:
-    - units::meter
-  ElevatorFeedforwardFeet:
-    qualname: frc::ElevatorFeedforward
-    params:
-    - units::feet
+      - units::dimensionless::scalar
 
 
