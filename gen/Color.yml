@@ -179,7 +179,7 @@ inline_code: |
       );
       return h != -1 ? h : -2;
     })
-    .def("__repr__", [](Color8Bit *self) {
+    .def("__repr__", [](Color *self) {
       return "Color("
         "red=" + std::to_string(self->red) + ", "
         "green=" + std::to_string(self->green) + ", "
