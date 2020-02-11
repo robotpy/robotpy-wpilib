@@ -161,6 +161,13 @@ classes:
         overloads:
           "":
           double, double, double:
+            param_override:
+              r:
+                name: red
+              g:
+                name: green
+              b:
+                name: blue
 
 inline_code: |
   cls_Color.def(py::self == py::self)
@@ -171,4 +178,10 @@ inline_code: |
         ^ (std::hash<double>{}(self->blue) << 2)
       );
       return h != -1 ? h : -2;
+    })
+    .def("__repr__", [](Color8Bit *self) {
+      return "Color("
+        "red=" + std::to_string(self->red) + ", "
+        "green=" + std::to_string(self->green) + ", "
+        "blue=" + std::to_string(self->blue) + ")";
     });

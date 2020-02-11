@@ -18,10 +18,23 @@ classes:
         overloads:
           "":
           int, int, int:
+            param_override:
+              r:
+                name: red
+              g:
+                name: green
+              b:
+                name: blue
           Color&:
 
 inline_code: |
   cls_Color8Bit.def(py::self == py::self)
     .def("__hash__", [](Color8Bit *self) -> ssize_t {
       return (self->red) | (self->green << 8) | (self->blue << 16);
+    })
+    .def("__repr__", [](Color8Bit *self) {
+      return "Color8Bit("
+        "red=" + std::to_string(self->red) + ", "
+        "green=" + std::to_string(self->green) + ", "
+        "blue=" + std::to_string(self->blue) + ")";
     });
