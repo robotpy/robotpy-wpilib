@@ -7,23 +7,10 @@
 
 import sys
 import os
+from os.path import abspath, dirname
 
-from os.path import abspath, join, dirname
-
-sys.path.insert(0, abspath(join(dirname(__file__))))
-sys.path.insert(0, abspath(join(dirname(__file__), "..", "wpilib")))
-sys.path.insert(0, abspath(join(dirname(__file__), "..", "hal-base")))
-sys.path.insert(0, abspath(join(dirname(__file__), "..", "hal-sim")))
-
+# Project must be built+installed to generate docs
 import wpilib
-
-#
-# Autogenerate the documentation
-#
-
-import regen
-
-regen.main()
 
 # -- RTD configuration ------------------------------------------------
 
@@ -46,7 +33,8 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
-    "sphinx_autodoc_typehints",
+
+    'robotpy_sphinx.all',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -60,7 +48,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "RobotPy WPILib"
-copyright = "2014-2016, RobotPy development team"
+copyright = "2014-2020, RobotPy development team"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -148,47 +136,21 @@ epub_exclude_files = ["search.html"]
 
 # -- Custom Document processing ----------------------------------------------
 
-import gensidebar
+from robotpy_sphinx.regen import gen_package
+from robotpy_sphinx.sidebar import generate_sidebar
 
-gensidebar.generate_sidebar(globals(), "wpilib")
+generate_sidebar(
+    globals(), "wpilib", 
+    "https://raw.githubusercontent.com/robotpy/docs-sidebar/master/sidebar.toml"
+)
 
-import sphinx.addnodes
-import docutils.nodes
+root = abspath(dirname(__file__))
 
-
-def process_child(node):
-    """This function changes class references to not have the
-       intermediate module name by hacking at the doctree"""
-
-    # Edit descriptions to be nicer
-    if isinstance(node, sphinx.addnodes.desc_addname):
-        if len(node.children) == 1:
-            child = node.children[0]
-            text = child.astext()
-            if text.startswith("wpilib.") and text.endswith("."):
-                # remove the last element
-                text = ".".join(text.split(".")[:-2]) + "."
-                node.children[0] = docutils.nodes.Text(text)
-
-    # Edit literals to be nicer
-    elif isinstance(node, docutils.nodes.literal):
-        child = node.children[0]
-        text = child.astext()
-
-        # Remove the imported module name
-        if text.startswith("wpilib."):
-            stext = text.split(".")
-            text = ".".join(stext[:-2] + [stext[-1]])
-            node.children[0] = docutils.nodes.Text(text)
-
-    for child in node.children:
-        process_child(child)
-
-
-def doctree_read(app, doctree):
-    for child in doctree.children:
-        process_child(child)
-
-
-def setup(app):
-    app.connect("doctree-read", doctree_read)
+gen_package(root, 'wpilib', exclude=['wpi_*'])
+gen_package(root, 'wpilib.controller')
+gen_package(root, 'wpilib.drive')
+gen_package(root, 'wpilib.geometry')
+gen_package(root, 'wpilib.interfaces')
+gen_package(root, 'wpilib.kinematics')
+gen_package(root, 'wpilib.spline')
+gen_package(root, 'wpilib.trajectory')

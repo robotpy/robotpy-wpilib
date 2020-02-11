@@ -43,21 +43,7 @@ rpy-include
 /wpilib/_impl/include
 /wpilib/_impl/lib
 
-# Doc-related stuffs
-/docs/_build
-/docs/_sidebar.rst.inc
-/docs/wpilib.rst
-/docs/wpilib
-/docs/wpilib.buttons.rst
-/docs/wpilib.buttons
-/docs/wpilib.command.rst
-/docs/wpilib.command
-/docs/wpilib.drive.rst
-/docs/wpilib.drive
-/docs/wpilib.interfaces
-/docs/wpilib.interfaces.rst
-/docs/wpilib.shuffleboard
-/docs/wpilib.shuffleboard.rst
+
 
 version.py
 

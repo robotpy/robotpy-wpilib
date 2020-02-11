@@ -1,0 +1,25 @@
+
+
+# Doc-related stuffs
+/_build
+/_sidebar.rst.inc
+/_sidebar.toml
+
+/wpilib.rst
+/wpilib
+/wpilib.controller.rst
+/wpilib.controller
+/wpilib.drive.rst
+/wpilib.drive
+/wpilib.geometry.rst
+/wpilib.geometry
+/wpilib.interfaces.rst
+/wpilib.interfaces
+/wpilib.kinematics.rst
+/wpilib.kinematics
+/wpilib.shuffleboard.rst
+/wpilib.shuffleboard
+/wpilib.spline.rst
+/wpilib.spline
+/wpilib.trajectory.rst
+/wpilib.trajectory

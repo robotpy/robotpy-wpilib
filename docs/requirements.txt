@@ -1,4 +1,6 @@
+# This file is intended for use on readthedocs
+--find-links https://www.tortall.net/~robotpy/wheels/2020/linux_x86_64
 sphinx
 sphinx-rtd-theme
-sphinx-autodoc-typehints
-git+git://github.com/robotpy/pynetworktables.git#egg=pynetworktables
+robotpy-sphinx-plugin
+-e docs

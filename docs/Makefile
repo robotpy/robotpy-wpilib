@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    = -W
+SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
@@ -49,14 +49,17 @@ help:
 clean:
 	rm -rf $(BUILDDIR)/*
 	rm -rf __pycache__
-	rm -rf wpilib/*.rst
-	rm -rf wpilib.buttons/*.rst
-	rm -rf wpilib.command/*.rst
-	rm -rf wpilib.interfaces/*.rst
-	rm -f wpilib.rst
-	rm -f wpilib.buttons.rst
-	rm -f wpilib.command.rst
-	rm -f wpilib.interfaces.rst
+	for i in wpilib \
+		wpilib.controller \
+		wpilib.drive \
+		wpilib.geometry \
+		wpilib.interfaces \
+		wpilib.kinematics \
+		wpilib.spline \
+		wpilib.trajectory; do \
+		rm -f $$i.rst; \
+		rm -rf $$i; \
+	done
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

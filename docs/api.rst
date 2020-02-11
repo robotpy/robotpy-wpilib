@@ -18,14 +18,13 @@ The library is designed to:
   oversampling and integration of the input signal or just ask the class for the current
   robot heading. You can work at any level.
 
-
 .. toctree::
 
-    wpilib
-    wpilib.buttons
-    wpilib.command
-    wpilib.drive
-    wpilib.interfaces
-    wpilib.shuffleboard
-    
-    hal
+  wpilib
+  wpilib.controller
+  wpilib.drive
+  wpilib.geometry
+  wpilib.interfaces
+  wpilib.kinematics
+  wpilib.spline
+  wpilib.trajectory

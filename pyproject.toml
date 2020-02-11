@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "robotpy-build>=2020.1.3,<2021.0.0",
+    "robotpy-build>=2020.1.5,<2021.0.0",
     "robotpy-wpiutil>=2020.2.2.0,<2021.0.0",
     "robotpy-hal>=2020.2.2.0,<2021.0.0",
     "pyntcore>=2020.2.2.0,<2021.0.0",
