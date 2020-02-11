@@ -26,11 +26,17 @@ classes:
         .def_readwrite("kA", &SimpleMotorFeedforward<Distance>::kA);
 
 templates:
+  SimpleMotorFeedforward:
+    qualname: frc::SimpleMotorFeedforward
+    params:
+      - units::dimensionless::scalar
+
+  # TODO: remove for 2021
   SimpleMotorFeedforwardMeters:
     qualname: frc::SimpleMotorFeedforward
     params:
-    - units::meter
+      - units::meter
   SimpleMotorFeedforwardFeet:
     qualname: frc::SimpleMotorFeedforward
     params:
-    - units::feet
+      - units::feet

@@ -27,13 +27,18 @@ classes:
         .def_readwrite("kA", &ElevatorFeedforward<Distance>::kA);
 
 templates:
+  ElevatorFeedforward:
+    qualname: frc::ElevatorFeedforward
+    params:
+      - units::dimensionless::scalar
+
+  # TODO: remove for 2021
   ElevatorFeedforwardMeters:
     qualname: frc::ElevatorFeedforward
     params:
-    - units::meter
+      - units::meter
   ElevatorFeedforwardFeet:
     qualname: frc::ElevatorFeedforward
     params:
-    - units::feet
-
+      - units::feet
 
