@@ -33,8 +33,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
-
-    'robotpy_sphinx.all',
+    "robotpy_sphinx.all",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -140,17 +139,18 @@ from robotpy_sphinx.regen import gen_package
 from robotpy_sphinx.sidebar import generate_sidebar
 
 generate_sidebar(
-    globals(), "wpilib", 
-    "https://raw.githubusercontent.com/robotpy/docs-sidebar/master/sidebar.toml"
+    globals(),
+    "wpilib",
+    "https://raw.githubusercontent.com/robotpy/docs-sidebar/master/sidebar.toml",
 )
 
 root = abspath(dirname(__file__))
 
-gen_package(root, 'wpilib', exclude=['wpi_*'])
-gen_package(root, 'wpilib.controller')
-gen_package(root, 'wpilib.drive')
-gen_package(root, 'wpilib.geometry')
-gen_package(root, 'wpilib.interfaces')
-gen_package(root, 'wpilib.kinematics')
-gen_package(root, 'wpilib.spline')
-gen_package(root, 'wpilib.trajectory')
+gen_package(root, "wpilib", exclude=["wpi_*"])
+gen_package(root, "wpilib.controller")
+gen_package(root, "wpilib.drive")
+gen_package(root, "wpilib.geometry")
+gen_package(root, "wpilib.interfaces")
+gen_package(root, "wpilib.kinematics")
+gen_package(root, "wpilib.spline")
+gen_package(root, "wpilib.trajectory")
