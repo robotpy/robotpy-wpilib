@@ -1,4 +1,6 @@
 ---
+extra_includes:
+  - rpy/geometryToString.h
 
 functions:
   to_json:
@@ -25,3 +27,11 @@ classes:
       operator-:
       operator==:
       operator!=:
+
+inline_code: |
+  cls_Pose2d
+    .def("__repr__", [](Pose2d *self) {
+      return "Pose2d("
+        "translation=" + rpy::toString(self->Translation()) + ", "
+        "rotation=" + rpy::toString(self->Rotation()) + ")";
+    });
