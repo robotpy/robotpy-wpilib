@@ -252,7 +252,9 @@ __all__ = [
     "IterativeRobotBase",
     "Jaguar",
     "Joystick",
+    "LinearFilter",
     "LiveWindow",
+    "MedianFilter",
     "MotorSafety",
     "NidecBrushless",
     "Notifier",
@@ -275,10 +277,12 @@ __all__ = [
     "SendableBase",
     "SendableBuilder",
     "SendableBuilderImpl",
+    "SendableChooser",
     "SendableRegistry",
     "SensorUtil",
     "SerialPort",
     "Servo",
+    "SlewRateLimiter",
     "SmartDashboard",
     "Solenoid",
     "SolenoidBase",
@@ -419,11 +423,11 @@ del _init_wpilib
 
 from .cameraserver import CameraServer
 
-__all__.append("CameraServer")
-
 try:
     from .version import version as __version__
 except ImportError:
     __version__ = "master"
 
 from ._impl.main import run
+
+__all__ += ["CameraServer", "run"]
