@@ -1,4 +1,6 @@
 ---
+extra_includes:
+  - rpy/geometryToString.h
 
 functions:
   to_json:
@@ -37,5 +39,5 @@ inline_code: |
       return Rotation2d{units::degree_t(value)};
     })
     .def("__repr__", [](Rotation2d *self) {
-      return "Rotation2d(" + std::to_string(self->Radians()()) + ")";
+      return rpy::toString(*self);
     });
