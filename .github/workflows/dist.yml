@@ -39,7 +39,7 @@ jobs:
 
     - name: Install build dependencies
       run: |
-        python -m pip install 'robotpy-build>=2020.1.6'
+        python -m pip install 'robotpy-build>=2020.1.8'
         python -m robotpy_build build-dep --install --find-links https://www.tortall.net/~robotpy/wheels/2020/linux_x86_64
 
     - name: Build wheel
@@ -47,6 +47,15 @@ jobs:
       env:
         RPYBUILD_PARALLEL: 1
         RPYBUILD_STRIP_LIBPYTHON: 1
+    
+    - name: Test wheel
+      shell: bash
+      run: |
+        cd dist
+        python -m pip install *.whl
+        cd ../tests
+        python -m pip install -r requirements.txt
+        python run_tests.py
     
     - uses: actions/upload-artifact@v1
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
@@ -150,7 +159,7 @@ jobs:
         python-version: 3.8
 
     - name: Install build dependencies
-      run: python -m pip install 'robotpy-build>=2020.1.6'
+      run: python -m pip install 'robotpy-build>=2020.1.8'
 
     - name: Build sdist
       run: python setup.py sdist
