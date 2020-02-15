@@ -21,7 +21,7 @@ classes:
           constraints:
             x_type: typename TrapezoidProfile<Distance>::Constraints
           period:
-            default: 20_ms
+            default: 0.020_s
       SetPID:
       SetP:
       SetI:
