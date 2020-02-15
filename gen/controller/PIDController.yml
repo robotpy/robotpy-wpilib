@@ -12,7 +12,7 @@ classes:
       PIDController:
         param_override:
           period:
-            default: 20_ms
+            default: 0.020_s
       SetPID:
       SetP:
       SetI:
