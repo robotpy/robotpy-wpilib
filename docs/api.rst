@@ -28,3 +28,4 @@ The library is designed to:
   wpilib.kinematics
   wpilib.spline
   wpilib.trajectory
+  wpilib.trajectory.constraint
