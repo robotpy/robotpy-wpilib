@@ -2,7 +2,7 @@
 
 classes:
   TrapezoidProfile:
-    shared_ptr: true
+    shared_ptr: false
     typealias:
     - Distance_t = units::unit_t<Distance>
     - Velocity = units::compound_unit<Distance, units::inverse<units::seconds>>
@@ -25,15 +25,35 @@ classes:
       TimeLeftUntil:
       TotalTime:
       IsFinished:
+    template_inline_code: |
+      cls_State
+        .def(
+          py::init<Distance_t, Velocity_t>(),
+          py::arg("position") = 0,
+          py::arg("velocity") = 0
+        )
+        .def_readwrite("position", &frc::TrapezoidProfile<Distance>::State::position)
+        .def_readwrite("velocity", &frc::TrapezoidProfile<Distance>::State::velocity)
+        .def("__repr__", [=](const State &self) {
+          return std::string(clsName) + ".State("
+            "position=" + std::to_string(self.position()) + ", "
+            "velocity=" + std::to_string(self.velocity()) + ")";
+        });
   TrapezoidProfile::Constraints:
-    shared_ptr: true
+    shared_ptr: false
     methods:
       Constraints:
         overloads:
           "":
           units::unit_t<Velocity>, units::unit_t<Acceleration>:
+            param_override:
+              maxVelocity_:
+                name: maxVelocity
+              maxAcceleration_:
+                name: maxAcceleration
   TrapezoidProfile::State:
-    shared_ptr: true
+    force_no_default_constructor: true
+    shared_ptr: false
     methods:
       operator==:
         cpp_code: .def(py::self == State()
