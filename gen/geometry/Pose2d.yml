@@ -31,7 +31,5 @@ classes:
 inline_code: |
   cls_Pose2d
     .def("__repr__", [](Pose2d *self) {
-      return "Pose2d("
-        "translation=" + rpy::toString(self->Translation()) + ", "
-        "rotation=" + rpy::toString(self->Rotation()) + ")";
+      return rpy::toString(*self);
     });
