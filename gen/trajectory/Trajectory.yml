@@ -1,4 +1,6 @@
 ---
+extra_includes:
+  - rpy/geometryToString.h
 
 functions:
   to_json:
@@ -20,7 +22,8 @@ classes:
       RelativeTo:
       InitialPose:
   Trajectory::State:
-    shared_ptr: true
+    force_no_default_constructor: true
+    shared_ptr: false
     attributes:
       t:
       velocity:
@@ -33,4 +36,26 @@ classes:
 
 inline_code: |
   cls_State
+    .def(
+      py::init<
+        units::second_t,
+        units::meters_per_second_t,
+        units::meters_per_second_squared_t,
+        Pose2d,
+        curvature_t
+      >(),
+      py::arg("t") = 0_s,
+      py::arg("velocity") = 0_mps,
+      py::arg("acceleration") = 0_mps_sq,
+      py::arg("pose") = Pose2d(),
+      py::arg("curvature") = 0.0
+    )
+    .def("__repr__", [](frc::Trajectory::State *self) {
+      return "Trajectory.State("
+        "t=" + std::to_string(self->t()) + ", "
+        "velocity=" + std::to_string(self->velocity()) + ", "
+        "acceleration=" + std::to_string(self->acceleration()) + ", "
+        "pose=" + rpy::toString(self->pose) + ", "
+        "curvature=" + std::to_string(self->curvature()) + ")";
+    })
     .def_readwrite("curvature", &frc::Trajectory::State::curvature);
