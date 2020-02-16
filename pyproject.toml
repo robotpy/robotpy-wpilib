@@ -82,7 +82,7 @@ generate = [
     { Encoder = "frc/Encoder.h" },
     { Error = "frc/Error.h" },
     { ErrorBase = "frc/ErrorBase.h" },
-    { Filesystem = "frc/Filesystem.h" },
+    # { Filesystem = "frc/Filesystem.h" },
     # deprecated
     # { GearTooth = "frc/GearTooth.h" },
     
