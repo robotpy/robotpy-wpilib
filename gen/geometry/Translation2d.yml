@@ -36,6 +36,4 @@ classes:
 
 inline_code: |
   cls_Translation2d
-    .def("__repr__", [](Translation2d *self) {
-      return rpy::toString(*self);
-    });
+    .def("__repr__", py::overload_cast<const Translation2d&>(&rpy::toString));

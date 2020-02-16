@@ -30,6 +30,4 @@ classes:
 
 inline_code: |
   cls_Pose2d
-    .def("__repr__", [](Pose2d *self) {
-      return rpy::toString(*self);
-    });
+    .def("__repr__", py::overload_cast<const Pose2d&>(&rpy::toString));

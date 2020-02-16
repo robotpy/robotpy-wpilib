@@ -38,6 +38,4 @@ inline_code: |
     .def_static("fromDegrees", [](double value) {
       return Rotation2d{units::degree_t(value)};
     })
-    .def("__repr__", [](Rotation2d *self) {
-      return rpy::toString(*self);
-    });
+    .def("__repr__", py::overload_cast<const Rotation2d&>(&rpy::toString));
