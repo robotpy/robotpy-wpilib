@@ -384,7 +384,7 @@ author_email = "robotpy@googlegroups.com"
 url = "https://github.com/robotpy/robotpy-wpilib"
 license = "BSD-3-Clause"
 install_requires = [
-    "robotpy-wpiutil>=2020.2.2.0,<2021.0.0",
+    "robotpy-wpiutil>=2020.2.2.3,<2021.0.0",
     "robotpy-hal>=2020.2.2.0,<2021.0.0",
     "pyntcore>=2020.2.2.0,<2021.0.0",
 ]
