@@ -13,21 +13,9 @@ cls_RobotBase
         py::arg("robot_cls"), "Starting point for the application")
     .def(
         "getControlState",
-        [](RobotBase *that) -> py::tuple {
-          py::tuple retval(3);
-
-          HAL_ControlWord controlWord;
-
-          {
-            py::gil_scoped_release release;
-            HAL_GetControlWord(&controlWord);
-          }
-
-          retval[0] = py::bool_(controlWord.enabled != 0 &&
-                                controlWord.dsAttached != 0);
-          retval[1] = py::bool_(controlWord.autonomous != 0);
-          retval[2] = py::bool_(controlWord.test != 0);
-          return retval;
+        [](RobotBase *that) -> std::tuple<bool, bool, bool> {
+          py::gil_scoped_release release;
+          return rpy::GetControlState();
         },
         "More efficient way to determine what state the robot is in.\n"
         "\n"
@@ -40,12 +28,7 @@ cls_RobotBase
         "isAutonomousEnabled",
         [](RobotBase *that) -> bool {
           py::gil_scoped_release release;
-          HAL_ControlWord controlWord;
-          HAL_GetControlWord(&controlWord);
-
-          return controlWord.autonomous != 0 &&
-              controlWord.enabled != 0 &&
-              controlWord.dsAttached != 0;
+          return rpy::IsAutonomousEnabled();
         },
         "Equivalent to calling ``isAutonomous() and isEnabled()`` but\n"
         "more efficient.\n"
@@ -60,11 +43,7 @@ cls_RobotBase
         "isOperatorControlEnabled",
         [](RobotBase *that) -> bool {
           py::gil_scoped_release release;
-          HAL_ControlWord controlWord;
-          HAL_GetControlWord(&controlWord);
-
-          return !(controlWord.autonomous != 0 || controlWord.test != 0) &&
-              controlWord.enabled != 0 && controlWord.dsAttached != 0;
+          return rpy::IsOperatorControlEnabled();
         },
         "Equivalent to calling ``isOperatorControl() and isEnabled()`` but\n"
         "more efficient.\n"

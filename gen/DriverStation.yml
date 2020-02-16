@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- hal/DriverStation.h
+  - rpy/ControlWord.h
 
 inline_code: |
   #include <src/rpy/DriverStation.cpp.inl>
