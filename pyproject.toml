@@ -240,7 +240,7 @@ depends = [
     "wpilib_core", "wpilibc_interfaces", "wpilibc",
     "wpiHal", "wpiutil", "ntcore"
 ]
-generation_data = "gen"
+generation_data = "gen/drive"
 generate = [
     # frc/drive
     { DifferentialDrive = "frc/drive/DifferentialDrive.h" },
