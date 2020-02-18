@@ -38,13 +38,20 @@ def _log_versions():
                 "Running simulation HAL on actual roboRIO! This probably isn't what you want, and will probably cause difficult-to-debug issues!"
             )
 
+    versions = {}
+
     # Log third party versions
     # -> TODO: in the future, expand 3rd party HAL support here?
-    for entry_point in iter_entry_points(group="robotpylib", name=None):
-        # Don't actually load the entry points -- just print the
-        # packages unless we need to load them
-        dist = entry_point.dist
-        logger.info("%s version %s", dist.project_name, dist.version)
+    for group in ("robotpylib", "robotpybuild"):
+        for entry_point in iter_entry_points(group=group, name=None):
+            # Don't actually load the entry points -- just print the
+            # packages unless we need to load them
+            dist = entry_point.dist
+            versions[dist.project_name] = dist.version
+
+    for k, v in versions.items():
+        if k not in ("wpilib", "robotpy-hal"):
+            logger.info("%s version %s", k, v)
 
 
 def _enable_faulthandler():
