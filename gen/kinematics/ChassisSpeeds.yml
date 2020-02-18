@@ -2,6 +2,7 @@
 
 classes:
   ChassisSpeeds:
+    force_no_default_constructor: true
     shared_ptr: false
     attributes:
       vx:
@@ -12,13 +13,16 @@ classes:
 
 inline_code: |
   cls_ChassisSpeeds
-    .def(py::init([](units::meters_per_second_t vx, 
-                     units::meters_per_second_t vy,
-                     units::radians_per_second_t omega) {
-        auto cs = std::make_unique<ChassisSpeeds>();
-        cs->vx = vx;
-        cs->vy = vy;
-        cs->omega = omega;
-        return cs;
-    }))
+    .def(
+      py::init<
+        units::meters_per_second_t, units::meters_per_second_t,
+        units::radians_per_second_t
+      >(),
+      py::arg("vx") = 0, py::arg("vy") = 0, py::arg("omega") = 0
+    )
+    .def("__repr__", [](const ChassisSpeeds &cs) -> std::string {
+      return "ChassisSpeeds(vx=" + std::to_string(cs.vx()) + ", "
+                           "vy=" + std::to_string(cs.vy()) + ", "
+                           "omega=" + std::to_string(cs.omega()) + ")";
+    })
   ;
