@@ -11,6 +11,11 @@ classes:
     - SendableHelper<MecanumDrive>
     methods:
       MecanumDrive:
+        keepalive:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
       DriveCartesian:
       DrivePolar:
       IsRightSideInverted:
