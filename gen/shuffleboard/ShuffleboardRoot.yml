@@ -1,5 +1,8 @@
 ---
 
+extra_includes:
+- frc/shuffleboard/ShuffleboardTab.h
+
 classes:
   ShuffleboardRoot:
     shared_ptr: true

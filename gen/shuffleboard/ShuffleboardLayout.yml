@@ -1,0 +1,21 @@
+---
+
+classes:
+  ShuffleboardLayout:
+    shared_ptr: false
+    methods:
+      ShuffleboardLayout:
+        ignore: true
+        # keepalive:
+        # - [1, 2]
+      BuildInto:
+
+templates:
+  _ShuffleboardLayoutComponent:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::ShuffleboardLayout
+  _ShuffleboardLayoutWidget:
+    qualname: frc::ShuffleboardWidget
+    params:
+    - frc::ShuffleboardLayout

@@ -161,31 +161,6 @@ generate = [
     # frc/livewindow
     { LiveWindow = "frc/livewindow/LiveWindow.h" },
 
-    # frc/shuffleboard
-    # -> there's template madness here, do it later
-
-    # # { BuiltInLayouts = "frc/shuffleboard/BuiltInLayouts.h" },
-    # # { BuiltInWidgets = "frc/shuffleboard/BuiltInWidgets.h" },
-    # # { ComplexWidget = "frc/shuffleboard/ComplexWidget.h" },
-    # # { LayoutType = "frc/shuffleboard/LayoutType.h" },
-    # { RecordingController = "frc/shuffleboard/RecordingController.h" },
-    # # # No embedded cscore
-    # # # { SendableCameraWrapper = "frc/shuffleboard/SendableCameraWrapper.h" },
-    # # { Shuffleboard = "frc/shuffleboard/Shuffleboard.h" },
-    # # { ShuffleboardComponent = "frc/shuffleboard/ShuffleboardComponent.h" },
-    # # { ShuffleboardComponentBase = "frc/shuffleboard/ShuffleboardComponentBase.h" },
-    # # { ShuffleboardContainer = "frc/shuffleboard/ShuffleboardContainer.h" },
-    # { ShuffleboardEventImportance = "frc/shuffleboard/ShuffleboardEventImportance.h" },
-    # { ShuffleboardInstance = "frc/shuffleboard/ShuffleboardInstance.h" },
-    # # { ShuffleboardLayout = "frc/shuffleboard/ShuffleboardLayout.h" },
-    # { ShuffleboardRoot = "frc/shuffleboard/ShuffleboardRoot.h" },
-    # { ShuffleboardTab = "frc/shuffleboard/ShuffleboardTab.h" },
-    # # { ShuffleboardValue = "frc/shuffleboard/ShuffleboardValue.h" },
-    # # { ShuffleboardWidget = "frc/shuffleboard/ShuffleboardWidget.h" },
-    # # { SimpleWidget = "frc/shuffleboard/SimpleWidget.h" },
-    # # { SuppliedValueWidget = "frc/shuffleboard/SuppliedValueWidget.h" },
-    # # { WidgetType = "frc/shuffleboard/WidgetType.h" },
-
     # frc/smartdashboard
     # internal detail
     # { ListenerExecutor = "frc/smartdashboard/ListenerExecutor.h" },
@@ -312,6 +287,43 @@ generate = [
     # { SwerveDriveKinematics = "frc/kinematics/SwerveDriveKinematics.h" },
     # { SwerveDriveOdometry = "frc/kinematics/SwerveDriveOdometry.h" },
     # { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
+]
+
+[tool.robotpy-build.wrappers."wpilib.shuffleboard"]
+
+name = "wpilibc_shuffleboard"
+extension = "_shuffleboard"
+sources = ["wpilib/shuffleboard/shuffleboard.cpp"]
+depends = ["wpilibc", "wpiHal", "wpiutil", "ntcore"]
+
+pp_defines = [
+    "DYNAMIC_CAMERA_SERVER 1"
+]
+
+generation_data = "gen/shuffleboard"
+generate = [
+    # frc/shuffleboard
+    { BuiltInLayouts = "frc/shuffleboard/BuiltInLayouts.h" },
+    { BuiltInWidgets = "frc/shuffleboard/BuiltInWidgets.h" },
+    { ComplexWidget = "frc/shuffleboard/ComplexWidget.h" },
+    { LayoutType = "frc/shuffleboard/LayoutType.h" },
+    { RecordingController = "frc/shuffleboard/RecordingController.h" },
+    # # No embedded cscore
+    # # { SendableCameraWrapper = "frc/shuffleboard/SendableCameraWrapper.h" },
+    { Shuffleboard = "frc/shuffleboard/Shuffleboard.h" },
+    { ShuffleboardComponent = "frc/shuffleboard/ShuffleboardComponent.h" },
+    { ShuffleboardComponentBase = "frc/shuffleboard/ShuffleboardComponentBase.h" },
+    { ShuffleboardContainer = "frc/shuffleboard/ShuffleboardContainer.h" },
+    { ShuffleboardEventImportance = "frc/shuffleboard/ShuffleboardEventImportance.h" },
+    # { ShuffleboardInstance = "frc/shuffleboard/ShuffleboardInstance.h" },
+    { ShuffleboardLayout = "frc/shuffleboard/ShuffleboardLayout.h" },
+    { ShuffleboardRoot = "frc/shuffleboard/ShuffleboardRoot.h" },
+    { ShuffleboardTab = "frc/shuffleboard/ShuffleboardTab.h" },
+    { ShuffleboardValue = "frc/shuffleboard/ShuffleboardValue.h" },
+    { ShuffleboardWidget = "frc/shuffleboard/ShuffleboardWidget.h" },
+    { SimpleWidget = "frc/shuffleboard/SimpleWidget.h" },
+    # { SuppliedValueWidget = "frc/shuffleboard/SuppliedValueWidget.h" },
+    { WidgetType = "frc/shuffleboard/WidgetType.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.spline"]

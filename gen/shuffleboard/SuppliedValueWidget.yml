@@ -1,0 +1,20 @@
+---
+
+# TODO
+
+classes:
+  SuppliedValueWidget:
+    shared_ptr: true
+    methods:
+      SuppliedValueWidget:
+      BuildInto:
+
+templates:
+  _SuppliedValueWidgetComponent:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - SuppliedValueWidget<py::object>
+  _SuppliedValueWidgetWidget:
+    qualname: frc::ShuffleboardWidget
+    params:
+    - frc::ComplexWidget

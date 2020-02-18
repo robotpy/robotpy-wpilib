@@ -2,7 +2,7 @@
 
 classes:
   ShuffleboardInstance:
-    shared_ptr: true
+    shared_ptr: false
     methods:
       ShuffleboardInstance:
       GetTab:

@@ -1,0 +1,9 @@
+---
+
+extra_includes_first:
+- wpi/StringRef.h
+
+enums:
+  ShuffleboardEventImportance:
+functions:
+  ShuffleboardEventImportanceName:

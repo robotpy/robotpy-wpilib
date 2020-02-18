@@ -8,10 +8,14 @@ functions:
 classes:
   ShuffleboardWidget:
     shared_ptr: true
+    template_params:
+    - Derived
     methods:
       ShuffleboardWidget:
+        ignore: true
       WithWidget:
         overloads:
           BuiltInWidgets:
           WidgetType&:
           wpi::Twine&:
+            ignore: true # TODO
