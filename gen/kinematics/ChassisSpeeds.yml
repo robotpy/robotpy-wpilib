@@ -2,10 +2,23 @@
 
 classes:
   ChassisSpeeds:
-    shared_ptr: true
+    shared_ptr: false
     attributes:
       vx:
       vy:
       omega:
     methods:
       FromFieldRelativeSpeeds:
+
+inline_code: |
+  cls_ChassisSpeeds
+    .def(py::init([](units::meters_per_second_t vx, 
+                     units::meters_per_second_t vy,
+                     units::radians_per_second_t omega) {
+        auto cs = std::make_unique<ChassisSpeeds>();
+        cs->vx = vx;
+        cs->vy = vy;
+        cs->omega = omega;
+        return cs;
+    }))
+  ;
