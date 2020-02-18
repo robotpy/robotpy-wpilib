@@ -17,7 +17,7 @@ functions:
     ignore: true
 classes:
   RobotBase:
-    nodelete: true
+    shared_ptr: false
     attributes:
       m_ds:
         rename: ds
@@ -37,5 +37,3 @@ classes:
       IsReal:
       IsSimulation:
       RobotBase:
-        # ends up being a memory leak because nodelete
-        ignore: true
