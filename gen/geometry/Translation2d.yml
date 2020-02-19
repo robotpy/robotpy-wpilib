@@ -36,4 +36,18 @@ classes:
 
 inline_code: |
   cls_Translation2d
+    .def_property_readonly("x", &Translation2d::X)
+    .def_property_readonly("y", &Translation2d::Y)
+    .def("__abs__", &Translation2d::Norm)
+    .def("__len__", [](const Translation2d& self) { return 2; })
+    .def("__getitem__", [](const Translation2d& self, int index) {
+      switch (index) {
+        case 0:
+          return self.X();
+        case 1:
+          return self.Y();
+        default:
+          throw std::out_of_range("Translation2d index out of range");
+      }
+    })
     .def("__repr__", py::overload_cast<const Translation2d&>(&rpy::toString));
