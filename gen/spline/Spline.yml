@@ -7,6 +7,8 @@ classes:
   Spline:
     shared_ptr: true
     is_polymorphic: true
+    force_type_casters:
+    - units::unit_t
     template_params:
     - int Degree
     methods:
@@ -20,6 +22,13 @@ classes:
         ignore: true
     template_inline_code: |
       cls_ControlVector
+        .def(
+          py::init<
+            std::array<double, (Degree + 1) / 2>,
+            std::array<double, (Degree + 1) / 2>>(),
+          py::arg("x"),
+          py::arg("y")
+        )
         .def_readwrite("x", &frc::Spline<Degree>::ControlVector::x)
         .def_readwrite("y", &frc::Spline<Degree>::ControlVector::y);
   Spline::ControlVector:
@@ -34,7 +43,7 @@ templates:
     qualname: frc::Spline
     params:
     - 3
-  
+
   Spline5:
     qualname: frc::Spline
     params:
