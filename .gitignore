@@ -30,6 +30,8 @@ MANIFEST
 /wpilib/interfaces/pkgcfg.py
 /wpilib/kinematics/_init_kinematics.py
 /wpilib/kinematics/pkgcfg.py
+/wpilib/simulation/_init_simulation.py
+/wpilib/simulation/pkgcfg.py
 /wpilib/spline/_init_spline.py
 /wpilib/spline/pkgcfg.py
 /wpilib/trajectory/_init_trajectory.py

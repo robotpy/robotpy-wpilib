@@ -17,3 +17,5 @@ classes:
       HasPeriodPassed:
       GetFPGATimestamp:
       GetMatchTime:
+      HasElapsed:
+      AdvanceIfElapsed:

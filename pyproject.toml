@@ -1,9 +1,9 @@
 [build-system]
 requires = [
     "robotpy-build>=2020.1.9,<2021.0.0",
-    "robotpy-wpiutil>=2020.2.2.3,<2021.0.0",
-    "robotpy-hal>=2020.2.2.0,<2021.0.0",
-    "pyntcore>=2020.2.2.0,<2021.0.0",
+    "robotpy-wpiutil>=2020.3.1.0,<2021.0.0",
+    "robotpy-hal>=2020.3.1.0,<2021.0.0",
+    "pyntcore>=2020.3.1.0,<2021.0.0",
 ]
 
 [tool.robotpy-build]
@@ -13,7 +13,7 @@ base_package = "wpilib"
 artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
 repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2020.2.2"
+version = "2020.3.1"
 
 libs = ["wpilibc"]
 
@@ -315,6 +315,22 @@ generate = [
     # { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
 ]
 
+[tool.robotpy-build.wrappers."wpilib.simulation"]
+
+name = "wpilibc_simulation"
+extension = "_simulation"
+sources = ["wpilib/simulation/simulation.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_geometry", "wpilibc",
+    "wpiHal", "wpiutil", "ntcore"
+]
+generation_data = "gen/simulation"
+generate = [
+    # frc/simulation
+    { Field2d = "frc/simulation/Field2d.h" },
+]
+
+
 [tool.robotpy-build.wrappers."wpilib.spline"]
 
 name = "wpilibc_spline"
@@ -385,9 +401,9 @@ author_email = "robotpy@googlegroups.com"
 url = "https://github.com/robotpy/robotpy-wpilib"
 license = "BSD-3-Clause"
 install_requires = [
-    "robotpy-wpiutil>=2020.2.2.3,<2021.0.0",
-    "robotpy-hal>=2020.2.2.0,<2021.0.0",
-    "pyntcore>=2020.2.2.0,<2021.0.0",
+    "robotpy-wpiutil>=2020.3.1.0,<2021.0.0",
+    "robotpy-hal>=2020.3.1.0,<2021.0.0",
+    "pyntcore>=2020.3.1.0,<2021.0.0",
 ]
 
 [tool.robotpy-build.metadata.entry_points]

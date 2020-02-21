@@ -1,0 +1,12 @@
+---
+
+classes:
+  Field2d:
+    shared_ptr: true
+    methods:
+      Field2d:
+      SetRobotPose:
+        overloads:
+          Pose2d&:
+          units::meter_t, units::meter_t, Rotation2d:
+      GetRobotPose:

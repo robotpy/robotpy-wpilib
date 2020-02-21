@@ -22,3 +22,7 @@ classes:
             ignore: true
           units::second_t:
       LoopFunc:
+      SimulationInit:
+        internal: true
+      SimulationPeriodic:
+        internal: true

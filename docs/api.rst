@@ -26,6 +26,7 @@ The library is designed to:
   wpilib.geometry
   wpilib.interfaces
   wpilib.kinematics
+  wpilib.simulation
   wpilib.spline
   wpilib.trajectory
   wpilib.trajectory.constraint
