@@ -70,9 +70,6 @@ classes:
               };
             }
           }()
-    
-    # TODO: Update/UpdateWithTime depend on a particular module number
-    # .. how to grab the docstring in manually generated code?
 
 templates:
   SwerveDrive3Odometry:
