@@ -9,6 +9,13 @@ from ._kinematics import (
     MecanumDriveKinematics,
     MecanumDriveOdometry,
     MecanumDriveWheelSpeeds,
+    SwerveDrive3Kinematics,
+    SwerveDrive3Odometry,
+    SwerveDrive4Kinematics,
+    SwerveDrive4Odometry,
+    SwerveDrive6Kinematics,
+    SwerveDrive6Odometry,
+    SwerveModuleState,
 )
 
 __all__ = [
@@ -19,4 +26,11 @@ __all__ = [
     "MecanumDriveKinematics",
     "MecanumDriveOdometry",
     "MecanumDriveWheelSpeeds",
+    "SwerveDrive3Kinematics",
+    "SwerveDrive3Odometry",
+    "SwerveDrive4Kinematics",
+    "SwerveDrive4Odometry",
+    "SwerveDrive6Kinematics",
+    "SwerveDrive6Odometry",
+    "SwerveModuleState",
 ]

@@ -2,18 +2,88 @@
 
 classes:
   SwerveDriveOdometry:
-    shared_ptr: true
+    shared_ptr: false
     template_params:
-    - NumModules
+    - size_t NumModules
     methods:
       SwerveDriveOdometry:
       ResetPosition:
       GetPose:
       UpdateWithTime:
+        param_override:
+          currentTime:
+            ignore: true
+          gyroAngle:
+            ignore: true
+          moduleStates:
+            ignore: true
+        cpp_code: |
+          []() {
+            if constexpr (NumModules == 3) {
+              return [](SwerveDriveOdometry<NumModules> * self,
+                        units::second_t currentTime, const Rotation2d& gyroAngle,
+                        SwerveModuleState s1, SwerveModuleState s2, SwerveModuleState s3) {
+                return self->UpdateWithTime(currentTime, gyroAngle, s1, s2, s3);
+              };
+            } else if constexpr (NumModules == 4) {
+              return [](SwerveDriveOdometry<NumModules> * self,
+                        units::second_t currentTime, const Rotation2d& gyroAngle,
+                        SwerveModuleState s1, SwerveModuleState s2,
+                        SwerveModuleState s3, SwerveModuleState s4) {
+                return self->UpdateWithTime(currentTime, gyroAngle, s1, s2, s3, s4);
+              };
+            } else if constexpr (NumModules == 6) {
+              return [](SwerveDriveOdometry<NumModules> * self,
+                        units::second_t currentTime, const Rotation2d& gyroAngle,
+                        SwerveModuleState s1, SwerveModuleState s2,
+                        SwerveModuleState s3, SwerveModuleState s4,
+                        SwerveModuleState s5, SwerveModuleState s6) {
+                return self->UpdateWithTime(currentTime, gyroAngle, s1, s2, s3, s4, s5, s6);
+              };
+            }
+          }()
       Update:
+        param_override:
+          gyroAngle:
+            ignore: true
+          moduleStates:
+            ignore: true
+        cpp_code: |
+          []() {
+            if constexpr (NumModules == 3) {
+              return [](SwerveDriveOdometry<NumModules> * self, const Rotation2d& gyroAngle,
+                        SwerveModuleState s1, SwerveModuleState s2, SwerveModuleState s3) {
+                return self->Update(gyroAngle, s1, s2, s3);
+              };
+            } else if constexpr (NumModules == 4) {
+              return [](SwerveDriveOdometry<NumModules> * self, const Rotation2d& gyroAngle,
+                        SwerveModuleState s1, SwerveModuleState s2,
+                        SwerveModuleState s3, SwerveModuleState s4) {
+                return self->Update(gyroAngle, s1, s2, s3, s4);
+              };
+            } else if constexpr (NumModules == 6) {
+              return [](SwerveDriveOdometry<NumModules> * self, const Rotation2d& gyroAngle,
+                        SwerveModuleState s1, SwerveModuleState s2,
+                        SwerveModuleState s3, SwerveModuleState s4,
+                        SwerveModuleState s5, SwerveModuleState s6) {
+                return self->Update(gyroAngle, s1, s2, s3, s4, s5, s6);
+              };
+            }
+          }()
+    
+    # TODO: Update/UpdateWithTime depend on a particular module number
+    # .. how to grab the docstring in manually generated code?
 
 templates:
-  SwerveDriveOdometry4:
+  SwerveDrive3Odometry:
+    qualname: frc::SwerveDriveOdometry
+    params:
+    - 3
+  SwerveDrive4Odometry:
     qualname: frc::SwerveDriveOdometry
     params:
     - 4
+  SwerveDrive6Odometry:
+    qualname: frc::SwerveDriveOdometry
+    params:
+    - 6

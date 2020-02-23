@@ -6,6 +6,9 @@ from ._constraint import (
     DifferentialDriveKinematicsConstraint,
     DifferentialDriveVoltageConstraint,
     MecanumDriveKinematicsConstraint,
+    SwerveDrive3KinematicsConstraint,
+    SwerveDrive4KinematicsConstraint,
+    SwerveDrive6KinematicsConstraint,
     TrajectoryConstraint,
 )
 
@@ -14,6 +17,9 @@ __all__ = [
     "DifferentialDriveKinematicsConstraint",
     "DifferentialDriveVoltageConstraint",
     "MecanumDriveKinematicsConstraint",
+    "SwerveDrive3KinematicsConstraint",
+    "SwerveDrive4KinematicsConstraint",
+    "SwerveDrive6KinematicsConstraint",
     "TrajectoryConstraint",
 ]
 

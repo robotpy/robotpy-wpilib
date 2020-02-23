@@ -2,7 +2,22 @@
 
 classes:
   SwerveModuleState:
-    shared_ptr: true
+    force_no_default_constructor: true
+    shared_ptr: false
     attributes:
       speed:
       angle:
+
+inline_code: |
+  cls_SwerveModuleState
+    .def(
+      py::init<
+        units::meters_per_second_t, frc::Rotation2d
+      >(),
+      py::arg("speed") = 0, py::arg("angle") = frc::Rotation2d()
+    )
+    .def("__repr__", [](const SwerveModuleState &ss) -> std::string {
+      return "SwerveModuleState(speed=" + std::to_string(ss.speed()) + ", "
+                               "angle=" + std::to_string(ss.angle.Radians()()) + ")";
+    })
+  ;

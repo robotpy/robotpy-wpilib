@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "robotpy-build>=2020.1.9,<2021.0.0",
+    "robotpy-build>=2020.1.10,<2021.0.0",
     "robotpy-wpiutil>=2020.3.2.0,<2021.0.0",
     "robotpy-hal>=2020.3.2.0,<2021.0.0",
     "pyntcore>=2020.3.2.0,<2021.0.0",
@@ -310,9 +310,9 @@ generate = [
     { MecanumDriveKinematics = "frc/kinematics/MecanumDriveKinematics.h" },
     { MecanumDriveOdometry = "frc/kinematics/MecanumDriveOdometry.h" },
     { MecanumDriveWheelSpeeds = "frc/kinematics/MecanumDriveWheelSpeeds.h" },
-    # { SwerveDriveKinematics = "frc/kinematics/SwerveDriveKinematics.h" },
-    # { SwerveDriveOdometry = "frc/kinematics/SwerveDriveOdometry.h" },
-    # { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
+    { SwerveDriveKinematics = "frc/kinematics/SwerveDriveKinematics.h" },
+    { SwerveDriveOdometry = "frc/kinematics/SwerveDriveOdometry.h" },
+    { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.simulation"]
@@ -389,7 +389,7 @@ generate = [
     { DifferentialDriveKinematicsConstraint = "frc/trajectory/constraint/DifferentialDriveKinematicsConstraint.h" },
     { DifferentialDriveVoltageConstraint = "frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h" },
     { MecanumDriveKinematicsConstraint = "frc/trajectory/constraint/MecanumDriveKinematicsConstraint.h" },
-    # { SwerveDriveKinematicsConstraint = "frc/trajectory/constraint/SwerveDriveKinematicsConstraint.h" },
+    { SwerveDriveKinematicsConstraint = "frc/trajectory/constraint/SwerveDriveKinematicsConstraint.h" },
     { TrajectoryConstraint = "frc/trajectory/constraint/TrajectoryConstraint.h" },
 ]
 
