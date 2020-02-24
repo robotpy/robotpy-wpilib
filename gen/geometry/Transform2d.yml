@@ -6,6 +6,8 @@ extra_includes:
 classes:
   Transform2d:
     shared_ptr: false
+    force_type_casters:
+    - units::unit_t
     methods:
       Transform2d:
         overloads:
@@ -17,3 +19,13 @@ classes:
       operator*:
       operator==:
       operator!=:
+
+inline_code: |
+  cls_Transform2d
+    .def_static("fromFeet", [](units::foot_t x, units::foot_t y, units::radian_t angle){
+      return Transform2d(Translation2d(x, y), Rotation2d(angle));
+    }, py::arg("x"), py::arg("y"), py::arg("angle"))
+    .def(py::init([](units::meter_t x, units::meter_t y, units::radian_t angle) {
+      return Transform2d(Translation2d(x, y), Rotation2d(angle));
+    }), py::arg("x"), py::arg("y"), py::arg("angle"))
+  ;
