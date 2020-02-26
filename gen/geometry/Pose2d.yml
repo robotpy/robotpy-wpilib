@@ -30,4 +30,13 @@ classes:
 
 inline_code: |
   cls_Pose2d
+    .def_static("fromFeet", [](units::foot_t x, units::foot_t y, units::radian_t angle) {
+      return Pose2d(x, y, Rotation2d(angle));
+    }, py::arg("x"), py::arg("y"), py::arg("angle"))
+    .def_static("fromFeet", [](units::foot_t x, units::foot_t y, Rotation2d r) {
+      return Pose2d(x, y, r);
+    }, py::arg("x"), py::arg("y"), py::arg("r"))
+    .def(py::init([](units::meter_t x, units::meter_t y, units::radian_t angle) {
+      return Pose2d(x, y, angle);
+    }), py::arg("x"), py::arg("y"), py::arg("angle"))
     .def("__repr__", py::overload_cast<const Pose2d&>(&rpy::toString));
