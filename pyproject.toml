@@ -45,20 +45,25 @@ generate = [
     # { WPILibVersion = "WPILibVersion.h" },
 
     # frc
+    { DigitalSource = "frc/DigitalSource.h" },
+    { DutyCycle = "frc/DutyCycle.h" },
+    { I2C = "frc/I2C.h" },
+    { SPI = "frc/SPI.h" },
+
     { ADXL345_I2C = "frc/ADXL345_I2C.h" },
     { ADXL345_SPI = "frc/ADXL345_SPI.h" },
     { ADXL362 = "frc/ADXL362.h" },
     { ADXRS450_Gyro = "frc/ADXRS450_Gyro.h" },
     { AddressableLED = "frc/AddressableLED.h" },
     { AnalogAccelerometer = "frc/AnalogAccelerometer.h" },
-    { AnalogEncoder = "frc/AnalogEncoder.h" },
     { AnalogGyro = "frc/AnalogGyro.h" },
     { AnalogInput = "frc/AnalogInput.h" },
+    { AnalogEncoder = "frc/AnalogEncoder.h" },
     { AnalogOutput = "frc/AnalogOutput.h" },
     { AnalogPotentiometer = "frc/AnalogPotentiometer.h" },
-    { AnalogTrigger = "frc/AnalogTrigger.h" },
     { AnalogTriggerOutput = "frc/AnalogTriggerOutput.h" },
     { AnalogTriggerType = "frc/AnalogTriggerType.h" },
+    { AnalogTrigger = "frc/AnalogTrigger.h" },
     # Base.h not needed
     { BuiltInAccelerometer = "frc/BuiltInAccelerometer.h" },
     { CAN = "frc/CAN.h" },
@@ -72,15 +77,14 @@ generate = [
     # { DMASample = "frc/DMASample.h" },
 
     { DMC60 = "frc/DMC60.h" },
-    { DigitalGlitchFilter = "frc/DigitalGlitchFilter.h" },
     { DigitalInput = "frc/DigitalInput.h" },
     { DigitalOutput = "frc/DigitalOutput.h" },
-    { DigitalSource = "frc/DigitalSource.h" },
     { DoubleSolenoid = "frc/DoubleSolenoid.h" },
     { DriverStation = "frc/DriverStation.h" },
-    { DutyCycle = "frc/DutyCycle.h" },
     { DutyCycleEncoder = "frc/DutyCycleEncoder.h" },
     { Encoder = "frc/Encoder.h" },
+    { DigitalGlitchFilter = "frc/DigitalGlitchFilter.h" },
+
     { Error = "frc/Error.h" },
     { ErrorBase = "frc/ErrorBase.h" },
     # { Filesystem = "frc/Filesystem.h" },
@@ -88,7 +92,6 @@ generate = [
     # { GearTooth = "frc/GearTooth.h" },
     
     { GyroBase = "frc/GyroBase.h" },
-    { I2C = "frc/I2C.h" },
     { InterruptableSensorBase = "frc/InterruptableSensorBase.h" },
     { IterativeRobot = "frc/IterativeRobot.h" },
     { IterativeRobotBase = "frc/IterativeRobotBase.h" },
@@ -125,7 +128,6 @@ generate = [
     # { RobotDrive = "frc/RobotDrive.h" },
     { RobotState = "frc/RobotState.h" },
     { SD540 = "frc/SD540.h" },
-    { SPI = "frc/SPI.h" },
     { SensorUtil = "frc/SensorUtil.h" },
     { SerialPort = "frc/SerialPort.h" },
     { Servo = "frc/Servo.h" },
@@ -263,11 +265,11 @@ depends = [
 generation_data = "gen/geometry"
 generate = [
     # frc/geometry
-    { Pose2d = "frc/geometry/Pose2d.h" },
     { Rotation2d = "frc/geometry/Rotation2d.h" },
-    { Transform2d = "frc/geometry/Transform2d.h" },
     { Translation2d = "frc/geometry/Translation2d.h" },
     { Twist2d = "frc/geometry/Twist2d.h" },
+    { Transform2d = "frc/geometry/Transform2d.h" },
+    { Pose2d = "frc/geometry/Pose2d.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.interfaces"]
@@ -304,15 +306,15 @@ generation_data = "gen/kinematics"
 generate = [
     # frc/kinematics
     { ChassisSpeeds = "frc/kinematics/ChassisSpeeds.h" },
+    { DifferentialDriveWheelSpeeds = "frc/kinematics/DifferentialDriveWheelSpeeds.h" },
     { DifferentialDriveKinematics = "frc/kinematics/DifferentialDriveKinematics.h" },
     { DifferentialDriveOdometry = "frc/kinematics/DifferentialDriveOdometry.h" },
-    { DifferentialDriveWheelSpeeds = "frc/kinematics/DifferentialDriveWheelSpeeds.h" },
+    { MecanumDriveWheelSpeeds = "frc/kinematics/MecanumDriveWheelSpeeds.h" },
     { MecanumDriveKinematics = "frc/kinematics/MecanumDriveKinematics.h" },
     { MecanumDriveOdometry = "frc/kinematics/MecanumDriveOdometry.h" },
-    { MecanumDriveWheelSpeeds = "frc/kinematics/MecanumDriveWheelSpeeds.h" },
+    { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
     { SwerveDriveKinematics = "frc/kinematics/SwerveDriveKinematics.h" },
     { SwerveDriveOdometry = "frc/kinematics/SwerveDriveOdometry.h" },
-    { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.simulation"]
