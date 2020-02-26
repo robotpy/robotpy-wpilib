@@ -21,6 +21,7 @@ classes:
       m_mutex:
       m_instance:
       s_instances:
+        ignore: true
     methods:
       SendableChooserBase:
         ignore: true
