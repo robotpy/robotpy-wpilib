@@ -18,8 +18,8 @@ inline std::string toString(const frc::Translation2d& self) {
 
 inline std::string toString(const frc::Pose2d& self) {
   return "Pose2d("
-    "translation=" + rpy::toString(self.Translation()) + ", "
-    "rotation=" + rpy::toString(self.Rotation()) + ")";
+    + rpy::toString(self.Translation()) + ", "
+    + rpy::toString(self.Rotation()) + ")";
 }
 
 }  // namespace rpy
