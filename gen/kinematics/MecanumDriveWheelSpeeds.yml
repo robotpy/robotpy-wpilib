@@ -2,7 +2,8 @@
 
 classes:
   MecanumDriveWheelSpeeds:
-    shared_ptr: true
+    force_no_default_constructor: true
+    shared_ptr: false
     attributes:
       frontLeft:
       frontRight:

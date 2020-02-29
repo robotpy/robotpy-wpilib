@@ -6,14 +6,22 @@
 
 namespace rpy {
 
+
+
 inline std::string toString(const frc::Rotation2d& self) {
-  return "Rotation2d(" + std::to_string(self.Radians()()) + ")";
+  return "Rotation2d(" + std::to_string(self.Radians()()) + "rad)";
 }
 
 inline std::string toString(const frc::Translation2d& self) {
   return "Translation2d("
-    "x=" + std::to_string(self.X()()) + ", "
-    "y=" + std::to_string(self.Y()()) + ")";
+    "x=" + std::to_string(self.X()()) + "m, "
+    "y=" + std::to_string(self.Y()()) + "m)";
+}
+
+inline std::string toString(const frc::Transform2d& self) {
+  return "Transform2d("
+    + rpy::toString(self.Translation()) + ", "
+    + rpy::toString(self.Rotation()) + ")";
 }
 
 inline std::string toString(const frc::Pose2d& self) {
