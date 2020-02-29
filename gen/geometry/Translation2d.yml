@@ -37,8 +37,8 @@ classes:
 inline_code: |
   cls_Translation2d
     .def_static("fromFeet", [](units::foot_t x, units::foot_t y){
-      return Translation2d(x, y);
-    })
+      return std::make_unique<Translation2d>(x, y);
+    }, py::arg("x"), py::arg("y"))
     .def_property_readonly("x", &Translation2d::X)
     .def_property_readonly("y", &Translation2d::Y)
     .def_property_readonly("x_feet", [](Translation2d * self) -> units::foot_t {

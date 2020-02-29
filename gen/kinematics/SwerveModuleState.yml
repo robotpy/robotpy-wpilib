@@ -16,8 +16,16 @@ inline_code: |
       >(),
       py::arg("speed") = 0, py::arg("angle") = frc::Rotation2d()
     )
+    .def_property("speed_fps",
+      [](SwerveModuleState * self) -> units::feet_per_second_t {
+        return self->speed;
+      },
+      [](SwerveModuleState * self, units::feet_per_second_t speed) {
+        self->speed = speed;
+      }
+    )
     .def("__repr__", [](const SwerveModuleState &ss) -> std::string {
-      return "SwerveModuleState(speed=" + std::to_string(ss.speed()) + ", "
-                               "angle=" + std::to_string(ss.angle.Radians()()) + ")";
+      return "SwerveModuleState(speed=" + std::to_string(ss.speed()) + "m/s, "
+                               "angle=" + std::to_string(ss.angle.Radians()()) + "rad)";
     })
   ;

@@ -2,6 +2,7 @@
 
 extra_includes:
 - frc/geometry/Pose2d.h
+- rpy/geometryToString.h
 
 classes:
   Transform2d:
@@ -23,9 +24,10 @@ classes:
 inline_code: |
   cls_Transform2d
     .def_static("fromFeet", [](units::foot_t x, units::foot_t y, units::radian_t angle){
-      return Transform2d(Translation2d(x, y), Rotation2d(angle));
+      return std::make_unique<Transform2d>(Translation2d(x, y), Rotation2d(angle));
     }, py::arg("x"), py::arg("y"), py::arg("angle"))
     .def(py::init([](units::meter_t x, units::meter_t y, units::radian_t angle) {
-      return Transform2d(Translation2d(x, y), Rotation2d(angle));
+      return std::make_unique<Transform2d>(Translation2d(x, y), Rotation2d(angle));
     }), py::arg("x"), py::arg("y"), py::arg("angle"))
+    .def("__repr__", py::overload_cast<const Transform2d&>(&rpy::toString));
   ;
