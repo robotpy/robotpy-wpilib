@@ -67,6 +67,6 @@ inline_code: |
       return "MecanumDriveWheelSpeeds(frontLeft=" + std::to_string(ms.frontLeft()) + ", "
                                      "frontRight=" + std::to_string(ms.frontRight()) + ", "
                                      "rearLeft=" + std::to_string(ms.rearLeft()) + ", "
-                                     "rearRight=" + std::to_string(ms.rearRight()) + ">";
+                                     "rearRight=" + std::to_string(ms.rearRight()) + ")";
     })
   ;
