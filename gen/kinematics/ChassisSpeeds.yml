@@ -48,8 +48,8 @@ inline_code: |
       }
     )
     .def("__repr__", [](const ChassisSpeeds &cs) -> std::string {
-      return "ChassisSpeeds(vx=" + std::to_string(cs.vx()) + "m/s, "
-                           "vy=" + std::to_string(cs.vy()) + "m/s, "
-                           "omega=" + std::to_string(cs.omega()) + "rad/s)";
+      return "ChassisSpeeds(vx=" + std::to_string(cs.vx()) + ", "
+                           "vy=" + std::to_string(cs.vy()) + ", "
+                           "omega=" + std::to_string(cs.omega()) + ")";
     })
   ;

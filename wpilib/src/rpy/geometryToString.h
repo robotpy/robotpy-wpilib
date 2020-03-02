@@ -9,13 +9,13 @@ namespace rpy {
 
 
 inline std::string toString(const frc::Rotation2d& self) {
-  return "Rotation2d(" + std::to_string(self.Radians()()) + "rad)";
+  return "Rotation2d(" + std::to_string(self.Radians()()) + ")";
 }
 
 inline std::string toString(const frc::Translation2d& self) {
   return "Translation2d("
-    "x=" + std::to_string(self.X()()) + "m, "
-    "y=" + std::to_string(self.Y()()) + "m)";
+    "x=" + std::to_string(self.X()()) + ", "
+    "y=" + std::to_string(self.Y()()) + ")";
 }
 
 inline std::string toString(const frc::Transform2d& self) {
