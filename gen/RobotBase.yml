@@ -32,6 +32,7 @@ classes:
       IsTest:
       IsNewDataAvailable:
       GetThreadId:
+        ignore: true
       StartCompetition:
       EndCompetition:
       IsReal:

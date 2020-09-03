@@ -37,3 +37,4 @@ classes:
           }
       ApplyDeadband:
       Normalize:
+        ignore: true
