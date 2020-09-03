@@ -2,10 +2,13 @@
 
 extra_includes:
 - frc/smartdashboard/SendableBuilder.h
+- wpi/SmallString.h
 
 classes:
   NidecBrushless:
     shared_ptr: true
+    force_type_casters:
+    - wpi::StringRef
     ignored_bases:
     - SendableHelper<NidecBrushless>
     methods:
@@ -20,5 +23,19 @@ classes:
         rename: pidWrite
       StopMotor:
       GetDescription:
+        param_override:
+          desc:
+            ignore: true
+        cpp_code: |
+          [](NidecBrushless * self) -> py::str {
+            wpi::SmallString<128> buf;
+            wpi::raw_svector_ostream s(buf);
+            self->GetDescription(s);
+            return py::cast(s.str());
+          }
+        virtual_xform: |
+          [&](py::function &overload) {
+            desc << py::cast<std::string>(overload());
+          }
       GetChannel:
       InitSendable:

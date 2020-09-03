@@ -2,6 +2,7 @@
 
 extra_includes:
 - frc/SpeedController.h
+- wpi/SmallString.h
 
 classes:
   RobotDriveBase:
@@ -11,6 +12,8 @@ classes:
       m_maxOutput:
     enums:
       MotorType:
+    force_type_casters:
+    - wpi::StringRef
     methods:
       RobotDriveBase:
       SetDeadband:
@@ -18,5 +21,19 @@ classes:
       FeedWatchdog:
       StopMotor:
       GetDescription:
+        param_override:
+          desc:
+            ignore: true
+        cpp_code: |
+          [](RobotDriveBase * self) -> py::str {
+            wpi::SmallString<128> buf;
+            wpi::raw_svector_ostream s(buf);
+            self->GetDescription(s);
+            return py::cast(s.str());
+          }
+        virtual_xform: |
+          [&](py::function &overload) {
+            desc << py::cast<std::string>(overload());
+          }
       ApplyDeadband:
       Normalize:
