@@ -28,16 +28,19 @@ classes:
 
 templates:
   ElevatorFeedforward:
+    subpackage: controller
     qualname: frc::ElevatorFeedforward
     params:
       - units::dimensionless::scalar
 
   # TODO: remove for 2021
   ElevatorFeedforwardMeters:
+    subpackage: controller
     qualname: frc::ElevatorFeedforward
     params:
       - units::meter
   ElevatorFeedforwardFeet:
+    subpackage: controller
     qualname: frc::ElevatorFeedforward
     params:
       - units::feet

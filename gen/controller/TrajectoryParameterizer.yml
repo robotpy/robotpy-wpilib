@@ -2,6 +2,7 @@
 
 classes:
   TrajectoryParameterizer:
+    subpackage: trajectory
     shared_ptr: true
     methods:
       TimeParameterizeTrajectory:

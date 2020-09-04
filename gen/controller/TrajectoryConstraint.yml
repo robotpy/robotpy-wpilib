@@ -2,6 +2,7 @@
 
 classes:
   TrajectoryConstraint:
+    subpackage: constraints
     shared_ptr: true
     methods:
       TrajectoryConstraint:

@@ -2,6 +2,7 @@
 
 classes:
   DifferentialDriveVoltageConstraint:
+    subpackage: constraints
     shared_ptr: true
     typealias:
     - frc::TrajectoryConstraint::MinMax

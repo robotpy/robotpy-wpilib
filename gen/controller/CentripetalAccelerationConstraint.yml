@@ -1,11 +1,12 @@
 ---
 
 classes:
-  MecanumDriveKinematicsConstraint:
+  CentripetalAccelerationConstraint:
+    subpackage: constraints
     shared_ptr: true
     typealias:
     - frc::TrajectoryConstraint::MinMax
     methods:
-      MecanumDriveKinematicsConstraint:
+      CentripetalAccelerationConstraint:
       MaxVelocity:
       MinMaxAcceleration:
