@@ -6,7 +6,7 @@ import threading
 
 class Main:
     """
-        Executes the robot code using the currently installed HAL (this is probably not what you want unless you're on the roboRIO)
+    Executes the robot code using the currently installed HAL (this is probably not what you want unless you're on the roboRIO)
     """
 
     def __init__(self, parser):

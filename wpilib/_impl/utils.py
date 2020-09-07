@@ -7,7 +7,7 @@ import inspect
 def match_arglist(name, args, kwargs, templates, allow_extra_kwargs=False):
     """
     This compares args and kwargs against the argument templates in templates.
-    
+
     :param name: Name of the function being checked
     :param args: The list of positional arguments
     :param kwargs: The list of keyword arguments
@@ -202,10 +202,10 @@ class HasAttribute:
 
 def reset_wpilib():
     """
-        Clears all devices from WPILib, and resets the hal data
-    
-        .. warning:: This is only intended to be used by test frameworks and
-                     other debugging tools with the simulated HAL!
+    Clears all devices from WPILib, and resets the hal data
+
+    .. warning:: This is only intended to be used by test frameworks and
+                 other debugging tools with the simulated HAL!
     """
 
     raise NotImplementedError("Not supported yet for 2020")
