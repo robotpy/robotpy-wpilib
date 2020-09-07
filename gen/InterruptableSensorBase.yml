@@ -7,6 +7,7 @@ classes:
     - frc::InterruptableSensorBase::WaitResult
     attributes:
       m_interrupt:
+        ignore: true
     enums:
       WaitResult:
     methods:

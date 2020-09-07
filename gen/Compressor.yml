@@ -10,6 +10,7 @@ classes:
     - SendableHelper<Compressor>
     attributes:
       m_compressorHandle:
+        ignore: true
     methods:
       Compressor:
       Start:

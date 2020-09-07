@@ -11,6 +11,7 @@ classes:
     attributes:
       m_channel:
       m_port:
+        ignore: true
     methods:
       AnalogOutput:
       SetVoltage:

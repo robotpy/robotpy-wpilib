@@ -19,6 +19,7 @@ classes:
       m_haveSelected:
       m_activeEntries:
       m_mutex:
+        ignore: true
       m_instance:
       s_instances:
         ignore: true
