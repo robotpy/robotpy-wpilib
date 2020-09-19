@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "robotpy-build>=2020.1.10,<2021.0.0",
+    "robotpy-build>=2020.2.2,<2021.0.0",
     "robotpy-wpiutil>=2020.3.2.0,<2021.0.0",
     "robotpy-hal>=2020.3.2.0,<2021.0.0",
     "pyntcore>=2020.3.2.0,<2021.0.0",
@@ -211,14 +211,15 @@ generate = [
 ]
 
 [tool.robotpy-build.wrappers."wpilib.controller"]
+# This is a combination of controller + trajectory because of 
+# circular dependencies
 
 name = "wpilibc_controller"
 extension = "_controller"
 sources = ["wpilib/controller/controller.cpp"]
 depends = [
     "wpilib_core", "wpilibc_interfaces", "wpilibc",
-    "wpilibc_geometry", "wpilibc_kinematics",
-    "wpilibc_trajectory_constraint",
+    "wpilibc_geometry", "wpilibc_kinematics", "wpilibc_spline",
     "wpiHal", "wpiutil", "ntcore",
 ]
 generation_data = "gen/controller"
@@ -230,6 +231,22 @@ generate = [
     { ProfiledPIDController = "frc/controller/ProfiledPIDController.h" },
     { RamseteController = "frc/controller/RamseteController.h" },
     { SimpleMotorFeedforward = "frc/controller/SimpleMotorFeedforward.h" },
+
+    # frc/trajectory
+    { Trajectory = "frc/trajectory/Trajectory.h" },
+    { TrajectoryConfig = "frc/trajectory/TrajectoryConfig.h" },
+    { TrajectoryGenerator = "frc/trajectory/TrajectoryGenerator.h" },
+    { TrajectoryParameterizer = "frc/trajectory/TrajectoryParameterizer.h" },
+    { TrajectoryUtil = "frc/trajectory/TrajectoryUtil.h" },
+    { TrapezoidProfile = "frc/trajectory/TrapezoidProfile.h" },
+
+    # frc/trajectory/constraint
+    { CentripetalAccelerationConstraint = "frc/trajectory/constraint/CentripetalAccelerationConstraint.h" },
+    { DifferentialDriveKinematicsConstraint = "frc/trajectory/constraint/DifferentialDriveKinematicsConstraint.h" },
+    { DifferentialDriveVoltageConstraint = "frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h" },
+    { MecanumDriveKinematicsConstraint = "frc/trajectory/constraint/MecanumDriveKinematicsConstraint.h" },
+    { SwerveDriveKinematicsConstraint = "frc/trajectory/constraint/SwerveDriveKinematicsConstraint.h" },
+    { TrajectoryConstraint = "frc/trajectory/constraint/TrajectoryConstraint.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.drive"]
@@ -350,48 +367,6 @@ generate = [
     { SplineParameterizer = "frc/spline/SplineParameterizer.h" },
 ]
 
-[tool.robotpy-build.wrappers."wpilib.trajectory"]
-
-name = "wpilibc_trajectory"
-extension = "_trajectory"
-sources = ["wpilib/trajectory/trajectory.cpp"]
-depends = [
-    "wpilib_core", "wpilibc_interfaces", "wpilibc",
-    "wpilibc_geometry", "wpilibc_kinematics",
-    "wpilibc_trajectory_constraint",
-    "wpiHal", "wpiutil", "ntcore",
-]
-generation_data = "gen/trajectory"
-generate = [
-    # frc/trajectory
-    { Trajectory = "frc/trajectory/Trajectory.h" },
-    { TrajectoryConfig = "frc/trajectory/TrajectoryConfig.h" },
-    { TrajectoryGenerator = "frc/trajectory/TrajectoryGenerator.h" },
-    { TrajectoryParameterizer = "frc/trajectory/TrajectoryParameterizer.h" },
-    { TrajectoryUtil = "frc/trajectory/TrajectoryUtil.h" },
-    { TrapezoidProfile = "frc/trajectory/TrapezoidProfile.h" },
-]
-
-[tool.robotpy-build.wrappers."wpilib.trajectory.constraint"]
-
-name = "wpilibc_trajectory_constraint"
-extension = "_constraint"
-sources = ["wpilib/trajectory/constraint/constraint.cpp"]
-depends = [
-    "wpilib_core", "wpilibc_interfaces", "wpilibc",
-    "wpilibc_geometry", "wpilibc_kinematics",
-    "wpiHal", "wpiutil", "ntcore",
-]
-generation_data = "gen/trajectory/constraint"
-generate = [
-    # frc/trajectory/constraint
-    { CentripetalAccelerationConstraint = "frc/trajectory/constraint/CentripetalAccelerationConstraint.h" },
-    { DifferentialDriveKinematicsConstraint = "frc/trajectory/constraint/DifferentialDriveKinematicsConstraint.h" },
-    { DifferentialDriveVoltageConstraint = "frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h" },
-    { MecanumDriveKinematicsConstraint = "frc/trajectory/constraint/MecanumDriveKinematicsConstraint.h" },
-    { SwerveDriveKinematicsConstraint = "frc/trajectory/constraint/SwerveDriveKinematicsConstraint.h" },
-    { TrajectoryConstraint = "frc/trajectory/constraint/TrajectoryConstraint.h" },
-]
 
 [tool.robotpy-build.metadata]
 name = "wpilib"

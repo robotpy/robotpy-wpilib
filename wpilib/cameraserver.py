@@ -13,14 +13,14 @@ __all__ = ["CameraServer"]
 
 class CameraServer:
     """
-        Provides a way to launch an out of process cscore-based camera
-        service instance, for streaming or for image processing.
-        
-        .. note:: This does not correspond directly to the wpilib
-                  CameraServer object; that can be found as
-                  :class:`cscore.CameraServer`. However, you should
-                  not use cscore directly from your robot code, see
-                  the documentation for details             
+    Provides a way to launch an out of process cscore-based camera
+    service instance, for streaming or for image processing.
+
+    .. note:: This does not correspond directly to the wpilib
+              CameraServer object; that can be found as
+              :class:`cscore.CameraServer`. However, you should
+              not use cscore directly from your robot code, see
+              the documentation for details
     """
 
     _alive = False
@@ -34,20 +34,20 @@ class CameraServer:
     @classmethod
     def launch(cls, vision_py: Optional[str] = None) -> None:
         """
-            Launches the CameraServer process in autocapture mode or
-            using a user-specified python script
-        
-            :param vision_py: If specified, this is the relative path to
-                              a filename with a function in it
-                              
-            Example usage::
-            
-                wpilib.CameraServer.launch("vision.py:main")
-            
-            .. warning:: You must have robotpy-cscore installed, or this
-                         function will fail without returning an error
-                         (you will see an error in the console).
-                         
+        Launches the CameraServer process in autocapture mode or
+        using a user-specified python script
+
+        :param vision_py: If specified, this is the relative path to
+                          a filename with a function in it
+
+        Example usage::
+
+            wpilib.CameraServer.launch("vision.py:main")
+
+        .. warning:: You must have robotpy-cscore installed, or this
+                     function will fail without returning an error
+                     (you will see an error in the console).
+
         """
 
         if cls._launched:

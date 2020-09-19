@@ -17,6 +17,7 @@ classes:
       m_upSource:
       m_downSource:
       m_counter:
+        ignore: true
     enums:
       Mode:
     methods:

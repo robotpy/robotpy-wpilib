@@ -27,16 +27,19 @@ classes:
 
 templates:
   SimpleMotorFeedforward:
+    subpackage: controller
     qualname: frc::SimpleMotorFeedforward
     params:
       - units::dimensionless::scalar
   SimpleMotorFeedforwardMeters:
+    subpackage: controller
     qualname: frc::SimpleMotorFeedforward
     params:
       - units::meter
 
   # TODO: remove for 2021
   SimpleMotorFeedforwardFeet:
+    subpackage: controller
     qualname: frc::SimpleMotorFeedforward
     params:
       - units::feet

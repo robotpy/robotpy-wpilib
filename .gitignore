@@ -1,4 +1,4 @@
-*.py[cod]
+*.py[ciod]
 __pycache__
 *.egg-info
 .venv

@@ -113,19 +113,19 @@ argparse._HelpAction = _CustomHelpAction
 
 def run(robot_class, **kwargs):
     """
-        This function gets called in robot.py like so::
+    This function gets called in robot.py like so::
 
-            if __name__ == '__main__':
-                wpilib.run(MyRobot)
+        if __name__ == '__main__':
+            wpilib.run(MyRobot)
 
-        This function loads available entry points, parses arguments, and
-        sets things up specific to RobotPy so that the robot can run. This
-        function is used whether the code is running on the roboRIO or
-        a simulation.
+    This function loads available entry points, parses arguments, and
+    sets things up specific to RobotPy so that the robot can run. This
+    function is used whether the code is running on the roboRIO or
+    a simulation.
 
-        :param robot_class: A class that inherits from :class:`.RobotBase`
-        :param **kwargs: Keyword arguments that will be passed to the executed entry points
-        :returns: This function should never return
+    :param robot_class: A class that inherits from :class:`.RobotBase`
+    :param **kwargs: Keyword arguments that will be passed to the executed entry points
+    :returns: This function should never return
     """
 
     # sanity check

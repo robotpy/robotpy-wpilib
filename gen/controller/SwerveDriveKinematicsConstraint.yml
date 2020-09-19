@@ -14,14 +14,17 @@ classes:
 
 templates:
   SwerveDrive3KinematicsConstraint:
+    subpackage: constraints
     qualname: frc::SwerveDriveKinematicsConstraint
     params:
     - 3
   SwerveDrive4KinematicsConstraint:
+    subpackage: constraints
     qualname: frc::SwerveDriveKinematicsConstraint
     params:
     - 4
   SwerveDrive6KinematicsConstraint:
+    subpackage: constraints
     qualname: frc::SwerveDriveKinematicsConstraint
     params:
     - 6

@@ -9,6 +9,7 @@ functions:
     ignore: true
 classes:
   Trajectory:
+    subpackage: trajectory
     shared_ptr: true
     methods:
       Trajectory:
