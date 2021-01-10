@@ -15,21 +15,4 @@ std::tuple<bool, bool, bool> GetControlState() {
   return std::make_tuple(enable, auton, test);
 }
 
-bool IsAutonomousEnabled() {
-  HAL_ControlWord controlWord;
-  HAL_GetControlWord(&controlWord);
-
-  return controlWord.autonomous != 0 &&
-    controlWord.enabled != 0 &&
-    controlWord.dsAttached != 0;
-}
-
-bool IsOperatorControlEnabled() {
-  HAL_ControlWord controlWord;
-  HAL_GetControlWord(&controlWord);
-
-  return !(controlWord.autonomous != 0 || controlWord.test != 0) &&
-    controlWord.enabled != 0 && controlWord.dsAttached != 0;
-}
-
-}  // namespace rpy
+} // namespace rpy

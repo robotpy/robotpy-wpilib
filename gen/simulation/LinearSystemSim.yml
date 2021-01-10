@@ -1,0 +1,44 @@
+---
+
+classes:
+  LinearSystemSim:
+    shared_ptr: true
+    attributes:
+      m_plant:
+      m_x:
+      m_y:
+      m_u:
+      m_measurementStdDevs:
+    template_params:
+    - States
+    - Inputs
+    - Outputs
+    methods:
+      LinearSystemSim:
+      Update:
+      GetOutput:
+        overloads:
+          '[const]':
+          int [const]:
+      SetInput:
+        overloads:
+          Eigen::Matrix<double, Inputs, 1>&:
+          int, double:
+      SetState:
+      GetCurrentDraw:
+      UpdateX:
+      ClampInput:
+
+templates:
+  LinearSystemSim_1_1_1:
+    qualname: LinearSystemSim
+    params:
+    - 1
+    - 1
+    - 1
+  LinearSystemSim_2_1_1:
+    qualname: LinearSystemSim
+    params:
+    - 2
+    - 1
+    - 1

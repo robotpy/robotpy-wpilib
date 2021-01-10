@@ -1,9 +1,9 @@
 [build-system]
 requires = [
-    "robotpy-build>=2020.2.2,<2021.0.0",
-    "robotpy-wpiutil>=2020.3.2.0,<2021.0.0",
-    "robotpy-hal>=2020.3.2.0,<2021.0.0",
-    "pyntcore>=2020.3.2.0,<2021.0.0",
+    "robotpy-build>=2020.3.2,<2021.0.0",
+    "robotpy-wpiutil>=2021.1.2.0,<2022.0.0",
+    "robotpy-hal>=2021.1.2.0,<2022.0.0",
+    "pyntcore>=2021.1.2.0,<2022.0.0",
 ]
 
 [tool.robotpy-build]
@@ -13,13 +13,13 @@ base_package = "wpilib"
 artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
 repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2020.3.2"
+version = "2021.1.2"
 
 libs = ["wpilibc"]
 
 [tool.robotpy-build.wrappers."wpilib._impl"]
 name = "wpilibc"
-depends = ["wpiHal", "wpiutil", "ntcore"]
+depends = ["wpiHal", "wpiutil", "wpimath_cpp", "ntcore"]
 
 [tool.robotpy-build.wrappers."wpilib"]
 name = "wpilib_core"
@@ -35,7 +35,11 @@ sources = [
 extra_includes = ["wpilib/src"]
 
 generation_data = "gen"
-depends = ["wpiHal", "wpiutil", "ntcore", "wpilibc", "wpilibc_interfaces"]
+depends = [
+    "wpiHal", "wpiutil", "ntcore",
+    "wpimath_cpp", "wpimath_geometry",
+    "wpilibc", "wpilibc_interfaces"
+]
 
 pp_defines = [
     "DYNAMIC_CAMERA_SERVER 1"
@@ -94,8 +98,6 @@ generate = [
     { IterativeRobotBase = "frc/IterativeRobotBase.h" },
     { Jaguar = "frc/Jaguar.h" },
     { Joystick = "frc/Joystick.h" },
-    { LinearFilter = "frc/LinearFilter.h" },
-    { MedianFilter = "frc/MedianFilter.h" },
     { MotorSafety = "frc/MotorSafety.h" },
     { NidecBrushless = "frc/NidecBrushless.h" },
     { Notifier = "rpy/Notifier.h" },
@@ -119,11 +121,13 @@ generate = [
     # { Resource = "frc/Resource.h" },
     # TODO: weirdness
     { RobotBase = "frc/RobotBase.h" },
-    { RobotBaseUser = "rpy/RobotBaseUser.h" },
     { RobotController = "frc/RobotController.h" },
     # deprecated
     # { RobotDrive = "frc/RobotDrive.h" },
     { RobotState = "frc/RobotState.h" },
+
+    # Not useful for python
+    # { ScopedTracer = "frc/ScopedTracer.h" },
     { SD540 = "frc/SD540.h" },
     { SPI = "frc/SPI.h" },
     { SensorUtil = "frc/SensorUtil.h" },
@@ -138,6 +142,7 @@ generate = [
     { Talon = "frc/Talon.h" },
     { Threads = "frc/Threads.h" },
     { TimedRobot = "frc/TimedRobot.h" },
+    { Tracer = "frc/Tracer.h" },
 
     # non-units version
     # { Timer = "frc/Timer.h" },
@@ -188,6 +193,9 @@ generate = [
     # # { WidgetType = "frc/shuffleboard/WidgetType.h" },
 
     # frc/smartdashboard
+    { Field2d = "frc/smartdashboard/Field2d.h" },
+    { FieldObject2d = "frc/smartdashboard/FieldObject2d.h" },
+
     # internal detail
     # { ListenerExecutor = "frc/smartdashboard/ListenerExecutor.h" },
     { Sendable = "frc/smartdashboard/Sendable.h" },
@@ -219,34 +227,15 @@ extension = "_controller"
 sources = ["wpilib/controller/controller.cpp"]
 depends = [
     "wpilib_core", "wpilibc_interfaces", "wpilibc",
-    "wpilibc_geometry", "wpilibc_kinematics", "wpilibc_spline",
+    "wpimath_controller", "wpimath_geometry", "wpimath_kinematics", "wpimath_spline",
     "wpiHal", "wpiutil", "ntcore",
 ]
 generation_data = "gen/controller"
 generate = [
     # frc/controller
-    { ArmFeedforward = "frc/controller/ArmFeedforward.h" },
-    { ElevatorFeedforward = "frc/controller/ElevatorFeedforward.h" },
     { PIDController = "frc/controller/PIDController.h" },
     { ProfiledPIDController = "frc/controller/ProfiledPIDController.h" },
     { RamseteController = "frc/controller/RamseteController.h" },
-    { SimpleMotorFeedforward = "frc/controller/SimpleMotorFeedforward.h" },
-
-    # frc/trajectory
-    { Trajectory = "frc/trajectory/Trajectory.h" },
-    { TrajectoryConfig = "frc/trajectory/TrajectoryConfig.h" },
-    { TrajectoryGenerator = "frc/trajectory/TrajectoryGenerator.h" },
-    { TrajectoryParameterizer = "frc/trajectory/TrajectoryParameterizer.h" },
-    { TrajectoryUtil = "frc/trajectory/TrajectoryUtil.h" },
-    { TrapezoidProfile = "frc/trajectory/TrapezoidProfile.h" },
-
-    # frc/trajectory/constraint
-    { CentripetalAccelerationConstraint = "frc/trajectory/constraint/CentripetalAccelerationConstraint.h" },
-    { DifferentialDriveKinematicsConstraint = "frc/trajectory/constraint/DifferentialDriveKinematicsConstraint.h" },
-    { DifferentialDriveVoltageConstraint = "frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h" },
-    { MecanumDriveKinematicsConstraint = "frc/trajectory/constraint/MecanumDriveKinematicsConstraint.h" },
-    { SwerveDriveKinematicsConstraint = "frc/trajectory/constraint/SwerveDriveKinematicsConstraint.h" },
-    { TrajectoryConstraint = "frc/trajectory/constraint/TrajectoryConstraint.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.drive"]
@@ -266,25 +255,6 @@ generate = [
     { MecanumDrive = "frc/drive/MecanumDrive.h" },
     { RobotDriveBase = "frc/drive/RobotDriveBase.h" },
     { Vector2d = "frc/drive/Vector2d.h" },
-]
-
-[tool.robotpy-build.wrappers."wpilib.geometry"]
-
-name = "wpilibc_geometry"
-extension = "_geometry"
-sources = ["wpilib/geometry/geometry.cpp"]
-depends = [
-    "wpilib_core", "wpilibc_interfaces", "wpilibc",
-    "wpiHal", "wpiutil", "ntcore"
-]
-generation_data = "gen/geometry"
-generate = [
-    # frc/geometry
-    { Pose2d = "frc/geometry/Pose2d.h" },
-    { Rotation2d = "frc/geometry/Rotation2d.h" },
-    { Transform2d = "frc/geometry/Transform2d.h" },
-    { Translation2d = "frc/geometry/Translation2d.h" },
-    { Twist2d = "frc/geometry/Twist2d.h" },
 ]
 
 [tool.robotpy-build.wrappers."wpilib.interfaces"]
@@ -308,29 +278,6 @@ generate = [
     { Potentiometer = "frc/interfaces/Potentiometer.h" },
 ]
 
-[tool.robotpy-build.wrappers."wpilib.kinematics"]
-
-name = "wpilibc_kinematics"
-extension = "_kinematics"
-sources = ["wpilib/kinematics/kinematics.cpp"]
-depends = [
-    "wpilib_core", "wpilibc_geometry", "wpilibc_interfaces", "wpilibc",
-    "wpiHal", "wpiutil", "ntcore"
-]
-generation_data = "gen/kinematics"
-generate = [
-    # frc/kinematics
-    { ChassisSpeeds = "frc/kinematics/ChassisSpeeds.h" },
-    { DifferentialDriveKinematics = "frc/kinematics/DifferentialDriveKinematics.h" },
-    { DifferentialDriveOdometry = "frc/kinematics/DifferentialDriveOdometry.h" },
-    { DifferentialDriveWheelSpeeds = "frc/kinematics/DifferentialDriveWheelSpeeds.h" },
-    { MecanumDriveKinematics = "frc/kinematics/MecanumDriveKinematics.h" },
-    { MecanumDriveOdometry = "frc/kinematics/MecanumDriveOdometry.h" },
-    { MecanumDriveWheelSpeeds = "frc/kinematics/MecanumDriveWheelSpeeds.h" },
-    { SwerveDriveKinematics = "frc/kinematics/SwerveDriveKinematics.h" },
-    { SwerveDriveOdometry = "frc/kinematics/SwerveDriveOdometry.h" },
-    { SwerveModuleState = "frc/kinematics/SwerveModuleState.h" },
-]
 
 [tool.robotpy-build.wrappers."wpilib.simulation"]
 
@@ -338,35 +285,46 @@ name = "wpilibc_simulation"
 extension = "_simulation"
 sources = ["wpilib/simulation/simulation.cpp"]
 depends = [
-    "wpilib_core", "wpilibc_geometry", "wpilibc",
-    "wpiHal", "wpiutil", "ntcore"
+    "wpilib_core", "wpilibc", "wpiHal",
+    "wpiutil", "wpimath_cpp", "wpimath_geometry",
+    "ntcore"
 ]
 generation_data = "gen/simulation"
 generate = [
-    # frc/simulation
-    { Field2d = "frc/simulation/Field2d.h" },
+    { AddressableLEDSim = "frc/simulation/AddressableLEDSim.h" },
+    { ADXRS450_GyroSim = "frc/simulation/ADXRS450_GyroSim.h" },
+    { AnalogEncoderSim = "frc/simulation/AnalogEncoderSim.h" },
+    { AnalogGyroSim = "frc/simulation/AnalogGyroSim.h" },
+    { AnalogInputSim = "frc/simulation/AnalogInputSim.h" },
+    { AnalogOutputSim = "frc/simulation/AnalogOutputSim.h" },
+    { AnalogTriggerSim = "frc/simulation/AnalogTriggerSim.h" },
+    { BatterySim = "frc/simulation/BatterySim.h" },
+    { BuiltInAccelerometerSim = "frc/simulation/BuiltInAccelerometerSim.h" },
+    { CallbackStore = "frc/simulation/CallbackStore.h" },
+    # { DifferentialDrivetrainSim = "frc/simulation/DifferentialDrivetrainSim.h" },
+    { DigitalPWMSim = "frc/simulation/DigitalPWMSim.h" },
+    { DIOSim = "frc/simulation/DIOSim.h" },
+    { DriverStationSim = "frc/simulation/DriverStationSim.h" },
+    { DutyCycleEncoderSim = "frc/simulation/DutyCycleEncoderSim.h" },
+    { DutyCycleSim = "frc/simulation/DutyCycleSim.h" },
+    # { ElevatorSim = "frc/simulation/ElevatorSim.h" },
+    { EncoderSim = "frc/simulation/EncoderSim.h" },
+    # { FlywheelSim = "frc/simulation/FlywheelSim.h" },
+    { GenericHIDSim = "frc/simulation/GenericHIDSim.h" },
+    { JoystickSim = "frc/simulation/JoystickSim.h" },
+    # { LinearSystemSim = "frc/simulation/LinearSystemSim.h" },
+    { Mechanism2D = "frc/simulation/Mechanism2D.h" },
+    { PCMSim = "frc/simulation/PCMSim.h" },
+    { PDPSim = "frc/simulation/PDPSim.h" },
+    { PWMSim = "frc/simulation/PWMSim.h" },
+    { RelaySim = "frc/simulation/RelaySim.h" },
+    { RoboRioSim = "frc/simulation/RoboRioSim.h" },
+    { SimDeviceSim = "frc/simulation/SimDeviceSim.h" },
+    { SimHooks = "frc/simulation/SimHooks.h" },
+    # { SingleJointedArmSim = "frc/simulation/SingleJointedArmSim.h" },
+    { SPIAccelerometerSim = "frc/simulation/SPIAccelerometerSim.h" },
+    { XboxControllerSim = "frc/simulation/XboxControllerSim.h" },
 ]
-
-
-[tool.robotpy-build.wrappers."wpilib.spline"]
-
-name = "wpilibc_spline"
-extension = "_spline"
-sources = ["wpilib/spline/spline.cpp"]
-depends = [
-    "wpilib_core", "wpilibc_geometry", "wpilibc",
-    "wpiHal", "wpiutil", "ntcore"
-]
-generation_data = "gen/spline"
-generate = [
-    # frc/spline
-    { CubicHermiteSpline = "frc/spline/CubicHermiteSpline.h" },
-    { QuinticHermiteSpline = "frc/spline/QuinticHermiteSpline.h" },
-    { Spline = "frc/spline/Spline.h" },
-    { SplineHelper = "frc/spline/SplineHelper.h" },
-    { SplineParameterizer = "frc/spline/SplineParameterizer.h" },
-]
-
 
 [tool.robotpy-build.metadata]
 name = "wpilib"

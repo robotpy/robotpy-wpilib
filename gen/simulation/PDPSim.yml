@@ -1,0 +1,31 @@
+---
+
+extra_includes:
+- frc/PowerDistributionPanel.h
+
+classes:
+  PDPSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      PDPSim:
+        overloads:
+          int:
+          frc::PowerDistributionPanel&:
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      RegisterTemperatureCallback:
+      GetTemperature:
+      SetTemperature:
+      RegisterVoltageCallback:
+      GetVoltage:
+      SetVoltage:
+      RegisterCurrentCallback:
+      GetCurrent:
+      SetCurrent:
+      GetAllCurrents:
+      SetAllCurrents:
+      ResetData:

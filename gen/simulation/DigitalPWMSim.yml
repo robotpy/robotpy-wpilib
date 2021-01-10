@@ -1,0 +1,27 @@
+---
+
+extra_includes:
+- frc/DigitalOutput.h
+
+classes:
+  DigitalPWMSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      DigitalPWMSim:
+        overloads:
+          frc::DigitalOutput&:
+      CreateForChannel:
+      CreateForIndex:
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      RegisterDutyCycleCallback:
+      GetDutyCycle:
+      SetDutyCycle:
+      RegisterPinCallback:
+      GetPin:
+      SetPin:
+      ResetData:

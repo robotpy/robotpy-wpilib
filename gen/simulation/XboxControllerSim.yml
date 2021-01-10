@@ -1,0 +1,28 @@
+---
+
+extra_includes:
+- frc/XboxController.h
+
+classes:
+  XboxControllerSim:
+    shared_ptr: true
+    force_no_trampoline: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      XboxControllerSim:
+        overloads:
+          frc::XboxController&:
+          int:
+      SetX:
+      SetY:
+      SetTriggerAxis:
+      SetBumper:
+      SetStickButton:
+      SetAButton:
+      SetBButton:
+      SetXButton:
+      SetYButton:
+      SetBackButton:
+      SetStartButton:

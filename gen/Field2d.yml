@@ -1,0 +1,22 @@
+---
+
+extra_includes:
+- frc/smartdashboard/SendableBuilder.h
+
+classes:
+  Field2d:
+    shared_ptr: true
+    ignored_bases:
+    - SendableHelper<Field2d>
+    methods:
+      Field2d:
+      SetRobotPose:
+        overloads:
+          Pose2d&:
+          units::meter_t, units::meter_t, Rotation2d:
+      GetRobotPose:
+      GetObject:
+        return_value_policy: reference_internal
+      GetRobotObject:
+        return_value_policy: reference_internal
+      InitSendable:

@@ -1,0 +1,17 @@
+---
+
+classes:
+  ElevatorSim:
+    shared_ptr: true
+    methods:
+      ElevatorSim:
+        overloads:
+          LinearSystem<2, 1, 1>&, DCMotor&, double, units::meter_t, units::meter_t, units::meter_t, std::array<double, 1>&:
+          DCMotor&, double, units::kilogram_t, units::meter_t, units::meter_t, units::meter_t, std::array<double, 1>&:
+      HasHitLowerLimit:
+      HasHitUpperLimit:
+      GetPosition:
+      GetVelocity:
+      GetCurrentDraw:
+      SetInputVoltage:
+      UpdateX:

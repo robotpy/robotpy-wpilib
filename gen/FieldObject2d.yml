@@ -1,0 +1,23 @@
+---
+
+classes:
+  FieldObject2d:
+    shared_ptr: true
+    nodelete: true
+    methods:
+      FieldObject2d:
+        ignore: true
+      SetPose:
+        overloads:
+          Pose2d&:
+          units::meter_t, units::meter_t, Rotation2d:
+      GetPose:
+      SetPoses:
+        overloads:
+          wpi::ArrayRef<Pose2d>:
+          std::initializer_list<Pose2d>:
+            ignore: true
+      GetPoses:
+        overloads:
+          '[const]':
+          wpi::SmallVectorImpl<Pose2d>& [const]:

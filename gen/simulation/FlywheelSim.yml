@@ -1,0 +1,13 @@
+---
+
+classes:
+  FlywheelSim:
+    shared_ptr: true
+    methods:
+      FlywheelSim:
+        overloads:
+          LinearSystem<1, 1, 1>&, DCMotor&, double, std::array<double, 1>&:
+          DCMotor&, double, units::kilogram_square_meter_t, std::array<double, 1>&:
+      GetAngularVelocity:
+      GetCurrentDraw:
+      SetInputVoltage:

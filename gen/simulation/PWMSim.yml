@@ -1,0 +1,35 @@
+---
+
+extra_includes:
+- frc/PWM.h
+
+classes:
+  PWMSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      PWMSim:
+        overloads:
+          frc::PWM&:
+          int:
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      RegisterRawValueCallback:
+      GetRawValue:
+      SetRawValue:
+      RegisterSpeedCallback:
+      GetSpeed:
+      SetSpeed:
+      RegisterPositionCallback:
+      GetPosition:
+      SetPosition:
+      RegisterPeriodScaleCallback:
+      GetPeriodScale:
+      SetPeriodScale:
+      RegisterZeroLatchCallback:
+      GetZeroLatch:
+      SetZeroLatch:
+      ResetData:

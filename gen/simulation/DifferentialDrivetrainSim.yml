@@ -1,0 +1,64 @@
+---
+
+classes:
+  DifferentialDrivetrainSim:
+    shared_ptr: true
+    methods:
+      DifferentialDrivetrainSim:
+        overloads:
+          LinearSystem<2, 2, 2>, units::meter_t, DCMotor, double, units::meter_t, std::array<double, 7>&:
+          ? frc::DCMotor, double, units::kilogram_square_meter_t, units::kilogram_t,
+            units::meter_t, units::meter_t, std::array<double, 7>&
+          :
+      ClampInput:
+      SetInputs:
+      SetGearing:
+      Update:
+      GetGearing:
+      GetHeading:
+      GetPose:
+      GetRightPosition:
+      GetRightVelocity:
+      GetLeftPosition:
+      GetLeftVelocity:
+      GetRightCurrentDraw:
+      GetLeftCurrentDraw:
+      GetCurrentDraw:
+      SetState:
+      SetPose:
+      Dynamics:
+      CreateKitbotSim:
+        overloads:
+          frc::DCMotor, double, units::meter_t, std::array<double, 7>&:
+          frc::DCMotor, double, units::meter_t, units::kilogram_square_meter_t, std::array<double, 7>&:
+  DifferentialDrivetrainSim::State:
+    shared_ptr: true
+    attributes:
+      kX:
+      kY:
+      kHeading:
+      kLeftVelocity:
+      kRightVelocity:
+      kLeftPosition:
+      kRightPosition:
+  DifferentialDrivetrainSim::KitbotGearing:
+    shared_ptr: true
+    attributes:
+      k12p75:
+      k10p71:
+      k8p45:
+      k7p31:
+      k5p95:
+  DifferentialDrivetrainSim::KitbotMotor:
+    shared_ptr: true
+    attributes:
+      SingleCIMPerSide:
+      DualCIMPerSide:
+      SingleMiniCIMPerSide:
+      DualMiniCIMPerSide:
+  DifferentialDrivetrainSim::KitbotWheelSize:
+    shared_ptr: true
+    attributes:
+      kSixInch:
+      kEightInch:
+      kTenInch:

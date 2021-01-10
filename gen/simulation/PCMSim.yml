@@ -1,0 +1,41 @@
+---
+
+extra_includes:
+- frc/Compressor.h
+
+classes:
+  PCMSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      PCMSim:
+        overloads:
+          "":
+          int:
+          frc::Compressor&:
+      RegisterSolenoidInitializedCallback:
+      GetSolenoidInitialized:
+      SetSolenoidInitialized:
+      RegisterSolenoidOutputCallback:
+      GetSolenoidOutput:
+      SetSolenoidOutput:
+      RegisterCompressorInitializedCallback:
+      GetCompressorInitialized:
+      SetCompressorInitialized:
+      RegisterCompressorOnCallback:
+      GetCompressorOn:
+      SetCompressorOn:
+      RegisterClosedLoopEnabledCallback:
+      GetClosedLoopEnabled:
+      SetClosedLoopEnabled:
+      RegisterPressureSwitchCallback:
+      GetPressureSwitch:
+      SetPressureSwitch:
+      RegisterCompressorCurrentCallback:
+      GetCompressorCurrent:
+      SetCompressorCurrent:
+      GetAllSolenoidOutputs:
+      SetAllSolenoidOutputs:
+      ResetData:

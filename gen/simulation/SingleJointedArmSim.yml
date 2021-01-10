@@ -1,0 +1,22 @@
+---
+
+classes:
+  SingleJointedArmSim:
+    shared_ptr: true
+    methods:
+      SingleJointedArmSim:
+        overloads:
+          ? LinearSystem<2, 1, 1>&, DCMotor&, double, units::meter_t, units::radian_t,
+            units::radian_t, units::kilogram_t, bool, std::array<double, 1>&
+          :
+          ? DCMotor&, double, units::kilogram_square_meter_t, units::meter_t, units::radian_t,
+            units::radian_t, units::kilogram_t, bool, std::array<double, 1>&
+          :
+      HasHitLowerLimit:
+      HasHitUpperLimit:
+      GetAngle:
+      GetVelocity:
+      GetCurrentDraw:
+      SetInputVoltage:
+      EstimateMOI:
+      UpdateX:

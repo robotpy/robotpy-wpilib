@@ -1,0 +1,23 @@
+---
+
+extra_includes:
+- frc/AnalogOutput.h
+
+classes:
+  AnalogOutputSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      AnalogOutputSim:
+        overloads:
+          frc::AnalogOutput&:
+          int:
+      RegisterVoltageCallback:
+      GetVoltage:
+      SetVoltage:
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      ResetData:

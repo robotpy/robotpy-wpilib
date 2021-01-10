@@ -1,0 +1,21 @@
+---
+
+extra_includes:
+- frc/Joystick.h
+
+classes:
+  JoystickSim:
+    shared_ptr: true
+    force_no_trampoline: true
+    methods:
+      JoystickSim:
+        overloads:
+          frc::Joystick&:
+          int:
+      SetX:
+      SetY:
+      SetZ:
+      SetTwist:
+      SetThrottle:
+      SetTrigger:
+      SetTop:

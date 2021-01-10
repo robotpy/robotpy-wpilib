@@ -1,0 +1,56 @@
+---
+
+classes:
+  RoboRioSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      RegisterFPGAButtonCallback:
+      GetFPGAButton:
+      SetFPGAButton:
+      RegisterVInVoltageCallback:
+      GetVInVoltage:
+      SetVInVoltage:
+      RegisterVInCurrentCallback:
+      GetVInCurrent:
+      SetVInCurrent:
+      RegisterUserVoltage6VCallback:
+      GetUserVoltage6V:
+      SetUserVoltage6V:
+      RegisterUserCurrent6VCallback:
+      GetUserCurrent6V:
+      SetUserCurrent6V:
+      RegisterUserActive6VCallback:
+      GetUserActive6V:
+      SetUserActive6V:
+      RegisterUserVoltage5VCallback:
+      GetUserVoltage5V:
+      SetUserVoltage5V:
+      RegisterUserCurrent5VCallback:
+      GetUserCurrent5V:
+      SetUserCurrent5V:
+      RegisterUserActive5VCallback:
+      GetUserActive5V:
+      SetUserActive5V:
+      RegisterUserVoltage3V3Callback:
+      GetUserVoltage3V3:
+      SetUserVoltage3V3:
+      RegisterUserCurrent3V3Callback:
+      GetUserCurrent3V3:
+      SetUserCurrent3V3:
+      RegisterUserActive3V3Callback:
+      GetUserActive3V3:
+      SetUserActive3V3:
+      RegisterUserFaults6VCallback:
+      GetUserFaults6V:
+      SetUserFaults6V:
+      RegisterUserFaults5VCallback:
+      GetUserFaults5V:
+      SetUserFaults5V:
+      RegisterUserFaults3V3Callback:
+      GetUserFaults3V3:
+      SetUserFaults3V3:
+      ResetData:
+        ignore: true # TODO

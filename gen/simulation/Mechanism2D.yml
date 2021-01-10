@@ -1,0 +1,9 @@
+---
+
+classes:
+  Mechanism2D:
+    shared_ptr: true
+    methods:
+      Mechanism2D:
+      SetLigamentAngle:
+      SetLigamentLength:

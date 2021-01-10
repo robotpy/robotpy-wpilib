@@ -15,7 +15,7 @@
 #include <utility>
 
 #include <hal/Types.h>
-#include <units/units.h>
+#include <units/time.h>
 #include <wpi/Twine.h>
 #include <wpi/deprecated.h>
 #include <wpi/mutex.h>
@@ -109,9 +109,9 @@ public:
   void StartPeriodic(units::second_t period);
 
   /**
-   * Stop timer events from occuring.
+   * Stop timer events from occurring.
    *
-   * Stop any repeating timer events from occuring. This will also remove any
+   * Stop any repeating timer events from occurring. This will also remove any
    * single notification events from the queue.
    *
    * If a timer-based call to the registered handler is in progress, this
