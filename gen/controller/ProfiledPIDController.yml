@@ -74,14 +74,12 @@ classes:
 
 templates:
   ProfiledPIDController:
-    subpackage: controller
     qualname: frc::ProfiledPIDController
     params:
       - units::dimensionless::scalar
   
   # needed for HolonomicDriveController
   ProfiledPIDControllerRadians:
-    subpackage: controller
     qualname: frc::ProfiledPIDController
     params:
       - units::radian
