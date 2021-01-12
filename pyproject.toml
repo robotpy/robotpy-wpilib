@@ -219,20 +219,20 @@ generate = [
 ]
 
 [tool.robotpy-build.wrappers."wpilib.controller"]
-# This is a combination of controller + trajectory because of 
-# circular dependencies
 
 name = "wpilibc_controller"
 extension = "_controller"
 sources = ["wpilib/controller/controller.cpp"]
 depends = [
     "wpilib_core", "wpilibc_interfaces", "wpilibc",
-    "wpimath_controller", "wpimath_geometry", "wpimath_kinematics", "wpimath_spline",
+    "wpimath_controls", "wpimath_geometry", "wpimath_kinematics",
+    "wpimath_spline", "wpimath_trajectory",
     "wpiHal", "wpiutil", "ntcore",
 ]
 generation_data = "gen/controller"
 generate = [
     # frc/controller
+    { HolonomicDriveController = "frc/controller/HolonomicDriveController.h" },
     { PIDController = "frc/controller/PIDController.h" },
     { ProfiledPIDController = "frc/controller/ProfiledPIDController.h" },
     { RamseteController = "frc/controller/RamseteController.h" },
@@ -285,8 +285,8 @@ name = "wpilibc_simulation"
 extension = "_simulation"
 sources = ["wpilib/simulation/simulation.cpp"]
 depends = [
-    "wpilib_core", "wpilibc", "wpiHal",
-    "wpiutil", "wpimath_cpp", "wpimath_geometry",
+    "wpilib_core", "wpilibc", "wpiHal", "wpiutil",
+    "wpimath_cpp", "wpimath_controls", "wpimath_geometry", "wpimath_kinematics",
     "ntcore"
 ]
 generation_data = "gen/simulation"
@@ -301,18 +301,18 @@ generate = [
     { BatterySim = "frc/simulation/BatterySim.h" },
     { BuiltInAccelerometerSim = "frc/simulation/BuiltInAccelerometerSim.h" },
     { CallbackStore = "frc/simulation/CallbackStore.h" },
-    # { DifferentialDrivetrainSim = "frc/simulation/DifferentialDrivetrainSim.h" },
+    { DifferentialDrivetrainSim = "frc/simulation/DifferentialDrivetrainSim.h" },
     { DigitalPWMSim = "frc/simulation/DigitalPWMSim.h" },
     { DIOSim = "frc/simulation/DIOSim.h" },
     { DriverStationSim = "frc/simulation/DriverStationSim.h" },
     { DutyCycleEncoderSim = "frc/simulation/DutyCycleEncoderSim.h" },
     { DutyCycleSim = "frc/simulation/DutyCycleSim.h" },
-    # { ElevatorSim = "frc/simulation/ElevatorSim.h" },
+    { ElevatorSim = "frc/simulation/ElevatorSim.h" },
     { EncoderSim = "frc/simulation/EncoderSim.h" },
-    # { FlywheelSim = "frc/simulation/FlywheelSim.h" },
+    { FlywheelSim = "frc/simulation/FlywheelSim.h" },
     { GenericHIDSim = "frc/simulation/GenericHIDSim.h" },
     { JoystickSim = "frc/simulation/JoystickSim.h" },
-    # { LinearSystemSim = "frc/simulation/LinearSystemSim.h" },
+    { LinearSystemSim = "frc/simulation/LinearSystemSim.h" },
     { Mechanism2D = "frc/simulation/Mechanism2D.h" },
     { PCMSim = "frc/simulation/PCMSim.h" },
     { PDPSim = "frc/simulation/PDPSim.h" },
@@ -321,7 +321,7 @@ generate = [
     { RoboRioSim = "frc/simulation/RoboRioSim.h" },
     { SimDeviceSim = "frc/simulation/SimDeviceSim.h" },
     { SimHooks = "frc/simulation/SimHooks.h" },
-    # { SingleJointedArmSim = "frc/simulation/SingleJointedArmSim.h" },
+    { SingleJointedArmSim = "frc/simulation/SingleJointedArmSim.h" },
     { SPIAccelerometerSim = "frc/simulation/SPIAccelerometerSim.h" },
     { XboxControllerSim = "frc/simulation/XboxControllerSim.h" },
 ]
@@ -334,9 +334,9 @@ author_email = "robotpy@googlegroups.com"
 url = "https://github.com/robotpy/robotpy-wpilib"
 license = "BSD-3-Clause"
 install_requires = [
-    "robotpy-wpiutil>=2020.3.2.0,<2021.0.0",
-    "robotpy-hal>=2020.3.2.0,<2021.0.0",
-    "pyntcore>=2020.3.2.0,<2021.0.0",
+    "robotpy-wpiutil>=2021.1.2.0,<2022.0.0",
+    "robotpy-hal>=2021.1.2.0,<2022.0.0",
+    "pyntcore>=2021.1.2.0,<2022.0.0",
 ]
 
 [tool.robotpy-build.metadata.entry_points]
