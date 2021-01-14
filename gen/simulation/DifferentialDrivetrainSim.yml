@@ -10,9 +10,15 @@ classes:
       DifferentialDrivetrainSim:
         overloads:
           LinearSystem<2, 2, 2>, units::meter_t, DCMotor, double, units::meter_t, std::array<double, 7>&:
+            param_override:
+              measurementStdDevs:
+                default: std::array<double, 7>{}
           ? frc::DCMotor, double, units::kilogram_square_meter_t, units::kilogram_t,
             units::meter_t, units::meter_t, std::array<double, 7>&
           :
+            param_override:
+              measurementStdDevs:
+                default: std::array<double, 7>{}
       ClampInput:
       SetInputs:
       SetGearing:
@@ -33,7 +39,13 @@ classes:
       CreateKitbotSim:
         overloads:
           frc::DCMotor, double, units::meter_t, std::array<double, 7>&:
+            param_override:
+              measurementStdDevs:
+                default: std::array<double, 7>{}
           frc::DCMotor, double, units::meter_t, units::kilogram_square_meter_t, std::array<double, 7>&:
+            param_override:
+              measurementStdDevs:
+                default: std::array<double, 7>{}
   DifferentialDrivetrainSim::State:
     shared_ptr: true
     attributes:
