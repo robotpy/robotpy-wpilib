@@ -1,7 +1,13 @@
 ---
 name: dist
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+    tags:
+    - '*'
 
 jobs:
   check:
@@ -19,7 +25,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-18.04]
-        python_version: [3.6, 3.7, 3.8]
+        python_version: [3.6, 3.7, 3.8, 3.9]
         architecture: [x86, x64]
         exclude:
         - os: macos-latest
@@ -33,43 +39,55 @@ jobs:
       with:
         python-version: ${{ matrix.python_version }}
         architecture: ${{ matrix.architecture }}
-    
-    - uses: robotpy/build-actions/install-robotpy-build@v2020
-    - uses: robotpy/build-actions/install-build-deps@v2020
-    - uses: robotpy/build-actions/build-wheel@v2020
-    - uses: robotpy/build-actions/test-native-wheel@v2020
-    
+
+    - uses: robotpy/build-actions/install-robotpy-build@v2021
+    - uses: robotpy/build-actions/install-build-deps@v2021
+    - uses: robotpy/build-actions/build-wheel@v2021
+    - uses: robotpy/build-actions/test-native-wheel@v2021
+
+    - uses: robotpy/build-actions/validate-sphinx@v2021
+      if: ${{ matrix.python_version == '3.7' && matrix.os == 'ubuntu-18.04' }}
+
     - uses: actions/upload-artifact@v2
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
       with:
-        name: "dist-py${{ matrix.python_version }}-${{ matrix.os }}-${{ matrix.architecture }}"
+        name: "dist-${{ matrix.os }}"
         path: dist
 
   #
-  # Build roboRIO wheel
+  # Build roboRIO/raspbian wheels
   #
 
   cross-build:
     runs-on: ubuntu-latest
-    container: robotpy/roborio-cross-ubuntu:2020.1-20.04
+    strategy:
+      matrix:
+        os:
+        - container: robotpy/roborio-cross-ubuntu:2021.3
+          name:  roborio
+        - container: robotpy/raspbian-cross-ubuntu:2021.3
+          name:  raspbian
+
+    container:
+      image: "${{ matrix.os.container }}"
+
     steps:
     - uses: actions/checkout@v2
 
-    - uses: robotpy/build-actions/install-robotpy-build@v2020
+    - uses: robotpy/build-actions/install-robotpy-build@v2021
       with:
         python: /build/venv/bin/cross-python
-    - uses: robotpy/build-actions/install-build-deps@v2020
+    - uses: robotpy/build-actions/install-build-deps@v2021
       with:
         python: /build/venv/bin/cross-python
-        wheeldir: roborio
-    - uses: robotpy/build-actions/build-wheel@v2020
+        wheeldir: ${{ matrix.os.name }}
+    - uses: robotpy/build-actions/build-wheel@v2021
       with:
         python: /build/venv/bin/cross-python
 
     - uses: actions/upload-artifact@v2
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
       with:
-        name: dist-roborio
+        name: dist-${{ matrix.os.name }}
         path: dist
 
   #
@@ -78,38 +96,30 @@ jobs:
 
   publish-rpyrepo:
     runs-on: ubuntu-latest
-    needs: [check, build]
+    needs: [check, build, cross-build]
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
 
     steps:
     - uses: actions/download-artifact@v2
       with:
-        name: dist-py3.6-ubuntu-18.04-x64
-        path: dist/
-    
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.7-ubuntu-18.04-x64
-        path: dist/
-    
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.8-ubuntu-18.04-x64
+        name: dist-ubuntu-18.04
         path: dist/
 
-    - uses: garygrossgarten/github-action-scp@v0.6.0
+    - uses: robotpy/github-action-scp@atomic
       with:
         local: dist
-        remote: public_html/2020/linux_x86_64
+        remote: public_html/2021/linux_x86_64
         host: narya.tortall.net
         username: ${{ secrets.SSH_USER }}
         privateKey: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        atomicPut: true
 
     - name: Ping readthedocs
-      uses: wei/curl@v1
+      uses: robotpy/build-actions/ping-rtd@v2021
       with:
-        args: -X POST -d "token=${{ secrets.RTD_TOKEN }}" ${{ secrets.RTD_WEBHOOK }}
+        token: ${{ secrets.RTD_TOKEN }}
+        webhook: ${{ secrets.RTD_WEBHOOK }}
 
     #
     # RoboRIO wheel
@@ -120,19 +130,39 @@ jobs:
         name: dist-roborio
         path: dist-roborio/
 
-    - uses: garygrossgarten/github-action-scp@v0.6.0
+    - uses: robotpy/github-action-scp@atomic
       with:
         local: dist-roborio
-        remote: public_html/2020/roborio
+        remote: public_html/2021/roborio
         host: narya.tortall.net
         username: ${{ secrets.SSH_USER }}
         privateKey: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        atomicPut: true
+
+    #
+    # Raspbian wheel
+    #
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: dist-raspbian
+        path: dist-raspbian/
+
+    - uses: robotpy/github-action-scp@atomic
+      with:
+        local: dist-raspbian
+        remote: public_html/2021/raspbian
+        host: narya.tortall.net
+        username: ${{ secrets.SSH_USER }}
+        privateKey: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        atomicPut: true
 
 
   publish-pypi:
     runs-on: ubuntu-latest
-    needs: [check, build]
+    needs: [check, build, cross-build]
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
 
     steps:
@@ -140,55 +170,20 @@ jobs:
 
     - uses: actions/download-artifact@v2
       with:
-        name: dist-py3.6-windows-latest-x86
+        name: dist-windows-latest
         path: dist/
 
     - uses: actions/download-artifact@v2
       with:
-        name: dist-py3.6-windows-latest-x64
-        path: dist/
-    
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.6-macos-latest-x64
-        path: dist/
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.7-windows-latest-x86
-        path: dist/
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.7-windows-latest-x64
-        path: dist/
-    
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.7-macos-latest-x64
-        path: dist/
-    
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.8-windows-latest-x86
-        path: dist/
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.8-windows-latest-x64
-        path: dist/
-      
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-py3.8-macos-latest-x64
+        name: dist-macos-latest
         path: dist/
 
     - uses: actions/setup-python@v2
       with:
         python-version: 3.8
 
-    - uses: robotpy/build-actions/install-robotpy-build@v2020
-    - uses: robotpy/build-actions/build-sdist@v2020
+    - uses: robotpy/build-actions/install-robotpy-build@v2021
+    - uses: robotpy/build-actions/build-sdist@v2021
 
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@master
@@ -202,14 +197,6 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
 
     steps:
-    - name: Get Current Tag
-      uses: robotpy/build-actions/get-git-tag@v2020
-      id: currtag
-
-    - name: Ping meta
-      uses: peter-evans/repository-dispatch@v1
+    - uses: robotpy/build-actions/ping-meta@v2021
       with:
         token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        repository: robotpy/robotpy-meta
-        event-type: tag
-        client-payload: '{"package_name": "wpilib", "package_version": "${{ steps.currtag.outputs.tag }}"}'
