@@ -263,7 +263,10 @@ generate = [
 name = "wpilibc_interfaces"
 extension = "_interfaces"
 sources = ["wpilib/interfaces/interfaces.cpp"]
-depends = ["wpilibc", "wpiHal", "wpiutil", "ntcore"]
+depends = [
+    "wpilibc", "wpiHal", "wpiutil", "ntcore",
+    "wpimath_cpp", "wpimath_geometry"
+]
 generation_data = "gen"
 generate = [
 
