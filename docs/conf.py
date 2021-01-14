@@ -62,7 +62,7 @@ autoclass_content = "both"
 
 intersphinx_mapping = {
     "networktables": (
-        f"https://pynetworktables.readthedocs.io/en/%s/{rtd_version}/",
+        f"https://pynetworktables.readthedocs.io/en/{rtd_version}/",
         None,
     ),
     "wpimath": (
@@ -153,10 +153,5 @@ root = abspath(dirname(__file__))
 gen_package(root, "wpilib", exclude=["wpi_*"])
 gen_package(root, "wpilib.controller")
 gen_package(root, "wpilib.drive")
-gen_package(root, "wpilib.geometry")
 gen_package(root, "wpilib.interfaces")
-gen_package(root, "wpilib.kinematics")
 gen_package(root, "wpilib.simulation")
-gen_package(root, "wpilib.spline")
-gen_package(root, "wpilib.trajectory")
-gen_package(root, "wpilib.trajectory.constraint")
