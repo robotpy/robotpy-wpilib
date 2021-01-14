@@ -16,3 +16,11 @@ __all__ = [
     "ProfiledPIDControllerRadians",
     "RamseteController",
 ]
+
+# 2020 compatibility to be removed in 2022
+from wpimath.controller import (
+    ArmFeedforward,
+    ElevatorFeedforward,
+    SimpleMotorFeedforward,
+    SimpleMotorFeedforwardMeters,
+)

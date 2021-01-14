@@ -62,9 +62,13 @@ autoclass_content = "both"
 
 intersphinx_mapping = {
     "networktables": (
-        "https://pynetworktables.readthedocs.io/en/%s/" % rtd_version,
+        f"https://pynetworktables.readthedocs.io/en/%s/{rtd_version}/",
         None,
-    )
+    ),
+    "wpimath": (
+        f"https://robotpy.readthedocs.io/projects/wpimath/en/{rtd_version}/",
+        None,
+    ),
 }
 
 # List of patterns, relative to source directory, that match files and
