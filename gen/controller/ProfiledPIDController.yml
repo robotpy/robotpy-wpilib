@@ -9,6 +9,8 @@ functions:
 classes:
   ProfiledPIDController:
     shared_ptr: true
+    force_type_casters:
+    - units::radians_per_second
     template_params:
     - Distance
     ignored_bases:
@@ -72,7 +74,12 @@ classes:
 
 templates:
   ProfiledPIDController:
-    subpackage: controller
     qualname: frc::ProfiledPIDController
     params:
       - units::dimensionless::scalar
+  
+  # needed for HolonomicDriveController
+  ProfiledPIDControllerRadians:
+    qualname: frc::ProfiledPIDController
+    params:
+      - units::radian

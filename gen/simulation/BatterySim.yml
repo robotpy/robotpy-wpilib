@@ -1,0 +1,15 @@
+---
+
+classes:
+  BatterySim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      Calculate:
+        overloads:
+          units::volt_t, units::ohm_t, std::initializer_list<units::ampere_t>:
+            ignore: true
+          std::initializer_list<units::ampere_t>:
+            ignore: true

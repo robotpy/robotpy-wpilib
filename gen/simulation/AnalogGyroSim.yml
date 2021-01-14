@@ -1,0 +1,26 @@
+---
+
+extra_includes:
+- frc/AnalogGyro.h
+
+classes:
+  AnalogGyroSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      AnalogGyroSim:
+        overloads:
+          frc::AnalogGyro&:
+          int:
+      RegisterAngleCallback:
+      GetAngle:
+      SetAngle:
+      RegisterRateCallback:
+      GetRate:
+      SetRate:
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      ResetData:

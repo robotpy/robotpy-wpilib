@@ -1,0 +1,26 @@
+---
+
+classes:
+  SPIAccelerometerSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      SPIAccelerometerSim:
+      RegisterActiveCallback:
+      GetActive:
+      SetActive:
+      RegisterRangeCallback:
+      GetRange:
+      SetRange:
+      RegisterXCallback:
+      GetX:
+      SetX:
+      RegisterYCallback:
+      GetY:
+      SetY:
+      RegisterZCallback:
+      GetZ:
+      SetZ:
+      ResetData:

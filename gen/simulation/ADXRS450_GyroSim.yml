@@ -1,0 +1,15 @@
+---
+
+extra_includes:
+- frc/ADXRS450_Gyro.h
+
+classes:
+  ADXRS450_GyroSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      ADXRS450_GyroSim:
+      SetAngle:
+      SetRate:

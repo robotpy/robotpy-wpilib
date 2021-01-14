@@ -5,7 +5,6 @@ extra_includes:
 
 classes:
   PIDController:
-    subpackage: controller
     shared_ptr: true
     ignored_bases:
     - frc::SendableHelper<PIDController>

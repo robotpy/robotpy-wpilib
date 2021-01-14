@@ -27,3 +27,9 @@ classes:
       GetFPGAIndex:
       GetSourceChannel:
       InitSendable:
+
+inline_code: |
+  cls_DutyCycle
+    .def("__repr__", [](const DutyCycle &self) {
+      return py::str("<DutyCycle {}>").format(self.GetSourceChannel());
+    });

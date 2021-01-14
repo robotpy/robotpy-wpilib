@@ -18,3 +18,9 @@ classes:
       GetVoltage:
       GetChannel:
       InitSendable:
+
+inline_code: |
+  cls_AnalogOutput
+    .def("__repr__", [](const AnalogOutput &self) {
+      return py::str("<AnalogOutput {}>").format(self.GetChannel());
+    });

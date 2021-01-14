@@ -1,0 +1,17 @@
+---
+
+extra_includes:
+- frc/AnalogEncoder.h
+
+classes:
+  AnalogEncoderSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      AnalogEncoderSim:
+      SetPosition:
+      SetTurns:
+      GetTurns:
+      GetPosition:

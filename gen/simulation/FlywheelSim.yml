@@ -1,0 +1,22 @@
+---
+
+classes:
+  FlywheelSim:
+    shared_ptr: true
+    typealias:
+    - frc::DCMotor
+    - template <int S, int I, int O> using LinearSystem = frc::LinearSystem<S, I, O>
+    methods:
+      FlywheelSim:
+        overloads:
+          LinearSystem<1, 1, 1>&, DCMotor&, double, std::array<double, 1>&:
+            param_override:
+              measurementStdDevs:
+                default: std::array<double, 1>{0.0}
+          DCMotor&, double, units::kilogram_square_meter_t, std::array<double, 1>&:
+            param_override:
+              measurementStdDevs:
+                default: std::array<double, 1>{0.0}
+      GetAngularVelocity:
+      GetCurrentDraw:
+      SetInputVoltage:

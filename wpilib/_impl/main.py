@@ -124,7 +124,7 @@ def run(robot_class, **kwargs):
     a simulation.
 
     :param robot_class: A class that inherits from :class:`.RobotBase`
-    :param **kwargs: Keyword arguments that will be passed to the executed entry points
+    :param kwargs: Keyword arguments that will be passed to the executed entry points
     :returns: This function should never return
     """
 

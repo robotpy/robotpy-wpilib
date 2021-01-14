@@ -23,35 +23,4 @@ cls_RobotBase
         "\n"
         ".. versionadded:: 2019.2.1\n"
         "\n"
-        ".. note:: This function only exists in RobotPy\n")
-    .def(
-        "isAutonomousEnabled",
-        [](RobotBase *that) -> bool {
-          py::gil_scoped_release release;
-          return rpy::IsAutonomousEnabled();
-        },
-        "Equivalent to calling ``isAutonomous() and isEnabled()`` but\n"
-        "more efficient.\n"
-        "\n"
-        ":returns: True if the robot is in autonomous mode and is enabled,\n"
-        "    False otherwise.\n"
-        "\n"
-        ".. versionadded:: 2019.2.1\n"
-        "\n"
-        ".. note:: This function only exists in RobotPy\n")
-    .def(
-        "isOperatorControlEnabled",
-        [](RobotBase *that) -> bool {
-          py::gil_scoped_release release;
-          return rpy::IsOperatorControlEnabled();
-        },
-        "Equivalent to calling ``isOperatorControl() and isEnabled()`` but\n"
-        "more efficient.\n"
-        "\n"
-        ":returns: True if the robot is in operator-controlled mode and is "
-        "enabled,\n"
-        "    False otherwise.\n"
-        "\n"
-        ".. versionadded:: 2019.2.1\n"
-        "\n"
         ".. note:: This function only exists in RobotPy\n");

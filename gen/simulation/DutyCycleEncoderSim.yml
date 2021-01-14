@@ -1,0 +1,12 @@
+---
+
+extra_includes:
+- frc/DutyCycleEncoder.h
+
+classes:
+  DutyCycleEncoderSim:
+    shared_ptr: true
+    methods:
+      DutyCycleEncoderSim:
+      Set:
+      SetDistance:

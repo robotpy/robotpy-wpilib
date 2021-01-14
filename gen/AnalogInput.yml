@@ -41,3 +41,9 @@ classes:
         rename: pidGet
       SetSimDevice:
       InitSendable:
+
+inline_code: |
+  cls_AnalogInput
+    .def("__repr__", [](const AnalogInput &self) {
+      return py::str("<AnalogInput {}>").format(self.GetChannel());
+    });

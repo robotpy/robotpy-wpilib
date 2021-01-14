@@ -1,0 +1,26 @@
+---
+
+classes:
+  GenericHIDSim:
+    shared_ptr: true
+    methods:
+      GenericHIDSim:
+        overloads:
+          frc::GenericHID&:
+          int:
+      NotifyNewData:
+      SetRawButton:
+      SetRawAxis:
+      SetPOV:
+        overloads:
+          int, int:
+          int:
+      SetAxisCount:
+      SetPOVCount:
+      SetButtonCount:
+      SetType:
+      SetName:
+      SetAxisType:
+      GetOutput:
+      GetOutputs:
+      GetRumble:

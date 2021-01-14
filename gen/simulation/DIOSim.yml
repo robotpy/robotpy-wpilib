@@ -1,0 +1,34 @@
+---
+
+extra_includes:
+- frc/DigitalInput.h
+- frc/DigitalOutput.h
+
+classes:
+  DIOSim:
+    shared_ptr: true
+    force_type_casters:
+    - std::function
+    - wpi::StringRef
+    methods:
+      DIOSim:
+        overloads:
+          frc::DigitalInput&:
+          frc::DigitalOutput&:
+          int:
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      RegisterValueCallback:
+      GetValue:
+      SetValue:
+      RegisterPulseLengthCallback:
+      GetPulseLength:
+      SetPulseLength:
+      RegisterIsInputCallback:
+      GetIsInput:
+      SetIsInput:
+      RegisterFilterIndexCallback:
+      GetFilterIndex:
+      SetFilterIndex:
+      ResetData:

@@ -23,10 +23,6 @@ The library is designed to:
   wpilib
   wpilib.controller
   wpilib.drive
-  wpilib.geometry
   wpilib.interfaces
-  wpilib.kinematics
   wpilib.simulation
-  wpilib.spline
-  wpilib.trajectory
-  wpilib.trajectory.constraint
+  
