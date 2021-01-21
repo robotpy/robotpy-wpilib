@@ -49,7 +49,6 @@ jobs:
       if: ${{ matrix.python_version == '3.7' && matrix.os == 'ubuntu-18.04' }}
 
     - uses: actions/upload-artifact@v2
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
       with:
         name: "dist-${{ matrix.os }}"
         path: dist
@@ -101,26 +100,6 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
 
     steps:
-    - uses: actions/download-artifact@v2
-      with:
-        name: dist-ubuntu-18.04
-        path: dist/
-
-    - uses: robotpy/github-action-scp@atomic
-      with:
-        local: dist
-        remote: public_html/2021/linux_x86_64
-        host: narya.tortall.net
-        username: ${{ secrets.SSH_USER }}
-        privateKey: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        atomicPut: true
-
-    - name: Ping readthedocs
-      uses: robotpy/build-actions/ping-rtd@v2021
-      with:
-        token: ${{ secrets.RTD_TOKEN }}
-        webhook: ${{ secrets.RTD_WEBHOOK }}
 
     #
     # RoboRIO wheel
@@ -179,6 +158,11 @@ jobs:
         name: dist-macos-latest
         path: dist/
 
+    - uses: actions/download-artifact@v2
+      with:
+        name: dist-ubuntu-18.04
+        path: dist/
+
     - uses: actions/setup-python@v2
       with:
         python-version: 3.8
@@ -191,6 +175,12 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_PASSWORD }}
+
+    - name: Ping readthedocs
+      uses: robotpy/build-actions/ping-rtd@v2021
+      with:
+        token: ${{ secrets.RTD_TOKEN }}
+        webhook: ${{ secrets.RTD_WEBHOOK }}
 
   ping:
     runs-on: ubuntu-latest

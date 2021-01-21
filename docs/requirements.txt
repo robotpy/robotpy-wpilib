@@ -1,5 +1,4 @@
 # This file is intended for use on readthedocs
---find-links https://www.tortall.net/~robotpy/wheels/2021/linux_x86_64
 sphinx
 sphinx-rtd-theme
 robotpy-sphinx-plugin
