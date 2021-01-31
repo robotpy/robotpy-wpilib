@@ -1,6 +1,8 @@
 import warnings
 
-warnings.warn("wpilib.kinematics has moved to wpimath.kinematics", FutureWarning)
+warnings.warn(
+    "wpilib.kinematics has moved to wpimath.kinematics", FutureWarning, stacklevel=2
+)
 
 from wpimath.kinematics import (
     ChassisSpeeds,
