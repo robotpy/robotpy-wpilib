@@ -1,6 +1,8 @@
 import warnings
 
-warnings.warn("wpilib.trajectory has moved to wpimath.trajectory", FutureWarning)
+warnings.warn(
+    "wpilib.trajectory has moved to wpimath.trajectory", FutureWarning, stacklevel=2
+)
 
 from wpimath.trajectory import (
     Trajectory,

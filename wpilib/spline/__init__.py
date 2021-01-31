@@ -1,6 +1,6 @@
 import warnings
 
-warnings.warn("wpilib.spline has moved to wpimath.spline", FutureWarning)
+warnings.warn("wpilib.spline has moved to wpimath.spline", FutureWarning, stacklevel=2)
 
 from wpimath.spline import (
     CubicHermiteSpline,

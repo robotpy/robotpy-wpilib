@@ -3,6 +3,7 @@ import warnings
 warnings.warn(
     "wpilib.trajectory.constraint has moved to wpimath.trajectory.constraint",
     FutureWarning,
+    stacklevel=2,
 )
 
 
