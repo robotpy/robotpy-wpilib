@@ -77,3 +77,19 @@ classes:
       kSixInch:
       kEightInch:
       kTenInch:
+
+inline_code: |
+  cls_DifferentialDrivetrainSim
+    .def("getLeftPositionFeet", [](DifferentialDrivetrainSim * self) -> units::foot_t {
+      return self->GetLeftPosition();
+    })
+    .def("getLeftVelocityFps", [](DifferentialDrivetrainSim * self) -> units::feet_per_second_t {
+      return self->GetLeftVelocity();
+    })
+    .def("getRightPositionFeet", [](DifferentialDrivetrainSim * self) -> units::foot_t {
+      return self->GetRightPosition();
+    })
+    .def("getRightVelocityFps", [](DifferentialDrivetrainSim * self) -> units::feet_per_second_t {
+      return self->GetRightVelocity();
+    })
+  ;

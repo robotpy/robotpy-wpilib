@@ -29,3 +29,13 @@ classes:
       SetInputVoltage:
       EstimateMOI:
       UpdateX:
+
+inline_code: |
+  cls_SingleJointedArmSim
+    .def("getAngleDegrees", [](SingleJointedArmSim * self) -> units::degree_t {
+      return self->GetAngle();
+    })
+    .def("getVelocityDps", [](SingleJointedArmSim * self) -> units::degrees_per_second_t {
+      return self->GetVelocity();
+    })
+  ;

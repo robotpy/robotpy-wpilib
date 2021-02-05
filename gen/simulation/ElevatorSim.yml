@@ -24,3 +24,13 @@ classes:
       GetCurrentDraw:
       SetInputVoltage:
       UpdateX:
+
+inline_code: |
+  cls_ElevatorSim
+    .def("getPositionFeet", [](ElevatorSim * self) -> units::foot_t {
+      return self->GetPosition();
+    })
+    .def("getVelocityFps", [](ElevatorSim * self) -> units::feet_per_second_t {
+      return self->GetVelocity();
+    })
+  ;
