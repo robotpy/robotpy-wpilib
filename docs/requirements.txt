@@ -1,5 +1,5 @@
 # This file is intended for use on readthedocs
-sphinx
+sphinx != 3.5.0
 sphinx-rtd-theme
 robotpy-sphinx-plugin
--e docs
+# -e docs
