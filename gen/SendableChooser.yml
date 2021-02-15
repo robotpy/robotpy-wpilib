@@ -15,8 +15,12 @@ classes:
       GetSelected:
         # weirdness because return type
         cpp_code: |
-          [](frc::SendableChooser<T> * __that) {
-            return __that->GetSelected();
+          [](frc::SendableChooser<T> * __that) -> py::object {
+            auto v = __that->GetSelected();
+            if (!v) {
+              return py::none();
+            }
+            return v;
           }
       InitSendable:
 
