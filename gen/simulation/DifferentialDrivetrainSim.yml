@@ -83,10 +83,16 @@ inline_code: |
     .def("getLeftPositionFeet", [](DifferentialDrivetrainSim * self) -> units::foot_t {
       return self->GetLeftPosition();
     })
+    .def("getLeftPositionInches", [](DifferentialDrivetrainSim * self) -> units::inch_t {
+      return self->GetLeftPosition();
+    })
     .def("getLeftVelocityFps", [](DifferentialDrivetrainSim * self) -> units::feet_per_second_t {
       return self->GetLeftVelocity();
     })
     .def("getRightPositionFeet", [](DifferentialDrivetrainSim * self) -> units::foot_t {
+      return self->GetRightPosition();
+    })
+    .def("getRightPositionInches", [](DifferentialDrivetrainSim * self) -> units::inch_t {
       return self->GetRightPosition();
     })
     .def("getRightVelocityFps", [](DifferentialDrivetrainSim * self) -> units::feet_per_second_t {
