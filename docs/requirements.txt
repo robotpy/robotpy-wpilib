@@ -2,4 +2,4 @@
 sphinx != 3.5.0
 sphinx-rtd-theme
 robotpy-sphinx-plugin
-# -e docs
+-e docs
