@@ -1,6 +1,7 @@
 import hal
 import wpilib
 import logging
+import signal
 import threading
 
 
@@ -22,6 +23,9 @@ class RobotStarter:
         self.robot = None
         self.suppressExitWarning = False
 
+    def _on_ctrl_c(self, *ignored):
+        hal.exitMain()
+
     def run(self, robot_cls: wpilib.RobotBase) -> bool:
         if hal.hasMain():
             rval = [False]
@@ -31,6 +35,8 @@ class RobotStarter:
                     rval[0] = self.start(robot_cls)
                 finally:
                     hal.exitMain()
+
+            signal.signal(signal.SIGINT, self._on_ctrl_c)
 
             th = threading.Thread(target=_start, name="RobotThread", daemon=True)
             th.start()
