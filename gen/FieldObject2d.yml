@@ -1,5 +1,8 @@
 ---
 
+extra_includes:
+- frc/trajectory/Trajectory.h
+
 classes:
   FieldObject2d:
     shared_ptr: true

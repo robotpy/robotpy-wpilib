@@ -14,7 +14,7 @@ base_package = "wpilib"
 artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
 repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2021.2.2"
+version = "2021.3.1"
 
 libs = ["wpilibc"]
 
@@ -39,7 +39,7 @@ extra_includes = ["wpilib/src"]
 generation_data = "gen"
 depends = [
     "wpiHal", "wpiutil", "ntcore",
-    "wpimath_cpp", "wpimath_geometry",
+    "wpimath_cpp", "wpimath_geometry", "wpimath_trajectory",
     "wpilibc", "wpilibc_interfaces"
 ]
 
