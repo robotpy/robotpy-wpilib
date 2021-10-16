@@ -23,7 +23,7 @@ Installation instructions can be found in the [RobotPy documentation](https://ro
 License
 =======
 
-See [LICENSE.txt](wpilib/LICENSE.txt)
+See [LICENSE.txt](LICENSE.txt)
 
 Contributors
 ============
