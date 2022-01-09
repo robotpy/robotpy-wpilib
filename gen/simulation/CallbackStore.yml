@@ -10,30 +10,29 @@ classes:
     shared_ptr: true
     force_type_casters:
     - std::function
-    - wpi::StringRef
     methods:
       CallbackStore:
         overloads:
           # All are ignored because pybind11 can't use raw function pointers
-          int32_t, std::function<void ( wpi::StringRef, const HAL_Value * )>, void ( * ) ( int32_t uid ):
+          int32_t, std::function<void ( std::string_view, const HAL_Value * )>, void ( * ) ( int32_t uid ):
             ignore: true
-          int32_t, int32_t, std::function<void ( wpi::StringRef, const HAL_Value * )>, void ( * ) ( int32_t index, int32_t uid ):
+          int32_t, int32_t, std::function<void ( std::string_view, const HAL_Value * )>, void ( * ) ( int32_t index, int32_t uid ):
             ignore: true
-          ? int32_t, int32_t, int32_t, std::function<void ( wpi::StringRef, const
+          ? int32_t, int32_t, int32_t, std::function<void ( std::string_view, const
             HAL_Value * )>, void ( * ) ( int32_t index, int32_t channel, int32_t uid
             )
           :
             ignore: true
-          ? int32_t, std::function<void ( wpi::StringRef, const unsigned char * buffer,
+          ? int32_t, std::function<void ( std::string_view, const unsigned char * buffer,
             unsigned int count )>, void ( * ) ( int32_t uid )
           :
             ignore: true
-          ? int32_t, int32_t, std::function<void ( wpi::StringRef, const unsigned
+          ? int32_t, int32_t, std::function<void ( std::string_view, const unsigned
             char * buffer, unsigned int count )>, void ( * ) ( int32_t index, int32_t
             uid )
           :
             ignore: true
-          ? int32_t, int32_t, int32_t, std::function<void ( wpi::StringRef, const
+          ? int32_t, int32_t, int32_t, std::function<void ( std::string_view, const
             unsigned char * buffer, unsigned int count )>, void ( * ) ( int32_t index,
             int32_t channel, int32_t uid )
           :

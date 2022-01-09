@@ -1,13 +1,13 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 
 classes:
   PowerDistributionPanel:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<PowerDistributionPanel>
+    - wpi::SendableHelper<PowerDistributionPanel>
     methods:
       PowerDistributionPanel:
         overloads:

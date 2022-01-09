@@ -1,0 +1,38 @@
+---
+
+extra_includes:
+- frc/Compressor.h
+
+classes:
+  REVPHSim:
+    typealias:
+    - frc::PneumaticsBase
+    force_type_casters:
+    - std::function
+    methods:
+      REVPHSim:
+        overloads:
+          "":
+          int:
+          PneumaticsBase&:
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      RegisterSolenoidOutputCallback:
+      GetSolenoidOutput:
+      SetSolenoidOutput:
+      RegisterCompressorOnCallback:
+      GetCompressorOn:
+      SetCompressorOn:
+      RegisterCompressorConfigTypeCallback:
+      GetCompressorConfigType:
+      SetCompressorConfigType:
+      RegisterPressureSwitchCallback:
+      GetPressureSwitch:
+      SetPressureSwitch:
+      RegisterCompressorCurrentCallback:
+      GetCompressorCurrent:
+      SetCompressorCurrent:
+      GetAllSolenoidOutputs:
+      SetAllSolenoidOutputs:
+      ResetData:

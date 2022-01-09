@@ -2,7 +2,7 @@
 
 extra_includes:
 - frc/shuffleboard/ComplexWidget.h
-- frc/smartdashboard/Sendable.h
+- wpi/sendable/Sendable.h
 - frc/shuffleboard/ShuffleboardLayout.h
 - frc/shuffleboard/SimpleWidget.h
 

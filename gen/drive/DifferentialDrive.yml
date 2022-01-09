@@ -1,17 +1,14 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/SpeedController.h
-- wpi/SmallString.h
 
 classes:
   DifferentialDrive:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<DifferentialDrive>
-    force_type_casters:
-    - wpi::StringRef
+    - wpi::SendableHelper<DifferentialDrive>
     attributes:
       kDefaultQuickStopThreshold:
       kDefaultQuickStopAlpha:
@@ -23,26 +20,15 @@ classes:
       ArcadeDrive:
       CurvatureDrive:
       TankDrive:
+      ArcadeDriveIK:
+      CurvatureDriveIK:
+      TankDriveIK:
       SetQuickStopThreshold:
       SetQuickStopAlpha:
       IsRightSideInverted:
       SetRightSideInverted:
       StopMotor:
       GetDescription:
-        param_override:
-          desc:
-            ignore: true
-        cpp_code: |
-          [](DifferentialDrive * self) -> py::str {
-            wpi::SmallString<128> buf;
-            wpi::raw_svector_ostream s(buf);
-            self->GetDescription(s);
-            return py::cast(s.str());
-          }
-        virtual_xform: |
-          [&](py::function &overload) {
-            desc << py::cast<std::string>(overload());
-          }
       InitSendable:
     
     doc: |
@@ -50,9 +36,9 @@ classes:
       the Kit of Parts drive base, "tank drive", or West Coast Drive.
 
       These drive bases typically have drop-center / skid-steer with two or more
-      wheels per side (e.g., 6WD or 8WD). This class takes a SpeedController per
+      wheels per side (e.g., 6WD or 8WD). This class takes a MotorController per
       side. For four and six motor drivetrains, construct and pass in
-      :class:`SpeedControllerGroup` instances as follows.
+      :class:`MotorControllerGroup` instances as follows.
 
       Four motor drivetrain::
 
@@ -60,11 +46,11 @@ classes:
             def robotInit(self):
                 self.front_left = wpilib.PWMVictorSPX(1)
                 self.rear_left = wpilib.PWMVictorSPX(2)
-                self.left = wpilib.SpeedControllerGroup(self.front_left, self.rear_left)
+                self.left = wpilib.MotorControllerGroup(self.front_left, self.rear_left)
 
                 self.front_right = wpilib.PWMVictorSPX(3)
                 self.rear_right = wpilib.PWMVictorSPX(4)
-                self.right = wpilib.SpeedControllerGroup(self.front_right, self.rear_right)
+                self.right = wpilib.MotorControllerGroup(self.front_right, self.rear_right)
 
                 self.drive = wpilib.DifferentialDrive(self.left, self.right)
 
@@ -75,12 +61,12 @@ classes:
                 self.front_left = wpilib.PWMVictorSPX(1)
                 self.mid_left = wpilib.PWMVictorSPX(2)
                 self.rear_left = wpilib.PWMVictorSPX(3)
-                self.left = wpilib.SpeedControllerGroup(self.front_left, self.mid_left, self.rear_left)
+                self.left = wpilib.MotorControllerGroup(self.front_left, self.mid_left, self.rear_left)
 
                 self.front_right = wpilib.PWMVictorSPX(4)
                 self.mid_right = wpilib.PWMVictorSPX(5)
                 self.rear_right = wpilib.PWMVictorSPX(6)
-                self.right = wpilib.SpeedControllerGroup(self.front_right, self.mid_right, self.rear_right)
+                self.right = wpilib.MotorControllerGroup(self.front_right, self.mid_right, self.rear_right)
 
                 self.drive = wpilib.DifferentialDrive(self.left, self.right)
 
@@ -121,3 +107,7 @@ classes:
       * :meth:`curvatureDrive` is similar in concept to
         ``RobotDrive.drive`` with the addition of a quick turn
         mode. However, it is not designed to give exactly the same response.
+  DifferentialDrive::WheelSpeeds:
+    attributes:
+      left:
+      right:

@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/AnalogTrigger.h
 - frc/DigitalSource.h
 - frc/DMA.h
@@ -11,7 +11,7 @@ classes:
   DutyCycle:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<DutyCycle>
+    - wpi::SendableHelper<DutyCycle>
     methods:
       DutyCycle:
         overloads:

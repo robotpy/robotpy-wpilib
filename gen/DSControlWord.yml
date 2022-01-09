@@ -1,0 +1,16 @@
+---
+
+classes:
+  DSControlWord:
+    methods:
+      DSControlWord:
+      IsEnabled:
+      IsDisabled:
+      IsEStopped:
+      IsAutonomous:
+      IsAutonomousEnabled:
+      IsTeleop:
+      IsTeleopEnabled:
+      IsTest:
+      IsDSAttached:
+      IsFMSAttached:

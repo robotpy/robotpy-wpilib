@@ -1,0 +1,16 @@
+---
+
+extra_includes:
+- frc/shuffleboard/ShuffleboardContainer.h
+
+classes:
+  ShuffleboardComponent:
+    shared_ptr: false
+    template_params:
+    - Derived
+    methods:
+      ShuffleboardComponent:
+        ignore: true
+      WithProperties:
+      WithPosition:
+      WithSize:

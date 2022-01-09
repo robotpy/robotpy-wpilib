@@ -8,7 +8,7 @@ classes:
       SetLength:
       SetData:
         overloads:
-          wpi::ArrayRef<LEDData>:
+          wpi::span<const LEDData>:
           std::initializer_list<LEDData>:
             ignore: true
       SetBitTiming:
@@ -38,3 +38,4 @@ classes:
         overloads:
           Color&:
           Color8Bit&:
+

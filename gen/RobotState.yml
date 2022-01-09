@@ -11,5 +11,6 @@ classes:
       IsEnabled:
       IsEStopped:
       IsOperatorControl:
+      IsTeleop:
       IsAutonomous:
       IsTest:

@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- networktables/NTSendableBuilder.h
 - frc/DigitalSource.h
 
 classes:
@@ -12,7 +12,7 @@ classes:
     constants:
     - frc::Accelerometer::Range::kRange_2G
     ignored_bases:
-    - SendableHelper<ADXL362>
+    - wpi::SendableHelper<ADXL362>
     enums:
       Axes:
     methods:
@@ -20,6 +20,7 @@ classes:
         overloads:
           Range:
           SPI::Port, Range:
+      GetSpiPort:
       SetRange:
       GetX:
       GetY:

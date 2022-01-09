@@ -1,0 +1,20 @@
+---
+
+extra_includes:
+- frc/DigitalSource.h
+
+classes:
+  SynchronousInterrupt:
+    enums:
+      WaitResult:
+    methods:
+      SynchronousInterrupt:
+        overloads:
+          frc::DigitalSource&:
+          frc::DigitalSource*:
+          std::shared_ptr<DigitalSource>:
+      WaitForInterrupt:
+      SetInterruptEdges:
+      GetRisingTimestamp:
+      GetFallingTimestamp:
+      WakeupWaitingInterrupt:

@@ -17,10 +17,12 @@ classes:
       GetPose:
       SetPoses:
         overloads:
-          wpi::ArrayRef<Pose2d>:
+          wpi::span<const Pose2d>:
           std::initializer_list<Pose2d>:
             ignore: true
+      SetTrajectory:
       GetPoses:
         overloads:
           '[const]':
           wpi::SmallVectorImpl<Pose2d>& [const]:
+            ignore: true

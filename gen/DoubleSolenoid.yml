@@ -1,22 +1,25 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 
 classes:
   DoubleSolenoid:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<DoubleSolenoid>
+    - wpi::SendableHelper<DoubleSolenoid>
     enums:
       Value:
     methods:
       DoubleSolenoid:
         overloads:
-          int, int:
-          int, int, int:
+          int, PneumaticsModuleType, int, int:
+          PneumaticsModuleType, int, int:
       Set:
       Get:
-      IsFwdSolenoidBlackListed:
-      IsRevSolenoidBlackListed:
+      Toggle:
+      GetFwdChannel:
+      GetRevChannel:
+      IsFwdSolenoidDisabled:
+      IsRevSolenoidDisabled:
       InitSendable:

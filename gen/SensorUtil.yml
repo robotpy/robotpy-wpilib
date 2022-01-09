@@ -7,7 +7,6 @@ classes:
       kDigitalChannels:
       kAnalogInputs:
       kAnalogOutputs:
-        ignore: true # not implemented
       kSolenoidChannels:
       kSolenoidModules:
       kPwmChannels:
@@ -26,3 +25,5 @@ classes:
       CheckSolenoidChannel:
       CheckPDPChannel:
       CheckPDPModule:
+      GetDefaultCTREPCMModule:
+      GetDefaultREVPHModule:

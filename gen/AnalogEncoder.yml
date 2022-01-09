@@ -1,17 +1,18 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/AnalogInput.h
 
 classes:
   AnalogEncoder:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<AnalogEncoder>
+    - wpi::SendableHelper<AnalogEncoder>
     methods:
       AnalogEncoder:
         overloads:
+          int:
           frc::AnalogInput&:
             ignore: true
           frc::AnalogInput*:
@@ -23,4 +24,5 @@ classes:
       SetDistancePerRotation:
       GetDistancePerRotation:
       GetDistance:
+      GetChannel:
       InitSendable:

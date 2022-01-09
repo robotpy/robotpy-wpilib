@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/DutyCycle.h
 - frc/DigitalSource.h
 
@@ -9,7 +9,7 @@ classes:
   DutyCycleEncoder:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<DutyCycleEncoder>
+    - wpi::SendableHelper<DutyCycleEncoder>
     methods:
       DutyCycleEncoder:
         overloads:
@@ -32,6 +32,9 @@ classes:
       SetDistancePerRotation:
       GetDistancePerRotation:
       GetDistance:
+      SetDutyCycleRange:
+      GetFPGAIndex:
+      GetSourceChannel:
       InitSendable:
 
 inline_code: |

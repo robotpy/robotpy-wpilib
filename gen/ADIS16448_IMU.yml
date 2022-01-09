@@ -1,0 +1,45 @@
+---
+
+extra_includes:
+- networktables/NTSendableBuilder.h
+
+classes:
+  ADIS16448_IMU:
+    enums:
+      CalibrationTime:
+      IMUAxis:
+    ignored_bases:
+    - wpi::SendableHelper<ADIS16448_IMU>
+    methods:
+      ADIS16448_IMU:
+        overloads:
+          "":
+          frc::ADIS16448_IMU::IMUAxis, SPI::Port, frc::ADIS16448_IMU::CalibrationTime:
+      Calibrate:
+      ConfigCalTime:
+      Reset:
+      GetAngle:
+      GetRate:
+      GetGyroAngleX:
+      GetGyroAngleY:
+      GetGyroAngleZ:
+      GetGyroRateX:
+      GetGyroRateY:
+      GetGyroRateZ:
+      GetAccelX:
+      GetAccelY:
+      GetAccelZ:
+      GetXComplementaryAngle:
+      GetYComplementaryAngle:
+      GetXFilteredAccelAngle:
+      GetYFilteredAccelAngle:
+      GetMagneticFieldX:
+      GetMagneticFieldY:
+      GetMagneticFieldZ:
+      GetBarometricPressure:
+      GetTemperature:
+      GetYawAxis:
+      SetYawAxis:
+      ConfigDecRate:
+      GetPort:
+      InitSendable:

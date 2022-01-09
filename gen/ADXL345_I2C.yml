@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- networktables/NTSendableBuilder.h
 
 classes:
   ADXL345_I2C:
@@ -11,7 +11,7 @@ classes:
     constants:
     - frc::Accelerometer::Range::kRange_2G
     ignored_bases:
-    - SendableHelper<ADXL345_I2C>
+    - wpi::SendableHelper<ADXL345_I2C>
     attributes:
       m_i2c:
         ignore: true
@@ -31,7 +31,9 @@ classes:
       ADXL345_I2C:
         param_override:
           deviceAddress:
-            default: rpygen::Pyfrc__ADXL345_I2C<ADXL345_I2C>::kAddress
+            default: ADXL345_I2C_Trampoline::kAddress
+      GetI2CPort:
+      GetI2CDeviceAddress:
       SetRange:
       GetX:
       GetY:

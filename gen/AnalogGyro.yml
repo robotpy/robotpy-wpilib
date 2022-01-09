@@ -1,12 +1,14 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/AnalogInput.h
 
 classes:
   AnalogGyro:
     shared_ptr: true
+    ignored_bases:
+    - wpi::SendableHelper<AnalogGyro>
     attributes:
       kOversampleBits:
       kAverageBits:
@@ -32,3 +34,5 @@ classes:
       Reset:
       InitGyro:
       Calibrate:
+      GetAnalogInput:
+      InitSendable:

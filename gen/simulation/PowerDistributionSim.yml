@@ -1,0 +1,29 @@
+---
+
+extra_includes:
+- frc/PowerDistribution.h
+
+classes:
+  PowerDistributionSim:
+    force_type_casters:
+    - std::function
+    methods:
+      PowerDistributionSim:
+        overloads:
+          int:
+          frc::PowerDistribution&:
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      RegisterTemperatureCallback:
+      GetTemperature:
+      SetTemperature:
+      RegisterVoltageCallback:
+      GetVoltage:
+      SetVoltage:
+      RegisterCurrentCallback:
+      GetCurrent:
+      SetCurrent:
+      GetAllCurrents:
+      SetAllCurrents:
+      ResetData:

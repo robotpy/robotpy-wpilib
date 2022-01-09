@@ -17,6 +17,8 @@ classes:
             param_override:
               measurementStdDevs:
                 default: std::array<double, 1>{0.0}
+      WouldHitLowerLimit:
+      WouldHitUpperLimit:
       HasHitLowerLimit:
       HasHitUpperLimit:
       GetPosition:

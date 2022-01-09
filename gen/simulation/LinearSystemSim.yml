@@ -27,7 +27,7 @@ classes:
           int [const]:
       SetInput:
         overloads:
-          Eigen::Matrix<double, Inputs, 1>&:
+          Eigen::Vector<double, Inputs>&:
           int, double:
       SetState:
       GetCurrentDraw:

@@ -38,11 +38,16 @@ classes:
       GetJoystickType:
       GetJoystickName:
       GetJoystickAxisType:
+      IsJoystickConnected:
       IsEnabled:
       IsDisabled:
       IsEStopped:
       IsAutonomous:
+      IsAutonomousEnabled:
       IsOperatorControl:
+      IsOperatorControlEnabled:
+      IsTeleop:
+      IsTeleopEnabled:
       IsTest:
       IsDSAttached:
       IsNewControlData:
@@ -57,12 +62,15 @@ classes:
       WaitForData:
         overloads:
           "":
-          double:
+          units::second_t:
       GetMatchTime:
       GetBatteryVoltage:
       InDisabled:
       InAutonomous:
       InOperatorControl:
+      InTeleop:
       InTest:
       WakeupWaitForData:
       GetData:
+      SilenceJoystickConnectionWarning:
+      IsJoystickConnectionWarningSilenced:

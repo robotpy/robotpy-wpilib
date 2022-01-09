@@ -1,17 +1,14 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/SpeedController.h
-- wpi/SmallString.h
 
 classes:
   KilloughDrive:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<KilloughDrive>
-    force_type_casters:
-    - wpi::StringRef
+    - wpi::SendableHelper<KilloughDrive>
     attributes:
       kDefaultLeftMotorAngle:
       kDefaultRightMotorAngle:
@@ -31,20 +28,12 @@ classes:
             - [1, 4]
       DriveCartesian:
       DrivePolar:
+      DriveCartesianIK:
       StopMotor:
       GetDescription:
-        param_override:
-          desc:
-            ignore: true
-        cpp_code: |
-          [](KilloughDrive * self) -> py::str {
-            wpi::SmallString<128> buf;
-            wpi::raw_svector_ostream s(buf);
-            self->GetDescription(s);
-            return py::cast(s.str());
-          }
-        virtual_xform: |
-          [&](py::function &overload) {
-            desc << py::cast<std::string>(overload());
-          }
       InitSendable:
+  KilloughDrive::WheelSpeeds:
+    attributes:
+      left:
+      right:
+      back:

@@ -16,13 +16,16 @@ classes:
       Port:
     methods:
       SPI:
+      GetPort:
       SetClockRate:
       SetMSBFirst:
       SetLSBFirst:
       SetSampleDataOnLeadingEdge:
       SetSampleDataOnTrailingEdge:
       SetSampleDataOnFalling:
+        ignore: true
       SetSampleDataOnRising:
+        ignore: true
       SetClockActiveLow:
       SetClockActiveHigh:
       SetChipSelectActiveHigh:

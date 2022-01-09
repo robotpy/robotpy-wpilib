@@ -1,0 +1,11 @@
+---
+
+classes:
+  MechanismObject2d:
+    attributes:
+      m_mutex:
+    methods:
+      GetName:
+      Append:
+      MechanismObject2d:
+      UpdateEntries:

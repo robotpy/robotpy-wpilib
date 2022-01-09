@@ -1,13 +1,13 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 
 classes:
   AnalogPotentiometer:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<AnalogPotentiometer>
+    - wpi::SendableHelper<AnalogPotentiometer>
     methods:
       AnalogPotentiometer:
         overloads:

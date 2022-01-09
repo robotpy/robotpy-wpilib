@@ -28,13 +28,18 @@ classes:
       IsEnabled:
       IsDisabled:
       IsAutonomous:
+      IsAutonomousEnabled:
       IsOperatorControl:
+      IsTeleop:
+      IsOperatorControlEnabled:
+      IsTeleopEnabled:
       IsTest:
       IsNewDataAvailable:
       GetThreadId:
         ignore: true
       StartCompetition:
       EndCompetition:
+      GetRuntimeType:
       IsReal:
       IsSimulation:
       RobotBase:

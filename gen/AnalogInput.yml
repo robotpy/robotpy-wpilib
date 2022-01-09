@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/DMA.h
 - frc/DMASample.h
 
@@ -9,7 +9,7 @@ classes:
   AnalogInput:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<AnalogInput>
+    - wpi::SendableHelper<AnalogInput>
     attributes:
       kAccumulatorModuleNumber:
       kAccumulatorNumChannels:

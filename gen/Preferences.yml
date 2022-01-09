@@ -2,15 +2,9 @@
 
 classes:
   Preferences:
-    shared_ptr: false
-    nodelete: true
-    ignored_bases:
-    # ImportError: generic_type: type "Preferences" does not have a non-default holder
-    # type while its base "frc::ErrorBase" does
-    - ErrorBase
     methods:
       GetInstance:
-        return_value_policy: reference
+        ignore: true
       GetKeys:
       GetString:
       GetInt:
@@ -18,14 +12,24 @@ classes:
       GetFloat:
       GetBoolean:
       GetLong:
+      SetString:
       PutString:
+      InitString:
+      SetInt:
       PutInt:
+      InitInt:
+      SetDouble:
       PutDouble:
+      InitDouble:
+      SetFloat:
       PutFloat:
+      InitFloat:
+      SetBoolean:
       PutBoolean:
+      InitBoolean:
+      SetLong:
       PutLong:
+      InitLong:
       ContainsKey:
       Remove:
       RemoveAll:
-      Preferences:
-        ignore: true

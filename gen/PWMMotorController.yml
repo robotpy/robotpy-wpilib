@@ -1,0 +1,24 @@
+---
+
+extra_includes:
+- wpi/sendable/SendableBuilder.h
+- frc/DMA.h
+
+classes:
+  PWMMotorController:
+    ignored_bases:
+    - wpi::SendableHelper<PWMMotorController>
+    attributes:
+      m_pwm:
+    methods:
+      Set:
+      Get:
+      SetInverted:
+      GetInverted:
+      Disable:
+      StopMotor:
+      GetDescription:
+      GetChannel:
+      EnableDeadbandElimination:
+      PWMMotorController:
+      InitSendable:

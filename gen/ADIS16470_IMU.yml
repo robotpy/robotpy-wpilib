@@ -1,0 +1,36 @@
+---
+
+extra_includes:
+- networktables/NTSendableBuilder.h
+
+classes:
+  ADIS16470_IMU:
+    attributes:
+      m_yaw_axis:
+    enums:
+      CalibrationTime:
+      IMUAxis:
+    ignored_bases:
+    - wpi::SendableHelper<ADIS16470_IMU>
+    methods:
+      ADIS16470_IMU:
+        overloads:
+          "":
+          frc::ADIS16470_IMU::IMUAxis, SPI::Port, frc::ADIS16470_IMU::CalibrationTime:
+      ConfigDecRate:
+      Calibrate:
+      ConfigCalTime:
+      Reset:
+      GetAngle:
+      GetRate:
+      GetAccelX:
+      GetAccelY:
+      GetAccelZ:
+      GetXComplementaryAngle:
+      GetYComplementaryAngle:
+      GetXFilteredAccelAngle:
+      GetYFilteredAccelAngle:
+      GetYawAxis:
+      SetYawAxis:
+      GetPort:
+      InitSendable:

@@ -1,0 +1,9 @@
+---
+
+classes:
+  Mechanism2d:
+    methods:
+      Mechanism2d:
+      GetRoot:
+      SetBackgroundColor:
+      InitSendable:

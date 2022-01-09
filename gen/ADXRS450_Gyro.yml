@@ -1,12 +1,14 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/DigitalSource.h
 
 classes:
   ADXRS450_Gyro:
     shared_ptr: true
+    ignored_bases:
+    - wpi::SendableHelper<ADXRS450_Gyro>
     methods:
       ADXRS450_Gyro:
         overloads:
@@ -16,3 +18,5 @@ classes:
       GetRate:
       Reset:
       Calibrate:
+      GetPort:
+      InitSendable:

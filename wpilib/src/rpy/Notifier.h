@@ -1,9 +1,6 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2008-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 #pragma once
 
@@ -11,23 +8,21 @@
 
 #include <atomic>
 #include <functional>
+#include <string_view>
 #include <thread>
+#include <type_traits>
 #include <utility>
 
 #include <hal/Types.h>
 #include <units/time.h>
-#include <wpi/Twine.h>
-#include <wpi/deprecated.h>
 #include <wpi/mutex.h>
-
-#include "frc/ErrorBase.h"
 
 #include <robotpy_build.h>
 
 namespace frc {
 
-class PyNotifier : public ErrorBase {
-public:
+class PyNotifier {
+ public:
   /**
    * Create a Notifier for timer event notification.
    *
@@ -55,7 +50,7 @@ public:
    *
    * @param name Name
    */
-  void SetName(const wpi::Twine &name);
+  void SetName(std::string_view name);
 
   /**
    * Change the handler function.
@@ -69,32 +64,9 @@ public:
    *
    * A timer event is queued for a single event after the specified delay.
    *
-   * @param delay Seconds to wait before the handler is called.
-   */
-  WPI_DEPRECATED("Use unit-safe StartSingle method instead.")
-  void StartSingle(double delay);
-
-  /**
-   * Register for single event notification.
-   *
-   * A timer event is queued for a single event after the specified delay.
-   *
    * @param delay Amount of time to wait before the handler is called.
    */
   void StartSingle(units::second_t delay);
-
-  /**
-   * Register for periodic event notification.
-   *
-   * A timer event is queued for periodic event notification. Each time the
-   * interrupt occurs, the event will be immediately requeued for the same time
-   * interval.
-   *
-   * @param period Period in seconds to call the handler starting one period
-   *               after the call to this method.
-   */
-  WPI_DEPRECATED("Use unit-safe StartPeriodic method instead.")
-  void StartPeriodic(double period);
 
   /**
    * Register for periodic event notification.
@@ -118,6 +90,23 @@ public:
    * function will block until the handler call is complete.
    */
   void Stop();
+
+  /**
+   * Sets the HAL notifier thread priority.
+   *
+   * The HAL notifier thread is responsible for managing the FPGA's notifier
+   * interrupt and waking up user's Notifiers when it's their time to run.
+   * Giving the HAL notifier thread real-time priority helps ensure the user's
+   * real-time Notifiers, if any, are notified to run in a timely manner.
+   *
+   * @param realTime Set to true to set a real-time priority, false for standard
+   *                 priority.
+   * @param priority Priority to set the thread to. For real-time, this is 1-99
+   *                 with 99 being highest. For non-real-time, this is forced to
+   *                 0. See "man 7 sched" for more details.
+   * @return         True on success.
+   */
+  static bool SetHALThreadPriority(bool realTime, int32_t priority);
 
 private:
   /**
@@ -145,10 +134,10 @@ private:
   std::function<void()> m_handler;
 
   // The absolute expiration time
-  double m_expirationTime = 0;
+  units::second_t m_expirationTime = 0_s;
 
   // The relative time (either periodic or single)
-  double m_period = 0;
+  units::second_t m_period = 0_s;
 
   // True if this is a periodic event
   bool m_periodic = false;

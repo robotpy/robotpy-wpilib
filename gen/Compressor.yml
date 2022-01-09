@@ -1,30 +1,30 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
+- frc/Compressor.h
+- frc/Solenoid.h
+- frc/DoubleSolenoid.h
 
 classes:
   Compressor:
-    shared_ptr: true
     ignored_bases:
-    - SendableHelper<Compressor>
-    attributes:
-      m_compressorHandle:
-        ignore: true
+    - wpi::SendableHelper<Compressor>
     methods:
       Compressor:
+        overloads:
+          int, PneumaticsModuleType:
+          PneumaticsModuleType:
       Start:
       Stop:
       Enabled:
       GetPressureSwitchValue:
-      GetCompressorCurrent:
-      SetClosedLoopControl:
-      GetClosedLoopControl:
-      GetCompressorCurrentTooHighFault:
-      GetCompressorCurrentTooHighStickyFault:
-      GetCompressorShortedStickyFault:
-      GetCompressorShortedFault:
-      GetCompressorNotConnectedStickyFault:
-      GetCompressorNotConnectedFault:
-      ClearAllPCMStickyFaults:
+      GetCurrent:
+      GetAnalogVoltage:
+      GetPressure:
+      Disable:
+      EnableDigital:
+      EnableAnalog:
+      EnableHybrid:
+      GetConfigType:
       InitSendable:

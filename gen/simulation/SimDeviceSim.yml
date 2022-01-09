@@ -30,12 +30,24 @@ classes:
     shared_ptr: false
     force_type_casters:
     - std::function
-    - wpi::StringRef
+    - std::string_view
     methods:
       SimDeviceSim:
+        overloads:
+          char*:
+          char*, int:
+          char*, int, int:
       GetValue:
         doc: |
           Provides a readonly mechanism to retrieve all types of device values
+      GetInt:
+        doc: |
+          Retrieves an object that allows you to interact with simulated values
+          represented as an integer.
+      GetLong:
+        doc: |
+          Retrieves an object that allows you to interact with simulated values
+          represented as a long.
       GetDouble:
         doc: |
           Retrieves an object that allows you to interact with simulated values
@@ -47,9 +59,9 @@ classes:
           represented as a boolean.
       GetEnumOptions:
       EnumerateValues:
-        ignore: true # TODO
+        ignore: true
       EnumerateDevices:
-        ignore: true # TODO
+        ignore: true
       ResetData:
 
 inline_code: |

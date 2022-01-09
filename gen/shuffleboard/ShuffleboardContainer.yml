@@ -1,0 +1,71 @@
+---
+
+extra_includes:
+- frc/shuffleboard/ComplexWidget.h
+- wpi/sendable/Sendable.h
+- frc/shuffleboard/ShuffleboardLayout.h
+- frc/shuffleboard/SimpleWidget.h
+
+functions:
+  Add:
+    overloads:
+      cs::VideoSource&:
+      wpi::Twine&, cs::VideoSource&:
+classes:
+  ShuffleboardContainer:
+    shared_ptr: false
+    attributes:
+      m_isLayout:
+    methods:
+      ShuffleboardContainer:
+        ignore: true
+      GetComponents:
+        # https://github.com/pybind/pybind11/issues/263
+        # .. use custom code here?
+        ignore: true
+      GetLayout:
+        overloads:
+          wpi::Twine&, BuiltInLayouts:
+          wpi::Twine&, LayoutType&:
+          wpi::Twine&, wpi::Twine&:
+          wpi::Twine&:
+      Add:
+        overloads:
+          wpi::Twine&, frc::Sendable&:
+            keepalive:
+            - [1, 3]
+          wpi::Twine&, cs::VideoSource&:
+            ignore: true
+          frc::Sendable&:
+            keepalive:
+            - [1, 2]
+          cs::VideoSource&:
+            ignore: true
+          wpi::Twine&, std::shared_ptr<nt::Value>:
+          wpi::Twine&, bool:
+          wpi::Twine&, double:
+          wpi::Twine&, int:
+          wpi::Twine&, wpi::Twine&:
+          wpi::Twine&, char*:
+          wpi::Twine&, wpi::ArrayRef<bool>:
+          wpi::Twine&, wpi::ArrayRef<double>:
+          wpi::Twine&, wpi::ArrayRef<std::string>:
+      AddString:
+      AddNumber:
+      AddBoolean:
+      AddStringArray:
+      AddNumberArray:
+      AddBooleanArray:
+      AddRaw:
+      AddPersistent:
+        overloads:
+          wpi::Twine&, std::shared_ptr<nt::Value>:
+          wpi::Twine&, bool:
+          wpi::Twine&, double:
+          wpi::Twine&, int:
+          wpi::Twine&, wpi::Twine&:
+          wpi::Twine&, wpi::ArrayRef<bool>:
+          wpi::Twine&, wpi::ArrayRef<double>:
+          wpi::Twine&, wpi::ArrayRef<std::string>:
+      EnableIfActuator:
+      DisableIfActuator:

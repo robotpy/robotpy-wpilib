@@ -36,3 +36,6 @@ classes:
       GetEnabled6V:
       GetFaultCount6V:
       GetCANStatus:
+      GetBatteryVoltage:
+      GetBrownoutVoltage:
+      SetBrownoutVoltage:

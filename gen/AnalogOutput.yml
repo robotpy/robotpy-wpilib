@@ -1,13 +1,13 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 
 classes:
   AnalogOutput:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<AnalogOutput>
+    - wpi::SendableHelper<AnalogOutput>
     attributes:
       m_channel:
       m_port:

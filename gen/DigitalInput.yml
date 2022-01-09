@@ -1,14 +1,14 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/DigitalGlitchFilter.h
 
 classes:
   DigitalInput:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<DigitalInput>
+    - wpi::SendableHelper<DigitalInput>
     methods:
       DigitalInput:
       Get:

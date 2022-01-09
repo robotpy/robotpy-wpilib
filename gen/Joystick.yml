@@ -5,9 +5,6 @@ extra_includes:
 
 classes:
   Joystick:
-    shared_ptr: true
-    typealias:
-    - frc::GenericHID::JoystickHand
     attributes:
       kDefaultXChannel:
       kDefaultYChannel:
@@ -30,17 +27,8 @@ classes:
       GetTwistChannel:
       GetThrottleChannel:
       GetX:
-        param_override:
-          hand:
-            default: frc::GenericHID::JoystickHand::kRightHand
       GetY:
-        param_override:
-          hand:
-            default: frc::GenericHID::JoystickHand::kRightHand
       GetZ:
-        param_override:
-          hand:
-            default: frc::GenericHID::JoystickHand::kRightHand
       GetTwist:
       GetThrottle:
       GetTrigger:

@@ -1,0 +1,13 @@
+---
+
+extra_includes:
+- frc/Ultrasonic.h
+
+classes:
+  UltrasonicSim:
+    typealias:
+    - frc::Ultrasonic
+    methods:
+      UltrasonicSim:
+      SetRangeValid:
+      SetRange:

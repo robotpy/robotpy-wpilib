@@ -6,23 +6,11 @@ extra_includes:
 classes:
   GenericHID:
     shared_ptr: true
-    ignored_bases:
-    - ErrorBase
     enums:
       RumbleType:
       HIDType:
-      JoystickHand:
-        rename: Hand
     methods:
       GenericHID:
-      GetX:
-        param_override:
-          hand:
-            default: frc::GenericHID::JoystickHand::kRightHand
-      GetY:
-        param_override:
-          hand:
-            default: frc::GenericHID::JoystickHand::kRightHand
       GetRawButton:
       GetRawButtonPressed:
       GetRawButtonReleased:
@@ -31,6 +19,7 @@ classes:
       GetAxisCount:
       GetPOVCount:
       GetButtonCount:
+      IsConnected:
       GetType:
       GetName:
       GetAxisType:

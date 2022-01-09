@@ -1,13 +1,13 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 
 classes:
   SendableBase:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<SendableBase>
+    - wpi::SendableHelper<SendableBase>
     methods:
       SendableBase:
         ignore: true

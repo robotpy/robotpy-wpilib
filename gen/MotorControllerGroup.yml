@@ -1,0 +1,38 @@
+---
+
+extra_includes:
+- wpi/sendable/SendableBuilder.h
+- pybind11/stl.h
+
+classes:
+  PyMotorControllerGroup:
+    rename: MotorControllerGroup
+    ignored_bases:
+    - wpi::SendableHelper<PyMotorControllerGroup>
+    methods:
+      PyMotorControllerGroup:
+        cpp_code: |
+          .def(py::init([](py::args args) {
+            if (args.size() < 1) {
+              throw py::value_error("requires 1+ arguments");
+            }
+            using Vector = std::vector<std::shared_ptr<SpeedController>>;
+            Vector v = args.cast<Vector>();
+            for (auto iter = v.cbegin(); iter != v.cend(); ++iter) {
+              if (!*iter) {
+                throw py::value_error("Arguments must not be None");
+              }
+            }
+            return std::make_shared<PyMotorControllerGroup>(std::move(v));
+          })
+        keepalive: []
+        param_override:
+          args:
+            ignore: true
+      Set:
+      Get:
+      SetInverted:
+      GetInverted:
+      Disable:
+      StopMotor:
+      InitSendable:

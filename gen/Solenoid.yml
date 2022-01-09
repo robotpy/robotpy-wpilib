@@ -1,21 +1,23 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 
 classes:
   Solenoid:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<Solenoid>
+    - wpi::SendableHelper<Solenoid>
     methods:
       Solenoid:
         overloads:
-          int:
-          int, int:
+          int, PneumaticsModuleType, int:
+          PneumaticsModuleType, int:
       Set:
       Get:
-      IsBlackListed:
+      Toggle:
+      GetChannel:
+      IsDisabled:
       SetPulseDuration:
       StartPulse:
       InitSendable:

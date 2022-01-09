@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/DigitalSource.h
 - frc/DigitalGlitchFilter.h
 - frc/DMA.h
@@ -11,7 +11,7 @@ classes:
   Encoder:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<Encoder>
+    - wpi::SendableHelper<Encoder>
     typealias:
     - frc::Encoder::EncodingType
     enums:

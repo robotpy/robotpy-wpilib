@@ -1,0 +1,27 @@
+---
+
+extra_includes:
+- wpi/sendable/Sendable.h
+- frc/shuffleboard/ShuffleboardContainer.h
+
+classes:
+  ComplexWidget:
+    shared_ptr: false
+    methods:
+      ComplexWidget:
+        keepalive:
+        - [1, 2]
+        - [1, 4]
+      EnableIfActuator:
+      DisableIfActuator:
+      BuildInto:
+
+templates:
+  _ComplexWidgetComponent:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::ComplexWidget
+  __ComplexWidgetWidget:
+    qualname: frc::ShuffleboardWidget
+    params:
+    - frc::ComplexWidget

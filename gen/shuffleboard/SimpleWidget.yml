@@ -1,0 +1,14 @@
+---
+
+extra_includes:
+- frc/shuffleboard/ShuffleboardContainer.h
+
+classes:
+  SimpleWidget:
+    shared_ptr: true
+    methods:
+      SimpleWidget:
+        keepalive:
+        - [1, 2]
+      GetEntry:
+      BuildInto:

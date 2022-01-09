@@ -1,0 +1,13 @@
+---
+
+classes:
+  MechanismLigament2d:
+    methods:
+      MechanismLigament2d:
+      SetColor:
+      SetLength:
+      GetLength:
+      SetAngle:
+      GetAngle:
+      SetLineWeight:
+      UpdateEntries:

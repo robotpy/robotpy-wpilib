@@ -26,3 +26,9 @@ classes:
         internal: true
       SimulationPeriodic:
         internal: true
+      DisabledExit:
+      AutonomousExit:
+      TeleopExit:
+      TestExit:
+      SetNetworkTablesFlushEnabled:
+      GetPeriod:

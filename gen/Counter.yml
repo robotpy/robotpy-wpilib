@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 - frc/DigitalGlitchFilter.h
 - frc/DMA.h
 - frc/DMASample.h
@@ -10,7 +10,7 @@ classes:
   Counter:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<Counter>
+    - wpi::SendableHelper<Counter>
     typealias:
     - frc::CounterBase::EncodingType
     attributes:

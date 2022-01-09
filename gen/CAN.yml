@@ -20,10 +20,17 @@ classes:
       WritePacket:
         buffers:
         - { type: in, src: data, len: length }
+      WritePacketNoError:
+        buffers:
+        - { type: in, src: data, len: length }
       WritePacketRepeating:
         buffers:
         - { type: in, src: data, len: length }
+      WritePacketRepeatingNoError:
+        buffers:
+        - { type: in, src: data, len: length }
       WriteRTRFrame:
+      WriteRTRFrameNoError:
       StopPacketRepeating:
       ReadPacketNew:
       ReadPacketLatest:

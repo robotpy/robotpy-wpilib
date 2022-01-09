@@ -1,0 +1,38 @@
+---
+
+extra_includes:
+- frc/Compressor.h
+
+classes:
+  CTREPCMSim:
+    typealias:
+    - frc::PneumaticsBase
+    force_type_casters:
+    - std::function
+    methods:
+      CTREPCMSim:
+        overloads:
+          "":
+          int:
+          PneumaticsBase&: 
+      RegisterInitializedCallback:
+      GetInitialized:
+      SetInitialized:
+      RegisterSolenoidOutputCallback:
+      GetSolenoidOutput:
+      SetSolenoidOutput:
+      RegisterCompressorOnCallback:
+      GetCompressorOn:
+      SetCompressorOn:
+      RegisterClosedLoopEnabledCallback:
+      GetClosedLoopEnabled:
+      SetClosedLoopEnabled:
+      RegisterPressureSwitchCallback:
+      GetPressureSwitch:
+      SetPressureSwitch:
+      RegisterCompressorCurrentCallback:
+      GetCompressorCurrent:
+      SetCompressorCurrent:
+      GetAllSolenoidOutputs:
+      SetAllSolenoidOutputs:
+      ResetData:

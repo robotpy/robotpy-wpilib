@@ -1,13 +1,13 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 
 classes:
   BuiltInAccelerometer:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<BuiltInAccelerometer>
+    - wpi::SendableHelper<BuiltInAccelerometer>
     typealias:
     - frc::Accelerometer::Range
     constants:

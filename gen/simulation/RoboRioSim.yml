@@ -5,7 +5,6 @@ classes:
     shared_ptr: true
     force_type_casters:
     - std::function
-    - wpi::StringRef
     methods:
       RegisterFPGAButtonCallback:
       GetFPGAButton:
@@ -52,5 +51,7 @@ classes:
       RegisterUserFaults3V3Callback:
       GetUserFaults3V3:
       SetUserFaults3V3:
+      RegisterBrownoutVoltageCallback:
+      GetBrownoutVoltage:
+      SetBrownoutVoltage:
       ResetData:
-        ignore: true # TODO

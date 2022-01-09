@@ -1,0 +1,7 @@
+---
+
+classes:
+  TimesliceRobot:
+    methods:
+      TimesliceRobot:
+      Schedule:

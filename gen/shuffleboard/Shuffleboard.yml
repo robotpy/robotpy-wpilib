@@ -1,0 +1,27 @@
+---
+
+extra_includes:
+- frc/shuffleboard/ShuffleboardTab.h
+
+classes:
+  Shuffleboard:
+    shared_ptr: false
+    attributes:
+      kBaseTableName:
+    methods:
+      Update:
+      GetTab:
+      SelectTab:
+        overloads:
+          int:
+          wpi::StringRef:
+      EnableActuatorWidgets:
+      DisableActuatorWidgets:
+      StartRecording:
+      StopRecording:
+      SetRecordingFileNameFormat:
+      ClearRecordingFileNameFormat:
+      AddEventMarker:
+        overloads:
+          wpi::StringRef, wpi::StringRef, ShuffleboardEventImportance:
+          wpi::StringRef, ShuffleboardEventImportance:

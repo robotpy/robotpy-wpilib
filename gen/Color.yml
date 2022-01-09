@@ -168,6 +168,7 @@ classes:
                 name: green
               b:
                 name: blue
+      FromHSV:
 
 inline_code: |
   cls_Color.def(py::self == py::self)

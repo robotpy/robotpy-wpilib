@@ -1,13 +1,13 @@
 ---
 
 extra_includes:
-- frc/smartdashboard/SendableBuilder.h
+- wpi/sendable/SendableBuilder.h
 
 classes:
   AnalogAccelerometer:
     shared_ptr: true
     ignored_bases:
-    - SendableHelper<AnalogAccelerometer>
+    - wpi::SendableHelper<AnalogAccelerometer>
     methods:
       AnalogAccelerometer:
         overloads:

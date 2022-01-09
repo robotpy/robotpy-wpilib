@@ -71,6 +71,10 @@ classes:
       DualCIMPerSide:
       SingleMiniCIMPerSide:
       DualMiniCIMPerSide:
+      SingleFalcon500PerSide:
+      DualFalcon500PerSide:
+      SingleNEOPerSide:
+      DualNEOPerSide:
   DifferentialDrivetrainSim::KitbotWheelSize:
     shared_ptr: true
     attributes:

@@ -1,0 +1,8 @@
+---
+
+classes:
+  WidgetType:
+    shared_ptr: true
+    methods:
+      WidgetType:
+      GetWidgetName:

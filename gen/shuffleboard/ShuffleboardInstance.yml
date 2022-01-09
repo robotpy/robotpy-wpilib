@@ -1,0 +1,15 @@
+---
+
+classes:
+  ShuffleboardInstance:
+    shared_ptr: false
+    methods:
+      ShuffleboardInstance:
+      GetTab:
+      Update:
+      EnableActuatorWidgets:
+      DisableActuatorWidgets:
+      SelectTab:
+        overloads:
+          int:
+          'wpi::':
