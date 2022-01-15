@@ -13,27 +13,3 @@ functions:
 classes:
   RuntimeError:
     ignore: true
-    
-    # TODO: should this be translated? 
-
-    # methods:
-    #   RuntimeError:
-    #     overloads:
-    #       int32_t, std::string&&, std::string&&, std::string&&:
-    #       int32_t, char*, int, char*, std::string&&, std::string&&:
-    #   code:
-    #   loc:
-    #   stack:
-    #   Report:
-
-inline_code: |
-  m.def("reportError", [](
-    int32_t status, const char * filename, int lineNumber,
-    const char * funcName, const char * message) {
-      frc::ReportError(status, filename, lineNumber, funcName, "%s", message);
-    },
-    release_gil(),
-    py::arg("status"), py::arg("filename"), py::arg("lineNumber"),
-    py::arg("funcName"), py::arg("message"),
-    py::doc("Reports an error to the driver station")
-    );

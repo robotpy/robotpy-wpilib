@@ -96,7 +96,6 @@ from ._wpilib import (
     getCurrentThreadPriority,
     getErrorMessage,
     getTime,
-    reportError,
     setCurrentThreadPriority,
     wait,
 )
@@ -193,11 +192,14 @@ __all__ = [
     "getCurrentThreadPriority",
     "getErrorMessage",
     "getTime",
-    "reportError",
     "setCurrentThreadPriority",
     "wait",
 ]
 
+# Error reporting
+from ._impl.report_error import reportError, reportWarning
+
+__all__ += ["reportError", "reportWarning"]
 
 # deprecated alias
 SpeedControllerGroup = MotorControllerGroup

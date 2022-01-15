@@ -2,21 +2,28 @@ import hal
 import sys
 import traceback
 import logging
-import wpilib
+import inspect
 
-logger = logging.getLogger("wpilib.ds")
+robotpy_logger = logging.getLogger("robotpy")
+user_logger = logging.getLogger("your.robot")
 
 
-def report_error(
-    isError: bool, code: int, error: str, printTrace: bool, exc_info=None
+def reportErrorInternal(
+    error: str,
+    printTrace: bool = False,
+    fromUser: bool = False,
+    isWarning: bool = True,
+    code: int = 1,
 ) -> None:
     traceString = ""
-    locString = ""
+
+    if fromUser:
+        log = user_logger
+    else:
+        log = robotpy_logger
 
     if printTrace:
-        # If an exception is passed in or an exception is present
-        if exc_info is None:
-            exc_info = sys.exc_info()
+        exc_info = sys.exc_info()
 
         exc = exc_info[0]
         if exc is None:
@@ -35,21 +42,50 @@ def report_error(
         traceString += "\n" + stackstr
 
         if exc is None:
-            logger.error(error + "\n" + traceString)
+            log.error(error + "\n" + traceString)
         else:
-            logger.error(error, exc_info=exc_info)
-
-    elif isError:
-        logger.error(error)
+            log.error(error, exc_info=exc_info)
     else:
-        logger.warning(error)
+        if isWarning:
+            log.warning(error)
+        else:
+            log.error(error)
 
-    hal.sendError(
-        isError,
-        code,
-        False,
-        error.encode("utf-8"),
-        locString.encode("utf-8"),
-        traceString.encode("utf-8"),
-        0 if wpilib.RobotBase.isSimulation() else 1,
-    )
+        try:
+            frame = inspect.stack(context=2)[-1]
+            locString = f"{frame.filename}:{frame.lineno}"
+        except Exception:
+            locString = "<unknown location>"
+
+    if not hal.__hal_simulation__:
+        hal.sendError(
+            not isWarning,
+            code,
+            False,
+            error.encode("utf-8"),
+            locString.encode("utf-8"),
+            traceString.encode("utf-8"),
+            True,
+        )
+
+
+def reportError(error: str, printTrace: bool = False) -> None:
+    """
+    Report error to Driver Station, and also prints error to ``sys.stderr``.
+    Optionally appends stack trace to error message.
+
+    :param error: message to show
+    :param printTrace: If True, appends stack trace to error string
+    """
+    reportErrorInternal(error, printTrace, fromUser=True)
+
+
+def reportWarning(error: str, printTrace: bool = False) -> None:
+    """
+    Report warning to Driver Station, and also prints error to ``sys.stderr``.
+    Optionally appends stack trace to error message.
+
+    :param error: message to show
+    :param printTrace: If True, appends stack trace to error string
+    """
+    reportErrorInternal(error, printTrace, fromUser=True, isWarning=True)
