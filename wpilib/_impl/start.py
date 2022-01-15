@@ -3,6 +3,9 @@ import wpilib
 import logging
 import threading
 
+from wpilib import SmartDashboard
+from .report_error import reportError, reportErrorInternal
+
 
 class Main:
     """
@@ -36,24 +39,34 @@ class RobotStarter:
             th.start()
             hal.runMain()
             self.suppressExitWarning = True
-            if self.robot:
+            robot = self.robot
+            if robot:
                 try:
-                    self.robot.endCompetition()
+                    robot.endCompetition()
                 except:
                     self.logger.warn("endCompetition raised an exception")
 
             th.join(1)
             if th.is_alive():
                 self.logger.warn("robot thread didn't die, crash may occur next!")
+            return rval[0]
         else:
             return self.start(robot_cls)
 
     def start(self, robot_cls: wpilib.RobotBase) -> bool:
+        try:
+            return self._start(robot_cls)
+        except:
+            reportErrorInternal(
+                "The robot program quit unexpectedly. This is usually due to a code error.\n"
+                "The above stacktrace can help determine where the error occurred.\n",
+            )
+            return False
+
+    def _start(self, robot_cls: wpilib.RobotBase) -> bool:
 
         import hal
         import wpilib
-
-        DriverStation = wpilib.DriverStation
 
         hal.report(
             hal.tResourceType.kResourceType_Language,
@@ -61,6 +74,11 @@ class RobotStarter:
             0,
             wpilib.__version__,
         )
+
+        if not wpilib.Notifier.setHALThreadPriority(True, 40):
+            reportErrorInternal(
+                "Setting HAL Notifier RT priority to 40 failed", isWarning=True
+            )
 
         isSimulation = wpilib.RobotBase.isSimulation()
 
@@ -74,17 +92,19 @@ class RobotStarter:
         else:
             NetworkTables.startServer()
 
+        SmartDashboard.init()
+
+        # Call DriverStation.inDisabled() to kick off DS thread
+        wpilib.DriverStation.inDisabled(True)
+
         try:
             self.robot = robot_cls()
         except:
-            DriverStation.reportError(
-                "Unhandled exception instantiating robot " + robot_cls.__name__, True
+            reportError(
+                f"Unhandled exception instantiating robot {robot_cls.__name__}", True
             )
-            DriverStation.reportWarning("Robots should not quit, but yours did!", False)
-            DriverStation.reportError(
-                "Could not instantiate robot " + robot_cls.__name__ + "!", False
-            )
-            return False
+            reportErrorInternal(f"Could not instantiate robot {robot_cls.__name__}!")
+            raise
 
         # TODO: Add a check to see if the user forgot to call super().__init__()
         # if not hasattr(robot, "_RobotBase__initialized"):
@@ -98,9 +118,7 @@ class RobotStarter:
                 with open("/tmp/frc_versions/FRC_Lib_Version.ini", "w") as fp:
                     fp.write("RobotPy %s" % wpilib.__version__)
             except:
-                DriverStation.reportError(
-                    "Could not write FRC version file to disk", True
-                )
+                reportErrorInternal("Could not write FRC version file to disk")
 
         try:
             self.robot.startCompetition()
@@ -114,13 +132,8 @@ class RobotStarter:
         except:
             self.robot = None
 
-            DriverStation.reportError("Unhandled exception", True)
-            DriverStation.reportWarning("Robots should not quit, but yours did!", False)
-            DriverStation.reportError(
-                "The startCompetition() method (or methods called by it) should have handled the exception above.",
-                False,
-            )
-            return False
+            reportError("Unhandled exception", True)
+            raise
         else:
             self.robot = None
             if self.suppressExitWarning:
@@ -128,10 +141,5 @@ class RobotStarter:
                 return True
             else:
                 # startCompetition never returns unless exception occurs....
-                DriverStation.reportWarning(
-                    "Robots should not quit, but yours did!", False
-                )
-                DriverStation.reportError(
-                    "Unexpected return from startCompetition() method.", False
-                )
+                reportError("Unexpected return from startCompetition() method.", False)
                 return False
