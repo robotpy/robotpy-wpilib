@@ -151,7 +151,6 @@ generate_sidebar(
 root = abspath(dirname(__file__))
 
 gen_package(root, "wpilib", exclude=["wpi_*"])
-gen_package(root, "wpilib.controller")
 gen_package(root, "wpilib.drive")
 gen_package(root, "wpilib.interfaces")
 gen_package(root, "wpilib.simulation")
