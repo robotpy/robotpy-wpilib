@@ -172,8 +172,8 @@ classes:
 
 inline_code: |
   cls_Color.def(py::self == py::self)
-    .def("__hash__", [](Color *self) -> ssize_t {
-      ssize_t h = (ssize_t)(
+    .def("__hash__", [](Color *self) -> size_t {
+      size_t h = (size_t)(
         std::hash<double>{}(self->red)
         ^ (std::hash<double>{}(self->green) << 1)
         ^ (std::hash<double>{}(self->blue) << 2)
