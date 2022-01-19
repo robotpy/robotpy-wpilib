@@ -4,6 +4,7 @@ classes:
   MechanismLigament2d:
     methods:
       MechanismLigament2d:
+        ignore: true
       SetColor:
       SetLength:
       GetLength:

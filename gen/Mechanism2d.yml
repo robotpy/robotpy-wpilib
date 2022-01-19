@@ -1,9 +1,15 @@
 ---
 
+extra_includes:
+- wpi/sendable/SendableBuilder.h
+
 classes:
   Mechanism2d:
+    ignored_bases:
+    - wpi::SendableHelper<Mechanism2d>
     methods:
       Mechanism2d:
       GetRoot:
+        return_value_policy: reference_internal
       SetBackgroundColor:
       InitSendable:
