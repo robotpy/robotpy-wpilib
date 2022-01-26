@@ -41,6 +41,8 @@ classes:
       :class:`MotorControllerGroup` instances as follows.
 
       Four motor drivetrain::
+        import wpilib
+        import wpilib.drive
 
         class Robot(wpilib.TimedRobot):
             def robotInit(self):
@@ -52,9 +54,11 @@ classes:
                 self.rear_right = wpilib.PWMVictorSPX(4)
                 self.right = wpilib.MotorControllerGroup(self.front_right, self.rear_right)
 
-                self.drive = wpilib.DifferentialDrive(self.left, self.right)
+                self.drive = wpilib.drive.DifferentialDrive(self.left, self.right)
 
       Six motor drivetrain::
+        import wpilib
+        import wpilib.drive
 
         class Robot(wpilib.TimedRobot):
             def robotInit(self):
@@ -68,7 +72,7 @@ classes:
                 self.rear_right = wpilib.PWMVictorSPX(6)
                 self.right = wpilib.MotorControllerGroup(self.front_right, self.mid_right, self.rear_right)
 
-                self.drive = wpilib.DifferentialDrive(self.left, self.right)
+                self.drive = wpilib.drive.DifferentialDrive(self.left, self.right)
 
       A differential drive robot has left and right wheels separated by an
       arbitrary width.
