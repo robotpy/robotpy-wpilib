@@ -41,7 +41,7 @@ classes:
       :class:`MotorControllerGroup` instances as follows.
 
       Four motor drivetrain::
-        import wpilib
+
         import wpilib.drive
 
         class Robot(wpilib.TimedRobot):
@@ -57,7 +57,7 @@ classes:
                 self.drive = wpilib.drive.DifferentialDrive(self.left, self.right)
 
       Six motor drivetrain::
-        import wpilib
+
         import wpilib.drive
 
         class Robot(wpilib.TimedRobot):
