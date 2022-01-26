@@ -27,6 +27,9 @@ void clearSmartDashboardData() {
     // force the dictionary to be deleted otherwise it'll crash when libc++
     // is unwinding static objects after interpreter destruction
     sdData.dec_ref();
+    // release our reference to this otherwise the destructor will try to
+    // delete a non-existant PyObject* after interpreter destruction
+    sdData.release();
   }
 }
 
