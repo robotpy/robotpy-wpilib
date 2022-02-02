@@ -1,10 +1,10 @@
 [build-system]
 requires = [
     "robotpy-build<2023.0.0,>=2022.2.0",
-    "robotpy-wpiutil<2023.0.0,>=2022.2.1.1",
-    "robotpy-wpimath<2023.0.0,>=2022.2.1.2",
-    "robotpy-hal<2023.0.0,>=2022.2.1.1",
-    "pyntcore<2023.0.0,>=2022.2.1.1",
+    "robotpy-wpiutil<2023.0.0,>=2022.3.1.0",
+    "robotpy-wpimath<2023.0.0,>=2022.3.1.0",
+    "robotpy-hal<2023.0.0,>=2022.3.1.0",
+    "pyntcore<2023.0.0,>=2022.3.1.0",
 ]
 
 [tool.robotpy-build]
@@ -14,7 +14,7 @@ base_package = "wpilib"
 artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
 repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2022.2.1"
+version = "2022.3.1"
 
 libs = ["wpilibc"]
 
@@ -293,10 +293,10 @@ author_email = "robotpy@googlegroups.com"
 url = "https://github.com/robotpy/robotpy-wpilib"
 license = "BSD-3-Clause"
 install_requires = [
-    "robotpy-wpiutil<2023.0.0,>=2022.2.1.1",
-    "robotpy-wpimath<2023.0.0,>=2022.2.1.2",
-    "robotpy-hal<2023.0.0,>=2022.2.1.1",
-    "pyntcore<2023.0.0,>=2022.2.1.1",
+    "robotpy-wpiutil<2023.0.0,>=2022.3.1.0",
+    "robotpy-wpimath<2023.0.0,>=2022.3.1.0",
+    "robotpy-hal<2023.0.0,>=2022.3.1.0",
+    "pyntcore<2023.0.0,>=2022.3.1.0",
 ]
 
 [tool.robotpy-build.metadata.entry_points]
