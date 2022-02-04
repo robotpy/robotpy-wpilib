@@ -37,7 +37,14 @@ class RobotStarter:
 
             th = threading.Thread(target=_start, name="RobotThread", daemon=True)
             th.start()
-            hal.runMain()
+            try:
+                hal.runMain()
+            except KeyboardInterrupt:
+                self.logger.exception(
+                    "THIS IS NOT AN ERROR: The user hit CTRL-C to kill the robot"
+                )
+                self.logger.info("Exiting because of keyboard interrupt")
+
             self.suppressExitWarning = True
             robot = self.robot
             if robot:
