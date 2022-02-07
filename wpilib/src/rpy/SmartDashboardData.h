@@ -12,5 +12,6 @@ namespace rpy {
 
 void addSmartDashboardData(py::str &key, std::shared_ptr<wpi::Sendable> data);
 void clearSmartDashboardData();
+void destroySmartDashboardData();
 
 } // namespace rpy
