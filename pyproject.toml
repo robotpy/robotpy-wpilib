@@ -75,6 +75,7 @@ CompressorConfigType = "frc/CompressorConfigType.h"
 # Controller = "frc/Controller.h"   # deprecated
 Counter = "frc/Counter.h"
 # CounterBase = "frc/CounterBase.h" # interfaces
+DataLogManager = "frc/DataLogManager.h"
 # Needs HAL object support, not sure if this is a good idea for python
 #   DMA = "frc/DMA.h"
 #   DMASample = "frc/DMASample.h"

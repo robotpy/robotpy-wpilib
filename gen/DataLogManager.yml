@@ -1,0 +1,13 @@
+---
+
+extra_includes:
+- wpi/DataLog.h
+
+classes:
+  DataLogManager:
+    methods:
+      Start:
+      Log:
+      GetLog:
+      GetLogDir:
+      LogNetworkTables:

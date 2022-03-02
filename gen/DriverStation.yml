@@ -1,7 +1,8 @@
 ---
 
 extra_includes:
-  - rpy/ControlWord.h
+- rpy/ControlWord.h
+- wpi/DataLog.h
 
 inline_code: |
   #include <src/rpy/DriverStation.cpp.inl>
