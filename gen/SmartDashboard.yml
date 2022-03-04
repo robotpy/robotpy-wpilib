@@ -171,6 +171,7 @@ inline_code: |
   // ensure that the smart dashboard data is released when python shuts down
   static int unused; // the capsule needs something to reference
   py::capsule cleanup(&unused, [](void *) {
-      rpy::clearSmartDashboardData();
+      rpy::destroySmartDashboardData();
   });
   m.add_object("_sd_cleanup", cleanup);
+  m.def("_clearSmartDashboardData", &rpy::clearSmartDashboardData);
