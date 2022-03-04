@@ -13,9 +13,26 @@ from .logconfig import configure_logging
 
 def _log_versions():
     import wpilib
+    import wpilib.deployinfo
     import hal
 
     import logging
+
+    data = wpilib.deployinfo.getDeployData()
+    if data:
+        logger = logging.getLogger("deploy-info")
+        logger.info(
+            "%s@%s at %s",
+            data.get("deploy-user", "<unknown>"),
+            data.get("deploy-host", "<unknown>"),
+            data.get("deploy-date", "<unknown>"),
+        )
+        if "git-hash" in data:
+            logger.info(
+                "- git info: %s (branch=%s)",
+                data.get("git-desc", "<unknown>"),
+                data.get("git-branch", "<unknown>"),
+            )
 
     logger = logging.getLogger("wpilib")
 
