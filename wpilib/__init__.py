@@ -215,6 +215,7 @@ SpeedControllerGroup = MotorControllerGroup
 del _init_wpilib
 
 from .cameraserver import CameraServer
+from .deployinfo import getDeployData
 
 try:
     from .version import version as __version__
