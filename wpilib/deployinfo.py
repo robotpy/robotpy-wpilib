@@ -3,7 +3,7 @@ import json
 import typing
 
 
-def getDeployData() -> typing.Union[None, typing.Dict[str, str]]:
+def getDeployData() -> typing.Optional[typing.Dict[str, str]]:
     """
     Utility function useful for retrieving deploy-related information
     that pyfrc stores with your robot code. The dictionary has the
