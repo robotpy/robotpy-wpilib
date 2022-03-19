@@ -9,5 +9,6 @@ classes:
       Start:
       Log:
       GetLog:
+        return_value_policy: reference
       GetLogDir:
       LogNetworkTables:
