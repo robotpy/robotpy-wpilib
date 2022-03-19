@@ -1,10 +1,10 @@
-import tempfile
-import pytest
+import pathlib
 import wpilib
 
 
-def test_get_log():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        wpilib.DataLogManager.start(tmpdir)
-        log = wpilib.DataLogManager.getLog()
-        assert log is not None
+def test_get_log(tmp_path: pathlib.Path):
+    log_dir = tmp_path / "wpilogs"
+    log_dir.mkdir()
+    wpilib.DataLogManager.start(str(log_dir))
+    log = wpilib.DataLogManager.getLog()
+    assert log is not None
