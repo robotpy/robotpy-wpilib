@@ -23,7 +23,7 @@ def getDeployData() -> typing.Optional[typing.Dict[str, str]]:
 
     :returns: None in simulation, or a dictionary
     """
-    if RobotBase.isReal():
+    if not RobotBase.isReal():
         return None
 
     try:
