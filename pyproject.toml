@@ -29,6 +29,7 @@ extension = "_wpilib"
 sources = [
     "wpilib/src/main.cpp",
     "wpilib/src/rpy/ControlWord.cpp",
+    "wpilib/src/rpy/Filesystem.cpp",
     "wpilib/src/rpy/Notifier.cpp",
     "wpilib/src/rpy/SmartDashboardData.cpp",
     "wpilib/src/rpy/MotorControllerGroup.cpp",
@@ -91,6 +92,7 @@ DutyCycleEncoder = "frc/DutyCycleEncoder.h"
 Encoder = "frc/Encoder.h"
 Errors = "frc/Errors.h"
 # Filesystem = "frc/Filesystem.h"
+Filesystem = "rpy/Filesystem.h"
 # GenericHID = "frc/GenericHID.h"   # interfaces
 I2C = "frc/I2C.h"
 IterativeRobotBase = "frc/IterativeRobotBase.h"
