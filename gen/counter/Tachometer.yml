@@ -1,0 +1,25 @@
+---
+extra_includes:
+- frc/DigitalSource.h
+
+classes:
+  Tachometer:
+    ignored_bases:
+    - wpi::SendableHelper<Tachometer>
+    methods:
+      Tachometer:
+        overloads:
+          frc::DigitalSource&:
+          std::shared_ptr<DigitalSource>:
+      GetFrequency:
+      GetPeriod:
+      GetEdgesPerRevolution:
+      SetEdgesPerRevolution:
+      GetRevolutionsPerSecond:
+      GetRevolutionsPerMinute:
+      GetStopped:
+      GetSamplesToAverage:
+      SetSamplesToAverage:
+      SetMaxPeriod:
+      SetUpdateWhenEmpty:
+      InitSendable:

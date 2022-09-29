@@ -5,6 +5,7 @@ classes:
     shared_ptr: true
     typealias:
     - template <int S, int I, int O> using LinearSystem = frc::LinearSystem<S, I, O>
+    - template <int I> using Vectord = frc::Vectord<I>
     template_params:
     - int States
     - int Inputs
@@ -27,7 +28,7 @@ classes:
           int [const]:
       SetInput:
         overloads:
-          Eigen::Vector<double, Inputs>&:
+          Vectord<Inputs>&:
           int, double:
       SetState:
       GetCurrentDraw:

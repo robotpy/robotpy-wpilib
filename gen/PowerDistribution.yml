@@ -25,6 +25,7 @@ classes:
       ResetTotalEnergy:
       ClearStickyFaults:
       GetModule:
+      GetType:
       GetSwitchableChannel:
       SetSwitchableChannel:
       GetVersion:
@@ -36,8 +37,8 @@ classes:
       FirmwareMajor:
       FirmwareMinor:
       FirmwareFix:
-      FardwareMinor:
-      FardwareMajor:
+      HardwareMinor:
+      HardwareMajor:
       UniqueId:
   PowerDistribution::Faults:
     attributes:

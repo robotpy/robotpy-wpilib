@@ -34,9 +34,11 @@ classes:
       GetTrigger:
       GetTriggerPressed:
       GetTriggerReleased:
+      Trigger:
       GetTop:
       GetTopPressed:
       GetTopReleased:
+      Top:
       GetMagnitude:
       GetDirectionRadians:
       GetDirectionDegrees:

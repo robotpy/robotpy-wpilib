@@ -12,7 +12,7 @@ classes:
         ignore: true
       SetPosition:
 
-# keep this in sync with MechanismRoot2d.yml
+# keep this in sync with MechanismRoot2d.h
 inline_code: |
   cls_MechanismRoot2d
     .def("getName", [](MechanismRoot2d *self) { return self->GetName(); }, release_gil())

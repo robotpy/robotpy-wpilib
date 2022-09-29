@@ -20,7 +20,9 @@ classes:
           std::shared_ptr<AnalogInput>:
       Reset:
       Get:
+      GetAbsolutePosition:
       GetPositionOffset:
+      SetPositionOffset:
       SetDistancePerRotation:
       GetDistancePerRotation:
       GetDistance:

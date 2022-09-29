@@ -75,3 +75,4 @@ classes:
       GetData:
       SilenceJoystickConnectionWarning:
       IsJoystickConnectionWarningSilenced:
+      StartDataLog:

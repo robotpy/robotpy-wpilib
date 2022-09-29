@@ -1,0 +1,18 @@
+---
+extra_includes:
+- frc/DigitalSource.h
+
+classes:
+  ExternalDirectionCounter:
+    ignored_bases:
+    - wpi::SendableHelper<ExternalDirectionCounter>
+    methods:
+      ExternalDirectionCounter:
+        overloads:
+          frc::DigitalSource&, frc::DigitalSource&:
+          std::shared_ptr<DigitalSource>, std::shared_ptr<DigitalSource>:
+      GetCount:
+      SetReverseDirection:
+      Reset:
+      SetEdgeConfiguration:
+      InitSendable:

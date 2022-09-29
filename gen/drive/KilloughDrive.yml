@@ -2,7 +2,7 @@
 
 extra_includes:
 - wpi/sendable/SendableBuilder.h
-- frc/SpeedController.h
+- frc/motorcontrol/MotorController.h
 
 classes:
   KilloughDrive:
@@ -16,12 +16,12 @@ classes:
     methods:
       KilloughDrive:
         overloads:
-          frc::SpeedController&, frc::SpeedController&, frc::SpeedController&:
+          frc::MotorController&, frc::MotorController&, frc::MotorController&:
             keepalive:
             - [1, 2]
             - [1, 3]
             - [1, 4]
-          frc::SpeedController&, frc::SpeedController&, frc::SpeedController&, double, double, double:
+          frc::MotorController&, frc::MotorController&, frc::MotorController&, double, double, double:
             keepalive:
             - [1, 2]
             - [1, 3]

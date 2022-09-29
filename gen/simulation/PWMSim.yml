@@ -2,17 +2,18 @@
 
 extra_includes:
 - frc/PWM.h
+- frc/motorcontrol/PWMMotorController.h
 
 classes:
   PWMSim:
     shared_ptr: true
     force_type_casters:
     - std::function
-    - wpi::StringRef
     methods:
       PWMSim:
         overloads:
           frc::PWM&:
+          frc::PWMMotorController&:
           int:
       RegisterInitializedCallback:
       GetInitialized:

@@ -1,7 +1,7 @@
 ---
 
 extra_includes:
-- frc/SpeedController.h
+- frc/motorcontrol/MotorController.h
 - wpi/SmallString.h
 
 classes:
@@ -12,8 +12,6 @@ classes:
       m_maxOutput:
     enums:
       MotorType:
-    force_type_casters:
-    - wpi::StringRef
     methods:
       RobotDriveBase:
       SetDeadband:

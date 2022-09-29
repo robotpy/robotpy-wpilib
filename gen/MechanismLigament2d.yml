@@ -6,9 +6,11 @@ classes:
       MechanismLigament2d:
         ignore: true
       SetColor:
+      GetColor:
       SetLength:
       GetLength:
       SetAngle:
       GetAngle:
       SetLineWeight:
+      GetLineWeight:
       UpdateEntries:

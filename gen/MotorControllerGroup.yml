@@ -16,7 +16,7 @@ classes:
             if (args.size() < 1) {
               throw py::value_error("requires 1+ arguments");
             }
-            using Vector = std::vector<std::shared_ptr<SpeedController>>;
+            using Vector = std::vector<std::shared_ptr<MotorController>>;
             Vector v = args.cast<Vector>();
             for (auto iter = v.cbegin(); iter != v.cend(); ++iter) {
               if (!*iter) {
