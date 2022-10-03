@@ -5,7 +5,7 @@ extra_includes:
 
 classes:
   ShuffleboardRoot:
-    shared_ptr: true
+    rename: _ShuffleboardRoot
     methods:
       GetTab:
       Update:
@@ -14,4 +14,4 @@ classes:
       SelectTab:
         overloads:
           int:
-          wpi::StringRef:
+          std::string_view:

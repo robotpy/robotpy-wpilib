@@ -5,7 +5,8 @@ extra_includes:
 
 classes:
   ShuffleboardComponent:
-    shared_ptr: false
+    # virtual base issue: robotpy-build/166
+    force_no_trampoline: true
     template_params:
     - Derived
     methods:
@@ -14,3 +15,52 @@ classes:
       WithProperties:
       WithPosition:
       WithSize:
+
+
+templates:
+  _SimpleComponent:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SimpleWidget
+  _ComplexComponent:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::ComplexWidget
+
+  _LayoutComponent:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::ShuffleboardLayout
+  
+  _SuppliedValueComponent_string:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SuppliedValueWidget<std::string>
+  _SuppliedValueComponent_string_view:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SuppliedValueWidget<std::string_view>
+  _SuppliedValueComponent_double:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SuppliedValueWidget<double>
+  _SuppliedValueComponent_bool:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SuppliedValueWidget<bool>
+  _SuppliedValueComponent_vector_string:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SuppliedValueWidget<std::vector<std::string>>
+  _SuppliedValueComponent_vector_int:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SuppliedValueWidget<std::vector<int>>
+  _SuppliedValueComponent_vector_double:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SuppliedValueWidget<std::vector<double>>
+  _SuppliedValueComponent_vector_string_view:
+    qualname: frc::ShuffleboardComponent
+    params:
+    - frc::SuppliedValueWidget<std::vector<std::string_view>>

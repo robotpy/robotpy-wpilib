@@ -5,10 +5,9 @@ extra_includes:
 
 classes:
   ShuffleboardTab:
-    shared_ptr: true
+    # virtual base issue: robotpy-build/166
+    force_no_trampoline: true
     methods:
       ShuffleboardTab:
-        keepalive:
-        - [1, 2]
       GetRoot:
       BuildInto:

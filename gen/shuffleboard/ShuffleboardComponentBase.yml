@@ -3,9 +3,11 @@
 extra_includes:
 - frc/shuffleboard/ShuffleboardContainer.h
 
+
 classes:
   ShuffleboardComponentBase:
-    shared_ptr: false
+    # virtual base issue: robotpy-build/166
+    force_no_trampoline: true
     attributes:
       m_properties:
       m_metadataDirty:
@@ -15,7 +17,7 @@ classes:
       m_height:
     methods:
       ShuffleboardComponentBase:
-        ignore: true
+        ignore: true # cannot construct without trampoline
       SetType:
       BuildMetadata:
       GetParent:

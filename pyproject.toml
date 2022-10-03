@@ -152,28 +152,6 @@ Talon = "frc/motorcontrol/Talon.h"
 Victor = "frc/motorcontrol/Victor.h"
 VictorSP = "frc/motorcontrol/VictorSP.h"
 
-# frc/shuffleboard -- template madness, still TODO
-# BuiltInLayouts = "frc/shuffleboard/BuiltInLayouts.h"
-# BuiltInWidgets = "frc/shuffleboard/BuiltInWidgets.h"
-# ComplexWidget = "frc/shuffleboard/ComplexWidget.h"
-# LayoutType = "frc/shuffleboard/LayoutType.h"
-# RecordingController = "frc/shuffleboard/RecordingController.h"
-# SendableCameraWrapper = "frc/shuffleboard/SendableCameraWrapper.h"
-# Shuffleboard = "frc/shuffleboard/Shuffleboard.h"
-# ShuffleboardComponent = "frc/shuffleboard/ShuffleboardComponent.h"
-# ShuffleboardComponentBase = "frc/shuffleboard/ShuffleboardComponentBase.h"
-# ShuffleboardContainer = "frc/shuffleboard/ShuffleboardContainer.h"
-# ShuffleboardEventImportance = "frc/shuffleboard/ShuffleboardEventImportance.h"
-# ShuffleboardInstance = "frc/shuffleboard/ShuffleboardInstance.h"
-# ShuffleboardLayout = "frc/shuffleboard/ShuffleboardLayout.h"
-# ShuffleboardRoot = "frc/shuffleboard/ShuffleboardRoot.h"
-# ShuffleboardTab = "frc/shuffleboard/ShuffleboardTab.h"
-# ShuffleboardValue = "frc/shuffleboard/ShuffleboardValue.h"
-# ShuffleboardWidget = "frc/shuffleboard/ShuffleboardWidget.h"
-# SimpleWidget = "frc/shuffleboard/SimpleWidget.h"
-# SuppliedValueWidget = "frc/shuffleboard/SuppliedValueWidget.h"
-# WidgetType = "frc/shuffleboard/WidgetType.h"
-
 # frc/smartdashboard
 Field2d = "frc/smartdashboard/Field2d.h"
 FieldObject2d = "frc/smartdashboard/FieldObject2d.h"
@@ -264,6 +242,42 @@ MotorController = "frc/motorcontrol/MotorController.h"
 Accelerometer = "frc/interfaces/Accelerometer.h"
 Gyro = "frc/interfaces/Gyro.h"
 
+[tool.robotpy-build.wrappers."wpilib.shuffleboard"]
+name = "wpilibc_shuffleboard"
+extension = "_shuffleboard"
+sources = ["wpilib/shuffleboard/shuffleboard.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpiHal", "wpiutil", "ntcore"
+]
+generation_data = "gen/shuffleboard"
+
+pp_defines = [
+    "DYNAMIC_CAMERA_SERVER 1"
+]
+
+[tool.robotpy-build.wrappers."wpilib.shuffleboard".autogen_headers]
+# frc/shuffleboard
+BuiltInLayouts = "frc/shuffleboard/BuiltInLayouts.h"
+BuiltInWidgets = "frc/shuffleboard/BuiltInWidgets.h"
+ComplexWidget = "frc/shuffleboard/ComplexWidget.h"
+LayoutType = "frc/shuffleboard/LayoutType.h"
+# RecordingController = "frc/shuffleboard/RecordingController.h"
+# SendableCameraWrapper = "frc/shuffleboard/SendableCameraWrapper.h"
+Shuffleboard = "frc/shuffleboard/Shuffleboard.h"
+ShuffleboardComponent = "frc/shuffleboard/ShuffleboardComponent.h"
+ShuffleboardComponentBase = "frc/shuffleboard/ShuffleboardComponentBase.h"
+ShuffleboardContainer = "frc/shuffleboard/ShuffleboardContainer.h"
+ShuffleboardEventImportance = "frc/shuffleboard/ShuffleboardEventImportance.h"
+ShuffleboardInstance = "frc/shuffleboard/ShuffleboardInstance.h"
+ShuffleboardLayout = "frc/shuffleboard/ShuffleboardLayout.h"
+ShuffleboardRoot = "frc/shuffleboard/ShuffleboardRoot.h"
+ShuffleboardTab = "frc/shuffleboard/ShuffleboardTab.h"
+ShuffleboardValue = "frc/shuffleboard/ShuffleboardValue.h"
+ShuffleboardWidget = "frc/shuffleboard/ShuffleboardWidget.h"
+SimpleWidget = "frc/shuffleboard/SimpleWidget.h"
+SuppliedValueWidget = "frc/shuffleboard/SuppliedValueWidget.h"
+WidgetType = "frc/shuffleboard/WidgetType.h"
 
 [tool.robotpy-build.wrappers."wpilib.simulation"]
 
