@@ -2,6 +2,7 @@ import hal
 import wpilib
 import logging
 import threading
+import time
 
 from wpilib import SmartDashboard
 from .report_error import reportError, reportErrorInternal
@@ -67,6 +68,7 @@ class RobotStarter:
             reportErrorInternal(
                 "The robot program quit unexpectedly. This is usually due to a code error.\n"
                 "The above stacktrace can help determine where the error occurred.\n",
+                True,
             )
             return False
 
@@ -91,18 +93,36 @@ class RobotStarter:
 
         # hack: initialize networktables before creating the robot
         #       class, otherwise our logger doesn't get created
-        from _pyntcore import NetworkTables
+        import ntcore
 
-        NetworkTables.setNetworkIdentity("Robot")
+        inst = ntcore.NetworkTableInstance.getDefault()
+
+        # subscribe to "" to force persistent values to progagate to local
+        msub = ntcore.MultiSubscriber(inst, [""])
+
         if not isSimulation:
-            NetworkTables.startServer("/home/lvuser/networktables.ini")
+            inst.startServer("/home/lvuser/networktables.ini")
         else:
-            NetworkTables.startServer()
+            inst.startServer()
+
+        # wait for the NT server to actually start
+        for i in range(100):
+            if (
+                inst.getNetworkMode()
+                & ntcore.NetworkTableInstance.NetworkMode.kStarting
+            ) == 0:
+                break
+            # real sleep since we're waiting for the server, not simulated sleep
+            time.sleep(0.010)
+        else:
+            reportErrorInternal(
+                "timed out while waiting for NT server to start", isWarning=True
+            )
 
         SmartDashboard.init()
 
-        # Call DriverStation.inDisabled() to kick off DS thread
-        wpilib.DriverStation.inDisabled(True)
+        # Call DriverStation.refreshData() to kick things off
+        wpilib.DriverStation.refreshData()
 
         try:
             self.robot = robot_cls()

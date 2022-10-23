@@ -8,9 +8,9 @@ classes:
     methods:
       Calculate:
         overloads:
-          units::volt_t, units::ohm_t, wpi::span<const units::ampere_t>:
+          units::volt_t, units::ohm_t, std::span<const units::ampere_t>:
           units::volt_t, units::ohm_t, std::initializer_list<units::ampere_t>:
             ignore: true
-          wpi::span<const units::ampere_t>:
+          std::span<const units::ampere_t>:
           std::initializer_list<units::ampere_t>:
             ignore: true

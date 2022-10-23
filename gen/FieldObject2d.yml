@@ -17,7 +17,7 @@ classes:
       GetPose:
       SetPoses:
         overloads:
-          wpi::span<const Pose2d>:
+          std::span<const Pose2d>:
           std::initializer_list<Pose2d>:
             ignore: true
       SetTrajectory:
