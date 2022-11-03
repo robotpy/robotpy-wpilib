@@ -14,7 +14,7 @@ base_package = "wpilib"
 artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
 repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2023.1.1-beta-1"
+version = "2023.1.1-beta-2"
 
 libs = ["wpilibc"]
 
@@ -204,10 +204,8 @@ generation_data = "gen/drive"
 [tool.robotpy-build.wrappers."wpilib.drive".autogen_headers]
 # frc/drive
 DifferentialDrive = "frc/drive/DifferentialDrive.h"
-KilloughDrive = "frc/drive/KilloughDrive.h"
 MecanumDrive = "frc/drive/MecanumDrive.h"
 RobotDriveBase = "frc/drive/RobotDriveBase.h"
-Vector2d = "frc/drive/Vector2d.h"
 
 [tool.robotpy-build.wrappers."wpilib.event"]
 

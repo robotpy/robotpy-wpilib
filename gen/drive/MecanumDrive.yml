@@ -6,7 +6,8 @@ extra_includes:
 
 classes:
   MecanumDrive:
-    shared_ptr: true
+    force_type_casters:
+    - units::radian_t
     ignored_bases:
     - wpi::SendableHelper<MecanumDrive>
     methods:
@@ -17,8 +18,14 @@ classes:
         - [1, 4]
         - [1, 5]
       DriveCartesian:
+        param_override:
+          gyroAngle:
+            default: 0_rad
       DrivePolar:
       DriveCartesianIK:
+        param_override:
+          gyroAngle:
+            default: 0_rad
       IsRightSideInverted:
       SetRightSideInverted:
       StopMotor:
