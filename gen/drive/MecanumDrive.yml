@@ -20,12 +20,12 @@ classes:
       DriveCartesian:
         param_override:
           gyroAngle:
-            default: 0_rad
+            default: frc::Rotation2d(0_rad)
       DrivePolar:
       DriveCartesianIK:
         param_override:
           gyroAngle:
-            default: 0_rad
+            default: frc::Rotation2d(0_rad)
       IsRightSideInverted:
       SetRightSideInverted:
       StopMotor:

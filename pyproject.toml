@@ -1,10 +1,27 @@
+[tool.robotpy-build.metadata]
+name = "wpilib"
+description = "Binary wrapper for FRC WPILib"
+author = "RobotPy Development Team"
+author_email = "robotpy@googlegroups.com"
+url = "https://github.com/robotpy/robotpy-wpilib"
+license = "BSD-3-Clause"
+install_requires = [
+    "robotpy-wpiutil<2024.0.0,>=2023.0.0b3.post1",
+    "robotpy-wpimath<2024.0.0,>=2023.0.0b3.post1",
+    "robotpy-hal<2024.0.0,>=2023.0.0b3.post1",
+    "pyntcore<2024.0.0,>=2023.0.0b3.post1",
+]
+
+[tool.robotpy-build.metadata.entry_points]
+robotpy = ["run = wpilib._impl.start:Main"]
+
 [build-system]
 requires = [
-    "robotpy-build<2023.0.0,>=2022.2.0",
-    "robotpy-wpiutil<2023.0.0,>=2022.4.1.1",
-    "robotpy-wpimath<2023.0.0,>=2022.4.1.0",
-    "robotpy-hal<2023.0.0,>=2022.4.1.0",
-    "pyntcore<2023.0.0,>=2022.4.1.0",
+    "robotpy-build<2024.0.0,>=2023.0.0b12",
+    "robotpy-wpiutil<2024.0.0,>=2023.0.0b3.post1",
+    "robotpy-wpimath<2024.0.0,>=2023.0.0b3.post1",
+    "robotpy-hal<2024.0.0,>=2023.0.0b3.post1",
+    "pyntcore<2024.0.0,>=2023.0.0b3.post1",
 ]
 
 [tool.robotpy-build]
@@ -13,8 +30,9 @@ base_package = "wpilib"
 [tool.robotpy-build.wrappers."wpilib._impl".maven_lib_download]
 artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
-repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2023.1.1-beta-3"
+# repo_url = "https://frcmaven.wpi.edu/artifactory/release"
+repo_url = "https://frcmaven.wpi.edu/artifactory/development"
+version = "2023.1.1-beta-3-9-g2a8e0e1"
 
 libs = ["wpilibc"]
 
@@ -340,20 +358,3 @@ SingleJointedArmSim = "frc/simulation/SingleJointedArmSim.h"
 SolenoidSim = "frc/simulation/SolenoidSim.h"
 UltrasonicSim = "frc/simulation/UltrasonicSim.h"
 XboxControllerSim = "frc/simulation/XboxControllerSim.h"
-
-[tool.robotpy-build.metadata]
-name = "wpilib"
-description = "Binary wrapper for FRC WPILib"
-author = "RobotPy Development Team"
-author_email = "robotpy@googlegroups.com"
-url = "https://github.com/robotpy/robotpy-wpilib"
-license = "BSD-3-Clause"
-install_requires = [
-    "robotpy-wpiutil<2023.0.0,>=2022.4.1.1",
-    "robotpy-wpimath<2023.0.0,>=2022.4.1.0",
-    "robotpy-hal<2023.0.0,>=2022.4.1.0",
-    "pyntcore<2023.0.0,>=2022.4.1.0",
-]
-
-[tool.robotpy-build.metadata.entry_points]
-robotpy = ["run = wpilib._impl.start:Main"]

@@ -10,4 +10,4 @@ if __name__ == "__main__":
     root = abspath(dirname(__file__))
     os.chdir(root)
 
-    subprocess.check_call([sys.executable, "-m", "py.test"])
+    subprocess.check_call([sys.executable, "-m", "pytest"])
