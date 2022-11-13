@@ -21,7 +21,9 @@ The library is designed to:
 .. toctree::
 
   wpilib
+  wpilib.counter
   wpilib.drive
+  wpilib.event
   wpilib.interfaces
   wpilib.simulation
   

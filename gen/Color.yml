@@ -169,6 +169,7 @@ classes:
               b:
                 name: blue
       FromHSV:
+      HexString:
 
 inline_code: |
   cls_Color.def(py::self == py::self)

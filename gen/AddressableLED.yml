@@ -8,7 +8,7 @@ classes:
       SetLength:
       SetData:
         overloads:
-          wpi::span<const LEDData>:
+          std::span<const LEDData>:
           std::initializer_list<LEDData>:
             ignore: true
       SetBitTiming:

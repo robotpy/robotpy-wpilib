@@ -23,6 +23,12 @@ void PyMotorControllerGroup::Set(double speed) {
   }
 }
 
+void PyMotorControllerGroup::SetVoltage(units::volt_t output) {
+  for (auto motorController : m_motorControllers) {
+    motorController->SetVoltage(m_isInverted ? -output : output);
+  }
+}
+
 double PyMotorControllerGroup::Get() const {
   if (!m_motorControllers.empty()) {
     return m_motorControllers.front()->Get() * (m_isInverted ? -1 : 1);
@@ -51,7 +57,7 @@ void PyMotorControllerGroup::StopMotor() {
 void PyMotorControllerGroup::InitSendable(wpi::SendableBuilder& builder) {
   builder.SetSmartDashboardType("Motor Controller");
   builder.SetActuator(true);
-  builder.SetSafeState([=]() { StopMotor(); });
-  builder.AddDoubleProperty("Value", [=]() { return Get(); },
-                            [=](double value) { Set(value); });
+  builder.SetSafeState([=, this]() { StopMotor(); });
+  builder.AddDoubleProperty("Value", [=, this]() { return Get(); },
+                            [=, this](double value) { Set(value); });
 }

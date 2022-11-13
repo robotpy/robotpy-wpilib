@@ -4,28 +4,14 @@ extra_includes:
 - rpy/ControlWord.h
 - wpi/DataLog.h
 
-inline_code: |
-  #include <src/rpy/DriverStation.cpp.inl>
-
 classes:
   DriverStation:
-    shared_ptr: true
     attributes:
       kJoystickPorts:
     enums:
       Alliance:
       MatchType:
     methods:
-      GetInstance:
-        return_value_policy: reference
-      ReportError:
-        overloads:
-          wpi::Twine&:
-            ignore: true
-          bool, int, wpi::Twine&, wpi::Twine&, wpi::Twine&:
-            ignore: true
-      ReportWarning:
-        ignore: true
       GetStickButton:
       GetStickButtonPressed:
       GetStickButtonReleased:
@@ -45,13 +31,10 @@ classes:
       IsEStopped:
       IsAutonomous:
       IsAutonomousEnabled:
-      IsOperatorControl:
-      IsOperatorControlEnabled:
       IsTeleop:
       IsTeleopEnabled:
       IsTest:
       IsDSAttached:
-      IsNewControlData:
       IsFMSAttached:
       GetGameSpecificMessage:
       GetEventName:
@@ -60,18 +43,24 @@ classes:
       GetReplayNumber:
       GetAlliance:
       GetLocation:
-      WaitForData:
-        overloads:
-          "":
-          units::second_t:
       GetMatchTime:
       GetBatteryVoltage:
-      InDisabled:
-      InAutonomous:
-      InOperatorControl:
-      InTeleop:
-      InTest:
-      WakeupWaitForData:
-      GetData:
+      RefreshData:
+      ProvideRefreshedDataEventHandle:
+      RemoveRefreshedDataEventHandle:
       SilenceJoystickConnectionWarning:
       IsJoystickConnectionWarningSilenced:
+      StartDataLog:
+    inline_code: |
+      .def("getControlState",
+        [](DriverStation *self) -> std::tuple<bool, bool, bool> {
+          py::gil_scoped_release release;
+          return rpy::GetControlState();
+        },
+        py::doc("More efficient way to determine what state the robot is in.\n"
+                "\n"
+                ":returns: booleans representing enabled, isautonomous, istest\n"
+                "\n"
+                ".. versionadded:: 2019.2.1\n"
+                "\n"
+                ".. note:: This function only exists in RobotPy\n"))

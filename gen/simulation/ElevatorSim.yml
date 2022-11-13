@@ -6,14 +6,15 @@ classes:
     typealias:
     - frc::DCMotor
     - template <int S, int I, int O> using LinearSystem = frc::LinearSystem<S, I, O>
+    - template <int I> using Vectord = frc::Vectord<I>
     methods:
       ElevatorSim:
         overloads:
-          LinearSystem<2, 1, 1>&, DCMotor&, double, units::meter_t, units::meter_t, units::meter_t, std::array<double, 1>&:
+          LinearSystem<2, 1, 1>&, DCMotor&, double, units::meter_t, units::meter_t, units::meter_t, bool, std::array<double, 1>&:
             param_override:
               measurementStdDevs:
                 default: std::array<double, 1>{0.0}
-          DCMotor&, double, units::kilogram_t, units::meter_t, units::meter_t, units::meter_t, std::array<double, 1>&:
+          DCMotor&, double, units::kilogram_t, units::meter_t, units::meter_t, units::meter_t, bool, std::array<double, 1>&:
             param_override:
               measurementStdDevs:
                 default: std::array<double, 1>{0.0}

@@ -2,7 +2,6 @@
 
 classes:
   LayoutType:
-    shared_ptr: false
     methods:
       LayoutType:
       GetLayoutName:

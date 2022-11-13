@@ -9,10 +9,12 @@ classes:
     attributes:
       m_port:
         ignore: true
+      m_mode:
       m_msbFirst:
       m_sampleOnTrailing:
       m_clockIdleHigh:
     enums:
+      Mode:
       Port:
     methods:
       SPI:
@@ -28,6 +30,7 @@ classes:
         ignore: true
       SetClockActiveLow:
       SetClockActiveHigh:
+      SetMode:
       SetChipSelectActiveHigh:
       SetChipSelectActiveLow:
       Write:

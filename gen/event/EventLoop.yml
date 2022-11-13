@@ -1,0 +1,13 @@
+---
+
+classes:
+  EventLoop:
+    methods:
+      EventLoop:
+      Bind:
+        cpp_code: |
+          [](EventLoop *self, std::function<bool()> condition, std::function<void()> action) {
+            self->Bind(std::move(condition), std::move(action));
+          }
+      Poll:
+      Clear:

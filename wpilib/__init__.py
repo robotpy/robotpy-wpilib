@@ -215,9 +215,6 @@ from ._impl.report_error import reportError, reportWarning
 
 __all__ += ["reportError", "reportWarning"]
 
-# deprecated alias
-SpeedControllerGroup = MotorControllerGroup
-
 del _init_wpilib
 
 from .cameraserver import CameraServer

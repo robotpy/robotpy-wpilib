@@ -1,5 +1,8 @@
 ---
 
+extra_includes:
+- frc/event/BooleanEvent.h
+
 classes:
   PS4Controller:
     methods:
@@ -13,45 +16,59 @@ classes:
       GetSquareButton:
       GetSquareButtonPressed:
       GetSquareButtonReleased:
+      Square:
       GetCrossButton:
       GetCrossButtonPressed:
       GetCrossButtonReleased:
+      Cross:
       GetCircleButton:
       GetCircleButtonPressed:
       GetCircleButtonReleased:
+      Circle:
       GetTriangleButton:
       GetTriangleButtonPressed:
       GetTriangleButtonReleased:
+      Triangle:
       GetL1Button:
       GetL1ButtonPressed:
       GetL1ButtonReleased:
+      L1:
       GetR1Button:
       GetR1ButtonPressed:
       GetR1ButtonReleased:
+      R1:
       GetL2Button:
       GetL2ButtonPressed:
       GetL2ButtonReleased:
+      L2:
       GetR2Button:
       GetR2ButtonPressed:
       GetR2ButtonReleased:
+      R2:
       GetShareButton:
       GetShareButtonPressed:
       GetShareButtonReleased:
+      Share:
       GetOptionsButton:
       GetOptionsButtonPressed:
       GetOptionsButtonReleased:
+      Options:
       GetL3Button:
       GetL3ButtonPressed:
       GetL3ButtonReleased:
+      L3:
       GetR3Button:
       GetR3ButtonPressed:
       GetR3ButtonReleased:
+      R3:
       GetPSButton:
       GetPSButtonPressed:
       GetPSButtonReleased:
+      PS:
       GetTouchpad:
       GetTouchpadPressed:
       GetTouchpadReleased:
+      Touchpad:
   PS4Controller::Button:
     attributes:
       kSquare:

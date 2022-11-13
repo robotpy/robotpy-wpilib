@@ -22,8 +22,9 @@ classes:
           std::shared_ptr<DigitalSource>:
       GetFrequency:
       GetOutput:
-      GetOutputRaw:
+      GetHighTime:
       GetOutputScaleFactor:
+        ignore: true # not in beta 1
       GetFPGAIndex:
       GetSourceChannel:
       InitSendable:

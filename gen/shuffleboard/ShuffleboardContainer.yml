@@ -6,66 +6,72 @@ extra_includes:
 - frc/shuffleboard/ShuffleboardLayout.h
 - frc/shuffleboard/SimpleWidget.h
 
-functions:
-  Add:
-    overloads:
-      cs::VideoSource&:
-      wpi::Twine&, cs::VideoSource&:
 classes:
   ShuffleboardContainer:
-    shared_ptr: false
+    # virtual base issue: robotpy-build/166
+    force_no_trampoline: true
     attributes:
       m_isLayout:
     methods:
       ShuffleboardContainer:
-        ignore: true
       GetComponents:
-        # https://github.com/pybind/pybind11/issues/263
-        # .. use custom code here?
-        ignore: true
       GetLayout:
         overloads:
-          wpi::Twine&, BuiltInLayouts:
-          wpi::Twine&, LayoutType&:
-          wpi::Twine&, wpi::Twine&:
-          wpi::Twine&:
+          std::string_view, BuiltInLayouts:
+          std::string_view, LayoutType&:
+          std::string_view, std::string_view:
+          std::string_view:
       Add:
         overloads:
-          wpi::Twine&, frc::Sendable&:
-            keepalive:
-            - [1, 3]
-          wpi::Twine&, cs::VideoSource&:
+          std::string_view, wpi::Sendable&:
+          std::string_view, cs::VideoSource&:
             ignore: true
-          frc::Sendable&:
-            keepalive:
-            - [1, 2]
+          wpi::Sendable&:
           cs::VideoSource&:
             ignore: true
-          wpi::Twine&, std::shared_ptr<nt::Value>:
-          wpi::Twine&, bool:
-          wpi::Twine&, double:
-          wpi::Twine&, int:
-          wpi::Twine&, wpi::Twine&:
-          wpi::Twine&, char*:
-          wpi::Twine&, wpi::ArrayRef<bool>:
-          wpi::Twine&, wpi::ArrayRef<double>:
-          wpi::Twine&, wpi::ArrayRef<std::string>:
+          std::string_view, nt::Value&:
+          std::string_view, bool:
+          std::string_view, double:
+          std::string_view, float:
+          std::string_view, int:
+          std::string_view, std::string_view:
+          std::string_view, char*:
+            ignore: true
+          std::string_view, std::span<const bool>:
+          std::string_view, std::span<const double>:
+          std::string_view, std::span<const float>:
+          std::string_view, std::span<const int64_t>:
+          std::string_view, std::span<const std::string>:
+      AddCamera:
+        ignore: true
       AddString:
       AddNumber:
+      AddDouble:
+      AddFloat:
+      AddInteger:
       AddBoolean:
       AddStringArray:
       AddNumberArray:
+      AddDoubleArray:
+      AddFloatArray:
+      AddIntegerArray:
       AddBooleanArray:
       AddRaw:
+        overloads:
+          std::string_view, std::function<std::vector<uint8_t> ( )>:
+          std::string_view, std::string_view, std::function<std::vector<uint8_t> ( )>:
       AddPersistent:
         overloads:
-          wpi::Twine&, std::shared_ptr<nt::Value>:
-          wpi::Twine&, bool:
-          wpi::Twine&, double:
-          wpi::Twine&, int:
-          wpi::Twine&, wpi::Twine&:
-          wpi::Twine&, wpi::ArrayRef<bool>:
-          wpi::Twine&, wpi::ArrayRef<double>:
-          wpi::Twine&, wpi::ArrayRef<std::string>:
+          std::string_view, nt::Value&:
+          std::string_view, bool:
+          std::string_view, double:
+          std::string_view, float:
+          std::string_view, int:
+          std::string_view, std::string_view:
+          std::string_view, std::span<const bool>:
+          std::string_view, std::span<const double>:
+          std::string_view, std::span<const float>:
+          std::string_view, std::span<const int64_t>:
+          std::string_view, std::span<const std::string>:
       EnableIfActuator:
       DisableIfActuator:

@@ -5,7 +5,6 @@ extra_includes:
 
 classes:
   Shuffleboard:
-    shared_ptr: false
     attributes:
       kBaseTableName:
     methods:
@@ -14,7 +13,7 @@ classes:
       SelectTab:
         overloads:
           int:
-          wpi::StringRef:
+          std::string_view:
       EnableActuatorWidgets:
       DisableActuatorWidgets:
       StartRecording:
@@ -23,5 +22,5 @@ classes:
       ClearRecordingFileNameFormat:
       AddEventMarker:
         overloads:
-          wpi::StringRef, wpi::StringRef, ShuffleboardEventImportance:
-          wpi::StringRef, ShuffleboardEventImportance:
+          std::string_view, std::string_view, ShuffleboardEventImportance:
+          std::string_view, ShuffleboardEventImportance:

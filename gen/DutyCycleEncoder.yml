@@ -29,6 +29,9 @@ classes:
       SetConnectedFrequencyThreshold:
       Reset:
       Get:
+      GetAbsolutePosition:
+      GetPositionOffset:
+      SetPositionOffset:
       SetDistancePerRotation:
       GetDistancePerRotation:
       GetDistance:

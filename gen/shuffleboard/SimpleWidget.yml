@@ -5,10 +5,9 @@ extra_includes:
 
 classes:
   SimpleWidget:
-    shared_ptr: true
+    # virtual base issue: robotpy-build/166
+    force_no_trampoline: true
     methods:
       SimpleWidget:
-        keepalive:
-        - [1, 2]
       GetEntry:
       BuildInto:

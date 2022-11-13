@@ -2,6 +2,7 @@
 
 extra_includes:
 - frc/DriverStation.h
+- frc/event/BooleanEvent.h
 
 classes:
   GenericHID:
@@ -14,6 +15,7 @@ classes:
       GetRawButton:
       GetRawButtonPressed:
       GetRawButtonReleased:
+      Button:
       GetRawAxis:
       GetPOV:
       GetAxisCount:

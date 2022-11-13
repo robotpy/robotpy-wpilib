@@ -2,3 +2,11 @@
 
 classes:
   MotorController:
+    methods:
+      Set:
+      SetVoltage:
+      Get:
+      SetInverted:
+      GetInverted:
+      Disable:
+      StopMotor:

@@ -1,10 +1,27 @@
+[tool.robotpy-build.metadata]
+name = "wpilib"
+description = "Binary wrapper for FRC WPILib"
+author = "RobotPy Development Team"
+author_email = "robotpy@googlegroups.com"
+url = "https://github.com/robotpy/robotpy-wpilib"
+license = "BSD-3-Clause"
+install_requires = [
+    "robotpy-wpiutil<2024.0.0,>=2023.0.0b3.post1",
+    "robotpy-wpimath<2024.0.0,>=2023.0.0b3.post1",
+    "robotpy-hal<2024.0.0,>=2023.0.0b3.post1",
+    "pyntcore<2024.0.0,>=2023.0.0b3.post1",
+]
+
+[tool.robotpy-build.metadata.entry_points]
+robotpy = ["run = wpilib._impl.start:Main"]
+
 [build-system]
 requires = [
-    "robotpy-build<2023.0.0,>=2022.2.0",
-    "robotpy-wpiutil<2023.0.0,>=2022.4.1.1",
-    "robotpy-wpimath<2023.0.0,>=2022.4.1.0",
-    "robotpy-hal<2023.0.0,>=2022.4.1.0",
-    "pyntcore<2023.0.0,>=2022.4.1.0",
+    "robotpy-build<2024.0.0,>=2023.0.0b12",
+    "robotpy-wpiutil<2024.0.0,>=2023.0.0b3.post1",
+    "robotpy-wpimath<2024.0.0,>=2023.0.0b3.post1",
+    "robotpy-hal<2024.0.0,>=2023.0.0b3.post1",
+    "pyntcore<2024.0.0,>=2023.0.0b3.post1",
 ]
 
 [tool.robotpy-build]
@@ -13,8 +30,9 @@ base_package = "wpilib"
 [tool.robotpy-build.wrappers."wpilib._impl".maven_lib_download]
 artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
-repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2022.4.1"
+# repo_url = "https://frcmaven.wpi.edu/artifactory/release"
+repo_url = "https://frcmaven.wpi.edu/artifactory/development"
+version = "2023.1.1-beta-3-9-g2a8e0e1"
 
 libs = ["wpilibc"]
 
@@ -40,7 +58,7 @@ generation_data = "gen"
 depends = [
     "wpiHal", "wpiutil", "ntcore",
     "wpimath_cpp", "wpimath_geometry", "wpimath_controls",
-    "wpilibc", "wpilibc_interfaces"
+    "wpilibc", "wpilibc_interfaces", "wpilibc_event"
 ]
 
 pp_defines = [
@@ -131,6 +149,9 @@ Ultrasonic = "frc/Ultrasonic.h"
 Watchdog = "frc/Watchdog.h"
 XboxController = "frc/XboxController.h"
 
+# frc/internal
+DriverStationModeThread = "frc/internal/DriverStationModeThread.h"
+
 # frc/livewindow
 LiveWindow = "frc/livewindow/LiveWindow.h"
 
@@ -152,28 +173,6 @@ Talon = "frc/motorcontrol/Talon.h"
 Victor = "frc/motorcontrol/Victor.h"
 VictorSP = "frc/motorcontrol/VictorSP.h"
 
-# frc/shuffleboard -- template madness, still TODO
-# BuiltInLayouts = "frc/shuffleboard/BuiltInLayouts.h"
-# BuiltInWidgets = "frc/shuffleboard/BuiltInWidgets.h"
-# ComplexWidget = "frc/shuffleboard/ComplexWidget.h"
-# LayoutType = "frc/shuffleboard/LayoutType.h"
-# RecordingController = "frc/shuffleboard/RecordingController.h"
-# SendableCameraWrapper = "frc/shuffleboard/SendableCameraWrapper.h"
-# Shuffleboard = "frc/shuffleboard/Shuffleboard.h"
-# ShuffleboardComponent = "frc/shuffleboard/ShuffleboardComponent.h"
-# ShuffleboardComponentBase = "frc/shuffleboard/ShuffleboardComponentBase.h"
-# ShuffleboardContainer = "frc/shuffleboard/ShuffleboardContainer.h"
-# ShuffleboardEventImportance = "frc/shuffleboard/ShuffleboardEventImportance.h"
-# ShuffleboardInstance = "frc/shuffleboard/ShuffleboardInstance.h"
-# ShuffleboardLayout = "frc/shuffleboard/ShuffleboardLayout.h"
-# ShuffleboardRoot = "frc/shuffleboard/ShuffleboardRoot.h"
-# ShuffleboardTab = "frc/shuffleboard/ShuffleboardTab.h"
-# ShuffleboardValue = "frc/shuffleboard/ShuffleboardValue.h"
-# ShuffleboardWidget = "frc/shuffleboard/ShuffleboardWidget.h"
-# SimpleWidget = "frc/shuffleboard/SimpleWidget.h"
-# SuppliedValueWidget = "frc/shuffleboard/SuppliedValueWidget.h"
-# WidgetType = "frc/shuffleboard/WidgetType.h"
-
 # frc/smartdashboard
 Field2d = "frc/smartdashboard/Field2d.h"
 FieldObject2d = "frc/smartdashboard/FieldObject2d.h"
@@ -191,6 +190,24 @@ SmartDashboard = "frc/smartdashboard/SmartDashboard.h"
 Color = "frc/util/Color.h"
 Color8Bit = "frc/util/Color8Bit.h"
 
+[tool.robotpy-build.wrappers."wpilib.counter"]
+
+name = "wpilibc_counter"
+extension = "_counter"
+sources = ["wpilib/counter/counter.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpiHal", "wpiutil", "ntcore"
+]
+generation_data = "gen/counter"
+
+[tool.robotpy-build.wrappers."wpilib.counter".autogen_headers]
+# frc/counter
+EdgeConfiguration = "frc/counter/EdgeConfiguration.h"
+ExternalDirectionCounter = "frc/counter/ExternalDirectionCounter.h"
+Tachometer = "frc/counter/Tachometer.h"
+UpDownCounter = "frc/counter/UpDownCounter.h"
+
 [tool.robotpy-build.wrappers."wpilib.drive"]
 
 name = "wpilibc_drive"
@@ -205,10 +222,24 @@ generation_data = "gen/drive"
 [tool.robotpy-build.wrappers."wpilib.drive".autogen_headers]
 # frc/drive
 DifferentialDrive = "frc/drive/DifferentialDrive.h"
-KilloughDrive = "frc/drive/KilloughDrive.h"
 MecanumDrive = "frc/drive/MecanumDrive.h"
 RobotDriveBase = "frc/drive/RobotDriveBase.h"
-Vector2d = "frc/drive/Vector2d.h"
+
+[tool.robotpy-build.wrappers."wpilib.event"]
+
+name = "wpilibc_event"
+extension = "_event"
+sources = ["wpilib/event/event.cpp"]
+depends = [
+    "wpilibc", "wpiHal", "wpimath_filter", "wpimath_cpp", "wpiutil", "ntcore"
+]
+generation_data = "gen/event"
+
+[tool.robotpy-build.wrappers."wpilib.event".autogen_headers]
+# frc/event
+BooleanEvent = "frc/event/BooleanEvent.h"
+EventLoop = "frc/event/EventLoop.h"
+NetworkBooleanEvent = "frc/event/NetworkBooleanEvent.h"
 
 [tool.robotpy-build.wrappers."wpilib.interfaces"]
 
@@ -216,7 +247,7 @@ name = "wpilibc_interfaces"
 extension = "_interfaces"
 sources = ["wpilib/interfaces/interfaces.cpp"]
 depends = [
-    "wpilibc", "wpiHal", "wpiutil", "ntcore",
+    "wpilibc", "wpilibc_event", "wpiHal", "wpiutil", "ntcore",
     "wpimath_cpp", "wpimath_geometry"
 ]
 generation_data = "gen"
@@ -226,12 +257,49 @@ generation_data = "gen"
 CounterBase = "frc/CounterBase.h"
 GenericHID = "frc/GenericHID.h"
 MotorController = "frc/motorcontrol/MotorController.h"
-SpeedController = "frc/SpeedController.h"
 
 # frc/interfaces
 Accelerometer = "frc/interfaces/Accelerometer.h"
 Gyro = "frc/interfaces/Gyro.h"
 
+[tool.robotpy-build.wrappers."wpilib.shuffleboard"]
+name = "wpilibc_shuffleboard"
+extension = "_shuffleboard"
+sources = ["wpilib/shuffleboard/shuffleboard.cpp"]
+depends = [
+    "wpilib_core", "wpilibc_interfaces", "wpilibc",
+    "wpiHal", "wpiutil", "ntcore"
+]
+generation_data = "gen/shuffleboard"
+
+pp_defines = [
+    "DYNAMIC_CAMERA_SERVER 1"
+]
+
+[tool.robotpy-build.wrappers."wpilib.shuffleboard".autogen_headers]
+# frc/shuffleboard
+
+# TODO: shuffleboard broken in wpilibc beta 1
+BuiltInLayouts = "frc/shuffleboard/BuiltInLayouts.h"
+# BuiltInWidgets = "frc/shuffleboard/BuiltInWidgets.h"
+# ComplexWidget = "frc/shuffleboard/ComplexWidget.h"
+# LayoutType = "frc/shuffleboard/LayoutType.h"
+# # RecordingController = "frc/shuffleboard/RecordingController.h"
+# # SendableCameraWrapper = "frc/shuffleboard/SendableCameraWrapper.h"
+# Shuffleboard = "frc/shuffleboard/Shuffleboard.h"
+# ShuffleboardComponent = "frc/shuffleboard/ShuffleboardComponent.h"
+# ShuffleboardComponentBase = "frc/shuffleboard/ShuffleboardComponentBase.h"
+# ShuffleboardContainer = "frc/shuffleboard/ShuffleboardContainer.h"
+# ShuffleboardEventImportance = "frc/shuffleboard/ShuffleboardEventImportance.h"
+# ShuffleboardInstance = "frc/shuffleboard/ShuffleboardInstance.h"
+# ShuffleboardLayout = "frc/shuffleboard/ShuffleboardLayout.h"
+# ShuffleboardRoot = "frc/shuffleboard/ShuffleboardRoot.h"
+# ShuffleboardTab = "frc/shuffleboard/ShuffleboardTab.h"
+# ShuffleboardValue = "frc/shuffleboard/ShuffleboardValue.h"
+# ShuffleboardWidget = "frc/shuffleboard/ShuffleboardWidget.h"
+# SimpleWidget = "frc/shuffleboard/SimpleWidget.h"
+# SuppliedValueWidget = "frc/shuffleboard/SuppliedValueWidget.h"
+# WidgetType = "frc/shuffleboard/WidgetType.h"
 
 [tool.robotpy-build.wrappers."wpilib.simulation"]
 
@@ -266,6 +334,7 @@ DCMotorSim = "frc/simulation/DCMotorSim.h"
 DIOSim = "frc/simulation/DIOSim.h"
 DifferentialDrivetrainSim = "frc/simulation/DifferentialDrivetrainSim.h"
 DigitalPWMSim = "frc/simulation/DigitalPWMSim.h"
+DoubleSolenoidSim = "frc/simulation/DoubleSolenoidSim.h"
 DriverStationSim = "frc/simulation/DriverStationSim.h"
 DutyCycleEncoderSim = "frc/simulation/DutyCycleEncoderSim.h"
 DutyCycleSim = "frc/simulation/DutyCycleSim.h"
@@ -277,6 +346,7 @@ JoystickSim = "frc/simulation/JoystickSim.h"
 LinearSystemSim = "frc/simulation/LinearSystemSim.h"
 PS4ControllerSim = "frc/simulation/PS4ControllerSim.h"
 PWMSim = "frc/simulation/PWMSim.h"
+PneumaticsBaseSim = "frc/simulation/PneumaticsBaseSim.h"
 PowerDistributionSim = "frc/simulation/PowerDistributionSim.h"
 REVPHSim = "frc/simulation/REVPHSim.h"
 RelaySim = "frc/simulation/RelaySim.h"
@@ -285,22 +355,6 @@ SPIAccelerometerSim = "frc/simulation/SPIAccelerometerSim.h"
 SimDeviceSim = "frc/simulation/SimDeviceSim.h"
 SimHooks = "frc/simulation/SimHooks.h"
 SingleJointedArmSim = "frc/simulation/SingleJointedArmSim.h"
+SolenoidSim = "frc/simulation/SolenoidSim.h"
 UltrasonicSim = "frc/simulation/UltrasonicSim.h"
 XboxControllerSim = "frc/simulation/XboxControllerSim.h"
-
-[tool.robotpy-build.metadata]
-name = "wpilib"
-description = "Binary wrapper for FRC WPILib"
-author = "RobotPy Development Team"
-author_email = "robotpy@googlegroups.com"
-url = "https://github.com/robotpy/robotpy-wpilib"
-license = "BSD-3-Clause"
-install_requires = [
-    "robotpy-wpiutil<2023.0.0,>=2022.4.1.1",
-    "robotpy-wpimath<2023.0.0,>=2022.4.1.0",
-    "robotpy-hal<2023.0.0,>=2022.4.1.0",
-    "pyntcore<2023.0.0,>=2022.4.1.0",
-]
-
-[tool.robotpy-build.metadata.entry_points]
-robotpy = ["run = wpilib._impl.start:Main"]

@@ -7,7 +7,6 @@ from ._interfaces import (
     GenericHID,
     Gyro,
     MotorController,
-    SpeedController,
 )
 
 __all__ = [
@@ -16,7 +15,6 @@ __all__ = [
     "GenericHID",
     "Gyro",
     "MotorController",
-    "SpeedController",
 ]
 
 del _init_interfaces

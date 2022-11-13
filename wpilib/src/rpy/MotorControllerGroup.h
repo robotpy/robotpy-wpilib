@@ -19,7 +19,7 @@ class PyMotorControllerGroup : public wpi::Sendable,
                              public MotorController,
                              public wpi::SendableHelper<PyMotorControllerGroup> {
  public:
-  PyMotorControllerGroup(std::vector<std::shared_ptr<frc::SpeedController>> &&args) :
+  PyMotorControllerGroup(std::vector<std::shared_ptr<frc::MotorController>> &&args) :
     m_motorControllers(args) {}
   ~PyMotorControllerGroup() override = default;
 
@@ -27,6 +27,7 @@ class PyMotorControllerGroup : public wpi::Sendable,
   PyMotorControllerGroup& operator=(PyMotorControllerGroup&&) = default;
 
   void Set(double speed) override;
+  void SetVoltage(units::volt_t output) override;
   double Get() const override;
   void SetInverted(bool isInverted) override;
   bool GetInverted() const override;
@@ -39,7 +40,7 @@ class PyMotorControllerGroup : public wpi::Sendable,
   void Initialize();
 
   bool m_isInverted = false;
-  std::vector<std::shared_ptr<frc::SpeedController>> m_motorControllers;
+  std::vector<std::shared_ptr<frc::MotorController>> m_motorControllers;
 };
 
 }  // namespace rpy

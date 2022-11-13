@@ -2,7 +2,6 @@
 
 classes:
   RecordingController:
-    shared_ptr: false
     methods:
       RecordingController:
       StartRecording:

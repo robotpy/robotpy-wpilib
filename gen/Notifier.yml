@@ -21,3 +21,4 @@ classes:
             ignore: true
           units::second_t:
       Stop:
+      SetHALThreadPriority:

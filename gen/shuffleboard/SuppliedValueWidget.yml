@@ -1,20 +1,47 @@
 ---
 
-# TODO
-
 classes:
   SuppliedValueWidget:
-    shared_ptr: true
+    # virtual base issue: robotpy-build/166
+    force_no_trampoline: true
+    template_params:
+    - T
     methods:
       SuppliedValueWidget:
+        ignore: true
       BuildInto:
 
+
 templates:
-  _SuppliedValueWidgetComponent:
-    qualname: frc::ShuffleboardComponent
+  SuppliedStringValueWidget:
+    qualname: frc::SuppliedValueWidget
     params:
-    - SuppliedValueWidget<py::object>
-  _SuppliedValueWidgetWidget:
-    qualname: frc::ShuffleboardWidget
+    - std::string
+  SuppliedRawValueWidget:
+    qualname: frc::SuppliedValueWidget
     params:
-    - frc::ComplexWidget
+    - std::string_view
+  SuppliedDoubleValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - double
+  SuppliedBoolValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - bool
+  SuppliedStringListValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - std::vector<std::string>
+  SuppliedDoubleListValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - std::vector<double>
+  SuppliedIntListValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - std::vector<int>
+  SuppliedRawListValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - std::vector<std::string_view>

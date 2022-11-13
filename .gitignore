@@ -18,18 +18,25 @@ dist
 MANIFEST
 
 /wpilib/pkgcfg.py
+/wpilib/py.typed
 /wpilib/version.py
 /wpilib/_init_wpilib.py
 /wpilib/controller/_init_controller.py
 /wpilib/controller/pkgcfg.py
+/wpilib/counter/_init_counter.py
+/wpilib/counter/pkgcfg.py
 /wpilib/drive/_init_drive.py
 /wpilib/drive/pkgcfg.py
+/wpilib/event/_init_event.py
+/wpilib/event/pkgcfg.py
 /wpilib/geometry/_init_geometry.py
 /wpilib/geometry/pkgcfg.py
 /wpilib/interfaces/_init_interfaces.py
 /wpilib/interfaces/pkgcfg.py
 /wpilib/kinematics/_init_kinematics.py
 /wpilib/kinematics/pkgcfg.py
+/wpilib/shuffleboard/_init_shuffleboard.py
+/wpilib/shuffleboard/pkgcfg.py
 /wpilib/simulation/_init_simulation.py
 /wpilib/simulation/pkgcfg.py
 /wpilib/spline/_init_spline.py

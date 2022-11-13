@@ -1,0 +1,20 @@
+---
+
+extra_includes:
+- frc/DigitalSource.h
+
+classes:
+  UpDownCounter:
+    ignored_bases:
+    - wpi::SendableHelper<UpDownCounter>
+    methods:
+      UpDownCounter:
+        overloads:
+          frc::DigitalSource&, frc::DigitalSource&:
+          std::shared_ptr<DigitalSource>, std::shared_ptr<DigitalSource>:
+      GetCount:
+      SetReverseDirection:
+      Reset:
+      SetUpEdgeConfiguration:
+      SetDownEdgeConfiguration:
+      InitSendable:

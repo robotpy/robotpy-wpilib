@@ -17,6 +17,8 @@ classes:
       m_defaultChoice:
       m_selected:
       m_haveSelected:
+      m_instancePubs:
+      m_activePubs:
       m_activeEntries:
       m_mutex:
         ignore: true

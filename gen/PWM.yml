@@ -10,8 +10,6 @@ classes:
     shared_ptr: true
     ignored_bases:
     - wpi::SendableHelper<PWM>
-    force_type_casters:
-    - wpi::StringRef
     enums:
       PeriodMultiplier:
     methods:

@@ -26,6 +26,7 @@ classes:
               b:
                 name: blue
           Color&:
+      HexString:
 
 inline_code: |
   cls_Color8Bit.def(py::self == py::self)

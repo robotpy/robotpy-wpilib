@@ -6,6 +6,7 @@ classes:
     template_params:
     - T
     methods:
+      SendableChooser:
       AddOption:
       SetDefaultOption:
       AddObject:

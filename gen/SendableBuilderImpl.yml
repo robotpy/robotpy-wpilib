@@ -1,15 +1,13 @@
 ---
-
 classes:
   SendableBuilderImpl:
-    shared_ptr: true
     methods:
       SendableBuilderImpl:
       SetTable:
       GetTable:
-      HasTable:
+      IsPublished:
       IsActuator:
-      UpdateTable:
+      Update:
       StartListeners:
       StopListeners:
       StartLiveWindowMode:
@@ -19,19 +17,26 @@ classes:
       SetActuator:
       SetSafeState:
       SetUpdateTable:
-      GetEntry:
+        cpp_code: |
+          [](SendableBuilderImpl *self, std::function<void()> func) {
+            self->SetUpdateTable(std::move(func));
+          }
+      GetTopic:
       AddBooleanProperty:
+      AddIntegerProperty:
+      AddFloatProperty:
       AddDoubleProperty:
       AddStringProperty:
       AddBooleanArrayProperty:
+      AddIntegerArrayProperty:
+      AddFloatArrayProperty:
       AddDoubleArrayProperty:
       AddStringArrayProperty:
       AddRawProperty:
-      AddValueProperty:
       AddSmallStringProperty:
       AddSmallBooleanArrayProperty:
+      AddSmallIntegerArrayProperty:
+      AddSmallFloatArrayProperty:
       AddSmallDoubleArrayProperty:
       AddSmallStringArrayProperty:
       AddSmallRawProperty:
-      IsPublished:
-      Update:

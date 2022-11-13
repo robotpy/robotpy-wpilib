@@ -9,4 +9,7 @@ classes:
     methods:
       SimpleWidget:
       GetEntry:
+        overloads:
+          "":
+          std::string_view:
       BuildInto:

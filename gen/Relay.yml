@@ -9,8 +9,6 @@ classes:
     shared_ptr: true
     ignored_bases:
     - wpi::SendableHelper<Relay>
-    force_type_casters:
-    - wpi::StringRef
     enums:
       Value:
       Direction:

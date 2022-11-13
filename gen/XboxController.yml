@@ -2,6 +2,7 @@
 
 extra_includes:
 - frc/DriverStation.h
+- frc/event/BooleanEvent.h
 
 classes:
   XboxController:
@@ -19,30 +20,40 @@ classes:
       GetRightBumperPressed:
       GetLeftBumperReleased:
       GetRightBumperReleased:
+      LeftBumper:
+      RightBumper:
       GetLeftStickButton:
       GetRightStickButton:
       GetLeftStickButtonPressed:
       GetRightStickButtonPressed:
       GetLeftStickButtonReleased:
       GetRightStickButtonReleased:
+      LeftStick:
+      RightStick:
       GetAButton:
       GetAButtonPressed:
       GetAButtonReleased:
+      A:
       GetBButton:
       GetBButtonPressed:
       GetBButtonReleased:
+      B:
       GetXButton:
       GetXButtonPressed:
       GetXButtonReleased:
+      X:
       GetYButton:
       GetYButtonPressed:
       GetYButtonReleased:
+      Y:
       GetBackButton:
       GetBackButtonPressed:
       GetBackButtonReleased:
+      Back:
       GetStartButton:
       GetStartButtonPressed:
       GetStartButtonReleased:
+      Start:
   XboxController::Button:
     attributes:
       kLeftBumper:
