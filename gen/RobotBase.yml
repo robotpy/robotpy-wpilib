@@ -12,6 +12,8 @@ functions:
     ignore: true
   StartRobot:
     ignore: true
+  ResetMotorSafety:
+    ignore: true
 classes:
   RobotBase:
     shared_ptr: false

@@ -27,6 +27,7 @@ class RobotStarter:
         self.suppressExitWarning = False
 
     def run(self, robot_cls: wpilib.RobotBase) -> bool:
+        retval = False
         if hal.hasMain():
             rval = [False]
 
@@ -57,9 +58,16 @@ class RobotStarter:
             th.join(1)
             if th.is_alive():
                 self.logger.warn("robot thread didn't die, crash may occur next!")
-            return rval[0]
+            retval = rval[0]
         else:
-            return self.start(robot_cls)
+            retval = self.start(robot_cls)
+
+        if wpilib.RobotBase.isSimulation():
+            import wpilib.simulation
+
+            wpilib.simulation._simulation._resetMotorSafety()
+
+        return retval
 
     def start(self, robot_cls: wpilib.RobotBase) -> bool:
         try:

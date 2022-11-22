@@ -32,5 +32,6 @@ classes:
       GetYFilteredAccelAngle:
       GetYawAxis:
       SetYawAxis:
+      IsConnected:
       GetPort:
       InitSendable:
