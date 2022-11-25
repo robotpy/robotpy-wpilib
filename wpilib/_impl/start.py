@@ -4,7 +4,6 @@ import logging
 import threading
 import time
 
-from wpilib import SmartDashboard
 from .report_error import reportError, reportErrorInternal
 
 
@@ -62,7 +61,9 @@ class RobotStarter:
         else:
             retval = self.start(robot_cls)
 
-        if wpilib.RobotBase.isSimulation():
+        from wpilib import RobotBase
+
+        if RobotBase.isSimulation():
             import wpilib.simulation
 
             wpilib.simulation._simulation._resetMotorSafety()
@@ -81,9 +82,6 @@ class RobotStarter:
             return False
 
     def _start(self, robot_cls: wpilib.RobotBase) -> bool:
-
-        import hal
-        import wpilib
 
         hal.report(
             hal.tResourceType.kResourceType_Language,
@@ -127,7 +125,7 @@ class RobotStarter:
                 "timed out while waiting for NT server to start", isWarning=True
             )
 
-        SmartDashboard.init()
+        wpilib.SmartDashboard.init()
 
         # Call DriverStation.refreshData() to kick things off
         wpilib.DriverStation.refreshData()
