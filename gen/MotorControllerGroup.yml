@@ -14,14 +14,20 @@ classes:
         cpp_code: |
           [](py::args args) {
             if (args.size() < 1) {
-              throw py::value_error("requires 1+ arguments");
+              throw py::type_error("requires 1+ arguments");
             }
-            using Vector = std::vector<std::shared_ptr<MotorController>>;
-            Vector v = args.cast<Vector>();
-            for (auto iter = v.cbegin(); iter != v.cend(); ++iter) {
-              if (!*iter) {
-                throw py::value_error("Arguments must not be None");
+            std::vector<std::shared_ptr<MotorController>> v;
+            v.reserve(args.size());
+            int i = 1;
+            for (auto &arg: args) {
+              try {
+                auto mc = arg.cast<std::shared_ptr<MotorController>>();
+                if (!mc) throw py::cast_error();
+                v.push_back(mc);
+              } catch (py::cast_error &e) {
+                throw py::type_error(py::str("Argument {} must be a MotorController (got '{}')").format(i, py::repr(arg)));
               }
+              i++;
             }
             return std::make_shared<PyMotorControllerGroup>(std::move(v));
           }
