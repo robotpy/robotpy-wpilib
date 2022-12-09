@@ -6,10 +6,10 @@ author_email = "robotpy@googlegroups.com"
 url = "https://github.com/robotpy/robotpy-wpilib"
 license = "BSD-3-Clause"
 install_requires = [
-    "robotpy-wpiutil<2024.0.0,>=2023.0.0b4",
-    "robotpy-wpimath<2024.0.0,>=2023.0.0b4",
-    "robotpy-hal<2024.0.0,>=2023.0.0b4",
-    "pyntcore<2024.0.0,>=2023.0.0b4",
+    "robotpy-wpiutil<2024.0.0,>=2023.0.0b5",
+    "robotpy-wpimath<2024.0.0,>=2023.0.0b5",
+    "robotpy-hal<2024.0.0,>=2023.0.0b5",
+    "pyntcore<2024.0.0,>=2023.0.0b5",
 ]
 
 [tool.robotpy-build.metadata.entry_points]
@@ -17,11 +17,11 @@ robotpy = ["run = wpilib._impl.start:Main"]
 
 [build-system]
 requires = [
-    "robotpy-build<2024.0.0,>=2023.0.0b14",
-    "robotpy-wpiutil<2024.0.0,>=2023.0.0b4",
-    "robotpy-wpimath<2024.0.0,>=2023.0.0b4",
-    "robotpy-hal<2024.0.0,>=2023.0.0b4",
-    "pyntcore<2024.0.0,>=2023.0.0b4",
+    "robotpy-build<2024.0.0,>=2023.0.0b15",
+    "robotpy-wpiutil<2024.0.0,>=2023.0.0b5",
+    "robotpy-wpimath<2024.0.0,>=2023.0.0b5",
+    "robotpy-hal<2024.0.0,>=2023.0.0b5",
+    "pyntcore<2024.0.0,>=2023.0.0b5",
 ]
 
 [tool.robotpy-build]
@@ -32,7 +32,7 @@ artifact_id = "wpilibc-cpp"
 group_id = "edu.wpi.first.wpilibc"
 # repo_url = "https://frcmaven.wpi.edu/artifactory/release"
 repo_url = "https://frcmaven.wpi.edu/artifactory/release"
-version = "2023.1.1-beta-4"
+version = "2023.1.1-beta-5"
 
 libs = ["wpilibc"]
 
