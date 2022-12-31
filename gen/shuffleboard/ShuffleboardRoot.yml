@@ -8,6 +8,7 @@ classes:
     rename: _ShuffleboardRoot
     methods:
       GetTab:
+        return_value_policy: reference_internal
       Update:
       EnableActuatorWidgets:
       DisableActuatorWidgets:

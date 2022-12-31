@@ -5,6 +5,7 @@
 
 namespace frc::impl {
 void ResetLiveWindow();
+void ResetShuffleboardInstance();
 void ResetSmartDashboardInstance();
 void ResetMotorSafety();
 } // namespace frc::impl
@@ -15,6 +16,7 @@ void ResetSendableRegistry();
 
 void resetWpilibSimulationData() {
   frc::impl::ResetSmartDashboardInstance();
+  frc::impl::ResetShuffleboardInstance();
   frc::impl::ResetLiveWindow();
   frc::impl::ResetMotorSafety();
   wpi::impl::ResetSendableRegistry();

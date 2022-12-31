@@ -10,6 +10,7 @@ classes:
     methods:
       Update:
       GetTab:
+        return_value_policy: reference_internal
       SelectTab:
         overloads:
           int:

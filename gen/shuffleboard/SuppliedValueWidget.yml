@@ -17,14 +17,18 @@ templates:
     qualname: frc::SuppliedValueWidget
     params:
     - std::string
-  SuppliedRawValueWidget:
-    qualname: frc::SuppliedValueWidget
-    params:
-    - std::string_view
   SuppliedDoubleValueWidget:
     qualname: frc::SuppliedValueWidget
     params:
     - double
+  SuppliedFloatValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - float
+  SuppliedIntegerValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - int64_t
   SuppliedBoolValueWidget:
     qualname: frc::SuppliedValueWidget
     params:
@@ -37,11 +41,19 @@ templates:
     qualname: frc::SuppliedValueWidget
     params:
     - std::vector<double>
+  SuppliedFloatListValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - std::vector<float>
   SuppliedIntListValueWidget:
     qualname: frc::SuppliedValueWidget
     params:
-    - std::vector<int>
-  SuppliedRawListValueWidget:
+    - std::vector<int64_t>
+  SuppliedBoolListValueWidget:
     qualname: frc::SuppliedValueWidget
     params:
-    - std::vector<std::string_view>
+    - std::vector<int>
+  SuppliedRawValueWidget:
+    qualname: frc::SuppliedValueWidget
+    params:
+    - std::vector<uint8_t>

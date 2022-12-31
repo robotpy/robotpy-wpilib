@@ -5,6 +5,9 @@ extra_includes:
 - wpi/sendable/Sendable.h
 - frc/shuffleboard/ShuffleboardLayout.h
 - frc/shuffleboard/SimpleWidget.h
+- ShuffleboardData.h
+- frc/Errors.h
+- wpi/sendable/SendableRegistry.h
 
 classes:
   ShuffleboardContainer:
@@ -14,64 +17,148 @@ classes:
       m_isLayout:
     methods:
       ShuffleboardContainer:
+        # this is abstract, so can't construct it without a trampoline
+        ignore: true
       GetComponents:
       GetLayout:
         overloads:
           std::string_view, BuiltInLayouts:
+            return_value_policy: reference_internal
           std::string_view, LayoutType&:
+            return_value_policy: reference_internal
           std::string_view, std::string_view:
+            return_value_policy: reference_internal
           std::string_view:
+            return_value_policy: reference_internal
       Add:
         overloads:
           std::string_view, wpi::Sendable&:
+            return_value_policy: reference_internal
+            param_override:
+              sendable:
+                name: defaultValue
+            cpp_code: |
+              [](ShuffleboardContainer *self, py::str &key, std::shared_ptr<wpi::Sendable> sendable) -> frc::ComplexWidget& {
+                if (!sendable) {
+                  throw FRC_MakeError(err::NullParameter, "{}", "value");
+                }
+
+                // convert key to a raw string so that we can create a StringRef
+                Py_ssize_t raw_size;
+                const char *raw_str = PyUnicode_AsUTF8AndSize(key.ptr(), &raw_size);
+                if (raw_str == NULL) {
+                  throw py::error_already_set();
+                }
+
+                std::string_view keyRef(raw_str, raw_size);
+                auto &rval = self->Add(keyRef, *sendable);
+
+                // this comes after the Add to ensure that the original object doesn't die
+                // while Add is called
+                rpy::addShuffleboardData(key, sendable);
+
+                return rval;
+              }
           std::string_view, cs::VideoSource&:
             ignore: true
           wpi::Sendable&:
+            return_value_policy: reference_internal
+            param_override:
+              sendable:
+                name: defaultValue
+            cpp_code: |
+              [](ShuffleboardContainer *self, std::shared_ptr<wpi::Sendable> value) -> frc::ComplexWidget& {
+                auto &rval = self->Add(*value);
+                // this comes after the PutData to ensure that the original object doesn't die
+                // while PutData is called
+                auto name = wpi::SendableRegistry::GetName(value.get());
+                if (!name.empty()) {
+                  py::str key(name);
+                  rpy::addShuffleboardData(key, value);
+                }
+                return rval;
+              }
           cs::VideoSource&:
             ignore: true
           std::string_view, nt::Value&:
+            return_value_policy: reference_internal
           std::string_view, bool:
+            return_value_policy: reference_internal
           std::string_view, double:
+            return_value_policy: reference_internal
           std::string_view, float:
+            return_value_policy: reference_internal
           std::string_view, int:
+            return_value_policy: reference_internal
           std::string_view, std::string_view:
+            return_value_policy: reference_internal
           std::string_view, char*:
             ignore: true
           std::string_view, std::span<const bool>:
+            return_value_policy: reference_internal
           std::string_view, std::span<const double>:
+            return_value_policy: reference_internal
           std::string_view, std::span<const float>:
+            return_value_policy: reference_internal
           std::string_view, std::span<const int64_t>:
+            return_value_policy: reference_internal
           std::string_view, std::span<const std::string>:
+            return_value_policy: reference_internal
       AddCamera:
-        ignore: true
+        ignore: true # AddCamera is broken when DYNAMIC_CAMERA_SERVER is defined
       AddString:
+        return_value_policy: reference_internal
       AddNumber:
+        return_value_policy: reference_internal
       AddDouble:
+        return_value_policy: reference_internal
       AddFloat:
+        return_value_policy: reference_internal
       AddInteger:
+        return_value_policy: reference_internal
       AddBoolean:
+        return_value_policy: reference_internal
       AddStringArray:
+        return_value_policy: reference_internal
       AddNumberArray:
+        return_value_policy: reference_internal
       AddDoubleArray:
+        return_value_policy: reference_internal
       AddFloatArray:
+        return_value_policy: reference_internal
       AddIntegerArray:
+        return_value_policy: reference_internal
       AddBooleanArray:
+        return_value_policy: reference_internal
       AddRaw:
         overloads:
           std::string_view, std::function<std::vector<uint8_t> ( )>:
+            return_value_policy: reference_internal
           std::string_view, std::string_view, std::function<std::vector<uint8_t> ( )>:
+            return_value_policy: reference_internal
       AddPersistent:
         overloads:
           std::string_view, nt::Value&:
+            return_value_policy: reference_internal
           std::string_view, bool:
+            return_value_policy: reference_internal
           std::string_view, double:
+            return_value_policy: reference_internal
           std::string_view, float:
+            return_value_policy: reference_internal
           std::string_view, int:
+            return_value_policy: reference_internal
           std::string_view, std::string_view:
+            return_value_policy: reference_internal
           std::string_view, std::span<const bool>:
+            return_value_policy: reference_internal
           std::string_view, std::span<const double>:
+            return_value_policy: reference_internal
           std::string_view, std::span<const float>:
+            return_value_policy: reference_internal
           std::string_view, std::span<const int64_t>:
+            return_value_policy: reference_internal
           std::string_view, std::span<const std::string>:
+            return_value_policy: reference_internal
       EnableIfActuator:
       DisableIfActuator:

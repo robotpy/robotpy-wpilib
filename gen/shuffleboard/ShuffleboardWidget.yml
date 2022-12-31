@@ -18,8 +18,11 @@ classes:
       WithWidget:
         overloads:
           BuiltInWidgets:
+            return_value_policy: reference_internal
           WidgetType&:
+            return_value_policy: reference_internal
           std::string_view:
+            return_value_policy: reference_internal
 
 templates:
   _SimpleWidget:
@@ -30,19 +33,23 @@ templates:
     qualname: frc::ShuffleboardWidget
     params:
     - frc::ComplexWidget
-  
+
   _SuppliedValueWidget_string:
     qualname: frc::ShuffleboardWidget
     params:
     - frc::SuppliedValueWidget<std::string>
-  _SuppliedValueWidget_string_view:
-    qualname: frc::ShuffleboardWidget
-    params:
-    - frc::SuppliedValueWidget<std::string_view>
   _SuppliedValueWidget_double:
     qualname: frc::ShuffleboardWidget
     params:
     - frc::SuppliedValueWidget<double>
+  _SuppliedValueWidget_float:
+    qualname: frc::ShuffleboardWidget
+    params:
+    - frc::SuppliedValueWidget<float>
+  _SuppliedValueWidget_integer:
+    qualname: frc::ShuffleboardWidget
+    params:
+    - frc::SuppliedValueWidget<int64_t>
   _SuppliedValueWidget_bool:
     qualname: frc::ShuffleboardWidget
     params:
@@ -51,15 +58,24 @@ templates:
     qualname: frc::ShuffleboardWidget
     params:
     - frc::SuppliedValueWidget<std::vector<std::string>>
-  _SuppliedValueWidget_vector_int:
-    qualname: frc::ShuffleboardWidget
-    params:
-    - frc::SuppliedValueWidget<std::vector<int>>
   _SuppliedValueWidget_vector_double:
     qualname: frc::ShuffleboardWidget
     params:
     - frc::SuppliedValueWidget<std::vector<double>>
-  _SuppliedValueWidget_vector_string_view:
+  _SuppliedValueWidget_vector_float:
     qualname: frc::ShuffleboardWidget
     params:
-    - frc::SuppliedValueWidget<std::vector<std::string_view>>
+    - frc::SuppliedValueWidget<std::vector<float>>
+  _SuppliedValueWidget_vector_int:
+    qualname: frc::ShuffleboardWidget
+    params:
+    - frc::SuppliedValueWidget<std::vector<int64_t>>
+  _SuppliedValueWidget_vector_bool:
+    qualname: frc::ShuffleboardWidget
+    params:
+    - frc::SuppliedValueWidget<std::vector<int>>
+  _SuppliedValueWidget_vector_raw:
+    qualname: frc::ShuffleboardWidget
+    params:
+    - frc::SuppliedValueWidget<std::vector<uint8_t>>
+  
