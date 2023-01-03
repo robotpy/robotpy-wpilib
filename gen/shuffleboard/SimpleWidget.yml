@@ -10,4 +10,9 @@ classes:
     methods:
       SimpleWidget:
       GetEntry:
+        overloads:
+          "":
+            return_value_policy: reference_internal
+          std::string_view:
+            return_value_policy: reference_internal
       BuildInto:

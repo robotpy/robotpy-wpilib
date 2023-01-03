@@ -11,6 +11,7 @@ classes:
     methods:
       ShuffleboardInstance:
       GetTab:
+        return_value_policy: reference_internal
       Update:
       EnableActuatorWidgets:
       DisableActuatorWidgets:

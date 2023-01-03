@@ -21,4 +21,5 @@ classes:
       SetType:
       BuildMetadata:
       GetParent:
+        return_value_policy: reference_internal
       GetType:
