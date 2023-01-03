@@ -148,8 +148,15 @@ class RobotStarter:
 
         if not isSimulation:
             try:
+                from robotpy.version import __version__ as robotpy_version
+
+                version_string = f"RobotPy {robotpy_version}"
+            except ImportError:
+                version_string = f"robotpy-wpilib {wpilib.__version__}"
+
+            try:
                 with open("/tmp/frc_versions/FRC_Lib_Version.ini", "w") as fp:
-                    fp.write("RobotPy %s" % wpilib.__version__)
+                    fp.write(version_string)
             except:
                 reportErrorInternal("Could not write FRC version file to disk")
 
