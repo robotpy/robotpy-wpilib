@@ -56,6 +56,9 @@ PyNotifier::PyNotifier(std::function<void()> handler) {
       if (handler)
         handler();
     }
+    if (_Py_IsFinalizing()) {
+      release.disarm();
+    }
   });
 
   // create a python thread and start it
