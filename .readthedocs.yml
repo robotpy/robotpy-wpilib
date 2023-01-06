@@ -7,6 +7,9 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
+  jobs:
+    post_install:
+    - python -m robotpy_sphinx.download_and_install robotpy robotpy-wpilib main dist dist-Linux
 
 python:
   install:
