@@ -1,8 +1,9 @@
-import hal
+import inspect
+import logging
 import sys
 import traceback
-import logging
-import inspect
+
+import hal
 
 robotpy_logger = logging.getLogger("robotpy")
 user_logger = logging.getLogger("your.robot")
@@ -36,9 +37,7 @@ def reportErrorInternal(
         trc = "Traceback (most recent call last):\n"
         stackstr = trc + "".join(traceback.format_list(tb))
         if exc is not None:
-            stackstr += "  " + ("".join(traceback.format_exception(*exc_info))).lstrip(
-                trc
-            )
+            stackstr += "  " + ("".join(traceback.format_exception(*exc_info))).lstrip(trc)
         traceString += "\n" + stackstr
 
         if exc is None:

@@ -1,10 +1,9 @@
+import logging
+import subprocess
+import threading
 from typing import Optional
 
 import hal
-import subprocess
-import threading
-
-import logging
 
 logger = logging.getLogger("wpilib.cs")
 
@@ -80,9 +79,7 @@ class CameraServer:
                 hal.report(hal.tResourceType.kResourceType_PCVideoServer, 0x52)
 
             # We open a pipe to it so that when this process exits, it dies
-            proc = subprocess.Popen(
-                args, close_fds=True, stdin=subprocess.PIPE, cwd="/home/lvuser/py"
-            )
+            proc = subprocess.Popen(args, close_fds=True, stdin=subprocess.PIPE, cwd="/home/lvuser/py")
             th = threading.Thread(target=cls._monitor_child, args=(proc,))
             th.daemon = True
             th.start()

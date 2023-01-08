@@ -1,7 +1,7 @@
 # novalidate
 
-import sys
 import inspect
+import sys
 
 
 def match_arglist(name, args, kwargs, templates, allow_extra_kwargs=False):
@@ -60,9 +60,7 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
         results = dict()
 
         if err:
-            _print(
-                "Checking template %s: %s" % (i, ", ".join(an for an, _ in template))
-            )
+            _print("Checking template %s: %s" % (i, ", ".join(an for an, _ in template)))
             showed_error = False
 
         # Scan through all arguments and set valid to false if we find an issue.
@@ -86,14 +84,8 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
             # Check to see if identities match:
             if not types_match(value, arg_type_condition):
                 if err:
-                    _print(
-                        "- Error at arg %d: %s != %s"
-                        % (j, arg_name, typematch_to_str(arg_type_condition))
-                    )
-                    _print(
-                        "     your arg: %s; value %s %s"
-                        % (match_type, value, type(value))
-                    )
+                    _print("- Error at arg %d: %s != %s" % (j, arg_name, typematch_to_str(arg_type_condition)))
+                    _print("     your arg: %s; value %s %s" % (match_type, value, type(value)))
                     _print()
                     showed_error = True
                 break
@@ -109,10 +101,7 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
             if len(args_copy) != 0:
                 _print("- Error: too many arguments")
             elif len(kwargs_copy):
-                _print(
-                    "- Error: unused parameters: %s"
-                    % ", ".join("%s" % s for s in kwargs_copy)
-                )
+                _print("- Error: unused parameters: %s" % ", ".join("%s" % s for s in kwargs_copy))
 
             _print()
         #    _print("Template %s unmatched:" % i)

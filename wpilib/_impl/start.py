@@ -1,8 +1,10 @@
-import hal
-import wpilib
 import logging
 import threading
 import time
+
+import hal
+
+import wpilib
 
 from .report_error import reportError, reportErrorInternal
 
@@ -41,9 +43,7 @@ class RobotStarter:
             try:
                 hal.runMain()
             except KeyboardInterrupt:
-                self.logger.exception(
-                    "THIS IS NOT AN ERROR: The user hit CTRL-C to kill the robot"
-                )
+                self.logger.exception("THIS IS NOT AN ERROR: The user hit CTRL-C to kill the robot")
                 self.logger.info("Exiting because of keyboard interrupt")
 
             self.suppressExitWarning = True
@@ -91,9 +91,7 @@ class RobotStarter:
         )
 
         if not wpilib.Notifier.setHALThreadPriority(True, 40):
-            reportErrorInternal(
-                "Setting HAL Notifier RT priority to 40 failed", isWarning=True
-            )
+            reportErrorInternal("Setting HAL Notifier RT priority to 40 failed", isWarning=True)
 
         isSimulation = wpilib.RobotBase.isSimulation()
 
@@ -113,17 +111,12 @@ class RobotStarter:
 
         # wait for the NT server to actually start
         for i in range(100):
-            if (
-                inst.getNetworkMode()
-                & ntcore.NetworkTableInstance.NetworkMode.kNetModeStarting
-            ) == 0:
+            if (inst.getNetworkMode() & ntcore.NetworkTableInstance.NetworkMode.kNetModeStarting) == 0:
                 break
             # real sleep since we're waiting for the server, not simulated sleep
             time.sleep(0.010)
         else:
-            reportErrorInternal(
-                "timed out while waiting for NT server to start", isWarning=True
-            )
+            reportErrorInternal("timed out while waiting for NT server to start", isWarning=True)
 
         wpilib.SmartDashboard.init()
 
@@ -133,9 +126,7 @@ class RobotStarter:
         try:
             self.robot = robot_cls()
         except:
-            reportError(
-                f"Unhandled exception instantiating robot {robot_cls.__name__}", True
-            )
+            reportError(f"Unhandled exception instantiating robot {robot_cls.__name__}", True)
             reportErrorInternal(f"Could not instantiate robot {robot_cls.__name__}!")
             raise
 
@@ -164,9 +155,7 @@ class RobotStarter:
             self.robot.startCompetition()
         except KeyboardInterrupt:
             self.robot = None
-            self.logger.exception(
-                "THIS IS NOT AN ERROR: The user hit CTRL-C to kill the robot"
-            )
+            self.logger.exception("THIS IS NOT AN ERROR: The user hit CTRL-C to kill the robot")
             self.logger.info("Exiting because of keyboard interrupt")
             return True
         except:

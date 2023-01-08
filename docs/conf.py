@@ -5,8 +5,8 @@
 # Imports
 #
 
-import sys
 import os
+import sys
 from os.path import abspath, dirname
 
 # Project must be built+installed to generate docs

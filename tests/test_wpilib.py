@@ -1,6 +1,7 @@
-import pytest
 import re
 import weakref
+
+import pytest
 
 import wpilib
 
@@ -37,7 +38,5 @@ def test_motorcontrollergroup():
 
 
 def test_motorcontrollergroup_error():
-    with pytest.raises(
-        TypeError, match=re.escape("Argument 1 must be a MotorController (got '1')")
-    ):
+    with pytest.raises(TypeError, match=re.escape("Argument 1 must be a MotorController (got '1')")):
         wpilib.MotorControllerGroup(1)

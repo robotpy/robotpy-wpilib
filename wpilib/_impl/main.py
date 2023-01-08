@@ -4,19 +4,20 @@ import argparse
 import inspect
 import os
 import sys
-
 from os.path import exists
+
 from pkg_resources import iter_entry_points
 
 from .logconfig import configure_logging
 
 
 def _log_versions():
-    import wpilib
-    import wpilib.deployinfo
+    import logging
+
     import hal
 
-    import logging
+    import wpilib
+    import wpilib.deployinfo
 
     data = wpilib.deployinfo.getDeployData()
     if data:
@@ -147,9 +148,7 @@ def run(robot_class, **kwargs):
 
     # sanity check
     if not hasattr(robot_class, "main"):
-        print(
-            "ERROR: run() must be passed a robot class that inherits from RobotBase (or IterativeBase/SampleBase)"
-        )
+        print("ERROR: run() must be passed a robot class that inherits from RobotBase (or IterativeBase/SampleBase)")
         exit(1)
 
     parser = argparse.ArgumentParser()
@@ -181,15 +180,10 @@ def run(robot_class, **kwargs):
                 print("WARNING: Ignoring error in '%s'" % entry_point)
                 continue
             else:
-                print(
-                    "Plugin error detected in '%s' (use --ignore-plugin-errors to ignore this)"
-                    % entry_point
-                )
+                print("Plugin error detected in '%s' (use --ignore-plugin-errors to ignore this)" % entry_point)
                 raise
 
-        cmdparser = subparser.add_parser(
-            entry_point.name, help=inspect.getdoc(cmd_class)
-        )
+        cmdparser = subparser.add_parser(entry_point.name, help=inspect.getdoc(cmd_class))
         obj = cmd_class(cmdparser)
         cmdparser.set_defaults(cmdobj=obj)
         has_cmd = True

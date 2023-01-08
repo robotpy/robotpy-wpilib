@@ -57,10 +57,7 @@ class VerboseExceptionFormatter(logging.Formatter):
                 locals_lines = locals_lines[:MAX_VARS_LINES]
                 locals_lines[-1] = "..."
             output_lines.extend(
-                line[: MAX_LINE_LENGTH - 3] + "..."
-                if len(line) > MAX_LINE_LENGTH
-                else line
-                for line in locals_lines
+                line[: MAX_LINE_LENGTH - 3] + "..." if len(line) > MAX_LINE_LENGTH else line for line in locals_lines
             )
             output_lines.append("\n")
         return "\n".join(output_lines)
