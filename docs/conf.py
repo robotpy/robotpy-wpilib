@@ -6,8 +6,10 @@
 #
 
 import os
-import sys
 from os.path import abspath, dirname
+
+from robotpy_sphinx.regen import gen_package
+from robotpy_sphinx.sidebar import generate_sidebar
 
 # Project must be built+installed to generate docs
 import wpilib
@@ -138,9 +140,6 @@ epub_copyright = "2014, RobotPy development team"
 epub_exclude_files = ["search.html"]
 
 # -- Custom Document processing ----------------------------------------------
-
-from robotpy_sphinx.regen import gen_package
-from robotpy_sphinx.sidebar import generate_sidebar
 
 generate_sidebar(
     globals(),
