@@ -43,7 +43,8 @@ def _log_versions():
     # should we just die here?
     if hal.__version__.split(".")[:3] != wpilib.__version__.split(".")[:3]:
         logger.warning(
-            "Core component versions are not identical! This is not a supported configuration, and you may run into errors!"
+            "Core component versions are not identical! "
+            "This is not a supported configuration, and you may run into errors!"
         )
 
     if wpilib.RobotBase.isSimulation():
@@ -53,7 +54,8 @@ def _log_versions():
         # NOTE: may have false positives, but it should work well enough
         if exists("/etc/natinst/share/scs_imagemetadata.ini"):
             logger.warning(
-                "Running simulation HAL on actual roboRIO! This probably isn't what you want, and will probably cause difficult-to-debug issues!"
+                "Running simulation HAL on actual roboRIO! "
+                "This probably isn't what you want, and will probably cause difficult-to-debug issues!"
             )
 
     versions = {}

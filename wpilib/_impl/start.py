@@ -11,7 +11,8 @@ from .report_error import reportError, reportErrorInternal
 
 class Main:
     """
-    Executes the robot code using the currently installed HAL (this is probably not what you want unless you're on the roboRIO)
+    Executes the robot code using the currently installed HAL
+    (this is probably not what you want unless you're on the roboRIO)
     """
 
     def __init__(self, parser):
@@ -51,7 +52,7 @@ class RobotStarter:
             if robot:
                 try:
                     robot.endCompetition()
-                except:
+                except Exception:
                     self.logger.warn("endCompetition raised an exception")
 
             th.join(1)
@@ -73,7 +74,7 @@ class RobotStarter:
     def start(self, robot_cls: wpilib.RobotBase) -> bool:
         try:
             return self._start(robot_cls)
-        except:
+        except Exception:
             reportErrorInternal(
                 "The robot program quit unexpectedly. This is usually due to a code error.\n"
                 "The above stacktrace can help determine where the error occurred.\n",
@@ -102,7 +103,7 @@ class RobotStarter:
         inst = ntcore.NetworkTableInstance.getDefault()
 
         # subscribe to "" to force persistent values to progagate to local
-        msub = ntcore.MultiSubscriber(inst, [""])
+        ntcore.MultiSubscriber(inst, [""])
 
         if not isSimulation:
             inst.startServer("/home/lvuser/networktables.ini")
@@ -125,7 +126,7 @@ class RobotStarter:
 
         try:
             self.robot = robot_cls()
-        except:
+        except Exception:
             reportError(f"Unhandled exception instantiating robot {robot_cls.__name__}", True)
             reportErrorInternal(f"Could not instantiate robot {robot_cls.__name__}!")
             raise
@@ -148,7 +149,7 @@ class RobotStarter:
             try:
                 with open("/tmp/frc_versions/FRC_Lib_Version.ini", "w") as fp:
                     fp.write(version_string)
-            except:
+            except Exception:
                 reportErrorInternal("Could not write FRC version file to disk")
 
         try:
@@ -158,7 +159,7 @@ class RobotStarter:
             self.logger.exception("THIS IS NOT AN ERROR: The user hit CTRL-C to kill the robot")
             self.logger.info("Exiting because of keyboard interrupt")
             return True
-        except:
+        except Exception:
             self.robot = None
 
             reportError("Unhandled exception", True)
