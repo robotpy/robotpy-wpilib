@@ -360,3 +360,10 @@ SingleJointedArmSim = "frc/simulation/SingleJointedArmSim.h"
 SolenoidSim = "frc/simulation/SolenoidSim.h"
 UltrasonicSim = "frc/simulation/UltrasonicSim.h"
 XboxControllerSim = "frc/simulation/XboxControllerSim.h"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
