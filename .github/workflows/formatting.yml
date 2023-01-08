@@ -1,0 +1,33 @@
+name: Run Linters
+
+on: [push, pull_request]
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    name: Black Format Check
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Run black 
+        uses: psf/black@stable
+  flake8:
+    runs-on: ubuntu-latest
+    name: Flake8 Format Check
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Run flake8 
+        uses: py-actions/flake8@v2
+  isort:
+    runs-on: ubuntu-latest
+    name: Flake8 Format Check
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Run Isort
+        uses: isort/isort-action@v1.0.0
