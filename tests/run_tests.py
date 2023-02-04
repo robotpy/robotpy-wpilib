@@ -6,7 +6,6 @@ import sys
 import subprocess
 
 if __name__ == "__main__":
-
     root = abspath(dirname(__file__))
     os.chdir(root)
 

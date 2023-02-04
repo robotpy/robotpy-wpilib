@@ -82,7 +82,6 @@ class RobotStarter:
             return False
 
     def _start(self, robot_cls: wpilib.RobotBase) -> bool:
-
         hal.report(
             hal.tResourceType.kResourceType_Language,
             hal.tInstances.kLanguage_Python,

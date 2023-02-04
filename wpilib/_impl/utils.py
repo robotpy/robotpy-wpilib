@@ -33,7 +33,6 @@ def _print(*args, **kwargs):
 
 
 def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False):
-
     # TODO: we can do better at giving the user an error message...
 
     if err:
@@ -67,7 +66,6 @@ def __match_arglist(name, args, kwargs, templates, err, allow_extra_kwargs=False
 
         # Scan through all arguments and set valid to false if we find an issue.
         for j, (arg_name, arg_type_condition) in enumerate(template):
-
             # Check kwargs first, then check args
             if arg_name in kwargs_copy:
                 kwargs_copy.remove(arg_name)

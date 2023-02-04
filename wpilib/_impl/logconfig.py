@@ -9,7 +9,6 @@ log_format = "%(asctime)s:%(msecs)03d %(levelname)-8s: %(name)-20s: %(message)s"
 
 
 def configure_logging(verbose):
-
     formatter = VerboseExceptionFormatter(fmt=log_format, datefmt=log_datefmt)
 
     # console logging
