@@ -27,5 +27,5 @@ The library is designed to:
   wpilib.drive
   wpilib.event
   wpilib.interfaces
+  wpilib.shuffleboard
   wpilib.simulation
-  
