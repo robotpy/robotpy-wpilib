@@ -19,6 +19,7 @@ classes:
       Pulse:
       IsPulsing:
       SetPWMRate:
+      EnablePPS:
       EnablePWM:
       DisablePWM:
       UpdateDutyCycle:

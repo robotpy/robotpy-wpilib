@@ -19,7 +19,7 @@ classes:
         overloads:
           BuiltInWidgets:
             return_value_policy: reference_internal
-          WidgetType&:
+          const WidgetType&:
             return_value_policy: reference_internal
           std::string_view:
             return_value_policy: reference_internal

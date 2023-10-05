@@ -12,8 +12,8 @@ classes:
     methods:
       DIOSim:
         overloads:
-          frc::DigitalInput&:
-          frc::DigitalOutput&:
+          const DigitalInput&:
+          const DigitalOutput&:
           int:
       RegisterInitializedCallback:
       GetInitialized:

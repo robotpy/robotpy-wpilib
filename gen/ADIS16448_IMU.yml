@@ -14,7 +14,7 @@ classes:
       ADIS16448_IMU:
         overloads:
           "":
-          frc::ADIS16448_IMU::IMUAxis, SPI::Port, frc::ADIS16448_IMU::CalibrationTime:
+          IMUAxis, SPI::Port, CalibrationTime:
       Calibrate:
       ConfigCalTime:
       Reset:

@@ -16,9 +16,9 @@ classes:
       Ultrasonic:
         overloads:
           int, int:
-          frc::DigitalOutput*, frc::DigitalInput*:
+          DigitalOutput*, DigitalInput*:
             ignore: true
-          frc::DigitalOutput&, frc::DigitalInput&:
+          DigitalOutput&, DigitalInput&:
             ignore: true
           std::shared_ptr<DigitalOutput>, std::shared_ptr<DigitalInput>:
       GetEchoChannel:

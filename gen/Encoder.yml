@@ -23,9 +23,9 @@ classes:
             param_override:
               encodingType:
                 default: frc::Encoder::EncodingType::k4X
-          frc::DigitalSource*, frc::DigitalSource*, bool, EncodingType:
+          DigitalSource*, DigitalSource*, bool, EncodingType:
             ignore: true
-          frc::DigitalSource&, frc::DigitalSource&, bool, EncodingType:
+          DigitalSource&, DigitalSource&, bool, EncodingType:
             ignore: true
           std::shared_ptr<DigitalSource>, std::shared_ptr<DigitalSource>, bool, EncodingType:
             param_override:
@@ -51,11 +51,11 @@ classes:
         rename: pidGet
       SetIndexSource:
         overloads:
-          int, frc::Encoder::IndexingType:
+          int, IndexingType:
             param_override:
               type:
                 default: frc::Encoder::IndexingType::kResetOnRisingEdge
-          frc::DigitalSource&, frc::Encoder::IndexingType:
+          const DigitalSource&, IndexingType:
             param_override:
               type:
                 default: frc::Encoder::IndexingType::kResetOnRisingEdge

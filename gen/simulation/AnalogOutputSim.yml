@@ -11,7 +11,7 @@ classes:
     methods:
       AnalogOutputSim:
         overloads:
-          frc::AnalogOutput&:
+          const AnalogOutput&:
           int:
       RegisterVoltageCallback:
       GetVoltage:

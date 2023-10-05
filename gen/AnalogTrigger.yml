@@ -15,8 +15,8 @@ classes:
       AnalogTrigger:
         overloads:
           int:
-          frc::AnalogInput*:
-          frc::DutyCycle*:
+          AnalogInput*:
+          DutyCycle*:
       SetLimitsVoltage:
       SetLimitsDutyCycle:
       SetLimitsRaw:

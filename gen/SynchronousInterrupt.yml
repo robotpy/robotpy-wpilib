@@ -10,8 +10,8 @@ classes:
     methods:
       SynchronousInterrupt:
         overloads:
-          frc::DigitalSource&:
-          frc::DigitalSource*:
+          DigitalSource&:
+          DigitalSource*:
           std::shared_ptr<DigitalSource>:
       WaitForInterrupt:
       SetInterruptEdges:

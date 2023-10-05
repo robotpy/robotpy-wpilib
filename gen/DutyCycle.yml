@@ -15,9 +15,9 @@ classes:
     methods:
       DutyCycle:
         overloads:
-          frc::DigitalSource&:
+          DigitalSource&:
             ignore: true
-          frc::DigitalSource*:
+          DigitalSource*:
             ignore: true
           std::shared_ptr<DigitalSource>:
       GetFrequency:

@@ -54,4 +54,8 @@ classes:
       RegisterBrownoutVoltageCallback:
       GetBrownoutVoltage:
       SetBrownoutVoltage:
+      GetSerialNumber:
+      SetSerialNumber:
+      GetComments:
+      SetComments:
       ResetData:

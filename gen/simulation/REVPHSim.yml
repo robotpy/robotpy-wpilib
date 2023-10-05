@@ -14,7 +14,7 @@ classes:
         overloads:
           "":
           int:
-          PneumaticsBase&:
+          const PneumaticsBase&:
       RegisterInitializedCallback:
       GetInitialized:
       SetInitialized:

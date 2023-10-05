@@ -11,7 +11,7 @@ classes:
     methods:
       AnalogGyroSim:
         overloads:
-          frc::AnalogGyro&:
+          const AnalogGyro&:
           int:
       RegisterAngleCallback:
       GetAngle:

@@ -23,7 +23,7 @@ classes:
     methods:
       Counter:
         overloads:
-          frc::Counter::Mode:
+          Mode:
             param_override:
               mode:
                 default: frc::Counter::Mode::kTwoPulse
@@ -31,7 +31,7 @@ classes:
           DigitalSource*:
             ignore: true
           std::shared_ptr<DigitalSource>:
-          AnalogTrigger&:
+          const AnalogTrigger&:
           EncodingType, DigitalSource*, DigitalSource*, bool:
             ignore: true
           EncodingType, std::shared_ptr<DigitalSource>, std::shared_ptr<DigitalSource>, bool:

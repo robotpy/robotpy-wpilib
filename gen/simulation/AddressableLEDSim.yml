@@ -12,7 +12,7 @@ classes:
       AddressableLEDSim:
         overloads:
           "":
-          frc::AddressableLED&:
+          const AddressableLED&:
       CreateForChannel:
       CreateForIndex:
       RegisterInitializedCallback:

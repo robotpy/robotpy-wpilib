@@ -31,6 +31,8 @@ classes:
       TeleopExit:
       TestExit:
       SetNetworkTablesFlushEnabled:
+      EnableLiveWindowInTest:
+      IsLiveWindowEnabledInTest:
       GetPeriod:
     doc: |
       IterativeRobotBase implements a specific type of robot program framework,

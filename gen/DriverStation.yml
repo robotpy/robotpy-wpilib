@@ -34,6 +34,7 @@ classes:
       IsTeleop:
       IsTeleopEnabled:
       IsTest:
+      IsTestEnabled:
       IsDSAttached:
       IsFMSAttached:
       GetGameSpecificMessage:

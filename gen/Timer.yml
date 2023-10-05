@@ -13,6 +13,7 @@ classes:
       Get:
       Reset:
       Start:
+      Restart:
       Stop:
       HasPeriodPassed:
       GetFPGATimestamp:

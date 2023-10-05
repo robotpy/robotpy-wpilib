@@ -10,7 +10,7 @@ classes:
     methods:
       JoystickSim:
         overloads:
-          frc::Joystick&:
+          const Joystick&:
           int:
       SetX:
       SetY:

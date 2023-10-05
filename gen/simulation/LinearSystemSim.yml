@@ -28,7 +28,7 @@ classes:
           int [const]:
       SetInput:
         overloads:
-          Vectord<Inputs>&:
+          const Vectord<Inputs>&:
           int, double:
       SetState:
       GetCurrentDraw:

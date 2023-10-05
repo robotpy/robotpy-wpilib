@@ -15,7 +15,7 @@ classes:
       PowerDistribution:
         overloads:
           "":
-          int, frc::PowerDistribution::ModuleType:
+          int, ModuleType:
       GetVoltage:
       GetTemperature:
       GetCurrent:

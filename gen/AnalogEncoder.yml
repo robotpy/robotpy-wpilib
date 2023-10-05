@@ -13,9 +13,9 @@ classes:
       AnalogEncoder:
         overloads:
           int:
-          frc::AnalogInput&:
+          AnalogInput&:
             ignore: true
-          frc::AnalogInput*:
+          AnalogInput*:
             ignore: true
           std::shared_ptr<AnalogInput>:
       Reset:

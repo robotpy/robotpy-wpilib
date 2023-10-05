@@ -13,6 +13,7 @@ classes:
     attributes:
       kAccumulatorModuleNumber:
       kAccumulatorNumChannels:
+      kAccumulatorChannels:
     methods:
       AnalogInput:
       GetValue:

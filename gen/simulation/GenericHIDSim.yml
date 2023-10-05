@@ -6,7 +6,7 @@ classes:
     methods:
       GenericHIDSim:
         overloads:
-          frc::GenericHID&:
+          const GenericHID&:
           int:
       NotifyNewData:
       SetRawButton:

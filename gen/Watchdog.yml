@@ -8,10 +8,10 @@ classes:
         overloads:
           double, std::function<void ( )>:
             ignore: true
-          units::second_t, std::function<void ( )>:
-          double, Callable&&, Arg&&, Args ...&&:
+          units::second_t, std::function<void ()>:
+          double, Callable&&, Arg&&, Args&&...:
             ignore: true
-          units::second_t, Callable&&, Arg&&, Args ...&&:
+          units::second_t, Callable&&, Arg&&, Args&&...:
             ignore: true
       GetTime:
       SetTimeout:

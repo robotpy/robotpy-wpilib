@@ -16,8 +16,8 @@ classes:
     methods:
       Color8Bit:
         overloads:
-          "":
-          int, int, int:
+          '[constexpr]':
+          int, int, int [constexpr]:
             param_override:
               r:
                 name: red
@@ -25,11 +25,12 @@ classes:
                 name: green
               b:
                 name: blue
-          Color&:
+          const Color& [constexpr]:
       HexString:
+      operator==:
 
 inline_code: |
-  cls_Color8Bit.def(py::self == py::self)
+  cls_Color8Bit
     .def("__hash__", [](Color8Bit *self) -> size_t {
       return (self->red) | (self->green << 8) | (self->blue << 16);
     })

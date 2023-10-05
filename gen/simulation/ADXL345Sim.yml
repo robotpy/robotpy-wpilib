@@ -9,8 +9,8 @@ classes:
     methods:
       ADXL345Sim:
         overloads:
-          frc::ADXL345_I2C&:
-          frc::ADXL345_SPI&:
+          const ADXL345_I2C&:
+          const ADXL345_SPI&:
       SetX:
       SetY:
       SetZ:

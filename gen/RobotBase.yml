@@ -33,6 +33,7 @@ classes:
       IsOperatorControlEnabled:
       IsTeleopEnabled:
       IsTest:
+      IsTestEnabled:
       IsNewDataAvailable:
       GetThreadId:
         ignore: true

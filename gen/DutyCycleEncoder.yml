@@ -14,14 +14,14 @@ classes:
       DutyCycleEncoder:
         overloads:
           int:
-          frc::DutyCycle&:
+          DutyCycle&:
             ignore: true
-          frc::DutyCycle*:
+          DutyCycle*:
             ignore: true
           std::shared_ptr<DutyCycle>:
-          frc::DigitalSource&:
+          DigitalSource&:
             ignore: true
-          frc::DigitalSource*:
+          DigitalSource*:
             ignore: true
           std::shared_ptr<DigitalSource>:
       GetFrequency:

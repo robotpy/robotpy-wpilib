@@ -18,6 +18,21 @@ classes:
       Button:
       GetRawAxis:
       GetPOV:
+      POV:
+        overloads:
+          int, EventLoop* [const]:
+          int, int, EventLoop* [const]:
+      POVUp:
+      POVUpRight:
+      POVRight:
+      POVDownRight:
+      POVDown:
+      POVDownLeft:
+      POVLeft:
+      POVUpLeft:
+      POVCenter:
+      AxisLessThan:
+      AxisGreaterThan:
       GetAxisCount:
       GetPOVCount:
       GetButtonCount:

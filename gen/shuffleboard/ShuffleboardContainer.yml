@@ -24,7 +24,7 @@ classes:
         overloads:
           std::string_view, BuiltInLayouts:
             return_value_policy: reference_internal
-          std::string_view, LayoutType&:
+          std::string_view, const LayoutType&:
             return_value_policy: reference_internal
           std::string_view, std::string_view:
             return_value_policy: reference_internal
@@ -59,7 +59,7 @@ classes:
 
                 return rval;
               }
-          std::string_view, cs::VideoSource&:
+          std::string_view, const cs::VideoSource&:
             ignore: true
           wpi::Sendable&:
             return_value_policy: reference_internal
@@ -78,9 +78,9 @@ classes:
                 }
                 return rval;
               }
-          cs::VideoSource&:
+          const cs::VideoSource&:
             ignore: true
-          std::string_view, nt::Value&:
+          std::string_view, const nt::Value&:
             return_value_policy: reference_internal
           std::string_view, bool:
             return_value_policy: reference_internal
@@ -92,7 +92,7 @@ classes:
             return_value_policy: reference_internal
           std::string_view, std::string_view:
             return_value_policy: reference_internal
-          std::string_view, char*:
+          std::string_view, const char*:
             ignore: true
           std::string_view, std::span<const bool>:
             return_value_policy: reference_internal
@@ -132,13 +132,13 @@ classes:
         return_value_policy: reference_internal
       AddRaw:
         overloads:
-          std::string_view, std::function<std::vector<uint8_t> ( )>:
+          std::string_view, std::function<std::vector<uint8_t> ()>:
             return_value_policy: reference_internal
-          std::string_view, std::string_view, std::function<std::vector<uint8_t> ( )>:
+          std::string_view, std::string_view, std::function<std::vector<uint8_t> ()>:
             return_value_policy: reference_internal
       AddPersistent:
         overloads:
-          std::string_view, nt::Value&:
+          std::string_view, const nt::Value&:
             return_value_policy: reference_internal
           std::string_view, bool:
             return_value_policy: reference_internal

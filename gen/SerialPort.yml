@@ -12,7 +12,7 @@ classes:
     methods:
       SerialPort:
         overloads:
-          int, frc::SerialPort::Port, int, frc::SerialPort::Parity, frc::SerialPort::StopBits:
+          int, Port, int, Parity, StopBits:
             param_override:
               port:
                 default: frc::SerialPort::Port::kOnboard
@@ -20,7 +20,7 @@ classes:
                 default: frc::SerialPort::Parity::kParity_None
               stopBits:
                 default: frc::SerialPort::StopBits::kStopBits_One
-          int, std::string_view, frc::SerialPort::Port, int, frc::SerialPort::Parity, frc::SerialPort::StopBits:
+          int, std::string_view, Port, int, Parity, StopBits:
             param_override:
               port:
                 default: frc::SerialPort::Port::kOnboard
@@ -40,7 +40,7 @@ classes:
         - { type: out, src: buffer, len: count }
       Write:
         overloads:
-          char*, int:
+          const char*, int:
             buffers:
             - { type: in, src: buffer, len: count }
           std::string_view:

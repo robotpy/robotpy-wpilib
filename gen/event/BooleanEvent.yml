@@ -15,6 +15,9 @@ classes:
           [](BooleanEvent *self, py::function constructor) -> py::object {
             return constructor(self, (std::function<bool()>)*self);
           }
+        param_override:
+          ctor:
+            no_default: true
       Rising:
       Falling:
       Debounce:

@@ -9,7 +9,7 @@ classes:
     methods:
       Tachometer:
         overloads:
-          frc::DigitalSource&:
+          DigitalSource&:
           std::shared_ptr<DigitalSource>:
       GetFrequency:
       GetPeriod:

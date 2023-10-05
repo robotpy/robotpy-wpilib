@@ -54,6 +54,14 @@ classes:
       GetStartButtonPressed:
       GetStartButtonReleased:
       Start:
+      LeftTrigger:
+        overloads:
+          double, EventLoop* [const]:
+          EventLoop* [const]:
+      RightTrigger:
+        overloads:
+          double, EventLoop* [const]:
+          EventLoop* [const]:
   XboxController::Button:
     attributes:
       kLeftBumper:

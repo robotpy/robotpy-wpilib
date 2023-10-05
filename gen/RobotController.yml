@@ -17,6 +17,8 @@ classes:
         ignore: true
       GetFPGAVersion:
       GetFPGARevision:
+      GetSerialNumber:
+      GetComments:
       GetFPGATime:
       GetUserButton:
       IsSysActive:

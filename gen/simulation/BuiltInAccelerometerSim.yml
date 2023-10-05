@@ -12,7 +12,7 @@ classes:
       BuiltInAccelerometerSim:
         overloads:
           "":
-          frc::BuiltInAccelerometer&:
+          const BuiltInAccelerometer&:
       RegisterActiveCallback:
       GetActive:
       SetActive:

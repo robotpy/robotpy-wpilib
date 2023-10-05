@@ -10,7 +10,7 @@ classes:
     methods:
       UpDownCounter:
         overloads:
-          frc::DigitalSource&, frc::DigitalSource&:
+          DigitalSource&, DigitalSource&:
           std::shared_ptr<DigitalSource>, std::shared_ptr<DigitalSource>:
       GetCount:
       SetReverseDirection:

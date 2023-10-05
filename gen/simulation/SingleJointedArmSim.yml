@@ -10,14 +10,14 @@ classes:
     methods:
       SingleJointedArmSim:
         overloads:
-          ? LinearSystem<2, 1, 1>&, DCMotor&, double, units::meter_t, units::radian_t,
-            units::radian_t, units::kilogram_t, bool, std::array<double, 1>&
+          ? const LinearSystem<2, 1, 1>&, const DCMotor&, double, units::meter_t,
+            units::radian_t, units::radian_t, bool, const std::array<double, 1>&
           :
             param_override:
               measurementStdDevs:
                 default: std::array<double, 1>{0.0}
-          ? DCMotor&, double, units::kilogram_square_meter_t, units::meter_t, units::radian_t,
-            units::radian_t, units::kilogram_t, bool, std::array<double, 1>&
+          ? const DCMotor&, double, units::kilogram_square_meter_t, units::meter_t,
+            units::radian_t, units::radian_t, bool, const std::array<double, 1>&
           :
             param_override:
               measurementStdDevs:

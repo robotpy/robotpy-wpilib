@@ -20,7 +20,7 @@ classes:
       AnalogGyro:
         overloads:
           int:
-          frc::AnalogInput*:
+          AnalogInput*:
             ignore: true
           std::shared_ptr<AnalogInput>:
           int, int, double:

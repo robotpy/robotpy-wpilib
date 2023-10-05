@@ -12,7 +12,7 @@ classes:
       Field2d:
       SetRobotPose:
         overloads:
-          Pose2d&:
+          const Pose2d&:
           units::meter_t, units::meter_t, Rotation2d:
       GetRobotPose:
       GetObject:

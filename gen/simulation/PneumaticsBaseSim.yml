@@ -30,5 +30,5 @@ classes:
       ResetData:
       PneumaticsBaseSim:
         overloads:
-          PneumaticsBase&:
-          int:
+          const PneumaticsBase&:
+          const int:

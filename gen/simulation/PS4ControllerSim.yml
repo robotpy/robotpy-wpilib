@@ -9,7 +9,7 @@ classes:
     methods:
       PS4ControllerSim:
         overloads:
-          frc::PS4Controller&:
+          const PS4Controller&:
           int:
       SetLeftX:
       SetRightX:

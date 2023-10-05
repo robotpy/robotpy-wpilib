@@ -11,7 +11,7 @@ classes:
     methods:
       RelaySim:
         overloads:
-          frc::Relay&:
+          const Relay&:
           int:
       RegisterInitializedForwardCallback:
       GetInitializedForward:

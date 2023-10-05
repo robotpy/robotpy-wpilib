@@ -15,13 +15,13 @@ classes:
       Add:
         overloads:
           DigitalSource*:
-          frc::Encoder*:
-          frc::Counter*:
+          Encoder*:
+          Counter*:
       Remove:
         overloads:
           DigitalSource*:
-          frc::Encoder*:
-          frc::Counter*:
+          Encoder*:
+          Counter*:
       SetPeriodCycles:
       SetPeriodNanoSeconds:
       GetPeriodCycles:

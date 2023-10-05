@@ -159,8 +159,8 @@ classes:
     methods:
       Color:
         overloads:
-          "":
-          double, double, double:
+          '[constexpr]':
+          double, double, double [constexpr]:
             param_override:
               r:
                 name: red
@@ -168,11 +168,13 @@ classes:
                 name: green
               b:
                 name: blue
+          int, int, int [constexpr]:
       FromHSV:
       HexString:
+      operator==:
 
 inline_code: |
-  cls_Color.def(py::self == py::self)
+  cls_Color
     .def("__hash__", [](Color *self) -> size_t {
       size_t h = (size_t)(
         std::hash<double>{}(self->red)

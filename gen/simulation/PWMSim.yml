@@ -12,8 +12,8 @@ classes:
     methods:
       PWMSim:
         overloads:
-          frc::PWM&:
-          frc::PWMMotorController&:
+          const PWM&:
+          const PWMMotorController&:
           int:
       RegisterInitializedCallback:
       GetInitialized:
