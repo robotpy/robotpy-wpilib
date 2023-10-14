@@ -19,5 +19,6 @@ classes:
       GetRate:
       Reset:
       Calibrate:
+      GetRotation2d:
       GetPort:
       InitSendable:

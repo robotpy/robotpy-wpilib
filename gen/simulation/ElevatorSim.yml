@@ -11,13 +11,14 @@ classes:
       ElevatorSim:
         overloads:
           ? const LinearSystem<2, 1, 1>&, const DCMotor&, double, units::meter_t,
-            units::meter_t, units::meter_t, bool, const std::array<double, 1>&
+            units::meter_t, units::meter_t, bool, units::meter_t, const std::array<double,
+            1>&
           :
             param_override:
               measurementStdDevs:
                 default: std::array<double, 1>{0.0}
           ? const DCMotor&, double, units::kilogram_t, units::meter_t, units::meter_t,
-            units::meter_t, bool, const std::array<double, 1>&
+            units::meter_t, bool, units::meter_t, const std::array<double, 1>&
           :
             param_override:
               measurementStdDevs:

@@ -7,6 +7,7 @@ classes:
       m_period:
     methods:
       RobotInit:
+      DriverStationConnected:
       DisabledInit:
       AutonomousInit:
       TeleopInit:

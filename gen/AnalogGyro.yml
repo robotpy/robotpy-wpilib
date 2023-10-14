@@ -34,5 +34,6 @@ classes:
       Reset:
       InitGyro:
       Calibrate:
+      GetRotation2d:
       GetAnalogInput:
       InitSendable:

@@ -5,13 +5,12 @@ extra_includes:
 
 classes:
   BuiltInAccelerometer:
-    shared_ptr: true
     ignored_bases:
     - wpi::SendableHelper<BuiltInAccelerometer>
-    typealias:
-    - frc::Accelerometer::Range
     constants:
-    - frc::Accelerometer::Range::kRange_8G
+    - frc::BuiltInAccelerometer::Range::kRange_8G
+    enums:
+      Range:
     methods:
       BuiltInAccelerometer:
       SetRange:

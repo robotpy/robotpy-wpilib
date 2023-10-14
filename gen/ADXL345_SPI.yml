@@ -6,11 +6,8 @@ extra_includes:
 
 classes:
   ADXL345_SPI:
-    shared_ptr: true
-    typealias:
-    - frc::Accelerometer::Range
     constants:
-    - frc::Accelerometer::Range::kRange_2G
+    - frc::ADXL345_SPI::Range::kRange_2G
     ignored_bases:
     - wpi::SendableHelper<ADXL345_SPI>
     attributes:
@@ -27,6 +24,7 @@ classes:
       kGsPerLSB:
     enums:
       Axes:
+      Range:
     methods:
       ADXL345_SPI:
       GetSpiPort:

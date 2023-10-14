@@ -14,10 +14,8 @@ classes:
       PeriodMultiplier:
     methods:
       PWM:
-      StopMotor:
-      GetDescription:
-      SetRaw:
-      GetRaw:
+      SetPulseTime:
+      GetPulseTime:
       SetPosition:
       GetPosition:
       SetSpeed:
@@ -27,8 +25,8 @@ classes:
       SetZeroLatch:
       EnableDeadbandElimination:
       SetBounds:
-      SetRawBounds:
-      GetRawBounds:
+      GetBounds:
+      SetAlwaysHighMode:
       GetChannel:
       InitSendable:
 

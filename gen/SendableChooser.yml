@@ -23,6 +23,7 @@ classes:
             }
             return v;
           }
+      OnChange:
       InitSendable:
 
 templates:

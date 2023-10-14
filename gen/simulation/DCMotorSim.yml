@@ -12,6 +12,7 @@ classes:
               plant:
                 x_type: frc::LinearSystem<2,1,2>
           const DCMotor&, double, units::kilogram_square_meter_t, const std::array<double, 2>&:
+      SetState:
       GetAngularPosition:
       GetAngularVelocity:
       GetCurrentDraw:

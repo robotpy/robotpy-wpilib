@@ -8,5 +8,12 @@ classes:
     shared_ptr: true
     methods:
       DutyCycleEncoderSim:
+      Get:
       Set:
+      GetDistance:
       SetDistance:
+      GetAbsolutePosition:
+      SetAbsolutePosition:
+      GetDistancePerRotation:
+      IsConnected:
+      SetConnected:

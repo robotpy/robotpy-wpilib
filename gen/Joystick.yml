@@ -42,3 +42,5 @@ classes:
       GetMagnitude:
       GetDirectionRadians:
       GetDirectionDegrees:
+      GetDirection:
+        ignore: true

@@ -35,3 +35,4 @@ classes:
       ReadPacketNew:
       ReadPacketLatest:
       ReadPacketTimeout:
+      GetTimestampBaseTime:

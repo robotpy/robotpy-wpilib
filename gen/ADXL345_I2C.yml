@@ -5,11 +5,8 @@ extra_includes:
 
 classes:
   ADXL345_I2C:
-    shared_ptr: true
-    typealias:
-    - frc::Accelerometer::Range
     constants:
-    - frc::Accelerometer::Range::kRange_2G
+    - frc::ADXL345_I2C::Range::kRange_2G
     ignored_bases:
     - wpi::SendableHelper<ADXL345_I2C>
     attributes:
@@ -27,6 +24,7 @@ classes:
       kGsPerLSB:
     enums:
       Axes:
+      Range:
     methods:
       ADXL345_I2C:
         param_override:

@@ -18,6 +18,9 @@ classes:
       RegisterInitializedCallback:
       GetInitialized:
       SetInitialized:
+      RegisterPulseMicrosecondCallback:
+      GetPulseMicrosecond:
+      SetPulseMicrosecond:
       RegisterRawValueCallback:
       GetRawValue:
       SetRawValue:

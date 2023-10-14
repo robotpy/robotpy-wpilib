@@ -44,6 +44,7 @@ classes:
       GetReplayNumber:
       GetAlliance:
       GetLocation:
+      WaitForDsConnection:
       GetMatchTime:
       GetBatteryVoltage:
       RefreshData:

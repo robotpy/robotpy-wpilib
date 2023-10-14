@@ -6,15 +6,13 @@ extra_includes:
 
 classes:
   ADXL362:
-    shared_ptr: true
-    typealias:
-    - frc::Accelerometer::Range
     constants:
-    - frc::Accelerometer::Range::kRange_2G
+    - frc::ADXL362::Range::kRange_2G
     ignored_bases:
     - wpi::SendableHelper<ADXL362>
     enums:
       Axes:
+      Range:
     methods:
       ADXL362:
         overloads:

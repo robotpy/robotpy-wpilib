@@ -23,6 +23,7 @@ classes:
       m_mutex:
         ignore: true
       m_instance:
+      m_previousVal:
       s_instances:
         ignore: true
     methods:
