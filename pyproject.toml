@@ -6,10 +6,10 @@ author_email = "robotpy@googlegroups.com"
 url = "https://github.com/robotpy/robotpy-wpilib"
 license = "BSD-3-Clause"
 install_requires = [
-    "robotpy-wpiutil~=2023.4.3",
-    "robotpy-wpimath~=2023.4.3",
-    "robotpy-hal~=2023.4.3",
-    "pyntcore~=2023.4.3",
+    "robotpy-wpiutil~=2024.0.0b2",
+    "robotpy-wpimath~=2024.0.0b2",
+    "robotpy-hal~=2024.0.0b2",
+    "pyntcore~=2024.0.0b2",
 ]
 
 [tool.robotpy-build.metadata.entry_points]
@@ -18,10 +18,10 @@ robotpy = ["run = wpilib._impl.start:Main"]
 [build-system]
 requires = [
     "robotpy-build<2025.0.0,~=2024.0.0b1",
-    "robotpy-wpiutil~=2023.4.3",
-    "robotpy-wpimath~=2023.4.3",
-    "robotpy-hal~=2023.4.3",
-    "pyntcore~=2023.4.3",
+    "robotpy-wpiutil~=2024.0.0b2",
+    "robotpy-wpimath~=2024.0.0b2",
+    "robotpy-hal~=2024.0.0b2",
+    "pyntcore~=2024.0.0b2",
 ]
 
 [tool.robotpy-build]
